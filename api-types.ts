@@ -19,7 +19,7 @@ export type Group = {
 
 export type Query = {
   __typename?: 'Query';
-  groups: Array<Maybe<Group>>;
+  listGroups: Array<Maybe<Group>>;
 };
 
 export type Mutation = {

@@ -4,7 +4,7 @@ type Group {
 }
 
 type Query {
-  groups: [Group]!
+  listGroups: [Group]!
 }
 
 type Mutation {
