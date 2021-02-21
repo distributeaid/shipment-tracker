@@ -21,7 +21,7 @@ export type Group = {
 
 export type Query = {
   __typename?: 'Query';
-  groups: Array<Maybe<Group>>;
+  listGroups: Array<Maybe<Group>>;
 };
 
 export type Mutation = {
@@ -138,7 +138,7 @@ export type GroupResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  groups?: Resolver<Array<Maybe<ResolversTypes['Group']>>, ParentType, ContextType>;
+  listGroups?: Resolver<Array<Maybe<ResolversTypes['Group']>>, ParentType, ContextType>;
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
