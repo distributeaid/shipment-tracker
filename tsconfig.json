@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "lib": ["esnext"],
+    "moduleResolution": "node",
+    "strict": true,
+    "target": "ES6"
+  },
+  "include": ["src/**/*"]
+}

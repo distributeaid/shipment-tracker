@@ -1,0 +1,12 @@
+type Group {
+  id: Int
+  name: String
+}
+
+type Query {
+  groups: [Group]!
+}
+
+type Mutation {
+  addGroup(name: String): Group
+}
