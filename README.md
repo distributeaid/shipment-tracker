@@ -1,4 +1,8 @@
-# Distribute Aid
+# Distribute Aid Shipment Tracker
+
+[Project goals and background](https://www.notion.so/distributeaid/1-Online-Offer-Submission-form-4f40e406e5124d23a4d35280585ec88d)
+
+[Project requirements document with user stories and proposed GraphQL schema](https://www.notion.so/distributeaid/Technical-requirements-c2fd190e0a8d4f708119c6944fa654dd)
 
 ## Dev setup
 
