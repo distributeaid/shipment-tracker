@@ -32,3 +32,6 @@ jobs:
 
     - name: Build TypeScript
       run: yarn run build
+
+    - name: Run tests
+      run: yarn test
