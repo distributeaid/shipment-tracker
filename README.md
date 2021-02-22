@@ -9,12 +9,12 @@
 Install system dependencies:
 
 - node.js v14.15.5
-- npm v7.5.4
+- yarn v1.22.5
 - postgresql v13.2
 
 Install project dependencies:
 
-- `npm install`
+- `yarn install`
 
 Initialize postgres databases for development:
 
