@@ -13,17 +13,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version:
-          - 14.15.5
-
     steps:
     - uses: actions/checkout@v2
+
     - name: Install Node.js
       uses: actions/setup-node@v1
       with:
         node-version: 14.15.5
+
+    # Cache node_modules between builds based on the yarn.lock file's hash.
+    - uses: actions/cache@v2
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+    - name: Install packages
+      run: yarn install
+
     # - run: npm ci
     # - run: npm run build --if-present
     # - run: npm test
