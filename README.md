@@ -34,6 +34,9 @@ createdb distributeaid_dev &&
   npx sequelize-cli db:migrate
 ```
 
+If these command fail due to `could not connect to server: No such file or directory`, check the log file at `/usr/local/var/log/postgres.log`. If you see an error that looks similar to `The data directory was initialized by PostgreSQL version 11, which is not compatible with this version 13.2`, you have a previous version of postgresql installed that is conflicting with this one. The easiest way to resolve this is to `mv` the old data directory and run `initdb` with the new version of postgres. See https://gist.github.com/olivierlacan/e1bf5c34bc9f82e06bc0 for more details.
+
+
 Run the dev server:
 
 `npm run dev`
