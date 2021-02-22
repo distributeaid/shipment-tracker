@@ -1,3 +1,5 @@
+![CI status](https://github.com/distributeaid/shipment-tracker/actions/workflows/ci.yml/badge.svg)
+
 # Distribute Aid Shipment Tracker
 
 [Project goals and background](https://www.notion.so/distributeaid/1-Online-Offer-Submission-form-4f40e406e5124d23a4d35280585ec88d)
