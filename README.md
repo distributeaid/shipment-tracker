@@ -10,7 +10,7 @@
 
 Install system dependencies:
 
-- node.js v14.15.5
+- node.js v14
 - yarn v1.22.5
 - postgresql v13.2
 
