@@ -19,7 +19,7 @@ jobs:
         env:
           POSTGRES_DB: distributeaid_test
           POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: distributeaid
+          POSTGRES_USER: postgres
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
