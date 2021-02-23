@@ -9,5 +9,6 @@ export const sequelize = new Sequelize({
   username: config.username,
   password: config.password,
   dialect: config.dialect,
+  logging: process.env.NODE_ENV?.toUpperCase() !== 'TEST',
   models: [__dirname + '/models'],
 })
