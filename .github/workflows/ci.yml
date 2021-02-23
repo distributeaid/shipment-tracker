@@ -18,6 +18,7 @@ jobs:
         image: postgres:latest
         env:
           POSTGRES_DB: distributeaid_test
+          POSTGRES_PASSWORD: postgres
           POSTGRES_USER: distributeaid
         ports:
           - 5432:5432
@@ -27,6 +28,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
 
     steps:
     - uses: actions/checkout@v2
