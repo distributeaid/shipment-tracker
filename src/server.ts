@@ -4,10 +4,8 @@ import depthLimit from 'graphql-depth-limit'
 import { createServer } from 'http'
 import compression from 'compression'
 import cors from 'cors'
-import { readFileSync } from 'fs'
 import resolvers from './resolvers'
-
-const typeDefs = readFileSync('./schema.graphql').toString('utf-8')
+import typeDefs from './typeDefs'
 
 const server = new ApolloServer({
   typeDefs,
