@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize-typescript'
 
-const env = process.env.NODE_ENV || 'development'
+const env = process.env.DB_ENV || process.env.NODE_ENV || 'development'
 const config = require(__dirname + '/../db/config.json')[env]
 
 export const sequelize = new Sequelize({

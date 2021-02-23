@@ -9,7 +9,8 @@
     "clean": "rm -rf dist",
     "build": "yarn -s run clean && yarn -s run codegen && tsc",
     "codegen": "graphql-codegen",
-    "test": "jest --detectOpenHandles"
+    "test": "jest --detectOpenHandles",
+    "test-ci": "DB_ENV=ci jest --detectOpenHandles"
   },
   "engines": {
     "node": "14.15.5",
