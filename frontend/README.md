@@ -21,7 +21,30 @@ This is a React and Typescript application bootstrapped using [Create React App]
 
 3. **That's it!**
 
-   View the app at http://localhost:3000/
+   View the app at http://localhost:3001/
+
+### Running the backend
+
+You'll usually want access to our data when running the frontend. Here's how to set that up:
+
+1. **Navigate to the root folder**
+2. **Install the dependencies:**
+
+   ```shell
+   yarn install
+
+   ```
+
+3. **Launch the server:**
+
+   ```shell
+   yarn dev
+
+   ```
+
+4. **Tada 🎉**
+
+   The server is now running at http://localhost:3000. There's a sweet GrapqhQL interface at http://localhost:3000/grapqhl.
 
 ## Infrastructure
 
