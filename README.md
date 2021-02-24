@@ -11,8 +11,8 @@
 Install system dependencies:
 
 - node.js v14.15.5
-- yarn v1.22.5
-- postgresql v13.2
+- yarn v1.22.5: `brew install yarn`
+- postgresql v13.2: `brew install postgresql`
 
 Install project dependencies:
 
