@@ -18,24 +18,16 @@ Install project dependencies:
 
 - `yarn install`
 
-Initialize postgres databases for development:
+Start postgres daemon:
 
 - macOS: `brew services start postgresql`
 - linux: `sudo service postgresql-13.2 start`
 
-then
+Next set up the development and test databases. Make sure `npx` is working first (`npx --version`).
 
-```
-createdb distributeaid_dev &&
-  createdb distributeaid_test &&
-  psql -d distributeaid_dev -c "create user distributeaid;" &&
-  psql -d distributeaid_dev -c "grant all privileges on database distributeaid_dev to distributeaid;" &&
-  psql -d distributeaid_dev -c "grant all privileges on database distributeaid_test to distributeaid;" &&
-  npx sequelize-cli db:migrate
-```
+- `./script/init_db`
 
 If these command fail due to `could not connect to server: No such file or directory`, check the log file at `/usr/local/var/log/postgres.log`. If you see an error that looks similar to `The data directory was initialized by PostgreSQL version 11, which is not compatible with this version 13.2`, you have a previous version of postgresql installed that is conflicting with this one. The easiest way to resolve this is to `mv` the old data directory and run `initdb` with the new version of postgres. See https://gist.github.com/olivierlacan/e1bf5c34bc9f82e06bc0 for more details.
-
 
 Run the dev server:
 
