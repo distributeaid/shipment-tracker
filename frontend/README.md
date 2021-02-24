@@ -13,8 +13,6 @@ This is a React and Typescript application bootstrapped using [Create React App]
 
 2. **Start the app**
 
-   Get your Gatsby blog set up in a single command:
-
    ```shell
    yarn start
    ```
@@ -42,7 +40,7 @@ You'll usually want access to our data when running the frontend. Here's how to 
 
    ```
 
-4. **Tada 🎉**
+4. **You're done 🎉**
 
    The server is now running at http://localhost:3000. There's a sweet GrapqhQL interface at http://localhost:3000/grapqhl.
 
@@ -69,3 +67,9 @@ In order of operation:
 2. we run `watch:styles` and `start:react` in parallel
    a. `watch:styles` compiles any changes to the CSS files
    b. `start:react` runs CRA's `react-scripts start` command, which runs the React code
+
+### Environment variables
+
+We follow Create React App's [approach to environment variables](https://create-react-app.dev/docs/adding-custom-environment-variables/#adding-development-environment-variables-in-env). There is a `.env` file **checked in** that contains non-sensitive default variables. You can create a `.env.local` file on your own machine and it should **not** be checked in.
+
+Environment variables must be prefixed with `REACT_APP_`.
