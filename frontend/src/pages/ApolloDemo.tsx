@@ -1,4 +1,5 @@
 import { useQuery, gql } from '@apollo/client'
+import LayoutWithNav from '../layouts/LayoutWithNav'
 
 /**
  * 1. Write your GraphQL query. I recommend using the GraphQL UI to put queries
@@ -27,21 +28,23 @@ const ApolloDemoPage = () => {
    * 3. Render your markup!
    */
   return (
-    <main className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-3xl text-gray-800 mb-4">Apollo + GraphQL demo</h1>
-      <div className="max-w-xl w-full p-4 border border-gray-200">
-        <p>{loading ? `⏳ Loading...` : `✅ Loaded`}</p>
-        <p>{error ? `Error: ${error.message}` : `✅ No errors`}</p>
-        {data && (
-          <>
-            <p>✅ Data:</p>
-            <pre className="bg-gray-100 p-2">
-              {JSON.stringify(data, null, 2)}
-            </pre>
-          </>
-        )}
-      </div>
-    </main>
+    <LayoutWithNav headerTitle="GraphQL demo">
+      <main className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-3xl text-gray-800 mb-4">Apollo + GraphQL demo</h1>
+        <div className="max-w-xl w-full p-4 border border-gray-200">
+          <p>{loading ? `⏳ Loading...` : `✅ Loaded`}</p>
+          <p>{error ? `Error: ${error.message}` : `✅ No errors`}</p>
+          {data && (
+            <>
+              <p>✅ Data:</p>
+              <pre className="bg-gray-100 p-2">
+                {JSON.stringify(data, null, 2)}
+              </pre>
+            </>
+          )}
+        </div>
+      </main>
+    </LayoutWithNav>
   )
 }
 
