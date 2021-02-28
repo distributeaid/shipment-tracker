@@ -27,12 +27,6 @@ export type Query = {
   __typename?: 'Query';
   listGroups: Array<Maybe<Group>>;
   listShipments: Array<Maybe<Shipment>>;
-  listShipment: Shipment;
-};
-
-
-export type QueryListShipmentArgs = {
-  id: Scalars['Int'];
 };
 
 export type Mutation = {

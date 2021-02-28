@@ -29,12 +29,6 @@ export type Query = {
   __typename?: 'Query';
   listGroups: Array<Maybe<Group>>;
   listShipments: Array<Maybe<Shipment>>;
-  listShipment: Shipment;
-};
-
-
-export type QueryListShipmentArgs = {
-  id: Scalars['Int'];
 };
 
 export type Mutation = {
@@ -212,7 +206,6 @@ export type GroupResolvers<ContextType = any, ParentType extends ResolversParent
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   listGroups?: Resolver<Array<Maybe<ResolversTypes['Group']>>, ParentType, ContextType>;
   listShipments?: Resolver<Array<Maybe<ResolversTypes['Shipment']>>, ParentType, ContextType>;
-  listShipment?: Resolver<ResolversTypes['Shipment'], ParentType, ContextType, RequireFields<QueryListShipmentArgs, 'id'>>;
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{

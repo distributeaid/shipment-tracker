@@ -12,7 +12,6 @@ input GroupInput {
 type Query {
   listGroups: [Group]!
   listShipments: [Shipment]!
-  listShipment(id: Int!): Shipment!
 }
 
 type Mutation {
