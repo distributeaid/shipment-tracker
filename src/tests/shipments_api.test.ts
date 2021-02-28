@@ -29,7 +29,7 @@ describe('Shipments API', () => {
       const group2 = await createGroup('group 2')
 
       const ADD_SHIPMENT = gql`
-        mutation($input: ShipmentInput) {
+        mutation($input: ShipmentInput!) {
           addShipment(input: $input) {
             id
             shippingRoute
