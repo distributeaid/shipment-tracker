@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 .vscode
+
+# CSS files output
+*.output.css
