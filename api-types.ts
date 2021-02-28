@@ -31,18 +31,18 @@ export type Query = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addGroup?: Maybe<Group>;
-  addShipment?: Maybe<Shipment>;
+  addGroup: Group;
+  addShipment: Shipment;
 };
 
 
 export type MutationAddGroupArgs = {
-  input?: Maybe<GroupInput>;
+  input: GroupInput;
 };
 
 
 export type MutationAddShipmentArgs = {
-  input?: Maybe<ShipmentInput>;
+  input: ShipmentInput;
 };
 
 export type ShipmentInput = {

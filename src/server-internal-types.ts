@@ -33,18 +33,18 @@ export type Query = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addGroup?: Maybe<Group>;
-  addShipment?: Maybe<Shipment>;
+  addGroup: Group;
+  addShipment: Shipment;
 };
 
 
 export type MutationAddGroupArgs = {
-  input?: Maybe<GroupInput>;
+  input: GroupInput;
 };
 
 
 export type MutationAddShipmentArgs = {
-  input?: Maybe<ShipmentInput>;
+  input: ShipmentInput;
 };
 
 export type ShipmentInput = {
@@ -209,8 +209,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  addGroup?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType, RequireFields<MutationAddGroupArgs, never>>;
-  addShipment?: Resolver<Maybe<ResolversTypes['Shipment']>, ParentType, ContextType, RequireFields<MutationAddShipmentArgs, never>>;
+  addGroup?: Resolver<ResolversTypes['Group'], ParentType, ContextType, RequireFields<MutationAddGroupArgs, 'input'>>;
+  addShipment?: Resolver<ResolversTypes['Shipment'], ParentType, ContextType, RequireFields<MutationAddShipmentArgs, 'input'>>;
 }>;
 
 export type ShipmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Shipment'] = ResolversParentTypes['Shipment']> = ResolversObject<{

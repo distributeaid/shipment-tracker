@@ -24,12 +24,6 @@ const addShipment: MutationResolvers['addShipment'] = async (
   { input },
   _context,
 ) => {
-  if (!input) {
-    throw new UserInputError('Shipment arguments invalid', {
-      invalidArgs: 'input',
-    })
-  }
-
   if (
     !input.shippingRoute ||
     !input.labelYear ||

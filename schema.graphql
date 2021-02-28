@@ -15,8 +15,8 @@ type Query {
 }
 
 type Mutation {
-  addGroup(input: GroupInput): Group
-  addShipment(input: ShipmentInput): Shipment
+  addGroup(input: GroupInput!): Group!
+  addShipment(input: ShipmentInput!): Shipment!
 }
 
 input ShipmentInput {

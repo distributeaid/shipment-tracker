@@ -17,7 +17,7 @@ const addGroup: MutationResolvers['addGroup'] = async (
   args,
   _context,
 ) => {
-  if (!args?.input?.name) {
+  if (!args.input.name) {
     throw new UserInputError('Group arguments invalid', {
       invalidArgs: 'name',
     })
