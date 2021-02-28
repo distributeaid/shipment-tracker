@@ -1,12 +1,63 @@
+scalar Date
+
 type Group {
   id: Int
   name: String
 }
 
+input GroupInput {
+  name: String
+}
+
 type Query {
   listGroups: [Group]!
+  listShipments: [Shipment]!
+  listShipment(id: Int!): Shipment!
 }
 
 type Mutation {
-  addGroup(name: String): Group
+  addGroup(input: GroupInput): Group
+  addShipment(input: ShipmentInput): Shipment
+}
+
+input ShipmentInput {
+  shippingRoute: ShippingRoute!
+  labelYear: Int!
+  labelMonth: Int!
+  sendingHubId: Int!
+  receivingHubId: Int!
+  status: ShipmentStatus!
+}
+
+enum ShippingRoute {
+  UK
+}
+
+enum ShipmentStatus {
+  ANNOUNCED
+  OPEN
+  STAGING
+  IN_PROGRESS
+  COMPLETE
+  ABANDONED
+}
+
+type Shipment {
+  id: Int
+  shippingRoute: ShippingRoute!
+  # label{year,month} are for identification purposes only e.g. for deriving
+  # display names like "UK-2021-03".
+  labelYear: Int!
+  labelMonth: Int!
+  offerSubmissionDeadline: Date
+  status: ShipmentStatus!
+  sendingHubId: Int!
+  sendingHub: Group!
+  receivingHubId: Int!
+  receivingHub: Group!
+
+  # default to created
+  statusChangeTime: Date!
+  createdAt: Date!
+  updatedAt: Date!
 }

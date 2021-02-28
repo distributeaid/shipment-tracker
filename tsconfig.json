@@ -8,7 +8,8 @@
     "lib": ["esnext"],
     "moduleResolution": "node",
     "strict": true,
-    "target": "ES6"
+    "target": "ES6",
+    "strictPropertyInitialization": false
   },
   "include": ["src/**/*"]
 }
