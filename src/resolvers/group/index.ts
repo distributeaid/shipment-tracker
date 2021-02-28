@@ -11,7 +11,7 @@ const listGroups: QueryResolvers['listGroups'] = async () => {
   return groupRepository.findAll()
 }
 
-// group mutate resolvers
+// Group mutation resolvers
 const addGroup: MutationResolvers['addGroup'] = async (
   _parent,
   args,

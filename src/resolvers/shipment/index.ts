@@ -13,12 +13,12 @@ import Group from '../../models/group'
 const shipmentRepository = sequelize.getRepository(Shipment)
 const groupRepository = sequelize.getRepository(Group)
 
-// Shipment Query Resolvers
+// Shipment query resolvers
 const listShipments: QueryResolvers['listShipments'] = async () => {
   return shipmentRepository.findAll()
 }
 
-// Shipment Mutation Resolvers
+// Shipment mutation resolvers
 const addShipment: MutationResolvers['addShipment'] = async (
   _parent,
   { input },
@@ -56,7 +56,7 @@ const addShipment: MutationResolvers['addShipment'] = async (
   })
 }
 
-// Shipment Custom Resolvers
+// Shipment custom resolvers
 const sendingHub: ShipmentResolvers['sendingHub'] = async (parent) => {
   return (await groupRepository.findByPk(parent.sendingHubId)) ?? {}
 }
