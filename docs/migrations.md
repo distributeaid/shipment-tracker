@@ -60,7 +60,7 @@ module.exports = {
 }
 ```
 
-Alternatively, if you are adding a new table you can use a command similar to fill in all of the fields of the migration:
+Alternatively, if you are adding a new table you can use a command similar the following in order to fill in all of the data types for the new table in the migration file:
 
 ```sh
 npx sequelize-cli model:generate --name User --attributes name:string,age:number
@@ -101,6 +101,6 @@ module.exports = {
 }
 ```
 
-It will also generate a model under the `src/models` directory, which you will want to delete and replace with a TypeScript file defining your new model.
+It will also generate a model file under the `src/models` directory, which you will want to delete and replace with a TypeScript file defining your new model.
 
 You can find more information about sequelize migration files [here](https://sequelize.org/master/manual/migrations.html#migration-skeleton).
