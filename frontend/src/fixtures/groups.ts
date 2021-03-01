@@ -1,9 +1,24 @@
 import { Group } from '../api-types'
+import { GroupType } from '../types/group'
+
+// TODO remove the placeholder fields when the issue below is resolved
+// https://github.com/distributeaid/shipment-tracker/issues/45
+type GroupPlaceholder = Group & {
+  groupType: GroupType
+  primaryLocation: {
+    countryCode?: string
+    townCity: string
+  }
+  primaryContact: {
+    name: string
+  }
+}
 
 /**
  * A list of groups used for mockups and testing.
  */
-const GROUPS: Group[] = [
+
+const GROUPS: GroupPlaceholder[] = [
   {
     id: 1,
     name: "L'Auberge des Migrants",

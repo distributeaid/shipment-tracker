@@ -32,7 +32,7 @@ const GroupList: FunctionComponent = () => {
         name: group.name,
         location: `${group.primaryLocation.townCity} (${group.primaryLocation.countryCode})`,
         groupType: formatGroupType(group.groupType),
-        contact: group.primaryContactName,
+        contact: group.primaryContact.name,
       })),
     [],
   )
