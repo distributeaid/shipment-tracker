@@ -1,7 +1,9 @@
 import { FunctionComponent, useMemo } from 'react'
 import { useSortBy, useTable } from 'react-table'
+import cx from 'classnames'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import groupsFixture from '../../fixtures/groups'
+import { formatGroupType } from '../../utils/format'
 
 const COLUMNS = [
   {
@@ -16,6 +18,11 @@ const COLUMNS = [
     Header: 'Type',
     accessor: 'groupType',
   },
+  {
+    Header: 'Contact',
+    accessor: 'contact',
+    disableSortBy: true,
+  },
 ]
 
 const GroupList: FunctionComponent = () => {
@@ -24,7 +31,8 @@ const GroupList: FunctionComponent = () => {
       groupsFixture.map((group) => ({
         name: group.name,
         location: `${group.primaryLocation.townCity} (${group.primaryLocation.countryCode})`,
-        groupType: group.groupType,
+        groupType: formatGroupType(group.groupType),
+        contact: group.primaryContactName,
       })),
     [],
   )
@@ -50,16 +58,20 @@ const GroupList: FunctionComponent = () => {
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column) => (
                     <th
-                      {...column.getHeaderProps(
-                        (column as any).getSortByToggleProps(),
+                      {...column.getHeaderProps(column.getSortByToggleProps())}
+                      className={cx(
+                        'p-2 first:pl-6 last:pr-6 bg-gray-50 text-gray-700 text-left font-semibold',
+                        {
+                          'hover:bg-gray-100': column.canSort,
+                          'bg-gray-100': column.isSorted,
+                        },
                       )}
-                      className="p-2 bg-gray-50 text-left font-semibold"
-                      title="Sort rows"
+                      title={column.canSort ? 'Sort rows' : ''}
                     >
                       {column.render('Header')}
-                      <span className="ml-2 text-gray-700">
-                        {(column as any).isSorted
-                          ? (column as any).isSortedDesc
+                      <span className="ml-2 text-gray-500">
+                        {column.isSorted
+                          ? column.isSortedDesc
                             ? '↓'
                             : '↑'
                           : ''}
@@ -78,7 +90,13 @@ const GroupList: FunctionComponent = () => {
                     className="border-b border-gray-200 px-4"
                   >
                     {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()} className="p-2">
+                      <td
+                        {...cell.getCellProps()}
+                        className={cx('p-2 first:pl-6 last:pr-6', {
+                          'font-semibold': cell.column.Header === 'Name',
+                          'bg-gray-50': cell.column.isSorted,
+                        })}
+                      >
                         {cell.render('Cell')}
                       </td>
                     ))}
