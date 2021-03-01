@@ -5,9 +5,7 @@ import {
   Table,
   CreatedAt,
   UpdatedAt,
-  HasMany,
 } from 'sequelize-typescript'
-import Shipment from './shipment'
 
 export interface GroupAttributes {
   id: number
@@ -24,14 +22,16 @@ export default class Group extends Model<
   GroupAttributes,
   GroupCreationAttributes
 > {
+  public id!: number
+
   @Column
   public name!: string
 
   @CreatedAt
   @Column
-  public createdAt!: Date
+  public readonly createdAt!: Date
 
   @UpdatedAt
   @Column
-  public updatedAt!: Date
+  public readonly updatedAt!: Date
 }

@@ -4,11 +4,13 @@
   "description": "We distribute aid.",
   "main": "index.js",
   "scripts": {
+    "predev": "yarn codegen",
     "dev": "ts-node-dev --no-notify --respawn --transpile-only src/server",
     "start": "node dist/server",
     "clean": "rm -rf dist",
     "build": "yarn -s run clean && yarn -s run codegen && tsc",
     "codegen": "graphql-codegen",
+    "codegen:watch": "graphql-codegen --watch",
     "test": "jest --detectOpenHandles",
     "test-ci": "DB_ENV=ci jest --detectOpenHandles"
   },

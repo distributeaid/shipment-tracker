@@ -15,18 +15,18 @@ export type Scalars = {
 
 export type Group = {
   __typename?: 'Group';
-  id?: Maybe<Scalars['Int']>;
-  name?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
+  name: Scalars['String'];
 };
 
 export type GroupInput = {
-  name?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  listGroups: Array<Maybe<Group>>;
-  listShipments: Array<Maybe<Shipment>>;
+  listGroups: Array<Group>;
+  listShipments: Array<Shipment>;
 };
 
 export type Mutation = {
@@ -69,7 +69,7 @@ export enum ShipmentStatus {
 
 export type Shipment = {
   __typename?: 'Shipment';
-  id?: Maybe<Scalars['Int']>;
+  id: Scalars['Int'];
   shippingRoute: ShippingRoute;
   labelYear: Scalars['Int'];
   labelMonth: Scalars['Int'];

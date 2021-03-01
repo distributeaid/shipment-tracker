@@ -1,17 +1,17 @@
 scalar Date
 
 type Group {
-  id: Int
-  name: String
+  id: Int!
+  name: String!
 }
 
 input GroupInput {
-  name: String
+  name: String!
 }
 
 type Query {
-  listGroups: [Group]!
-  listShipments: [Shipment]!
+  listGroups: [Group!]!
+  listShipments: [Shipment!]!
 }
 
 type Mutation {
@@ -42,7 +42,7 @@ enum ShipmentStatus {
 }
 
 type Shipment {
-  id: Int
+  id: Int!
   shippingRoute: ShippingRoute!
   # label{year,month} are for identification purposes only e.g. for deriving
   # display names like "UK-2021-03".

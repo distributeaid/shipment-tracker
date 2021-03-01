@@ -17,18 +17,18 @@ export type Scalars = {
 
 export type Group = {
   __typename?: 'Group';
-  id?: Maybe<Scalars['Int']>;
-  name?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
+  name: Scalars['String'];
 };
 
 export type GroupInput = {
-  name?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  listGroups: Array<Maybe<Group>>;
-  listShipments: Array<Maybe<Shipment>>;
+  listGroups: Array<Group>;
+  listShipments: Array<Shipment>;
 };
 
 export type Mutation = {
@@ -71,7 +71,7 @@ export enum ShipmentStatus {
 
 export type Shipment = {
   __typename?: 'Shipment';
-  id?: Maybe<Scalars['Int']>;
+  id: Scalars['Int'];
   shippingRoute: ShippingRoute;
   labelYear: Scalars['Int'];
   labelMonth: Scalars['Int'];
@@ -198,14 +198,14 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type GroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['Group'] = ResolversParentTypes['Group']> = ResolversObject<{
-  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  listGroups?: Resolver<Array<Maybe<ResolversTypes['Group']>>, ParentType, ContextType>;
-  listShipments?: Resolver<Array<Maybe<ResolversTypes['Shipment']>>, ParentType, ContextType>;
+  listGroups?: Resolver<Array<ResolversTypes['Group']>, ParentType, ContextType>;
+  listShipments?: Resolver<Array<ResolversTypes['Shipment']>, ParentType, ContextType>;
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
@@ -214,7 +214,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 }>;
 
 export type ShipmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Shipment'] = ResolversParentTypes['Shipment']> = ResolversObject<{
-  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   shippingRoute?: Resolver<ResolversTypes['ShippingRoute'], ParentType, ContextType>;
   labelYear?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   labelMonth?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;

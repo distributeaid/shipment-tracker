@@ -1,4 +1,4 @@
-import { UserInputError } from 'apollo-server'
+import { UserInputError, ApolloError } from 'apollo-server'
 
 import {
   QueryResolvers,
@@ -39,6 +39,16 @@ const addShipment: MutationResolvers['addShipment'] = async (
     })
   }
 
+  const sendingHub = await groupRepository.findByPk(input.sendingHubId)
+  if (!sendingHub) {
+    throw new ApolloError('Sending hub not found')
+  }
+
+  const receivingHub = await groupRepository.findByPk(input.sendingHubId)
+  if (!receivingHub) {
+    throw new ApolloError('Receiving hub not found')
+  }
+
   return shipmentRepository.create({
     shippingRoute: input.shippingRoute,
     labelYear: input.labelYear,
@@ -52,11 +62,21 @@ const addShipment: MutationResolvers['addShipment'] = async (
 
 // Shipment custom resolvers
 const sendingHub: ShipmentResolvers['sendingHub'] = async (parent) => {
-  return (await groupRepository.findByPk(parent.sendingHubId)) ?? {}
+  const sendingHub = await groupRepository.findByPk(parent.sendingHubId)
+  if (!sendingHub) {
+    throw new ApolloError('Sending hub not found')
+  }
+
+  return sendingHub
 }
 
 const receivingHub: ShipmentResolvers['receivingHub'] = async (parent) => {
-  return (await groupRepository.findByPk(parent.receivingHubId)) ?? {}
+  const receivingHub = await groupRepository.findByPk(parent.receivingHubId)
+  if (!receivingHub) {
+    throw new ApolloError('Receiving hub not found')
+  }
+
+  return receivingHub
 }
 
 export { listShipments, addShipment, sendingHub, receivingHub }
