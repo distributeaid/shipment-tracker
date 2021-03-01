@@ -60,4 +60,47 @@ module.exports = {
 }
 ```
 
+Alternatively, if you are adding a new table you can use a command similar to fill in all of the fields of the migration:
+
+```sh
+npx sequelize-cli model:generate --name User --attributes name:string,age:number
+```
+
+The above command would generate the following migration file:
+
+```javascript
+'use strict'
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('Users', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER,
+      },
+      name: {
+        type: Sequelize.STRING,
+      },
+      age: {
+        type: Sequelize.NUMBER,
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+    })
+  },
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable('Users')
+  },
+}
+```
+
+It will also generate a model under the `src/models` directory, which you will want to delete and replace with a TypeScript file defining your new model.
+
 You can find more information about sequelize migration files [here](https://sequelize.org/master/manual/migrations.html#migration-skeleton).
