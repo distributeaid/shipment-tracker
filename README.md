@@ -52,6 +52,10 @@ sure `npx` is working first by running `npx --version`.)
 
 - `./script/init_db`
 
+Create your local environment file:
+
+- `cp .env.example .env`
+
 Run the dev server:
 
 `yarn dev`
