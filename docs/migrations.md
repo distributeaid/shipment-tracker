@@ -23,7 +23,7 @@ npx sequelize-cli db:migrate:undo
 Or you can rollback all migration with:
 
 ```sh
-npx sequelize-cli db:migreate:undo:all
+npx sequelize-cli db:migrate:undo:all
 ```
 
 ## Creating migrations
