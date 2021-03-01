@@ -1,4 +1,4 @@
-import { GroupType } from '../types/group'
+import { GroupType } from '../fixtures/groups'
 
 export function formatGroupType(type: GroupType) {
   switch (type) {

@@ -1,8 +1,13 @@
-import { Group } from '../api-types'
-import { GroupType } from '../types/group'
+import { Group } from '../types/api-types'
 
 // TODO remove the placeholder fields when the issue below is resolved
 // https://github.com/distributeaid/shipment-tracker/issues/45
+export enum GroupType {
+  DAHub = 'DA_HUB',
+  ReceivingGroup = 'RECEIVING_GROUP',
+  SendingGroup = 'SENDING_GROUP',
+}
+
 type GroupPlaceholder = Group & {
   groupType: GroupType
   primaryLocation: {

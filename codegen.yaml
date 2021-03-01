@@ -11,7 +11,7 @@ generates:
       - typescript
   # Generate the types used by the frontend, because react-scripts requires them
   # to exist in the src directory.
-  ./frontend/src/api-types.ts:
+  ./frontend/src/types/api-types.ts:
     plugins:
       - add:
           content: "/**\n
