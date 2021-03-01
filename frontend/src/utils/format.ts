@@ -9,6 +9,6 @@ export function formatGroupType(type: GroupType) {
     case GroupType.SendingGroup:
       return 'Sending group'
     default:
-      return type
+      throw new Error(`Unknown GroupType: ${type}`)
   }
 }
