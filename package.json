@@ -4,11 +4,13 @@
   "description": "We distribute aid.",
   "main": "index.js",
   "scripts": {
+    "predev": "yarn codegen",
     "dev": "ts-node-dev --no-notify --respawn --transpile-only src/server",
     "start": "node dist/server",
     "clean": "rm -rf dist",
     "build": "yarn -s run clean && yarn -s run codegen && tsc",
     "codegen": "graphql-codegen",
+    "codegen:watch": "graphql-codegen --watch",
     "test": "jest --detectOpenHandles",
     "test-ci": "DB_ENV=ci jest --detectOpenHandles"
   },
@@ -27,6 +29,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "graphql": "^15.5.0",
+    "graphql-scalars": "^1.7.1",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^1.12.2",

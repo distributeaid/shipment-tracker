@@ -1,32 +1,34 @@
-import { UserInputError } from 'apollo-server'
-import { Resolvers, MutationAddGroupArgs } from './server-internal-types'
-import { sequelize } from './sequelize'
-import Group from './models/group'
+import { DateResolver } from 'graphql-scalars'
 
-const groupRepository = sequelize.getRepository(Group)
+import { Resolvers } from './server-internal-types'
+import { listGroups, addGroup } from './resolvers/group'
+import {
+  addShipment,
+  listShipments,
+  receivingHub,
+  sendingHub,
+} from './resolvers/shipment'
 
 const resolvers: Resolvers = {
+  // Third Party Resolvers
+  Date: DateResolver,
+
+  // Query Resolvers
   Query: {
-    listGroups: async (parent, args, ctx) => {
-      const groupList: Group[] = await groupRepository.findAll()
-
-      return groupList.map((group) => ({ id: group.id, name: group.name }))
-    },
+    listGroups,
+    listShipments,
   },
+
+  // Mutation Resolvers
   Mutation: {
-    addGroup: async (parent, args: MutationAddGroupArgs, ctx) => {
-      if (!args.name) {
-        throw new UserInputError('Group arguments invalid', {
-          invalidArgs: Object.keys(args),
-        })
-      }
+    addGroup,
+    addShipment,
+  },
 
-      const group: Group = await groupRepository.create({
-        name: args.name,
-      })
-
-      return { id: group.id, name: group.name }
-    },
+  // Custom Resolvers
+  Shipment: {
+    sendingHub,
+    receivingHub,
   },
 }
 

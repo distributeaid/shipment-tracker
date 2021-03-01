@@ -1,8 +1,10 @@
 import gql from 'graphql-tag'
 import { ApolloServerTestClient } from 'apollo-server-testing'
+
 import makeTestServer from '../testServer'
 import { sequelize } from '../sequelize'
 import Group from '../models/group'
+import { createGroup } from './helpers'
 
 describe('Groups API', () => {
   let testServer: ApolloServerTestClient
@@ -11,14 +13,16 @@ describe('Groups API', () => {
     testServer = makeTestServer()
 
     await sequelize.sync({ force: true })
-    await sequelize.getRepository(Group).truncate()
+    await sequelize
+      .getRepository(Group)
+      .truncate({ cascade: true, force: true })
   })
 
   describe('addGroup', () => {
     it('adds a new group', async () => {
       const ADD_GROUP = gql`
         mutation($name: String!) {
-          addGroup(name: $name) {
+          addGroup(input: { name: $name }) {
             id
             name
           }
@@ -61,8 +65,4 @@ describe('Groups API', () => {
       ])
     })
   })
-
-  async function createGroup(name: string): Promise<Group> {
-    return await sequelize.getRepository(Group).create({ name })
-  }
 })
