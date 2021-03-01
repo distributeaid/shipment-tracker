@@ -73,3 +73,12 @@ In order of operation:
 We follow Create React App's [approach to environment variables](https://create-react-app.dev/docs/adding-custom-environment-variables/#adding-development-environment-variables-in-env). There is a `.env` file **checked in** that contains non-sensitive default variables. You can create a `.env.local` file on your own machine and it should **not** be checked in.
 
 Environment variables must be prefixed with `REACT_APP_`.
+
+## Notes
+
+It might be beneficial to move the frontend into its own repo. List of reasons why:
+
+- package versions can conflict because there's a `package.json` file at the root ([see this comment](https://github.com/facebook/create-react-app/issues/1795#issuecomment-357353472)). This is the reason we have `SKIP_PREFLIGHT_CHECK=true` in the `.env` file.
+- the DX would be a little better: there wouldn't be 2 package.json files in every search results, etc.
+- if we host on Netlify, we'll be billed for build-time for every push to `saga`, even when it's only backend changes.
+- `react-scripts` doesn't support looking outside the `/src` directory.
