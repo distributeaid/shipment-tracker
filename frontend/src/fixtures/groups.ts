@@ -1,4 +1,4 @@
-import { Group, GroupType } from '../types/group'
+import { Group } from '../api-types'
 
 /**
  * A list of groups used for mockups and testing.
@@ -12,7 +12,9 @@ const GROUPS: Group[] = [
       countryCode: 'FR',
       townCity: 'Calais',
     },
-    primaryContactName: 'Myriam McLaughlin',
+    primaryContact: {
+      name: 'Myriam McLaughlin',
+    },
   },
   {
     id: 2,
@@ -22,7 +24,9 @@ const GROUPS: Group[] = [
       countryCode: 'FR',
       townCity: 'Dunkerque',
     },
-    primaryContactName: 'Meaghan Crist',
+    primaryContact: {
+      name: 'Meaghan Crist',
+    },
   },
   {
     id: 3,
@@ -32,7 +36,9 @@ const GROUPS: Group[] = [
       countryCode: 'GB',
       townCity: 'London',
     },
-    primaryContactName: 'Jacinthe Donnelly',
+    primaryContact: {
+      name: 'Jacinthe Donnelly',
+    },
   },
   {
     id: 4,
@@ -42,7 +48,9 @@ const GROUPS: Group[] = [
       countryCode: 'FR',
       townCity: 'Calais',
     },
-    primaryContactName: 'Wyman Krajcik',
+    primaryContact: {
+      name: 'Wyman Krajcik',
+    },
   },
   {
     id: 7,
@@ -52,7 +60,9 @@ const GROUPS: Group[] = [
       countryCode: 'GB',
       townCity: 'Leeds',
     },
-    primaryContactName: 'Elissa Schaefer',
+    primaryContact: {
+      name: 'Elissa Schaefer',
+    },
   },
   {
     id: 8,
@@ -62,7 +72,9 @@ const GROUPS: Group[] = [
       countryCode: 'GB',
       townCity: 'Dumfries',
     },
-    primaryContactName: 'Nellie Roob',
+    primaryContact: {
+      name: 'Nellie Roob',
+    },
   },
 ]
 

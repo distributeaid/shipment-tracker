@@ -71,6 +71,16 @@ See the README in the `frontend` directory for instructions on setting up for fr
 - [Database Migrations](./docs/migrations.md)
 - [Graphql Codegen](./docs/codegen.md)
 
+### Type definitions
+
+We want to maintain a single source of truth for our type definitions. We use `graphql-codegen` for that purpose.
+
+The command below will output TypeScript definitions that can be used by the backend and frontend.
+
+```shell
+yarn codegen
+```
+
 ## Technologies
 
 Shipment Tracker is a full stack TypeScript web app backed by a PostgreSQL database.
