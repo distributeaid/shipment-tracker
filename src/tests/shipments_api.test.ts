@@ -19,8 +19,12 @@ describe('Shipments API', () => {
     testServer = makeTestServer()
 
     await sequelize.sync({ force: true })
-    await sequelize.getRepository(Group).truncate({ cascade: true })
-    await sequelize.getRepository(Shipment).truncate({ cascade: true })
+    await sequelize
+      .getRepository(Group)
+      .truncate({ cascade: true, force: true })
+    await sequelize
+      .getRepository(Shipment)
+      .truncate({ cascade: true, force: true })
   })
 
   describe('addShipment', () => {

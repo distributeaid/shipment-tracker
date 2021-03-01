@@ -64,8 +64,8 @@ See the README in the `frontend` directory for instructions on setting up for fr
 
 ## Other project docs
 
-- [Database migrations](./docs/migrations.md)
-- [Codegen](./docs/codegen.md)
+- [Database Migrations](./docs/migrations.md)
+- [Graphql Codegen](./docs/codegen.md)
 
 ## Technologies
 

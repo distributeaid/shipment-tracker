@@ -1,6 +1,6 @@
-# Codegen
+# Graphql Codegen
 
-In order to generate TypeScript typings from our graphql schema we rely on a tool called [graphql-codegen](https://graphql-code-generator.com/).
+When you introduce a change to the project's GraphQL schema (the `schema.graphql` file in the root directly) you will need to re-run the codegen tool. Makes sure to check in the generated code changes along with the change to the schema file in your PR.
 
 ## Running the codegen process
 

@@ -39,12 +39,15 @@ const addShipment: MutationResolvers['addShipment'] = async (
     })
   }
 
-  const sendingHub = await groupRepository.findByPk(input.sendingHubId)
+  const sendingHubPromise = groupRepository.findByPk(input.sendingHubId)
+  const receivingHubPromise = groupRepository.findByPk(input.receivingHubId)
+
+  const sendingHub = await sendingHubPromise
   if (!sendingHub) {
     throw new ApolloError('Sending hub not found')
   }
 
-  const receivingHub = await groupRepository.findByPk(input.sendingHubId)
+  const receivingHub = await receivingHubPromise
   if (!receivingHub) {
     throw new ApolloError('Receiving hub not found')
   }
