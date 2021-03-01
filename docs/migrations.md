@@ -60,4 +60,4 @@ module.exports = {
 }
 ```
 
-You can find more information about sequelize migrations [here](https://sequelize.org/master/manual/migrations.html).
+You can find more information about sequelize migration files [here](https://sequelize.org/master/manual/migrations.html#migration-skeleton).
