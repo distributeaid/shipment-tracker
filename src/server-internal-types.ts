@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
@@ -11,27 +11,79 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Date: any;
 };
+
 
 export type Group = {
   __typename?: 'Group';
-  id?: Maybe<Scalars['Int']>;
-  name?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
+  name: Scalars['String'];
+};
+
+export type GroupInput = {
+  name: Scalars['String'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  listGroups: Array<Maybe<Group>>;
+  listGroups: Array<Group>;
+  listShipments: Array<Shipment>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addGroup?: Maybe<Group>;
+  addGroup: Group;
+  addShipment: Shipment;
 };
 
 
 export type MutationAddGroupArgs = {
-  name?: Maybe<Scalars['String']>;
+  input: GroupInput;
+};
+
+
+export type MutationAddShipmentArgs = {
+  input: ShipmentInput;
+};
+
+export type ShipmentInput = {
+  shippingRoute: ShippingRoute;
+  labelYear: Scalars['Int'];
+  labelMonth: Scalars['Int'];
+  sendingHubId: Scalars['Int'];
+  receivingHubId: Scalars['Int'];
+  status: ShipmentStatus;
+};
+
+export enum ShippingRoute {
+  Uk = 'UK'
+}
+
+export enum ShipmentStatus {
+  Announced = 'ANNOUNCED',
+  Open = 'OPEN',
+  Staging = 'STAGING',
+  InProgress = 'IN_PROGRESS',
+  Complete = 'COMPLETE',
+  Abandoned = 'ABANDONED'
+}
+
+export type Shipment = {
+  __typename?: 'Shipment';
+  id: Scalars['Int'];
+  shippingRoute: ShippingRoute;
+  labelYear: Scalars['Int'];
+  labelMonth: Scalars['Int'];
+  offerSubmissionDeadline?: Maybe<Scalars['Date']>;
+  status: ShipmentStatus;
+  sendingHubId: Scalars['Int'];
+  sendingHub: Group;
+  receivingHubId: Scalars['Int'];
+  receivingHub: Group;
+  statusChangeTime: Scalars['Date'];
+  createdAt: Scalars['Date'];
+  updatedAt: Scalars['Date'];
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -113,42 +165,77 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  Date: ResolverTypeWrapper<Scalars['Date']>;
   Group: ResolverTypeWrapper<Group>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  GroupInput: GroupInput;
   Query: ResolverTypeWrapper<{}>;
   Mutation: ResolverTypeWrapper<{}>;
+  ShipmentInput: ShipmentInput;
+  ShippingRoute: ShippingRoute;
+  ShipmentStatus: ShipmentStatus;
+  Shipment: ResolverTypeWrapper<Shipment>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  Date: Scalars['Date'];
   Group: Group;
   Int: Scalars['Int'];
   String: Scalars['String'];
+  GroupInput: GroupInput;
   Query: {};
   Mutation: {};
+  ShipmentInput: ShipmentInput;
+  Shipment: Shipment;
   Boolean: Scalars['Boolean'];
 }>;
 
+export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
+  name: 'Date';
+}
+
 export type GroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['Group'] = ResolversParentTypes['Group']> = ResolversObject<{
-  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  listGroups?: Resolver<Array<Maybe<ResolversTypes['Group']>>, ParentType, ContextType>;
+  listGroups?: Resolver<Array<ResolversTypes['Group']>, ParentType, ContextType>;
+  listShipments?: Resolver<Array<ResolversTypes['Shipment']>, ParentType, ContextType>;
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  addGroup?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType, RequireFields<MutationAddGroupArgs, never>>;
+  addGroup?: Resolver<ResolversTypes['Group'], ParentType, ContextType, RequireFields<MutationAddGroupArgs, 'input'>>;
+  addShipment?: Resolver<ResolversTypes['Shipment'], ParentType, ContextType, RequireFields<MutationAddShipmentArgs, 'input'>>;
+}>;
+
+export type ShipmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Shipment'] = ResolversParentTypes['Shipment']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  shippingRoute?: Resolver<ResolversTypes['ShippingRoute'], ParentType, ContextType>;
+  labelYear?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  labelMonth?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  offerSubmissionDeadline?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['ShipmentStatus'], ParentType, ContextType>;
+  sendingHubId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  sendingHub?: Resolver<ResolversTypes['Group'], ParentType, ContextType>;
+  receivingHubId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  receivingHub?: Resolver<ResolversTypes['Group'], ParentType, ContextType>;
+  statusChangeTime?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  Date?: GraphQLScalarType;
   Group?: GroupResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  Shipment?: ShipmentResolvers<ContextType>;
 }>;
 
 

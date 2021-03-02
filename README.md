@@ -18,7 +18,7 @@ First, please read our [code of conduct](https://www.notion.so/distributeaid/Cod
 
 ### Issue tracking
 
-Development tasks are managed in the github issues for this repository. The issues themselves are fairly light on detail in favor of a simple description of scope (i.e. the conditions for the task being considered "done"). For specifics on task requirements, please reference the [project requirements document](https://www.notion.so/distributeaid/Technical-requirements-c2fd190e0a8d4f708119c6944fa654dd)  early and often.
+Development tasks are managed in the github issues for this repository. The issues themselves are fairly light on detail in favor of a simple description of scope (i.e. the conditions for the task being considered "done"). For specifics on task requirements, please reference the [project requirements document](https://www.notion.so/distributeaid/Technical-requirements-c2fd190e0a8d4f708119c6944fa654dd) early and often.
 
 Issues tagged `front end` will also be tagged with either `needs UI mock`, indicating the task still needs design work to be ready for development, or `has UI mock` indicating it's ready for dev work.
 
@@ -65,6 +65,11 @@ And then view graphql sandbox at http://localhost:3000/graphql
 If you run into problems setting up your development environment please create an issue describing any errors you encounter.
 
 See the README in the `frontend` directory for instructions on setting up for front end development.
+
+## Other project docs
+
+- [Database Migrations](./docs/migrations.md)
+- [Graphql Codegen](./docs/codegen.md)
 
 ## Technologies
 
