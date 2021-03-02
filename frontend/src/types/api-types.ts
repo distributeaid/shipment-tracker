@@ -1,3 +1,9 @@
+/**
+ * ⚠️ These type definitions are generated automatically by graphql-codegen.
+ * The generation is configurated in codegen.yaml. Visit the docs for more information:
+ * https://graphql-code-generator.com/docs/getting-started/index
+ */
+
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };

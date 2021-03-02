@@ -5,6 +5,7 @@ import Shipment from '../models/shipment'
 import makeTestServer from '../testServer'
 import { sequelize } from '../sequelize'
 import {
+  GroupType,
   ShipmentInput,
   ShipmentStatus,
   ShippingRoute,
@@ -29,8 +30,14 @@ describe('Shipments API', () => {
 
   describe('addShipment', () => {
     it('adds a new shipment', async () => {
-      const group1 = await createGroup('group 1')
-      const group2 = await createGroup('group 2')
+      const group1 = await createGroup({
+        name: 'group 1',
+        groupType: GroupType.DaHub,
+      })
+      const group2 = await createGroup({
+        name: 'group 2',
+        groupType: GroupType.ReceivingGroup,
+      })
 
       const ADD_SHIPMENT = gql`
         mutation($input: ShipmentInput!) {
@@ -74,8 +81,14 @@ describe('Shipments API', () => {
 
   describe('listShipments', () => {
     it('lists existing shipments', async () => {
-      const group1 = await createGroup('group 1')
-      const group2 = await createGroup('group 2')
+      const group1 = await createGroup({
+        name: 'group 1',
+        groupType: GroupType.DaHub,
+      })
+      const group2 = await createGroup({
+        name: 'group 2',
+        groupType: GroupType.ReceivingGroup,
+      })
 
       const shipment1 = await createShipment({
         shippingRoute: ShippingRoute.Uk,

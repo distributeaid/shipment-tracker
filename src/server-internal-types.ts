@@ -19,10 +19,12 @@ export type Group = {
   __typename?: 'Group';
   id: Scalars['Int'];
   name: Scalars['String'];
+  groupType: GroupType;
 };
 
 export type GroupInput = {
   name: Scalars['String'];
+  groupType: GroupType;
 };
 
 export type Query = {
@@ -85,6 +87,12 @@ export type Shipment = {
   createdAt: Scalars['Date'];
   updatedAt: Scalars['Date'];
 };
+
+export enum GroupType {
+  DaHub = 'DA_HUB',
+  ReceivingGroup = 'RECEIVING_GROUP',
+  SendingGroup = 'SENDING_GROUP'
+}
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
@@ -176,6 +184,7 @@ export type ResolversTypes = ResolversObject<{
   ShippingRoute: ShippingRoute;
   ShipmentStatus: ShipmentStatus;
   Shipment: ResolverTypeWrapper<Shipment>;
+  GroupType: GroupType;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 }>;
 
@@ -200,6 +209,7 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type GroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['Group'] = ResolversParentTypes['Group']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  groupType?: Resolver<ResolversTypes['GroupType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

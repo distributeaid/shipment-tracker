@@ -11,7 +11,11 @@ module.exports = {
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      // Adds the ability to style the first and last child.
+      // For example: first:pl-4
+      padding: ['first', 'last'],
+    },
   },
   plugins: [],
 }

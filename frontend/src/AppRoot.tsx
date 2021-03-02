@@ -7,6 +7,7 @@ import HomePage from './pages/Home'
 
 // Make things pretty
 import './stylesheets/index.output.css'
+import GroupList from './pages/groups/GroupList'
 
 const App = () => (
   <ApolloProvider client={apolloClientInstance}>
@@ -17,6 +18,9 @@ const App = () => (
         </Route>
         <Route path="/apollo-demo">
           <ApolloDemoPage />
+        </Route>
+        <Route path="/groups">
+          <GroupList />
         </Route>
       </Switch>
     </Router>

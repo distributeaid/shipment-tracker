@@ -31,7 +31,7 @@ npx sequelize-cli db:migrate:undo:all
 To create a new migration skeleton run:
 
 ```sh
-npx sequelize-cli db:migration:create --name <migration-name>
+npx sequelize-cli migration:create --name <migration-name>
 ```
 
 this will generate a dated file under `db/migrations` with a sequelize migration skeleton inside, which will look something like:

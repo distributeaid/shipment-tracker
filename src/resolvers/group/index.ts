@@ -23,7 +23,10 @@ const addGroup: MutationResolvers['addGroup'] = async (
     })
   }
 
-  return groupRepository.create({ name: args.input.name })
+  return groupRepository.create({
+    name: args.input.name,
+    groupType: args.input.groupType,
+  })
 }
 
 export { listGroups, addGroup }

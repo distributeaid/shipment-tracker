@@ -9,3 +9,14 @@ generates:
   ./api-types.ts:
     plugins:
       - typescript
+  # Generate the types used by the frontend, because react-scripts requires them
+  # to exist in the src directory.
+  ./frontend/src/types/api-types.ts:
+    plugins:
+      - add:
+          content: "/**\n
+            * ⚠️ These type definitions are generated automatically by graphql-codegen.\n
+            * The generation is configurated in codegen.yaml. Visit the docs for more information:\n
+            * https://graphql-code-generator.com/docs/getting-started/index\n
+            */\n"
+      - typescript

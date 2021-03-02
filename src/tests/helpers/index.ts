@@ -1,10 +1,10 @@
 import Group from '../../models/group'
 import Shipment from '../../models/shipment'
 import { sequelize } from '../../sequelize'
-import { ShipmentInput } from '../../server-internal-types'
+import { GroupInput, ShipmentInput } from '../../server-internal-types'
 
-async function createGroup(name: string): Promise<Group> {
-  return await sequelize.getRepository(Group).create({ name })
+async function createGroup(input: GroupInput): Promise<Group> {
+  return await sequelize.getRepository(Group).create(input)
 }
 
 async function createShipment(input: ShipmentInput): Promise<Shipment> {

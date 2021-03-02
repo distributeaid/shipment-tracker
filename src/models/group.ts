@@ -5,11 +5,14 @@ import {
   Table,
   CreatedAt,
   UpdatedAt,
+  DataType,
 } from 'sequelize-typescript'
+import { GroupType } from '../server-internal-types'
 
 export interface GroupAttributes {
   id: number
   name: string
+  groupType: GroupType
 }
 
 export interface GroupCreationAttributes
@@ -26,6 +29,9 @@ export default class Group extends Model<
 
   @Column
   public name!: string
+
+  @Column(DataType.STRING)
+  public groupType!: GroupType
 
   @CreatedAt
   @Column

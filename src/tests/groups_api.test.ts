@@ -5,6 +5,7 @@ import makeTestServer from '../testServer'
 import { sequelize } from '../sequelize'
 import Group from '../models/group'
 import { createGroup } from './helpers'
+import { GroupType } from '../server-internal-types'
 
 describe('Groups API', () => {
   let testServer: ApolloServerTestClient
@@ -21,17 +22,18 @@ describe('Groups API', () => {
   describe('addGroup', () => {
     it('adds a new group', async () => {
       const ADD_GROUP = gql`
-        mutation($name: String!) {
-          addGroup(input: { name: $name }) {
+        mutation($name: String!, $groupType: GroupType!) {
+          addGroup(input: { name: $name, groupType: $groupType }) {
             id
             name
+            groupType
           }
         }
       `
 
       const res = await testServer.mutate({
         mutation: ADD_GROUP,
-        variables: { name: 'test name' },
+        variables: { name: 'test name', groupType: GroupType.ReceivingGroup },
       })
 
       expect(res.errors).toBeUndefined()
@@ -42,14 +44,21 @@ describe('Groups API', () => {
 
   describe('listGroups', () => {
     it('lists existing groups', async () => {
-      const group1 = await createGroup('group 1')
-      const group2 = await createGroup('group 2')
+      const group1 = await createGroup({
+        name: 'group 1',
+        groupType: GroupType.DaHub,
+      })
+      const group2 = await createGroup({
+        name: 'group 2',
+        groupType: GroupType.ReceivingGroup,
+      })
 
       const LIST_GROUPS = gql`
         query listGroups {
           listGroups {
             id
             name
+            groupType
           }
         }
       `
@@ -60,8 +69,8 @@ describe('Groups API', () => {
 
       expect(res.errors).toBeUndefined()
       expect(res?.data?.listGroups).toIncludeSameMembers([
-        { id: group1.id, name: group1.name },
-        { id: group2.id, name: group2.name },
+        { id: group1.id, name: group1.name, groupType: group1.groupType },
+        { id: group2.id, name: group2.name, groupType: group2.groupType },
       ])
     })
   })
