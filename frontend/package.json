@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.3.11",
+    "@auth0/auth0-react": "^1.3.0",
     "classnames": "^2.2.6",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -26,7 +27,7 @@
   },
   "scripts": {
     "start": "npm-run-all build:styles --parallel watch:styles start:react",
-    "start:react": "PORT=3001 react-scripts start",
+    "start:react": "PORT=8080 react-scripts start",
     "build:styles": "tailwind build src/stylesheets/index.css -o src/stylesheets/index.output.css",
     "watch:styles": "chokidar 'src/**/*.css' --ignore src/stylesheets/index.output.css -c 'npm run build:styles'",
     "build": "react-scripts build",

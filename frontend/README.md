@@ -19,7 +19,7 @@ This is a React and Typescript application bootstrapped using [Create React App]
 
 3. **That's it!**
 
-   View the app at http://localhost:3001/
+   View the app at http://localhost:8080/
 
 ### Running the backend
 
