@@ -3,6 +3,7 @@ scalar Date
 type Group {
   id: Int!
   name: String!
+  groupType: GroupType!
 }
 
 input GroupInput {
@@ -59,4 +60,10 @@ type Shipment {
   statusChangeTime: Date!
   createdAt: Date!
   updatedAt: Date!
+}
+
+enum GroupType {
+  DA_HUB
+  RECEIVING_GROUP
+  SENDING_GROUP
 }

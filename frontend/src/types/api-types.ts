@@ -15,25 +15,84 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Date: any;
 };
+
 
 export type Group = {
   __typename?: 'Group';
-  id?: Maybe<Scalars['Int']>;
-  name?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  groupType: GroupType;
+};
+
+export type GroupInput = {
+  name: Scalars['String'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  listGroups: Array<Maybe<Group>>;
+  listGroups: Array<Group>;
+  listShipments: Array<Shipment>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addGroup?: Maybe<Group>;
+  addGroup: Group;
+  addShipment: Shipment;
 };
 
 
 export type MutationAddGroupArgs = {
-  name?: Maybe<Scalars['String']>;
+  input: GroupInput;
 };
+
+
+export type MutationAddShipmentArgs = {
+  input: ShipmentInput;
+};
+
+export type ShipmentInput = {
+  shippingRoute: ShippingRoute;
+  labelYear: Scalars['Int'];
+  labelMonth: Scalars['Int'];
+  sendingHubId: Scalars['Int'];
+  receivingHubId: Scalars['Int'];
+  status: ShipmentStatus;
+};
+
+export enum ShippingRoute {
+  Uk = 'UK'
+}
+
+export enum ShipmentStatus {
+  Announced = 'ANNOUNCED',
+  Open = 'OPEN',
+  Staging = 'STAGING',
+  InProgress = 'IN_PROGRESS',
+  Complete = 'COMPLETE',
+  Abandoned = 'ABANDONED'
+}
+
+export type Shipment = {
+  __typename?: 'Shipment';
+  id: Scalars['Int'];
+  shippingRoute: ShippingRoute;
+  labelYear: Scalars['Int'];
+  labelMonth: Scalars['Int'];
+  offerSubmissionDeadline?: Maybe<Scalars['Date']>;
+  status: ShipmentStatus;
+  sendingHubId: Scalars['Int'];
+  sendingHub: Group;
+  receivingHubId: Scalars['Int'];
+  receivingHub: Group;
+  statusChangeTime: Scalars['Date'];
+  createdAt: Scalars['Date'];
+  updatedAt: Scalars['Date'];
+};
+
+export enum GroupType {
+  DaHub = 'DA_HUB',
+  ReceivingGroup = 'RECEIVING_GROUP',
+  SendingGroup = 'SENDING_GROUP'
+}

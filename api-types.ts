@@ -17,6 +17,7 @@ export type Group = {
   __typename?: 'Group';
   id: Scalars['Int'];
   name: Scalars['String'];
+  groupType: GroupType;
 };
 
 export type GroupInput = {
@@ -83,3 +84,9 @@ export type Shipment = {
   createdAt: Scalars['Date'];
   updatedAt: Scalars['Date'];
 };
+
+export enum GroupType {
+  DaHub = 'DA_HUB',
+  ReceivingGroup = 'RECEIVING_GROUP',
+  SendingGroup = 'SENDING_GROUP'
+}
