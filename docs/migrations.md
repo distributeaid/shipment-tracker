@@ -1,3 +1,4 @@
+# Database Migrations
 
 You can use the `sequelize-cli` tool via `npx` to create and run database migrations. You can read about the commands available by running:
 
