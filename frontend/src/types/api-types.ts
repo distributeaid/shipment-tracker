@@ -28,6 +28,7 @@ export type Group = {
 
 export type GroupInput = {
   name: Scalars['String'];
+  groupType: GroupType;
 };
 
 export type Query = {

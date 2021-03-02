@@ -8,6 +8,7 @@ type Group {
 
 input GroupInput {
   name: String!
+  groupType: GroupType!
 }
 
 type Query {
