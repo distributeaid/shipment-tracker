@@ -45,3 +45,7 @@ fi
 echo
 echo Running sequelize migrations...
 npx sequelize-cli db:migrate
+
+echo
+echo Running sequelize seeders...
+npx sequelize-cli db:seed:all
