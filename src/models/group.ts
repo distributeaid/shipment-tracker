@@ -7,12 +7,15 @@ import {
   UpdatedAt,
   DataType,
 } from 'sequelize-typescript'
-import { GroupType } from '../server-internal-types'
+import { GroupType, Location, ContactInfo } from '../server-internal-types'
 
 export interface GroupAttributes {
   id: number
   name: string
   groupType: GroupType
+  primaryLocation: Location;
+  primaryContact: ContactInfo;
+  website?: string;
 }
 
 export interface GroupCreationAttributes
@@ -32,6 +35,15 @@ export default class Group extends Model<
 
   @Column(DataType.STRING)
   public groupType!: GroupType
+
+  @Column
+  public primaryLocation!: Location
+
+  @Column
+  public primaryContact!: ContactInfo
+
+  @Column
+  public website?: string;
 
   @CreatedAt
   @Column

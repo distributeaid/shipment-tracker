@@ -15,11 +15,32 @@ export type Scalars = {
 };
 
 
+export type Location = {
+  __typename?: 'Location';
+  countryCode?: Maybe<Scalars['String']>;
+  townCity: Scalars['String'];
+  openLocationCode?: Maybe<Scalars['String']>;
+};
+
+export type ContactInfo = {
+  __typename?: 'ContactInfo';
+  name: Scalars['String'];
+  email?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  signal?: Maybe<Scalars['String']>;
+  whatsApp?: Maybe<Scalars['String']>;
+};
+
 export type Group = {
   __typename?: 'Group';
   id: Scalars['Int'];
   name: Scalars['String'];
   groupType: GroupType;
+  primaryLocation: Location;
+  primaryContact: ContactInfo;
+  website?: Maybe<Scalars['String']>;
+  createTime: Scalars['Date'];
+  updateTime: Scalars['Date'];
 };
 
 export type GroupInput = {
@@ -174,9 +195,11 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Date: ResolverTypeWrapper<Scalars['Date']>;
+  Location: ResolverTypeWrapper<Location>;
+  String: ResolverTypeWrapper<Scalars['String']>;
+  ContactInfo: ResolverTypeWrapper<ContactInfo>;
   Group: ResolverTypeWrapper<Group>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
-  String: ResolverTypeWrapper<Scalars['String']>;
   GroupInput: GroupInput;
   Query: ResolverTypeWrapper<{}>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -191,9 +214,11 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Date: Scalars['Date'];
+  Location: Location;
+  String: Scalars['String'];
+  ContactInfo: ContactInfo;
   Group: Group;
   Int: Scalars['Int'];
-  String: Scalars['String'];
   GroupInput: GroupInput;
   Query: {};
   Mutation: {};
@@ -206,10 +231,31 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Date';
 }
 
+export type LocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = ResolversObject<{
+  countryCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  townCity?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  openLocationCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ContactInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['ContactInfo'] = ResolversParentTypes['ContactInfo']> = ResolversObject<{
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  signal?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  whatsApp?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type GroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['Group'] = ResolversParentTypes['Group']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   groupType?: Resolver<ResolversTypes['GroupType'], ParentType, ContextType>;
+  primaryLocation?: Resolver<ResolversTypes['Location'], ParentType, ContextType>;
+  primaryContact?: Resolver<ResolversTypes['ContactInfo'], ParentType, ContextType>;
+  website?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createTime?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  updateTime?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -242,6 +288,8 @@ export type ShipmentResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type Resolvers<ContextType = any> = ResolversObject<{
   Date?: GraphQLScalarType;
+  Location?: LocationResolvers<ContextType>;
+  ContactInfo?: ContactInfoResolvers<ContextType>;
   Group?: GroupResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;

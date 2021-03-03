@@ -1,9 +1,29 @@
 scalar Date
 
+type Location {
+  countryCode: String
+  townCity: String!
+  openLocationCode: String
+}
+
+type ContactInfo {
+  name: String!
+  email: String
+  phone: String
+  signal: String
+  whatsApp: String
+}
+
 type Group {
   id: Int!
   name: String!
   groupType: GroupType!
+  primaryLocation: Location!
+  primaryContact: ContactInfo!
+  website: String
+
+  createTime: Date!
+  updateTime: Date!
 }
 
 input GroupInput {
