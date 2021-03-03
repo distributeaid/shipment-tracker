@@ -14,6 +14,20 @@ type ContactInfo {
   whatsApp: String
 }
 
+input LocationInput {
+  countryCode: String
+  townCity: String!
+  openLocationCode: String
+}
+
+input ContactInfoInput {
+  name: String!
+  email: String
+  phone: String
+  signal: String
+  whatsApp: String
+}
+
 type Group {
   id: Int!
   name: String!
@@ -22,15 +36,15 @@ type Group {
   primaryContact: ContactInfo!
   website: String
 
-  createTime: Date!
-  updateTime: Date!
+  createdAt: Date!
+  updatedAt: Date!
 }
 
 input GroupInput {
   name: String!
   groupType: GroupType!
-  primaryLocation: Location!
-  primaryContact: ContactInfo!
+  primaryLocation: LocationInput!
+  primaryContact: ContactInfoInput!
   website: String
 }
 

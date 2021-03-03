@@ -13,13 +13,13 @@ export interface GroupAttributes {
   id: number
   name: string
   groupType: GroupType
-  primaryLocation: Location;
-  primaryContact: ContactInfo;
-  website?: string;
+  primaryLocation: Location
+  primaryContact: ContactInfo
+  website?: string
 }
 
 export interface GroupCreationAttributes
-  extends Optional<GroupAttributes, 'id'> {}
+  extends Optional<GroupAttributes, 'id' | 'website'> {}
 
 @Table({
   timestamps: true,
@@ -43,7 +43,7 @@ export default class Group extends Model<
   public primaryContact!: ContactInfo
 
   @Column
-  public website?: string;
+  public website?: string
 
   @CreatedAt
   @Column

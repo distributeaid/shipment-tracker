@@ -1,6 +1,10 @@
 import { UserInputError } from 'apollo-server'
 
-import { QueryResolvers, MutationResolvers, GroupInput } from '../../server-internal-types'
+import {
+  QueryResolvers,
+  MutationResolvers,
+  GroupInput,
+} from '../../server-internal-types'
 import { sequelize } from '../../sequelize'
 import Group from '../../models/group'
 
@@ -17,7 +21,12 @@ const addGroup: MutationResolvers['addGroup'] = async (
   { input },
   _context,
 ) => {
-  if (!input.name || !input.groupType || !input.primaryLocation || !input.primaryContact) {
+  if (
+    !input.name ||
+    !input.groupType ||
+    !input.primaryLocation ||
+    !input.primaryContact
+  ) {
     throw new UserInputError('Group arguments invalid', {
       invalidArgs: Object.keys(input).filter(
         (key) => !input[key as keyof GroupInput],
@@ -30,10 +39,9 @@ const addGroup: MutationResolvers['addGroup'] = async (
     groupType: input.groupType,
     primaryLocation: input.primaryLocation,
     primaryContact: input.primaryContact,
-    website: input.website
+    website: input.website || undefined,
   })
 }
-
 
 // Group custom resolvers
 

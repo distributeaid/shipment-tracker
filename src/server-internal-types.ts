@@ -31,6 +31,20 @@ export type ContactInfo = {
   whatsApp?: Maybe<Scalars['String']>;
 };
 
+export type LocationInput = {
+  countryCode?: Maybe<Scalars['String']>;
+  townCity: Scalars['String'];
+  openLocationCode?: Maybe<Scalars['String']>;
+};
+
+export type ContactInfoInput = {
+  name: Scalars['String'];
+  email?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  signal?: Maybe<Scalars['String']>;
+  whatsApp?: Maybe<Scalars['String']>;
+};
+
 export type Group = {
   __typename?: 'Group';
   id: Scalars['Int'];
@@ -39,15 +53,15 @@ export type Group = {
   primaryLocation: Location;
   primaryContact: ContactInfo;
   website?: Maybe<Scalars['String']>;
-  createTime: Scalars['Date'];
-  updateTime: Scalars['Date'];
+  createdAt: Scalars['Date'];
+  updatedAt: Scalars['Date'];
 };
 
 export type GroupInput = {
   name: Scalars['String'];
   groupType: GroupType;
-  primaryLocation: Location;
-  primaryContact: ContactInfo;
+  primaryLocation: LocationInput;
+  primaryContact: ContactInfoInput;
   website?: Maybe<Scalars['String']>;
 };
 
@@ -201,6 +215,8 @@ export type ResolversTypes = ResolversObject<{
   Location: ResolverTypeWrapper<Location>;
   String: ResolverTypeWrapper<Scalars['String']>;
   ContactInfo: ResolverTypeWrapper<ContactInfo>;
+  LocationInput: LocationInput;
+  ContactInfoInput: ContactInfoInput;
   Group: ResolverTypeWrapper<Group>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   GroupInput: GroupInput;
@@ -220,6 +236,8 @@ export type ResolversParentTypes = ResolversObject<{
   Location: Location;
   String: Scalars['String'];
   ContactInfo: ContactInfo;
+  LocationInput: LocationInput;
+  ContactInfoInput: ContactInfoInput;
   Group: Group;
   Int: Scalars['Int'];
   GroupInput: GroupInput;
@@ -257,8 +275,8 @@ export type GroupResolvers<ContextType = any, ParentType extends ResolversParent
   primaryLocation?: Resolver<ResolversTypes['Location'], ParentType, ContextType>;
   primaryContact?: Resolver<ResolversTypes['ContactInfo'], ParentType, ContextType>;
   website?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createTime?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  updateTime?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
