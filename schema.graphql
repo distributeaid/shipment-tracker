@@ -29,6 +29,9 @@ type Group {
 input GroupInput {
   name: String!
   groupType: GroupType!
+  primaryLocation: Location!
+  primaryContact: ContactInfo!
+  website: String
 }
 
 type Query {

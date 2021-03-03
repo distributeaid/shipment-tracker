@@ -44,6 +44,9 @@ export type Group = {
 export type GroupInput = {
   name: Scalars['String'];
   groupType: GroupType;
+  primaryLocation: Location;
+  primaryContact: ContactInfo;
+  website?: Maybe<Scalars['String']>;
 };
 
 export type Query = {

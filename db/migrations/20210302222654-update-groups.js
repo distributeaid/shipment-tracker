@@ -7,14 +7,14 @@ module.exports = {
       queryInterface.addColumn('Groups', 'primaryLocation',
         {
           allowNull: false,
-          type: Sequelize.JSON,
+          type: Sequelize.JSONB,
         }
       ),
       queryInterface.addColumn('Groups', 'website', { type: Sequelize.STRING }),
       queryInterface.addColumn('Groups', 'primaryContact',
         {
           allowNull: false,
-          type: Sequelize.JSON,
+          type: Sequelize.JSONB,
         }
       ),
       queryInterface.changeColumn('Groups', 'name',

@@ -36,10 +36,10 @@ export default class Group extends Model<
   @Column(DataType.STRING)
   public groupType!: GroupType
 
-  @Column
+  @Column(DataType.JSONB)
   public primaryLocation!: Location
 
-  @Column
+  @Column(DataType.JSONB)
   public primaryContact!: ContactInfo
 
   @Column
