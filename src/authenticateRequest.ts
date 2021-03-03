@@ -3,6 +3,11 @@ import { Request } from 'express'
 import { Maybe } from 'graphql/jsutils/Maybe'
 import jwt, { GetPublicKeyOrSecret } from 'jsonwebtoken'
 import jwksClient from 'jwks-rsa'
+import UserAccount from './models/user_account'
+import { sequelize } from './sequelize'
+import { omit } from 'lodash'
+
+const userAccountRepository = sequelize.getRepository(UserAccount)
 
 const skipAuth = process.env.AUTH_MODE === 'SKIP'
 
@@ -68,9 +73,52 @@ const validateJwt = async (token: string): Promise<AuthResult> => {
   })
 }
 
-export const authenticateRequest = async (req: Request): Promise<object> => {
+const ROLES_KEY = 'http://id.distributeaid.org/role'
+export type RawAuthClaims = {
+  [ROLES_KEY]: string[]
+  iss: string
+  sub: string
+  aud: string[]
+  iat: number
+  exp: number
+  azp: string
+  scope: string
+  permissions: string[]
+}
+
+export type AuthClaims = {
+  roles: string[]
+  iss: string
+  sub: string
+  aud: string[]
+  iat: number
+  exp: number
+  azp: string
+  scope: string
+  permissions: string[]
+}
+
+export type Auth = {
+  claims: AuthClaims
+  userAccount: UserAccount
+}
+
+const fakeAccount = userAccountRepository.build({ auth0Id: '' })
+const fakeClaims = {
+  roles: [],
+  iss: '',
+  sub: '',
+  aud: [],
+  iat: 0,
+  exp: 0,
+  azp: '',
+  scope: '',
+  permissions: [],
+}
+
+export const authenticateRequest = async (req: Request): Promise<Auth> => {
   if (skipAuth) {
-    return Promise.resolve({})
+    return Promise.resolve({ userAccount: fakeAccount, claims: fakeClaims })
   }
 
   const { authorization: token } = req.headers
@@ -96,8 +144,13 @@ export const authenticateRequest = async (req: Request): Promise<object> => {
     )
   }
 
-  // The contents of the decoded auth result are determined by the scopes
-  // requested by the client when it got its bearer token from Auth0.
-  // See https://auth0.com/docs/scopes for more info.
-  return authResult.decoded
+  const rawClaims = authResult.decoded as RawAuthClaims
+  const [userAccount, _created] = await userAccountRepository.findOrCreate({
+    where: { auth0Id: rawClaims.sub },
+  })
+
+  const roles = rawClaims[ROLES_KEY]
+  const claims = omit(rawClaims, ROLES_KEY)
+
+  return { userAccount, claims: { roles, ...claims } }
 }
