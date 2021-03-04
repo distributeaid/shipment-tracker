@@ -74,8 +74,8 @@ const validateJwt = async (token: string): Promise<AuthResult> => {
 }
 
 const ROLES_KEY = 'http://id.distributeaid.org/role'
-export type RawAuthClaims = {
-  [ROLES_KEY]: string[]
+
+type CommonAuthClaims = {
   iss: string
   sub: string
   aud: string[]
@@ -86,16 +86,12 @@ export type RawAuthClaims = {
   permissions: string[]
 }
 
-export type AuthClaims = {
+export type RawAuthClaims = CommonAuthClaims & {
+  [ROLES_KEY]: string[]
+}
+
+export type AuthClaims = CommonAuthClaims & {
   roles: string[]
-  iss: string
-  sub: string
-  aud: string[]
-  iat: number
-  exp: number
-  azp: string
-  scope: string
-  permissions: string[]
 }
 
 export type Auth = {
