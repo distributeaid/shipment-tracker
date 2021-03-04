@@ -3,9 +3,10 @@ import { Request } from 'express'
 import { Maybe } from 'graphql/jsutils/Maybe'
 import jwt, { GetPublicKeyOrSecret } from 'jsonwebtoken'
 import jwksClient from 'jwks-rsa'
+import { omit } from 'lodash'
+
 import UserAccount from './models/user_account'
 import { sequelize } from './sequelize'
-import { omit } from 'lodash'
 
 const userAccountRepository = sequelize.getRepository(UserAccount)
 
@@ -96,7 +97,7 @@ export type AuthClaims = CommonAuthClaims & {
 
 export type Auth = {
   claims: AuthClaims
-  userAccount: UserAccount
+  userAccount: UserAccount | null
 }
 
 const fakeAccount = userAccountRepository.build({ auth0Id: '' })
@@ -141,7 +142,7 @@ export const authenticateRequest = async (req: Request): Promise<Auth> => {
   }
 
   const rawClaims = authResult.decoded as RawAuthClaims
-  const [userAccount, _created] = await userAccountRepository.findOrCreate({
+  const userAccount = await userAccountRepository.findOne({
     where: { auth0Id: rawClaims.sub },
   })
 

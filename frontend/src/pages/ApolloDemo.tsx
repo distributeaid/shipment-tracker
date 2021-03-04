@@ -1,4 +1,5 @@
 import { useQuery, gql } from '@apollo/client'
+
 import LayoutWithNav from '../layouts/LayoutWithNav'
 
 /**
@@ -22,7 +23,9 @@ const ApolloDemoPage = () => {
    *    - error: a ApolloError object with some details, in case things fail
    *    - data: the data fetched by your query
    */
-  const { data, loading, error } = useQuery(GROUPS_QUERY)
+  const { data, loading, error } = useQuery(GROUPS_QUERY, {
+    pollInterval: 5000,
+  })
 
   /**
    * 3. Render your markup!
