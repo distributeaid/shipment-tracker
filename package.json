@@ -43,6 +43,7 @@
     "sequelize-typescript": "^2.1.0"
   },
   "devDependencies": {
+    "@distributeaid/shared-config": "distributeaid/shared-config",
     "@graphql-codegen/add": "^2.0.2",
     "@graphql-codegen/cli": "^1.20.1",
     "@graphql-codegen/typescript": "^1.21.0",

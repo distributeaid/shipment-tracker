@@ -628,6 +628,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@distributeaid/shared-config@distributeaid/shared-config":
+  version "1.0.0"
+  resolved "https://codeload.github.com/distributeaid/shared-config/tar.gz/a9097a177de2a047fb2815b29918944faa67cce9"
+
 "@endemolshinegroup/cosmiconfig-typescript-loader@3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@endemolshinegroup/cosmiconfig-typescript-loader/-/cosmiconfig-typescript-loader-3.0.2.tgz"
