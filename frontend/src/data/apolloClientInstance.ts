@@ -23,7 +23,6 @@ const authLink = new ApolloLink((operation, forward) => {
   return fromPromise(
     getAccessTokenSilently()
       .then((token: string) => {
-        console.log(`Access token: ${token}`)
         operation.setContext({
           headers: {
             authorization: token ? `Bearer ${token}` : '',
