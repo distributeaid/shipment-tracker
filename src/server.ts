@@ -9,10 +9,20 @@ dotenv.config()
 import apolloServer from './apolloServer'
 
 const app = express()
-app.use('*', cors())
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:8080',
+    credentials: true,
+  }),
+)
 app.use(compression())
 
-apolloServer.applyMiddleware({ app, path: '/graphql' })
+apolloServer.applyMiddleware({
+  app,
+  path: '/graphql',
+  cors: false, // We use the cors plugin for this
+})
 
 const httpServer = createServer(app)
 

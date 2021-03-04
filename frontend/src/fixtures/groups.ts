@@ -69,7 +69,7 @@ const GROUPS: GroupPlaceholder[] = [
   {
     id: 7,
     name: 'Distribute Aid - Leeds',
-    groupType: GroupType.DAHub,
+    groupType: GroupType.DaHub,
     primaryLocation: {
       countryCode: 'GB',
       townCity: 'Leeds',

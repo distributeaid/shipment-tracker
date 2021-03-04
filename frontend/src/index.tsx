@@ -1,10 +1,19 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { Auth0Provider } from '@auth0/auth0-react'
 import App from './AppRoot'
+import './stylesheets/index.output.css'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Auth0Provider
+      domain="distributeaid.eu.auth0.com"
+      clientId="3wxYeItzvD1fN5tloBikUHED8sQ1BImj"
+      redirectUri={window.location.origin}
+      audience="https://da-shipping-tracker-dev"
+    >
+      <App />
+    </Auth0Provider>
   </React.StrictMode>,
   document.getElementById('root'),
 )

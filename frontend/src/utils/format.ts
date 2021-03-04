@@ -1,8 +1,8 @@
-import { GroupType } from '../fixtures/groups'
+import { GroupType } from '../types/api-types'
 
 export function formatGroupType(type: GroupType) {
   switch (type) {
-    case GroupType.DAHub:
+    case GroupType.DaHub:
       return 'DA hub'
     case GroupType.ReceivingGroup:
       return 'Receiving group'

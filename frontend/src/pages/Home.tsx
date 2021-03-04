@@ -3,8 +3,8 @@ import LayoutWithNav from '../layouts/LayoutWithNav'
 
 const HomePage = () => (
   <LayoutWithNav headerTitle="Home">
-    <main className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-3xl text-gray-800">
+    <main className="flex flex-col items-center justify-center h-screen p-4">
+      <h1 className="text-xl md:text-3xl text-gray-800">
         Welcome to the Shipment Tracker! 📦👀
       </h1>
       <p className="mt-6 text-lg text-gray-700">
