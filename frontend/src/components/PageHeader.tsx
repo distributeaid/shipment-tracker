@@ -3,10 +3,6 @@ import { Link } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
 import DistributeAidLogo from './DistributeAidLogo'
 import DropdownMenu from './DropdownMenu'
-import LogOutButton from './LogOutButton'
-import DropdownMenuText from './DropdownMenuText'
-import DropdownMenuDivider from './DropdownMenuDivider'
-import DropdownMenuButton from './DropdownMenuButton'
 
 interface Props {
   title?: ReactNode
@@ -40,7 +36,6 @@ const PageHeader: FunctionComponent<Props> = ({ title }) => {
             </DropdownMenu.Button>
           </DropdownMenu>
         </div>
-        <LogOutButton />
       </div>
     </header>
   )
