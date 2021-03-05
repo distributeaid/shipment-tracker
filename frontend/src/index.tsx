@@ -10,7 +10,7 @@ ReactDOM.render(
       domain="distributeaid.eu.auth0.com"
       clientId="3wxYeItzvD1fN5tloBikUHED8sQ1BImj"
       redirectUri={window.location.origin}
-      audience="https://da-shipping-tracker-dev"
+      audience={process.env.REACT_APP_AUTH0_AUDIENCE}
     >
       <App />
     </Auth0Provider>
