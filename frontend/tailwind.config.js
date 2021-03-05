@@ -8,6 +8,9 @@ module.exports = {
         // TODO come up with a better naming convention once we have a palette
         'da-blue-900': '#112C71',
       },
+      minHeight: {
+        'half-screen': '50vh',
+      },
     },
   },
   variants: {
