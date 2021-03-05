@@ -8,6 +8,7 @@ import PublicHomePage from './pages/PublicHome'
 import GroupList from './pages/groups/GroupList'
 import PrivateRoute from './components/PrivateRoute'
 import ApolloAuthProvider from './components/ApolloAuthProvider'
+import LoadingPage from './pages/LoadingPage'
 
 const fetchProfile = (token: string) => {
   return fetch('/profile', {
@@ -33,15 +34,15 @@ const AppRoot = () => {
     }
   }, [isAuthenticated, getAccessTokenSilently, profileIsLoaded])
 
-  if (isLoading) {
-    // TODO make this look a LOT better...
-    return <div>Loading...</div>
-  }
-
   return (
     <ApolloAuthProvider>
       <Router>
         <Switch>
+          {isLoading && (
+            <Route>
+              <LoadingPage />
+            </Route>
+          )}
           <Route path="/" exact>
             {isAuthenticated ? <HomePage /> : <PublicHomePage />}
           </Route>

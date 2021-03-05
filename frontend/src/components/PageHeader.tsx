@@ -6,13 +6,19 @@ import DropdownMenu from './DropdownMenu'
 
 interface Props {
   title?: ReactNode
+  /**
+   * If true, the user's information and "log out" button will be hidden.
+   * Use this prop when you want to show the page header while things are
+   * still loading.
+   */
+  hideControls?: boolean
 }
 
 /**
  * A full-width element that sits at the top of the page. It displays the DA
  * branding and a dropdown-menu with some account information.
  */
-const PageHeader: FunctionComponent<Props> = ({ title }) => {
+const PageHeader: FunctionComponent<Props> = ({ title, hideControls }) => {
   const { user, logout } = useAuth0()
 
   return (
@@ -24,18 +30,20 @@ const PageHeader: FunctionComponent<Props> = ({ title }) => {
           </Link>
           {title && <span className="ml-6 text-white">{title}</span>}
         </div>
-        <div className="flex items-center text-white">
-          <DropdownMenu position="right">
-            <DropdownMenu.Text>
-              <div>{user.name}</div>
-              <div className="text-sm text-gray-500">{user.email}</div>
-            </DropdownMenu.Text>
-            <DropdownMenu.Divider />
-            <DropdownMenu.Button onClick={() => logout()}>
-              Log out
-            </DropdownMenu.Button>
-          </DropdownMenu>
-        </div>
+        {!hideControls && (
+          <div className="flex items-center text-white">
+            <DropdownMenu position="right">
+              <DropdownMenu.Text>
+                <div>{user.name}</div>
+                <div className="text-sm text-gray-500">{user.email}</div>
+              </DropdownMenu.Text>
+              <DropdownMenu.Divider />
+              <DropdownMenu.Button onClick={() => logout()}>
+                Log out
+              </DropdownMenu.Button>
+            </DropdownMenu>
+          </div>
+        )}
       </div>
     </header>
   )
