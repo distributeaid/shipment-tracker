@@ -4,11 +4,15 @@ import { createServer } from 'http'
 import compression from 'compression'
 import cors from 'cors'
 
+// Load the env vars before initializing code that depends on them
 dotenv.config()
 
+import findOrCreateProfile from './findOrCreateProfile'
 import apolloServer from './apolloServer'
 
 const app = express()
+
+app.get('/profile', findOrCreateProfile)
 
 app.use(
   cors({

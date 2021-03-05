@@ -12,6 +12,12 @@ const apolloServer = new ApolloServer({
   async context({ req }) {
     const auth = await authenticateRequest(req)
 
+    if (auth.userAccount == null) {
+      throw new AuthenticationError(
+        `No user account found for profile ${auth.claims.sub}`,
+      )
+    }
+
     return { auth }
   },
 })
