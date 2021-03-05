@@ -39,7 +39,7 @@ const addGroup: MutationResolvers['addGroup'] = async (
     groupType: input.groupType,
     primaryLocation: input.primaryLocation,
     primaryContact: input.primaryContact,
-    website: input.website || undefined,
+    website: input.website,
   })
 }
 

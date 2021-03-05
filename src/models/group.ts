@@ -15,7 +15,7 @@ export interface GroupAttributes {
   groupType: GroupType
   primaryLocation: Location
   primaryContact: ContactInfo
-  website?: string
+  website?: string | null
 }
 
 export interface GroupCreationAttributes

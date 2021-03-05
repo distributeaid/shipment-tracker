@@ -14,8 +14,10 @@ import { createGroup, createShipment } from './helpers'
 import Group from '../models/group'
 
 describe('Shipments API', () => {
-  let testServer: ApolloServerTestClient
-  let adminTestServer: ApolloServerTestClient
+  let testServer: ApolloServerTestClient,
+    adminTestServer: ApolloServerTestClient,
+    group1: Group,
+    group2: Group
 
   beforeEach(async () => {
     testServer = makeTestServer()
@@ -28,11 +30,25 @@ describe('Shipments API', () => {
     await sequelize
       .getRepository(Shipment)
       .truncate({ cascade: true, force: true })
+
+    group1 = await createGroup({
+        name: 'group 1',
+        groupType: GroupType.DaHub,
+        primaryLocation: { countryCode: "UK", townCity: "Bristol" },
+        primaryContact:  { name: "Contact", email: "contact@example.com" }
+      })
+    group2 = await createGroup({
+        name: 'group 2',
+        groupType: GroupType.ReceivingGroup,
+        primaryLocation: { countryCode: "FR", townCity: "Bordeaux" },
+        primaryContact:  {
+          name: "Second Contact",
+          email: "2ndcontact@example.com"
+        }
+      })
   })
 
   describe('addShipment', () => {
-    let group1: Group, group2: Group
-
     const ADD_SHIPMENT = gql`
       mutation($input: ShipmentInput!) {
         addShipment(input: $input) {
@@ -46,17 +62,6 @@ describe('Shipments API', () => {
         }
       }
     `
-
-    beforeEach(async () => {
-      group1 = await createGroup({
-        name: 'group 1',
-        groupType: GroupType.DaHub,
-      })
-      group2 = await createGroup({
-        name: 'group 2',
-        groupType: GroupType.ReceivingGroup,
-      })
-    })
 
     it('forbids non-admin access', async () => {
       const res = await testServer.mutate<
@@ -117,14 +122,6 @@ describe('Shipments API', () => {
 
   describe('listShipments', () => {
     it('lists existing shipments', async () => {
-      const group1 = await createGroup({
-        name: 'group 1',
-        groupType: GroupType.DaHub,
-      })
-      const group2 = await createGroup({
-        name: 'group 2',
-        groupType: GroupType.ReceivingGroup,
-      })
 
       const shipment1 = await createShipment({
         shippingRoute: ShippingRoute.Uk,
