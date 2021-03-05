@@ -2,7 +2,6 @@ import {
   ApolloClient,
   ApolloLink,
   ApolloProvider,
-  createHttpLink,
   fromPromise,
   HttpLink,
   InMemoryCache,

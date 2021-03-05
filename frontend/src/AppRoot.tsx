@@ -17,21 +17,21 @@ const fetchProfile = (token: string) => {
 
 const AppRoot = () => {
   const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0()
-  const [profileIsLoading, setProfileIsLoading] = useState(true)
+  const [profileIsLoaded, setProfileIsLoaded] = useState(false)
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !profileIsLoaded) {
       getAccessTokenSilently()
         .then(fetchProfile)
         .then((response) => {
           if (response.ok) {
-            setProfileIsLoading(false)
+            setProfileIsLoaded(true)
           } else {
             console.error('Non-OK server response retrieving profile')
           }
         })
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, getAccessTokenSilently, profileIsLoaded])
 
   if (isLoading) {
     // TODO make this look a LOT better...
