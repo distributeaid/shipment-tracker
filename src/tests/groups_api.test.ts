@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 import { ApolloServerTestClient } from 'apollo-server-testing'
 
-import makeTestServer from '../testServer'
+import { makeTestServer } from '../testServer'
 import { sequelize } from '../sequelize'
 import Group from '../models/group'
 import { createGroup } from './helpers'

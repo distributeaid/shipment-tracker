@@ -1,4 +1,4 @@
-import { AuthenticationError } from 'apollo-server-express'
+import { AuthenticationError, ForbiddenError } from 'apollo-server-express'
 import { Request } from 'express'
 import { Maybe } from 'graphql/jsutils/Maybe'
 import jwt, { GetPublicKeyOrSecret } from 'jsonwebtoken'
@@ -74,6 +74,7 @@ const validateJwt = async (token: string): Promise<AuthResult> => {
   })
 }
 
+const ADMIN_ROLE = 'admin'
 const ROLES_KEY = 'http://id.distributeaid.org/role'
 
 type CommonAuthClaims = {
@@ -98,6 +99,7 @@ export type AuthClaims = CommonAuthClaims & {
 export type Auth = {
   claims: AuthClaims
   userAccount: UserAccount | null
+  isAdmin: boolean
 }
 
 const fakeAccount = userAccountRepository.build({ auth0Id: '' })
@@ -113,15 +115,27 @@ const fakeClaims = {
   permissions: [],
 }
 
+export const fakeAdminAuth: Auth = {
+  userAccount: fakeAccount,
+  claims: fakeClaims,
+  isAdmin: true,
+}
+
+export const fakeUserAuth: Auth = {
+  userAccount: fakeAccount,
+  claims: fakeClaims,
+  isAdmin: false,
+}
+
 export const authenticateRequest = async (req: Request): Promise<Auth> => {
   if (skipAuth) {
-    return Promise.resolve({ userAccount: fakeAccount, claims: fakeClaims })
+    return fakeAdminAuth
   }
 
   const { authorization: token } = req.headers
 
   if (token == null) {
-    throw new AuthenticationError('you must be logged in')
+    throw new ForbiddenError('you must be logged in')
   }
 
   let authResult: AuthResult
@@ -147,7 +161,8 @@ export const authenticateRequest = async (req: Request): Promise<Auth> => {
   })
 
   const roles = rawClaims[ROLES_KEY]
-  const claims = omit(rawClaims, ROLES_KEY)
+  const claims = { roles, ...omit(rawClaims, ROLES_KEY) }
+  const isAdmin = roles.includes(ADMIN_ROLE)
 
-  return { userAccount, claims: { roles, ...claims } }
+  return { userAccount, claims, isAdmin }
 }
