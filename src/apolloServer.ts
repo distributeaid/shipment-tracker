@@ -1,15 +1,23 @@
-import { ApolloServer, AuthenticationError } from 'apollo-server-express'
+import {
+  ApolloServer,
+  ApolloServerExpressConfig,
+  AuthenticationError,
+} from 'apollo-server-express'
 import depthLimit from 'graphql-depth-limit'
 
 import resolvers from './resolvers'
 import typeDefs from './typeDefs'
-import { authenticateRequest } from './authenticateRequest'
+import { Auth, authenticateRequest } from './authenticateRequest'
 
-const apolloServer = new ApolloServer({
+export type Context = {
+  auth: Auth
+}
+
+export const serverConfig: ApolloServerExpressConfig = {
   typeDefs,
   resolvers,
   validationRules: [depthLimit(7)],
-  async context({ req }) {
+  async context({ req }): Promise<Context> {
     const auth = await authenticateRequest(req)
 
     if (auth.userAccount == null) {
@@ -20,6 +28,8 @@ const apolloServer = new ApolloServer({
 
     return { auth }
   },
-})
+}
+
+const apolloServer = new ApolloServer(serverConfig)
 
 export default apolloServer

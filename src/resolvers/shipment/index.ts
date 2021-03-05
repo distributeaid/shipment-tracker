@@ -1,4 +1,9 @@
-import { UserInputError, ApolloError } from 'apollo-server'
+import {
+  UserInputError,
+  ApolloError,
+  AuthenticationError,
+  ForbiddenError,
+} from 'apollo-server'
 
 import {
   QueryResolvers,
@@ -9,6 +14,7 @@ import {
 import { sequelize } from '../../sequelize'
 import Shipment from '../../models/shipment'
 import Group from '../../models/group'
+import { Context } from '../../apolloServer'
 
 const shipmentRepository = sequelize.getRepository(Shipment)
 const groupRepository = sequelize.getRepository(Group)
@@ -22,8 +28,12 @@ const listShipments: QueryResolvers['listShipments'] = async () => {
 const addShipment: MutationResolvers['addShipment'] = async (
   _parent,
   { input },
-  _context,
+  context: Context,
 ) => {
+  if (!context.auth.isAdmin) {
+    throw new ForbiddenError('addShipment forbidden to non-admin users')
+  }
+
   if (
     !input.shippingRoute ||
     !input.labelYear ||

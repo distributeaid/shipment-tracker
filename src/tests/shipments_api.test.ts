@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 import { ApolloServerTestClient } from 'apollo-server-testing'
 
 import Shipment from '../models/shipment'
-import makeTestServer from '../testServer'
+import { makeTestServer, makeAdminTestServer } from '../testServer'
 import { sequelize } from '../sequelize'
 import {
   GroupType,
@@ -15,9 +15,11 @@ import Group from '../models/group'
 
 describe('Shipments API', () => {
   let testServer: ApolloServerTestClient
+  let adminTestServer: ApolloServerTestClient
 
   beforeEach(async () => {
     testServer = makeTestServer()
+    adminTestServer = makeAdminTestServer()
 
     await sequelize.sync({ force: true })
     await sequelize
@@ -29,31 +31,65 @@ describe('Shipments API', () => {
   })
 
   describe('addShipment', () => {
-    it('adds a new shipment', async () => {
-      const group1 = await createGroup({
+    let group1: Group, group2: Group
+
+    const ADD_SHIPMENT = gql`
+      mutation($input: ShipmentInput!) {
+        addShipment(input: $input) {
+          id
+          shippingRoute
+          labelYear
+          labelMonth
+          sendingHubId
+          receivingHubId
+          status
+        }
+      }
+    `
+
+    beforeEach(async () => {
+      group1 = await createGroup({
         name: 'group 1',
         groupType: GroupType.DaHub,
       })
-      const group2 = await createGroup({
+      group2 = await createGroup({
         name: 'group 2',
         groupType: GroupType.ReceivingGroup,
       })
+    })
 
-      const ADD_SHIPMENT = gql`
-        mutation($input: ShipmentInput!) {
-          addShipment(input: $input) {
-            id
-            shippingRoute
-            labelYear
-            labelMonth
-            sendingHubId
-            receivingHubId
-            status
-          }
-        }
-      `
-
+    it('forbids non-admin access', async () => {
       const res = await testServer.mutate<
+        { addShipment: Shipment },
+        { input: ShipmentInput }
+      >({
+        mutation: ADD_SHIPMENT,
+        variables: {
+          input: {
+            shippingRoute: ShippingRoute.Uk,
+            labelYear: 2020,
+            labelMonth: 1,
+            sendingHubId: group1.id,
+            receivingHubId: group2.id,
+            status: ShipmentStatus.Open,
+          },
+        },
+      })
+
+      expect(res.errors).not.toBeUndefined()
+      expect(res.errors).not.toBeEmpty()
+
+      if (res.errors == null || res.errors.length === 0) {
+        return
+      }
+
+      expect(res.errors[0].message).toEqual(
+        'addShipment forbidden to non-admin users',
+      )
+    })
+
+    it('adds a new shipment', async () => {
+      const res = await adminTestServer.mutate<
         { addShipment: Shipment },
         { input: ShipmentInput }
       >({
