@@ -66,20 +66,21 @@ If you run into problems setting up your development environment please create a
 
 See the README in the `frontend` directory for instructions on setting up for front end development.
 
-## Other project docs
+## Technical documentation
 
 - [Database Migrations](./docs/migrations.md)
 - [Graphql Codegen](./docs/codegen.md)
 
 ### Type definitions
 
-We want to maintain a single source of truth for our type definitions. We use `graphql-codegen` for that purpose.
+We want to maintain a single source of truth defining types used on both the API server and browser client. We use [GraphQL Codegen](https://graphql-code-generator.com/) for that purpose.
 
-The command below will output TypeScript definitions that can be used by the backend and frontend.
+Types are defined in `schema.graphql`. Type code for TypeScript is generated from that schema file using the command `yarn codegen`. This will update the type definition files at
 
-```shell
-yarn codegen
-```
+- `./src/server-internal-types.ts` for the server
+- `./frontend/src/types/api-types.ts` for the browser client
+
+Make sure to run `yarn codegen` and include the generated code changes in any commits that alter the GraphQL schema.
 
 ## Technologies
 

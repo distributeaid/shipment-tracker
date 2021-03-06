@@ -6,9 +6,6 @@ generates:
       - typescript-resolvers
     config:
       useIndexSignature: true
-  ./api-types.ts:
-    plugins:
-      - typescript
   # Generate the types used by the frontend, because react-scripts requires them
   # to exist in the src directory.
   ./frontend/src/types/api-types.ts:
