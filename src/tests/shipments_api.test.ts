@@ -78,12 +78,7 @@ describe('Shipments API', () => {
 
       expect(res.errors).not.toBeUndefined()
       expect(res.errors).not.toBeEmpty()
-
-      if (res.errors == null || res.errors.length === 0) {
-        return
-      }
-
-      expect(res.errors[0].message).toEqual(
+      expect(res?.errors?.[0]?.message).toEqual(
         'addShipment forbidden to non-admin users',
       )
     })
