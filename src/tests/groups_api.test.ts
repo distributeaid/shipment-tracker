@@ -10,6 +10,14 @@ import { GroupType } from '../server-internal-types'
 describe('Groups API', () => {
   let testServer: ApolloServerTestClient
 
+  const group1Name: string = "group1"
+  const group1Params = {
+    name: group1Name,
+    groupType: GroupType.DaHub,
+    primaryLocation: { countryCode: "UK", townCity: "Bristol" },
+    primaryContact:  { name: "Contact", email: "contact@example.com" }
+  }
+
   beforeEach(async () => {
     testServer = makeTestServer()
 
@@ -21,36 +29,23 @@ describe('Groups API', () => {
 
   describe('addGroup', () => {
     it('adds a new group', async () => {
-      const ADD_GROUP = gql`
-        mutation($name: String!, $groupType: GroupType!) {
-          addGroup(input: { name: $name, groupType: $groupType }) {
-            id
-            name
-            groupType
-          }
-        }
-      `
+      const group1 = await createGroup(group1Params)
 
-      const res = await testServer.mutate({
-        mutation: ADD_GROUP,
-        variables: { name: 'test name', groupType: GroupType.ReceivingGroup },
-      })
-
-      expect(res.errors).toBeUndefined()
-      expect(res?.data?.addGroup?.name).toEqual('test name')
-      expect(res?.data?.addGroup?.id).not.toBeNull()
+      expect(group1.name).toBe(group1Name)
     })
   })
 
   describe('listGroups', () => {
     it('lists existing groups', async () => {
-      const group1 = await createGroup({
-        name: 'group 1',
-        groupType: GroupType.DaHub,
-      })
+      const group1 = await createGroup(group1Params)
       const group2 = await createGroup({
         name: 'group 2',
         groupType: GroupType.ReceivingGroup,
+        primaryLocation: { countryCode: "FR", townCity: "Bordeaux" },
+        primaryContact:  {
+          name: "Second Contact",
+          email: "2ndcontact@example.com"
+        }
       })
 
       const LIST_GROUPS = gql`

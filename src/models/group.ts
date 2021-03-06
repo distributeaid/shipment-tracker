@@ -7,16 +7,19 @@ import {
   UpdatedAt,
   DataType,
 } from 'sequelize-typescript'
-import { GroupType } from '../server-internal-types'
+import { GroupType, Location, ContactInfo } from '../server-internal-types'
 
 export interface GroupAttributes {
   id: number
   name: string
   groupType: GroupType
+  primaryLocation: Location
+  primaryContact: ContactInfo
+  website?: string | null
 }
 
 export interface GroupCreationAttributes
-  extends Optional<GroupAttributes, 'id'> {}
+  extends Optional<GroupAttributes, 'id' | 'website'> {}
 
 @Table({
   timestamps: true,
@@ -32,6 +35,15 @@ export default class Group extends Model<
 
   @Column(DataType.STRING)
   public groupType!: GroupType
+
+  @Column(DataType.JSONB)
+  public primaryLocation!: Location
+
+  @Column(DataType.JSONB)
+  public primaryContact!: ContactInfo
+
+  @Column
+  public website?: string
 
   @CreatedAt
   @Column

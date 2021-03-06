@@ -1,14 +1,51 @@
 scalar Date
 
+type Location {
+  countryCode: String
+  townCity: String!
+  openLocationCode: String
+}
+
+type ContactInfo {
+  name: String!
+  email: String
+  phone: String
+  signal: String
+  whatsApp: String
+}
+
+input LocationInput {
+  countryCode: String
+  townCity: String!
+  openLocationCode: String
+}
+
+input ContactInfoInput {
+  name: String!
+  email: String
+  phone: String
+  signal: String
+  whatsApp: String
+}
+
 type Group {
   id: Int!
   name: String!
   groupType: GroupType!
+  primaryLocation: Location!
+  primaryContact: ContactInfo!
+  website: String
+
+  createdAt: Date!
+  updatedAt: Date!
 }
 
 input GroupInput {
   name: String!
   groupType: GroupType!
+  primaryLocation: LocationInput!
+  primaryContact: ContactInfoInput!
+  website: String
 }
 
 type Query {

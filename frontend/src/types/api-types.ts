@@ -19,16 +19,54 @@ export type Scalars = {
 };
 
 
+export type Location = {
+  __typename?: 'Location';
+  countryCode?: Maybe<Scalars['String']>;
+  townCity: Scalars['String'];
+  openLocationCode?: Maybe<Scalars['String']>;
+};
+
+export type ContactInfo = {
+  __typename?: 'ContactInfo';
+  name: Scalars['String'];
+  email?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  signal?: Maybe<Scalars['String']>;
+  whatsApp?: Maybe<Scalars['String']>;
+};
+
+export type LocationInput = {
+  countryCode?: Maybe<Scalars['String']>;
+  townCity: Scalars['String'];
+  openLocationCode?: Maybe<Scalars['String']>;
+};
+
+export type ContactInfoInput = {
+  name: Scalars['String'];
+  email?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  signal?: Maybe<Scalars['String']>;
+  whatsApp?: Maybe<Scalars['String']>;
+};
+
 export type Group = {
   __typename?: 'Group';
   id: Scalars['Int'];
   name: Scalars['String'];
   groupType: GroupType;
+  primaryLocation: Location;
+  primaryContact: ContactInfo;
+  website?: Maybe<Scalars['String']>;
+  createdAt: Scalars['Date'];
+  updatedAt: Scalars['Date'];
 };
 
 export type GroupInput = {
   name: Scalars['String'];
   groupType: GroupType;
+  primaryLocation: LocationInput;
+  primaryContact: ContactInfoInput;
+  website?: Maybe<Scalars['String']>;
 };
 
 export type Query = {
