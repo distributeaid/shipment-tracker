@@ -74,7 +74,7 @@ const GroupList: FunctionComponent = () => {
 
   return (
     <LayoutWithNav>
-      <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-screen">
+      <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
         <header className="p-6 border-b border-gray-200">
           <h1 className="text-da-navy-100 text-3xl">Groups</h1>
         </header>

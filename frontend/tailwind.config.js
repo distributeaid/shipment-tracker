@@ -15,6 +15,10 @@ module.exports = {
       },
       minHeight: {
         'half-screen': '50vh',
+        /**
+         * Viewport height minus the header height
+         */
+        content: 'calc(100vh - 4rem)',
       },
       height: {
         /**
