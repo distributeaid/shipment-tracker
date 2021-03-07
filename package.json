@@ -11,6 +11,7 @@
     "build": "yarn -s run clean && yarn -s run codegen && tsc",
     "codegen": "graphql-codegen",
     "codegen:watch": "graphql-codegen --watch",
+    "heroku-postbuild": "npx sequelize-cli db:migrate",
     "test": "jest --detectOpenHandles",
     "test-ci": "DB_ENV=ci jest --detectOpenHandles",
     "prepare": "husky install"
