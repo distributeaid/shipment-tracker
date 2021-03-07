@@ -32,8 +32,10 @@ apolloServer.applyMiddleware({
 
 const httpServer = createServer(app)
 
-httpServer.listen({ port: 3000 }, (): void =>
+const port = process.env.PORT || 3000
+
+httpServer.listen({ port }, (): void =>
   console.log(
-    `\n🚀      GraphQL is now running on http://localhost:3000/graphql`,
+    `\n🚀      GraphQL is now running on http://localhost:${port}/graphql`,
   ),
 )
