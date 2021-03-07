@@ -4,6 +4,7 @@ import { Sequelize, SequelizeOptions } from 'sequelize-typescript'
 // tests on CI. This is because DB connection config is different between
 // CI and local test envs. See db/config.json
 const env = process.env.DB_ENV || process.env.NODE_ENV || 'development'
+const config = require(__dirname + '/../db/config.json')[env]
 
 export let sequelize: Sequelize
 
@@ -21,17 +22,9 @@ if (env === 'production') {
 
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     ...COMMON_CONFIG,
-    models: [__dirname + '/models'],
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
+    dialectOptions: config.dialectOptions,
   })
 } else {
-  const config = require(__dirname + '/../db/config.json')[env]
-
   sequelize = new Sequelize({
     ...COMMON_CONFIG,
     database: config.database,
