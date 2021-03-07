@@ -10,6 +10,12 @@ Key documents:
 
 - [Project requirements document with user stories and proposed GraphQL schema](https://www.notion.so/distributeaid/Technical-requirements-c2fd190e0a8d4f708119c6944fa654dd)
 
+## Deployments
+
+### Staging
+
+The main `saga` branch is deployed automatically to Heroku by CI. Staging can be accessed here: https://shipment-tracker-dev.herokuapp.com
+
 ## Devopment process
 
 ### Code of conduct
