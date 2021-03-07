@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import LayoutWithNav from '../layouts/LayoutWithNav'
 
 const HomePage = () => (
-  <LayoutWithNav headerTitle="Home">
+  <LayoutWithNav>
     <main className="flex flex-col items-center justify-center min-h-half-screen p-4">
       <h1 className="text-xl md:text-3xl text-gray-800">
         Welcome to the Shipment Tracker! 📦👀

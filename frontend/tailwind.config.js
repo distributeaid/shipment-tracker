@@ -5,11 +5,26 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // TODO come up with a better naming convention once we have a palette
-        'da-blue-900': '#112C71',
+        // https://www.figma.com/file/F86X05axrNQFJJh0IhZEWs/Distribute-Aid-colors
+        'da-navy-50': '#082B76',
+        'da-navy-100': '#09328B',
+        'da-navy-200': '#4362A6',
+        'da-navy-300': '#8B9FC8',
+        'da-navy-400': '#C5CFE4',
+        'da-navy-500': '#E2E7F1',
       },
       minHeight: {
         'half-screen': '50vh',
+      },
+      height: {
+        /**
+         * Height of the navigation at the top of the page
+         */
+        nav: '4rem',
+        /**
+         * Viewport height minus the header height
+         */
+        content: 'calc(100vh - 4rem)',
       },
     },
   },

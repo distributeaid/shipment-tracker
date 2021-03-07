@@ -9,6 +9,7 @@ import GroupList from './pages/groups/GroupList'
 import PrivateRoute from './components/PrivateRoute'
 import ApolloAuthProvider from './components/ApolloAuthProvider'
 import LoadingPage from './pages/LoadingPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 const fetchProfile = (token: string) => {
   return fetch('/profile', {
@@ -51,6 +52,9 @@ const AppRoot = () => {
           </Route>
           <PrivateRoute exact isAuthenticated={isAuthenticated} path="/groups">
             <GroupList />
+          </PrivateRoute>
+          <PrivateRoute isAuthenticated={isAuthenticated} path="*">
+            <NotFoundPage />
           </PrivateRoute>
         </Switch>
       </Router>

@@ -46,10 +46,10 @@ const GroupList: FunctionComponent = () => {
   } = useTable({ columns: COLUMNS as any, data: tableData }, useSortBy)
 
   return (
-    <LayoutWithNav headerTitle="Groups">
+    <LayoutWithNav>
       <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-screen">
         <header className="p-6 border-b border-gray-200">
-          <h1 className="text-da-blue-900 text-3xl">Groups</h1>
+          <h1 className="text-da-navy-100 text-3xl">Groups</h1>
         </header>
         <main>
           <table className="w-full" {...getTableProps()}>
