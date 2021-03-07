@@ -1,10 +1,6 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, SVGProps } from 'react'
 
-interface Props {
-  className?: string
-}
-
-const PackageIcon: FunctionComponent<Props> = (props) => (
+const PackageIcon: FunctionComponent<SVGProps<SVGSVGElement>> = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"

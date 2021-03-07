@@ -6,6 +6,7 @@ import DropdownMenu from './DropdownMenu'
 import TruckIcon from './icons/TruckIcon'
 import CubeIcon from './icons/PackageIcon'
 import CogIcon from './icons/CogIcon'
+import UserIcon from './icons/UserIcon'
 import MobileNavigation from './navigation/MobileNavigation'
 import DesktopNavigation from './navigation/DesktopNavigation'
 
@@ -71,39 +72,22 @@ const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
         </div>
         <DesktopNavigation navLinks={NAV_LINKS} />
         {!hideControls && (
-          <>
-            <div className="flex items-center text-white">
-              <DropdownMenu
-                buttonClassname="p-2"
-                position="right"
-                label={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                }
-              >
-                <DropdownMenu.Text>
-                  <div>{user.name}</div>
-                  <div className="text-sm text-gray-500">{user.email}</div>
-                </DropdownMenu.Text>
-                <DropdownMenu.Divider />
-                <DropdownMenu.Button onClick={() => logout()}>
-                  Log out
-                </DropdownMenu.Button>
-              </DropdownMenu>
-            </div>
-          </>
+          <div className="flex items-center text-white">
+            <DropdownMenu
+              buttonClassname="p-2"
+              position="right"
+              label={<UserIcon className="w-6 h-6" />}
+            >
+              <DropdownMenu.Text>
+                <div>{user.name}</div>
+                <div className="text-sm text-gray-500">{user.email}</div>
+              </DropdownMenu.Text>
+              <DropdownMenu.Divider />
+              <DropdownMenu.Button onClick={() => logout()}>
+                Log out
+              </DropdownMenu.Button>
+            </DropdownMenu>
+          </div>
         )}
       </div>
     </header>
