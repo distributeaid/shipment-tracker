@@ -1,17 +1,13 @@
-import { FunctionComponent, ReactNode } from 'react'
-import PageHeader from '../components/PageHeader'
-
-interface Props {
-  headerTitle?: ReactNode
-}
+import { FunctionComponent } from 'react'
+import TopNavigation from '../components/TopNavigation'
 
 /**
  * Application layout for logged-in users with a header at the top.
  */
-const LayoutWithNav: FunctionComponent<Props> = ({ children, headerTitle }) => {
+const LayoutWithNav: FunctionComponent = ({ children }) => {
   return (
     <>
-      <PageHeader title={headerTitle} />
+      <TopNavigation />
       {children}
     </>
   )

@@ -34,7 +34,7 @@ const ApolloDemoPage = () => {
    * 3. Render your markup!
    */
   return (
-    <LayoutWithNav headerTitle="GraphQL demo">
+    <LayoutWithNav>
       <main className="flex flex-col items-center justify-center h-screen">
         <h1 className="text-3xl text-gray-800 mb-4">Apollo + GraphQL demo</h1>
         <div className="max-w-xl w-full p-4 border border-gray-200">

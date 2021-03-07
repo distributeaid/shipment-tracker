@@ -1,10 +1,18 @@
-import { FunctionComponent, useRef, useState } from 'react'
+import { FunctionComponent, ReactNode, useRef, useState } from 'react'
 import cx from 'classnames'
 import DropdownMenuText from './DropdownMenuText'
 import DropdownMenuButton from './DropdownMenuButton'
 import DropdownMenuDivider from './DropdownMenuDivider'
 
 interface Props {
+  /**
+   * An optional way to style the button that triggers the dropdown
+   */
+  buttonClassname?: string
+  /**
+   * The content of the trigger
+   */
+  label: ReactNode
   /**
    * Determines whether the menu is horizontally-aligned to the left or right of
    * the button.
@@ -37,6 +45,8 @@ enum MenuAnim {
  */
 const DropdownMenu: FunctionComponent<Props> & NestedComponents = ({
   position = 'left',
+  buttonClassname,
+  label,
   children,
 }) => {
   const dropdownContainerRef = useRef<HTMLDivElement>(null)
@@ -95,8 +105,8 @@ const DropdownMenu: FunctionComponent<Props> & NestedComponents = ({
 
   return (
     <div className="relative">
-      <button type="button" onClick={toggleMenu}>
-        Menu
+      <button type="button" onClick={toggleMenu} className={buttonClassname}>
+        {label}
       </button>
       <div
         className={cx('absolute', {
