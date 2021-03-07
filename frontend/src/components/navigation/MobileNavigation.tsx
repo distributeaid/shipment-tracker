@@ -13,6 +13,7 @@ const MobileNavigation: FunctionComponent<Props> = ({ navLinks }) => {
   const toggleMobileNav = () => {
     setShowMobileNav(!showMobileNav)
   }
+
   return (
     <nav role="navigation" className="md:hidden">
       {/* Screenreaders work best when the button is inside the nav */}
@@ -51,6 +52,7 @@ const MobileNavigation: FunctionComponent<Props> = ({ navLinks }) => {
               to={link.path}
               className="py-2 px-4 flex items-center bg-da-navy-100 text-white"
             >
+              {link.icon}
               {link.label}
             </Link>
           </li>

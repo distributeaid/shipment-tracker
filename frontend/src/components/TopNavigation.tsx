@@ -13,35 +13,24 @@ import DesktopNavigation from './navigation/DesktopNavigation'
 export interface NavLinkItem {
   path: string
   label: ReactNode
+  icon?: ReactNode
 }
 
 const NAV_LINKS: NavLinkItem[] = [
   {
     path: '/offers',
-    label: (
-      <>
-        <CubeIcon className="w-5 h-5 mr-2" />
-        Offers
-      </>
-    ),
+    label: 'Offers',
+    icon: <CubeIcon className="w-5 h-5 mr-2" />,
   },
   {
     path: '/shipments',
-    label: (
-      <>
-        <TruckIcon className="w-5 h-5 mr-2" />
-        Shipments
-      </>
-    ),
+    label: 'Shipments',
+    icon: <TruckIcon className="w-5 h-5 mr-2" />,
   },
   {
     path: '/admin',
-    label: (
-      <>
-        <CogIcon className="w-5 h-5 mr-2" />
-        Admin
-      </>
-    ),
+    label: 'Admin',
+    icon: <CogIcon className="w-5 h-5 mr-2" />,
   },
 ]
 

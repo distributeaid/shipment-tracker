@@ -16,6 +16,7 @@ const DesktopNavigation: FunctionComponent<Props> = ({ navLinks }) => {
               to={link.path}
               className="py-2 px-4 rounded hover:bg-da-navy-200 transition-colors flex items-center text-white"
             >
+              {link.icon}
               {link.label}
             </Link>
           </li>
