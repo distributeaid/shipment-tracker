@@ -17,7 +17,6 @@
   },
   "engines": {
     "node": "14.15.5",
-    "npm": "please-use-yarn",
     "yarn": ">= 1.22.5"
   },
   "keywords": [],
