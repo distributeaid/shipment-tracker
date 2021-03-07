@@ -16,6 +16,8 @@ const app = express()
 
 app.get('/profile', findOrCreateProfile)
 
+app.use(express.static('frontend/build'))
+
 app.use(
   cors({
     origin: process.env.CLIENT_URL || 'http://localhost:8080',
