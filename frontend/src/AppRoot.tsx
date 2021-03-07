@@ -10,6 +10,7 @@ import PrivateRoute from './components/PrivateRoute'
 import ApolloAuthProvider from './components/ApolloAuthProvider'
 import LoadingPage from './pages/LoadingPage'
 import NotFoundPage from './pages/NotFoundPage'
+import AdminPage from './pages/AdminPage'
 
 const fetchProfile = (token: string) => {
   return fetch('/profile', {
@@ -47,6 +48,9 @@ const AppRoot = () => {
           <Route path="/" exact>
             {isAuthenticated ? <HomePage /> : <PublicHomePage />}
           </Route>
+          <PrivateRoute path="/admin" isAuthenticated={isAuthenticated} exact>
+            <AdminPage />
+          </PrivateRoute>
           <Route path="/apollo-demo">
             <ApolloDemoPage />
           </Route>
