@@ -6,7 +6,7 @@
   "scripts": {
     "predev": "yarn codegen",
     "dev": "ts-node-dev --no-notify --respawn --transpile-only src/server",
-    "start": "node dist/server",
+    "start": "node --optimize_for_size --max_old_space_size=920 --gc_interval=100 dist/server",
     "clean": "rm -rf dist",
     "build": "yarn -s run clean && tsc",
     "codegen": "graphql-codegen",
