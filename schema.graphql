@@ -51,6 +51,7 @@ input GroupInput {
 type Query {
   listGroups: [Group!]!
   listShipments: [Shipment!]!
+  group(id: Int!): Group!
 }
 
 type Mutation {

@@ -1,7 +1,8 @@
 import { DateResolver } from 'graphql-scalars'
 
 import { Resolvers } from './server-internal-types'
-import { listGroups, addGroup } from './resolvers/group'
+import { addGroup, group, listGroups } from './resolvers/group'
+
 import {
   addShipment,
   listShipments,
@@ -15,6 +16,7 @@ const resolvers: Resolvers = {
 
   // Query Resolvers
   Query: {
+    group,
     listGroups,
     listShipments,
   },
