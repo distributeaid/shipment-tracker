@@ -2,8 +2,26 @@ import { FunctionComponent, useMemo } from 'react'
 import { useSortBy, useTable } from 'react-table'
 import cx from 'classnames'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import groupsFixture from '../../fixtures/groups'
 import { formatGroupType } from '../../utils/format'
+import { gql, useQuery } from '@apollo/client'
+import { Group } from '../../types/api-types'
+
+const GROUPS_QUERY = gql`
+  query GetAllGroups {
+    listGroups {
+      id
+      name
+      groupType
+      primaryContact {
+        name
+      }
+      primaryLocation {
+        countryCode
+        townCity
+      }
+    }
+  }
+`
 
 const COLUMNS = [
   {
@@ -25,16 +43,25 @@ const COLUMNS = [
   },
 ]
 
+/**
+ * Display a list of all the groups in the database
+ */
 const GroupList: FunctionComponent = () => {
+  const { data } = useQuery<{ listGroups: Group[] }>(GROUPS_QUERY)
+
   const tableData = useMemo(
-    () =>
-      groupsFixture.map((group) => ({
-        name: group.name,
-        location: `${group.primaryLocation.townCity} (${group.primaryLocation.countryCode})`,
-        groupType: formatGroupType(group.groupType),
-        contact: group.primaryContact.name,
-      })),
-    [],
+    function memoizeGroupList() {
+      if (data) {
+        return data.listGroups.map((group) => ({
+          name: group.name,
+          location: `${group.primaryLocation.townCity} (${group.primaryLocation.countryCode})`,
+          groupType: formatGroupType(group.groupType),
+          contact: group.primaryContact.name,
+        }))
+      }
+      return []
+    },
+    [data],
   )
 
   const {
