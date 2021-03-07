@@ -5,7 +5,9 @@ import compression from 'compression'
 import cors from 'cors'
 
 // Load the env vars before initializing code that depends on them
-dotenv.config()
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config()
+}
 
 import findOrCreateProfile from './findOrCreateProfile'
 import apolloServer from './apolloServer'
