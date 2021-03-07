@@ -4,7 +4,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import DistributeAidLogo from './branding/DistributeAidLogo'
 import DropdownMenu from './DropdownMenu'
 import TruckIcon from './icons/TruckIcon'
-import CubeIcon from './icons/PackageIcon'
+import PackageIcon from './icons/PackageIcon'
 import CogIcon from './icons/CogIcon'
 import UserIcon from './icons/UserIcon'
 import MobileNavigation from './navigation/MobileNavigation'
@@ -20,7 +20,7 @@ const NAV_LINKS: NavLinkItem[] = [
   {
     path: '/offers',
     label: 'Offers',
-    icon: <CubeIcon className="w-5 h-5 mr-2" />,
+    icon: <PackageIcon className="w-5 h-5 mr-2" />,
   },
   {
     path: '/shipments',
