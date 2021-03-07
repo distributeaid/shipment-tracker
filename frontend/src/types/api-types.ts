@@ -4,104 +4,110 @@
  * https://graphql-code-generator.com/docs/getting-started/index
  */
 
-export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Maybe<T> = T | null
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K]
+}
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> }
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  Date: any;
-};
-
+  ID: string
+  String: string
+  Boolean: boolean
+  Int: number
+  Float: number
+  Date: any
+}
 
 export type Location = {
-  __typename?: 'Location';
-  countryCode?: Maybe<Scalars['String']>;
-  townCity: Scalars['String'];
-  openLocationCode?: Maybe<Scalars['String']>;
-};
+  __typename?: 'Location'
+  countryCode?: Maybe<Scalars['String']>
+  townCity: Scalars['String']
+  openLocationCode?: Maybe<Scalars['String']>
+}
 
 export type ContactInfo = {
-  __typename?: 'ContactInfo';
-  name: Scalars['String'];
-  email?: Maybe<Scalars['String']>;
-  phone?: Maybe<Scalars['String']>;
-  signal?: Maybe<Scalars['String']>;
-  whatsApp?: Maybe<Scalars['String']>;
-};
+  __typename?: 'ContactInfo'
+  name: Scalars['String']
+  email?: Maybe<Scalars['String']>
+  phone?: Maybe<Scalars['String']>
+  signal?: Maybe<Scalars['String']>
+  whatsApp?: Maybe<Scalars['String']>
+}
 
 export type LocationInput = {
-  countryCode?: Maybe<Scalars['String']>;
-  townCity: Scalars['String'];
-  openLocationCode?: Maybe<Scalars['String']>;
-};
+  countryCode?: Maybe<Scalars['String']>
+  townCity: Scalars['String']
+  openLocationCode?: Maybe<Scalars['String']>
+}
 
 export type ContactInfoInput = {
-  name: Scalars['String'];
-  email?: Maybe<Scalars['String']>;
-  phone?: Maybe<Scalars['String']>;
-  signal?: Maybe<Scalars['String']>;
-  whatsApp?: Maybe<Scalars['String']>;
-};
+  name: Scalars['String']
+  email?: Maybe<Scalars['String']>
+  phone?: Maybe<Scalars['String']>
+  signal?: Maybe<Scalars['String']>
+  whatsApp?: Maybe<Scalars['String']>
+}
 
 export type Group = {
-  __typename?: 'Group';
-  id: Scalars['Int'];
-  name: Scalars['String'];
-  groupType: GroupType;
-  primaryLocation: Location;
-  primaryContact: ContactInfo;
-  website?: Maybe<Scalars['String']>;
-  createdAt: Scalars['Date'];
-  updatedAt: Scalars['Date'];
-};
+  __typename?: 'Group'
+  id: Scalars['Int']
+  name: Scalars['String']
+  groupType: GroupType
+  primaryLocation: Location
+  primaryContact: ContactInfo
+  website?: Maybe<Scalars['String']>
+  createdAt: Scalars['Date']
+  updatedAt: Scalars['Date']
+}
 
 export type GroupInput = {
-  name: Scalars['String'];
-  groupType: GroupType;
-  primaryLocation: LocationInput;
-  primaryContact: ContactInfoInput;
-  website?: Maybe<Scalars['String']>;
-};
+  name: Scalars['String']
+  groupType: GroupType
+  primaryLocation: LocationInput
+  primaryContact: ContactInfoInput
+  website?: Maybe<Scalars['String']>
+}
 
 export type Query = {
-  __typename?: 'Query';
-  listGroups: Array<Group>;
-  listShipments: Array<Shipment>;
-};
+  __typename?: 'Query'
+  listGroups: Array<Group>
+  listShipments: Array<Shipment>
+  group: Group
+}
+
+export type QueryGroupArgs = {
+  id: Scalars['Int']
+}
 
 export type Mutation = {
-  __typename?: 'Mutation';
-  addGroup: Group;
-  addShipment: Shipment;
-};
-
+  __typename?: 'Mutation'
+  addGroup: Group
+  addShipment: Shipment
+}
 
 export type MutationAddGroupArgs = {
-  input: GroupInput;
-};
-
+  input: GroupInput
+}
 
 export type MutationAddShipmentArgs = {
-  input: ShipmentInput;
-};
+  input: ShipmentInput
+}
 
 export type ShipmentInput = {
-  shippingRoute: ShippingRoute;
-  labelYear: Scalars['Int'];
-  labelMonth: Scalars['Int'];
-  sendingHubId: Scalars['Int'];
-  receivingHubId: Scalars['Int'];
-  status: ShipmentStatus;
-};
+  shippingRoute: ShippingRoute
+  labelYear: Scalars['Int']
+  labelMonth: Scalars['Int']
+  sendingHubId: Scalars['Int']
+  receivingHubId: Scalars['Int']
+  status: ShipmentStatus
+}
 
 export enum ShippingRoute {
-  Uk = 'UK'
+  Uk = 'UK',
 }
 
 export enum ShipmentStatus {
@@ -110,28 +116,28 @@ export enum ShipmentStatus {
   Staging = 'STAGING',
   InProgress = 'IN_PROGRESS',
   Complete = 'COMPLETE',
-  Abandoned = 'ABANDONED'
+  Abandoned = 'ABANDONED',
 }
 
 export type Shipment = {
-  __typename?: 'Shipment';
-  id: Scalars['Int'];
-  shippingRoute: ShippingRoute;
-  labelYear: Scalars['Int'];
-  labelMonth: Scalars['Int'];
-  offerSubmissionDeadline?: Maybe<Scalars['Date']>;
-  status: ShipmentStatus;
-  sendingHubId: Scalars['Int'];
-  sendingHub: Group;
-  receivingHubId: Scalars['Int'];
-  receivingHub: Group;
-  statusChangeTime: Scalars['Date'];
-  createdAt: Scalars['Date'];
-  updatedAt: Scalars['Date'];
-};
+  __typename?: 'Shipment'
+  id: Scalars['Int']
+  shippingRoute: ShippingRoute
+  labelYear: Scalars['Int']
+  labelMonth: Scalars['Int']
+  offerSubmissionDeadline?: Maybe<Scalars['Date']>
+  status: ShipmentStatus
+  sendingHubId: Scalars['Int']
+  sendingHub: Group
+  receivingHubId: Scalars['Int']
+  receivingHub: Group
+  statusChangeTime: Scalars['Date']
+  createdAt: Scalars['Date']
+  updatedAt: Scalars['Date']
+}
 
 export enum GroupType {
   DaHub = 'DA_HUB',
   ReceivingGroup = 'RECEIVING_GROUP',
-  SendingGroup = 'SENDING_GROUP'
+  SendingGroup = 'SENDING_GROUP',
 }

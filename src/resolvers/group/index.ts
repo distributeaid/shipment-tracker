@@ -1,4 +1,4 @@
-import { UserInputError } from 'apollo-server'
+import { ApolloError, UserInputError } from 'apollo-server'
 
 import {
   QueryResolvers,
@@ -15,6 +15,14 @@ const listGroups: QueryResolvers['listGroups'] = async () => {
   return groupRepository.findAll()
 }
 
+const group: QueryResolvers['group'] = async (_, { id }) => {
+  const group = await groupRepository.findByPk(id)
+  if (!group) {
+    throw new ApolloError('No group exists with that ID')
+  }
+
+  return group
+}
 // Group mutation resolvers
 const addGroup: MutationResolvers['addGroup'] = async (
   _parent,
@@ -45,4 +53,4 @@ const addGroup: MutationResolvers['addGroup'] = async (
 
 // Group custom resolvers
 
-export { listGroups, addGroup }
+export { addGroup, group, listGroups }
