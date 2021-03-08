@@ -6,7 +6,6 @@ import { sequelize } from '../sequelize'
 import Group from '../models/group'
 import { createGroup } from './helpers'
 import { GroupType } from '../server-internal-types'
-import { group } from '../resolvers/group'
 
 describe('Groups API', () => {
   let testServer: ApolloServerTestClient
@@ -20,12 +19,12 @@ describe('Groups API', () => {
   }
 
   beforeEach(async () => {
-    testServer = makeTestServer()
-
-    await sequelize.sync({ force: true })
     await sequelize
       .getRepository(Group)
       .truncate({ cascade: true, force: true })
+    await sequelize.sync({ force: true })
+
+    testServer = await makeTestServer()
   })
 
   describe('addGroup', () => {

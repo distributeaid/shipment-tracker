@@ -20,9 +20,6 @@ describe('Shipments API', () => {
     group2: Group
 
   beforeEach(async () => {
-    testServer = makeTestServer()
-    adminTestServer = makeAdminTestServer()
-
     await sequelize.sync({ force: true })
     await sequelize
       .getRepository(Group)
@@ -31,21 +28,24 @@ describe('Shipments API', () => {
       .getRepository(Shipment)
       .truncate({ cascade: true, force: true })
 
+    testServer = await makeTestServer()
+    adminTestServer = await makeAdminTestServer()
+
     group1 = await createGroup({
-        name: 'group 1',
-        groupType: GroupType.DaHub,
-        primaryLocation: { countryCode: "UK", townCity: "Bristol" },
-        primaryContact:  { name: "Contact", email: "contact@example.com" }
-      })
+      name: 'group 1',
+      groupType: GroupType.DaHub,
+      primaryLocation: { countryCode: 'UK', townCity: 'Bristol' },
+      primaryContact: { name: 'Contact', email: 'contact@example.com' },
+    })
     group2 = await createGroup({
-        name: 'group 2',
-        groupType: GroupType.ReceivingGroup,
-        primaryLocation: { countryCode: "FR", townCity: "Bordeaux" },
-        primaryContact:  {
-          name: "Second Contact",
-          email: "2ndcontact@example.com"
-        }
-      })
+      name: 'group 2',
+      groupType: GroupType.ReceivingGroup,
+      primaryLocation: { countryCode: 'FR', townCity: 'Bordeaux' },
+      primaryContact: {
+        name: 'Second Contact',
+        email: '2ndcontact@example.com',
+      },
+    })
   })
 
   describe('addShipment', () => {
@@ -122,7 +122,6 @@ describe('Shipments API', () => {
 
   describe('listShipments', () => {
     it('lists existing shipments', async () => {
-
       const shipment1 = await createShipment({
         shippingRoute: ShippingRoute.Uk,
         labelYear: 2020,

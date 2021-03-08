@@ -141,3 +141,9 @@ export enum GroupType {
   ReceivingGroup = 'RECEIVING_GROUP',
   SendingGroup = 'SENDING_GROUP',
 }
+
+export type UserProfile = {
+  __typename?: 'UserProfile'
+  id: Scalars['Int']
+  isAdmin: Scalars['Boolean']
+}
