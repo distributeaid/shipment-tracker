@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize-typescript'
+import { Sequelize, SequelizeOptions } from 'sequelize-typescript'
 
 // DB_ENV is used soley to set the database config to "ci" for running
 // tests on CI. This is because DB connection config is different between
@@ -6,12 +6,30 @@ import { Sequelize } from 'sequelize-typescript'
 const env = process.env.DB_ENV || process.env.NODE_ENV || 'development'
 const config = require(__dirname + '/../db/config.json')[env]
 
-export const sequelize = new Sequelize({
+export let sequelize: Sequelize
+
+const COMMON_CONFIG: Partial<SequelizeOptions> = {
   repositoryMode: true,
-  database: config.database,
-  username: config.username,
-  password: config.password,
-  dialect: config.dialect,
-  logging: process.env.NODE_ENV?.toUpperCase() !== 'TEST' && console.log,
   models: [__dirname + '/models'],
-})
+  dialect: 'postgres',
+  protocol: 'postgres',
+}
+
+if (env === 'production') {
+  if (process.env.DATABASE_URL == null) {
+    throw new Error('DATABASE_URL is null!')
+  }
+
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    ...COMMON_CONFIG,
+    dialectOptions: config.dialectOptions,
+  })
+} else {
+  sequelize = new Sequelize({
+    ...COMMON_CONFIG,
+    database: config.database,
+    username: config.username,
+    password: config.password,
+    logging: process.env.NODE_ENV?.toUpperCase() !== 'TEST' && console.log,
+  })
+}
