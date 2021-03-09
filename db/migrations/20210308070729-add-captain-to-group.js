@@ -2,9 +2,6 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('Shipments', {})
-    await queryInterface.bulkDelete('Groups', {})
-
     await queryInterface.addColumn('Groups', 'captainId', {
       allowNull: false,
       type: Sequelize.INTEGER,
