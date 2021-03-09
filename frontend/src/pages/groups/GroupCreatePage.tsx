@@ -1,9 +1,9 @@
 import { FunctionComponent } from 'react'
-import { gql, useMutation } from '@apollo/client'
 import { useHistory } from 'react-router-dom'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { Group, GroupInput } from '../../types/api-types'
 import GroupForm from './GroupForm'
+import { gql, useMutation, useQuery } from '@apollo/client'
 
 const ADD_GROUP = gql`
   mutation Groups($input: GroupInput!) {
