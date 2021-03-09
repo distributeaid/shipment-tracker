@@ -1,8 +1,8 @@
 import { FunctionComponent } from 'react'
-import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { Group, GroupInput } from '../../types/api-types'
 import { gql, useMutation } from '@apollo/client'
 import { useHistory } from 'react-router-dom'
+import LayoutWithNav from '../../layouts/LayoutWithNav'
+import { Group, GroupInput } from '../../types/api-types'
 import GroupForm from './GroupForm'
 
 const ADD_GROUP = gql`
@@ -31,7 +31,7 @@ const GroupCreatePage: FunctionComponent = () => {
         }
       })
       .catch((error) => {
-        console.log(error)
+        console.error(error)
       })
   }
 

@@ -11,7 +11,7 @@ interface ExplicitProps {
   /**
    * Specify whether the icon is before or after the text
    */
-  placement?: 'before' | 'after'
+  placement: 'before' | 'after'
 }
 
 /**

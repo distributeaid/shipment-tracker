@@ -80,7 +80,9 @@ const SelectField: FunctionComponent<Props> = ({
       <Label htmlFor={fieldId} required={otherProps.required}>
         {label}
       </Label>
+
       {error && <InlineError>{error}</InlineError>}
+
       <SelectInput {...otherProps} hasError={!!error} id={fieldId}>
         {options.map((option) => (
           <option
