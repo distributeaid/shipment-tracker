@@ -1,9 +1,9 @@
 import { FunctionComponent, ReactNode, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { Group, GroupInput, GroupType } from '../../types/api-types'
-import TextField from '../../components/forms/TextField'
-import SelectField from '../../components/forms/SelectField'
 import Button from '../../components/Button'
+import SelectField from '../../components/forms/SelectField'
+import TextField from '../../components/forms/TextField'
+import { Group, GroupInput, GroupType } from '../../types/api-types'
 
 interface Props {
   /**

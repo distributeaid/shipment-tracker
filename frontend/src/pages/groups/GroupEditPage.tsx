@@ -1,5 +1,5 @@
-import { FunctionComponent } from 'react'
 import { gql, useQuery } from '@apollo/client'
+import { FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { Group, GroupInput } from '../../types/api-types'
