@@ -34,8 +34,6 @@ const GroupForm: FunctionComponent<Props> = (props) => {
   useEffect(
     function resetFormValues() {
       if (props.defaultValues) {
-        console.log(props.defaultValues)
-
         // Update the values of the fields
         reset(props.defaultValues)
       }
