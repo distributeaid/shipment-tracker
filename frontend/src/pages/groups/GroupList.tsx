@@ -5,6 +5,7 @@ import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { formatGroupType } from '../../utils/format'
 import { gql, useQuery } from '@apollo/client'
 import { Group } from '../../types/api-types'
+import { Link } from 'react-router-dom'
 
 const GROUPS_QUERY = gql`
   query GetAllGroups {
@@ -57,6 +58,7 @@ const GroupList: FunctionComponent = () => {
           location: `${group.primaryLocation.townCity} (${group.primaryLocation.countryCode})`,
           groupType: formatGroupType(group.groupType),
           contact: group.primaryContact.name,
+          id: group.id,
         }))
       }
       return []
@@ -75,8 +77,14 @@ const GroupList: FunctionComponent = () => {
   return (
     <LayoutWithNav>
       <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
-        <header className="p-6 border-b border-gray-200">
+        <header className="p-6 border-b border-gray-200 flex items-center justify-between">
           <h1 className="text-da-navy-100 text-3xl">Groups</h1>
+          <Link
+            className="border rounded border-da-navy-100 text-da-navy-100 px-2 py-1"
+            to="/group/new"
+          >
+            Create a group
+          </Link>
         </header>
         <main>
           <table className="w-full" {...getTableProps()}>
@@ -120,11 +128,18 @@ const GroupList: FunctionComponent = () => {
                       <td
                         {...cell.getCellProps()}
                         className={cx('p-2 first:pl-6 last:pr-6', {
-                          'font-semibold': cell.column.Header === 'Name',
+                          'font-semibold text-da-navy-100':
+                            cell.column.Header === 'Name',
                           'bg-gray-50': cell.column.isSorted,
                         })}
                       >
-                        {cell.render('Cell')}
+                        {cell.column.Header === 'Name' ? (
+                          <Link to={`/group/${row.original.id}`}>
+                            {cell.render('Cell')}
+                          </Link>
+                        ) : (
+                          cell.render('Cell')
+                        )}
                       </td>
                     ))}
                   </tr>
