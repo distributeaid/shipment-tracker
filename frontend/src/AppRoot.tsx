@@ -12,7 +12,7 @@ import LoadingPage from './pages/LoadingPage'
 import NotFoundPage from './pages/NotFoundPage'
 import AdminPage from './pages/AdminPage'
 import GroupCreatePage from './pages/groups/GroupCreatePage'
-import GroupPage from './pages/groups/GroupPage'
+import GroupEditPage from './pages/groups/GroupEditPage'
 
 const fetchProfile = (token: string) => {
   return fetch('/profile', {
@@ -71,7 +71,7 @@ const AppRoot = () => {
             isAuthenticated={isAuthenticated}
             path="/group/:groupId"
           >
-            <GroupPage />
+            <GroupEditPage />
           </PrivateRoute>
           <PrivateRoute isAuthenticated={isAuthenticated} path="*">
             <NotFoundPage />

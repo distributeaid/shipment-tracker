@@ -77,7 +77,9 @@ const SelectField: FunctionComponent<Props> = ({
 
   return (
     <div className="w-full">
-      <Label htmlFor={fieldId}>{label}</Label>
+      <Label htmlFor={fieldId} required={otherProps.required}>
+        {label}
+      </Label>
       {error && <InlineError>{error}</InlineError>}
       <SelectInput {...otherProps} hasError={!!error} id={fieldId}>
         {options.map((option) => (

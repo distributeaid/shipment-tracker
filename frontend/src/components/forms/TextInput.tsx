@@ -32,6 +32,7 @@ const TextInput: FunctionComponent<Props> = ({
       'cursor-not-allowed': disabled,
     },
   )
+
   return (
     <input
       {...otherProps}
