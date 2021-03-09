@@ -7,6 +7,8 @@ import {
 } from '../../server-internal-types'
 import { sequelize } from '../../sequelize'
 import Group from '../../models/group'
+import { AuthenticatedContext, Context } from '../../apolloServer'
+import UserAccount from '../../models/user_account'
 
 const groupRepository = sequelize.getRepository(Group)
 
@@ -27,7 +29,7 @@ const group: QueryResolvers['group'] = async (_, { id }) => {
 const addGroup: MutationResolvers['addGroup'] = async (
   _parent,
   { input },
-  _context,
+  context: AuthenticatedContext,
 ) => {
   if (
     !input.name ||
@@ -48,6 +50,7 @@ const addGroup: MutationResolvers['addGroup'] = async (
     primaryLocation: input.primaryLocation,
     primaryContact: input.primaryContact,
     website: input.website,
+    captainId: context.auth.userAccount.id,
   })
 }
 

@@ -6,8 +6,11 @@ import {
   CreatedAt,
   UpdatedAt,
   DataType,
+  ForeignKey,
+  BelongsTo,
 } from 'sequelize-typescript'
 import { GroupType, Location, ContactInfo } from '../server-internal-types'
+import UserAccount from './user_account'
 
 export interface GroupAttributes {
   id: number
@@ -16,6 +19,7 @@ export interface GroupAttributes {
   primaryLocation: Location
   primaryContact: ContactInfo
   website?: string | null
+  captainId: number
 }
 
 export interface GroupCreationAttributes
@@ -44,6 +48,13 @@ export default class Group extends Model<
 
   @Column
   public website?: string
+
+  @ForeignKey(() => UserAccount)
+  @Column
+  public captainId!: number
+
+  @BelongsTo(() => UserAccount, 'captainId')
+  public captain!: UserAccount
 
   @CreatedAt
   @Column

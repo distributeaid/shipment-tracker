@@ -1,7 +1,24 @@
 'use strict'
 
+const { captureRejectionSymbol } = require('ws')
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkInsert('UserAccounts', [
+      {
+        auth0Id: 'seeded-account-id',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ])
+
+    const [{ id: captainId }] = await queryInterface.sequelize.query(
+      'SELECT id FROM "UserAccounts" LIMIT 1',
+      {
+        type: queryInterface.sequelize.QueryTypes.SELECT,
+      },
+    )
+
     await queryInterface.bulkInsert(
       'Groups',
       [
@@ -17,6 +34,7 @@ module.exports = {
           primaryContact: JSON.stringify({
             name: 'Myriam McLaughlin',
           }),
+          captainId,
         },
         {
           name: 'Brighton',
@@ -30,6 +48,7 @@ module.exports = {
           primaryContact: JSON.stringify({
             name: 'Meaghan Crist',
           }),
+          captainId,
         },
         {
           name: 'Calais',
@@ -43,6 +62,7 @@ module.exports = {
           primaryContact: JSON.stringify({
             name: 'Jacinthe Donnelly',
           }),
+          captainId,
         },
       ],
       {},

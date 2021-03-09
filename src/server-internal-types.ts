@@ -145,6 +145,12 @@ export enum GroupType {
   SendingGroup = 'SENDING_GROUP',
 }
 
+export type UserProfile = {
+  __typename?: 'UserProfile'
+  id: Scalars['Int']
+  isAdmin: Scalars['Boolean']
+}
+
 export type WithIndex<TObject> = TObject & Record<string, any>
 export type ResolversObject<TObject> = WithIndex<TObject>
 
@@ -280,6 +286,7 @@ export type ResolversTypes = ResolversObject<{
   ShipmentStatus: ShipmentStatus
   Shipment: ResolverTypeWrapper<Shipment>
   GroupType: GroupType
+  UserProfile: ResolverTypeWrapper<UserProfile>
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>
 }>
 
@@ -298,6 +305,7 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {}
   ShipmentInput: ShipmentInput
   Shipment: Shipment
+  UserProfile: UserProfile
   Boolean: Scalars['Boolean']
 }>
 
@@ -423,6 +431,15 @@ export type ShipmentResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
+export type UserProfileResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['UserProfile'] = ResolversParentTypes['UserProfile']
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
 export type Resolvers<ContextType = any> = ResolversObject<{
   Date?: GraphQLScalarType
   Location?: LocationResolvers<ContextType>
@@ -431,6 +448,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Query?: QueryResolvers<ContextType>
   Mutation?: MutationResolvers<ContextType>
   Shipment?: ShipmentResolvers<ContextType>
+  UserProfile?: UserProfileResolvers<ContextType>
 }>
 
 /**

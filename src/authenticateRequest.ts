@@ -102,6 +102,12 @@ export type Auth = {
   isAdmin: boolean
 }
 
+export type AuthenticatedAuth = {
+  claims: AuthClaims
+  userAccount: UserAccount
+  isAdmin: boolean
+}
+
 const fakeAccount = userAccountRepository.build({ auth0Id: '' })
 const fakeClaims = {
   roles: [],
