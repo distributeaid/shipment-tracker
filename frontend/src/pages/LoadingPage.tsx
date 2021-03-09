@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react'
-import TopNavigation from '../components/TopNavigation'
 import Spinner from '../components/Spinner'
+import TopNavigation from '../components/TopNavigation'
 
 const LoadingPage: FunctionComponent = () => {
   return (

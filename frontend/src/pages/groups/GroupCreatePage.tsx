@@ -1,5 +1,5 @@
-import { FunctionComponent } from 'react'
 import { gql, useMutation } from '@apollo/client'
+import { FunctionComponent } from 'react'
 import { useHistory } from 'react-router-dom'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { Group, GroupInput } from '../../types/api-types'

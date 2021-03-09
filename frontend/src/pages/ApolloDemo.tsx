@@ -1,6 +1,5 @@
-import { useQuery, gql } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { useEffect } from 'react'
-
 import LayoutWithNav from '../layouts/LayoutWithNav'
 
 /**

@@ -1,11 +1,11 @@
-import { FunctionComponent, useMemo } from 'react'
-import { useSortBy, useTable } from 'react-table'
-import cx from 'classnames'
-import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { formatGroupType } from '../../utils/format'
 import { gql, useQuery } from '@apollo/client'
-import { Group } from '../../types/api-types'
+import cx from 'classnames'
+import { FunctionComponent, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { useSortBy, useTable } from 'react-table'
+import LayoutWithNav from '../../layouts/LayoutWithNav'
+import { Group } from '../../types/api-types'
+import { formatGroupType } from '../../utils/format'
 
 const GROUPS_QUERY = gql`
   query GetAllGroups {
