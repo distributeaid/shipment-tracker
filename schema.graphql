@@ -57,6 +57,7 @@ type Query {
 type Mutation {
   addGroup(input: GroupInput!): Group!
   addShipment(input: ShipmentInput!): Shipment!
+  addOffer(input: OfferCreateInput!): Offer!
 }
 
 input ShipmentInput {
@@ -110,4 +111,35 @@ enum GroupType {
 type UserProfile {
   id: Int!
   isAdmin: Boolean!
+}
+
+enum OfferStatus {
+  DRAFT
+  PROPOSED
+  BEING_REVIEWED
+  REJECTED
+  ACCEPTED
+}
+
+type Offer {
+  id: Int!
+  status: OfferStatus!
+  shipmentId: Int!
+  sendingGroupId: Int!
+
+  # if null contact is group default
+  contact: ContactInfo
+
+  photoUris: [String!]!
+
+  statusChangeTime: Date!
+  updatedAt: Date!
+  createdAt: Date!
+}
+
+input OfferCreateInput {
+  sendingGroupId: Int!
+  shipmentId: Int!
+  contact: ContactInfoInput
+  photoUris: [String!]
 }

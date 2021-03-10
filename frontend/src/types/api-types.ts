@@ -87,6 +87,7 @@ export type Mutation = {
   __typename?: 'Mutation'
   addGroup: Group
   addShipment: Shipment
+  addOffer: Offer
 }
 
 export type MutationAddGroupArgs = {
@@ -95,6 +96,10 @@ export type MutationAddGroupArgs = {
 
 export type MutationAddShipmentArgs = {
   input: ShipmentInput
+}
+
+export type MutationAddOfferArgs = {
+  input: OfferCreateInput
 }
 
 export type ShipmentInput = {
@@ -146,4 +151,32 @@ export type UserProfile = {
   __typename?: 'UserProfile'
   id: Scalars['Int']
   isAdmin: Scalars['Boolean']
+}
+
+export enum OfferStatus {
+  Draft = 'DRAFT',
+  Proposed = 'PROPOSED',
+  BeingReviewed = 'BEING_REVIEWED',
+  Rejected = 'REJECTED',
+  Accepted = 'ACCEPTED',
+}
+
+export type Offer = {
+  __typename?: 'Offer'
+  id: Scalars['Int']
+  status: OfferStatus
+  shipmentId: Scalars['Int']
+  sendingGroupId: Scalars['Int']
+  contact?: Maybe<ContactInfo>
+  photoUris: Array<Scalars['String']>
+  statusChangeTime: Scalars['Date']
+  updatedAt: Scalars['Date']
+  createdAt: Scalars['Date']
+}
+
+export type OfferCreateInput = {
+  sendingGroupId: Scalars['Int']
+  shipmentId: Scalars['Int']
+  contact?: Maybe<ContactInfoInput>
+  photoUris?: Maybe<Array<Scalars['String']>>
 }

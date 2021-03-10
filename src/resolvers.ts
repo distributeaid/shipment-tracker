@@ -10,6 +10,8 @@ import {
   sendingHub,
 } from './resolvers/shipment'
 
+import { addOffer } from './resolvers/offer'
+
 const resolvers: Resolvers = {
   // Third Party Resolvers
   Date: DateResolver,
@@ -25,6 +27,7 @@ const resolvers: Resolvers = {
   Mutation: {
     addGroup,
     addShipment,
+    addOffer,
   },
 
   // Custom Resolvers

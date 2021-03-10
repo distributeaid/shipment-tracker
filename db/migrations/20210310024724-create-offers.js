@@ -20,10 +20,6 @@ module.exports = {
         allowNull: false,
         type: Sequelize.JSONB,
       },
-      statusChangedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
       shipmentId: {
         type: Sequelize.INTEGER,
         references: { model: 'Shipments', key: 'id' },
