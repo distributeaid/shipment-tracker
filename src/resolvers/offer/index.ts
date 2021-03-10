@@ -45,7 +45,7 @@ const addOffer: MutationResolvers['addOffer'] = async (
     throw new UserInputError(`Shipment ${input.shipmentId} does not exist`)
   }
 
-  if (shipment.status !== ShipmentStatus.Staging) {
+  if (shipment.status !== ShipmentStatus.Open) {
     throw new UserInputError(
       `Shipment ${input.shipmentId} is not accepting offers`,
     )
