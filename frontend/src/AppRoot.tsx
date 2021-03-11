@@ -12,6 +12,7 @@ import HomePage from './pages/Home'
 import LoadingPage from './pages/LoadingPage'
 import NotFoundPage from './pages/NotFoundPage'
 import PublicHomePage from './pages/PublicHome'
+import ShipmentList from './pages/shipments/ShipmentList'
 import ROUTES from './utils/routes'
 
 const fetchProfile = (token: string) => {
@@ -62,24 +63,27 @@ const AppRoot = () => {
           </Route>
           <PrivateRoute
             path={ROUTES.GROUP_LIST}
-            exact
             isAuthenticated={isAuthenticated}
           >
             <GroupList />
           </PrivateRoute>
           <PrivateRoute
             path={ROUTES.GROUP_CREATE}
-            exact
             isAuthenticated={isAuthenticated}
           >
             <GroupCreatePage />
           </PrivateRoute>
           <PrivateRoute
             path={ROUTES.GROUP_EDIT}
-            exact
             isAuthenticated={isAuthenticated}
           >
             <GroupEditPage />
+          </PrivateRoute>
+          <PrivateRoute
+            path={ROUTES.SHIPMENT_LIST}
+            isAuthenticated={isAuthenticated}
+          >
+            <ShipmentList />
           </PrivateRoute>
           <PrivateRoute isAuthenticated={isAuthenticated} path="*">
             <NotFoundPage />
