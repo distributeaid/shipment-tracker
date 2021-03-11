@@ -91,6 +91,7 @@ export type Mutation = {
   addGroup: Group
   addShipment: Shipment
   addOffer: Offer
+  updateOffer: Offer
 }
 
 export type MutationAddGroupArgs = {
@@ -103,6 +104,10 @@ export type MutationAddShipmentArgs = {
 
 export type MutationAddOfferArgs = {
   input: OfferCreateInput
+}
+
+export type MutationUpdateOfferArgs = {
+  input: OfferUpdateInput
 }
 
 export type ShipmentInput = {
@@ -180,6 +185,13 @@ export type Offer = {
 export type OfferCreateInput = {
   sendingGroupId: Scalars['Int']
   shipmentId: Scalars['Int']
+  contact?: Maybe<ContactInfoInput>
+  photoUris?: Maybe<Array<Scalars['String']>>
+}
+
+export type OfferUpdateInput = {
+  id: Scalars['Int']
+  status?: Maybe<OfferStatus>
   contact?: Maybe<ContactInfoInput>
   photoUris?: Maybe<Array<Scalars['String']>>
 }
@@ -324,6 +336,7 @@ export type ResolversTypes = ResolversObject<{
   OfferStatus: OfferStatus
   Offer: ResolverTypeWrapper<Offer>
   OfferCreateInput: OfferCreateInput
+  OfferUpdateInput: OfferUpdateInput
 }>
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -345,6 +358,7 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']
   Offer: Offer
   OfferCreateInput: OfferCreateInput
+  OfferUpdateInput: OfferUpdateInput
 }>
 
 export interface DateScalarConfig
@@ -444,6 +458,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationAddOfferArgs, 'input'>
+  >
+  updateOffer?: Resolver<
+    ResolversTypes['Offer'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateOfferArgs, 'input'>
   >
 }>
 

@@ -58,6 +58,7 @@ type Mutation {
   addGroup(input: GroupInput!): Group!
   addShipment(input: ShipmentInput!): Shipment!
   addOffer(input: OfferCreateInput!): Offer!
+  updateOffer(input: OfferUpdateInput!): Offer!
 }
 
 input ShipmentInput {
@@ -140,6 +141,13 @@ type Offer {
 input OfferCreateInput {
   sendingGroupId: Int!
   shipmentId: Int!
+  contact: ContactInfoInput
+  photoUris: [String!]
+}
+
+input OfferUpdateInput {
+  id: Int!
+  status: OfferStatus
   contact: ContactInfoInput
   photoUris: [String!]
 }

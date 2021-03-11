@@ -8,6 +8,7 @@ import {
   GroupType,
   OfferCreateInput,
   OfferStatus,
+  OfferUpdateInput,
   ShipmentStatus,
   ShippingRoute,
 } from '../server-internal-types'
@@ -16,6 +17,7 @@ import { createGroup, createShipment } from './helpers'
 import UserAccount from '../models/user_account'
 import { fakeUserAuth } from '../authenticateRequest'
 
+const offerRepository = sequelize.getRepository(Offer)
 const shipmentRepository = sequelize.getRepository(Shipment)
 const userAccountRepository = sequelize.getRepository(UserAccount)
 
@@ -250,6 +252,58 @@ describe('Offers API', () => {
       expect(res.errors?.[0].message).toContain(
         `Shipment ${shipment.id} already has offer from group ${captainsGroup.id}`,
       )
+    })
+  })
+
+  describe('updateOffer', () => {
+    let offer: Offer
+
+    const UPDATE_OFFER = gql`
+      mutation($input: OfferUpdateInput!) {
+        updateOffer(input: $input) {
+          id
+          status
+          contact {
+            name
+            email
+            signal
+          }
+          photoUris
+          shipmentId
+          sendingGroupId
+        }
+      }
+    `
+
+    beforeEach(async () => {
+      offer = await offerRepository.create({
+        status: OfferStatus.Draft,
+        statusChangeTime: new Date(),
+        photoUris: [],
+        shipmentId: shipment.id,
+        sendingGroupId: captainsGroup.id,
+      })
+    })
+
+    it.only('updates the provided attributes', async () => {
+      const res = await captainTestServer.mutate<
+        { updateOffer: Offer },
+        { input: OfferUpdateInput }
+      >({
+        mutation: UPDATE_OFFER,
+        variables: {
+          input: {
+            id: offer.id,
+            status: OfferStatus.Proposed,
+          },
+        },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res?.data?.updateOffer?.id).toBeNumber()
+      expect(res?.data?.updateOffer?.status).toEqual(OfferStatus.Proposed)
+      expect(res?.data?.updateOffer?.shipmentId).toEqual(shipment.id)
+      expect(res?.data?.updateOffer?.sendingGroupId).toEqual(captainsGroup.id)
     })
   })
 })

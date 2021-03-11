@@ -30,10 +30,7 @@ export interface OfferCreationAttributes
 @Table({
   timestamps: true,
 })
-export default class Offer extends Model<
-  OfferAttributes,
-  OfferCreationAttributes
-> {
+export default class Offer extends Model {
   public id!: number
 
   @Column(DataType.STRING)
@@ -52,6 +49,9 @@ export default class Offer extends Model<
   @ForeignKey(() => Group)
   @Column
   public sendingGroupId!: number
+
+  @BelongsTo(() => Group, 'sendingGroupId')
+  public sendingGroup!: Group
 
   @Column
   public statusChangeTime!: Date

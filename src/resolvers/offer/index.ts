@@ -1,7 +1,8 @@
-import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
+import { ForbiddenError, UserInputError } from 'apollo-server'
+import { omit } from 'lodash'
 import { AuthenticatedContext } from '../../apolloServer'
 import Group from '../../models/group'
-import Offer from '../../models/offer'
+import Offer, { OfferAttributes } from '../../models/offer'
 import Shipment from '../../models/shipment'
 import { sequelize } from '../../sequelize'
 import {
@@ -67,4 +68,44 @@ const addOffer: MutationResolvers['addOffer'] = async (
   })
 }
 
-export { addOffer }
+const updateOffer: MutationResolvers['updateOffer'] = async (
+  _parent,
+  { input },
+  context: AuthenticatedContext,
+) => {
+  // TODO figure out a better way to convert attributes before merging
+  // @ts-ignore
+  const updateAttributes: Partial<OfferAttributes> = omit(input, 'id')
+
+  const offer = await offerRepository.findByPk(input.id)
+
+  if (!offer) {
+    throw new UserInputError(`Offer ${input.id} does not exist`)
+  }
+
+  // This sucks, there's apparently a bug making it very annoying to
+  // do eager loading of model associations when using sequelize-typescript
+  // in repository mode. See issue #76.
+  // TODO(#75): stop using sequelize repository mode
+  const group = await groupRepository.findByPk(offer.sendingGroupId)
+
+  if (
+    !context.auth.isAdmin &&
+    context.auth.userAccount.id !== group?.captainId
+  ) {
+    throw new ForbiddenError('Must be admin or group captain')
+  }
+
+  if (input.status != null) {
+    updateAttributes.statusChangeTime = new Date()
+  }
+
+  const [_n, updatedOffers] = await offerRepository.update(updateAttributes, {
+    where: { id: offer.id },
+    returning: true,
+  })
+
+  return updatedOffers[0]
+}
+
+export { addOffer, updateOffer }

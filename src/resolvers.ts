@@ -10,7 +10,7 @@ import {
   sendingHub,
 } from './resolvers/shipment'
 
-import { addOffer } from './resolvers/offer'
+import { addOffer, updateOffer } from './resolvers/offer'
 
 const resolvers: Resolvers = {
   // Third Party Resolvers
@@ -28,6 +28,7 @@ const resolvers: Resolvers = {
     addGroup,
     addShipment,
     addOffer,
+    updateOffer,
   },
 
   // Custom Resolvers
