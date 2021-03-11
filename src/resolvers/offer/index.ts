@@ -6,7 +6,6 @@ import Shipment from '../../models/shipment'
 import { sequelize } from '../../sequelize'
 import {
   MutationResolvers,
-  OfferResolvers,
   OfferStatus,
   ShipmentStatus,
 } from '../../server-internal-types'

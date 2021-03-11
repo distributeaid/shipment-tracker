@@ -14,8 +14,9 @@ import {
 import { makeTestServer } from '../testServer'
 import { createGroup, createShipment } from './helpers'
 import UserAccount from '../models/user_account'
-import { fakeAdminAuth, fakeUserAuth } from '../authenticateRequest'
+import { fakeUserAuth } from '../authenticateRequest'
 
+const shipmentRepository = sequelize.getRepository(Shipment)
 const userAccountRepository = sequelize.getRepository(UserAccount)
 
 describe('Offers API', () => {
@@ -121,6 +122,134 @@ describe('Offers API', () => {
       expect(res?.data?.addOffer?.photoUris).toContain('three')
       expect(res?.data?.addOffer?.shipmentId).toEqual(shipment.id)
       expect(res?.data?.addOffer?.sendingGroupId).toEqual(captainsGroup.id)
+    })
+
+    it('fails validation if missing required inputs', async () => {
+      let res = await captainTestServer.mutate({
+        mutation: ADD_OFFER,
+        variables: {
+          input: {
+            shipmentId: shipment.id,
+            contact: { name: 'Savannah', email: 'test@example.com' },
+            photoUris: ['one', 'two', 'three'],
+          },
+        },
+      })
+
+      expect(res.errors?.[0].message).toContain(
+        'Field "sendingGroupId" of required type "Int!" was not provided.',
+      )
+
+      res = await captainTestServer.mutate({
+        mutation: ADD_OFFER,
+        variables: {
+          input: {
+            sendingGroupId: captainsGroup.id,
+            contact: { name: 'Savannah', email: 'test@example.com' },
+            photoUris: ['one', 'two', 'three'],
+          },
+        },
+      })
+
+      expect(res.errors?.[0].message).toContain(
+        'Field "shipmentId" of required type "Int!" was not provided.',
+      )
+    })
+
+    it('does not allow non-captains to create offers', async () => {
+      const res = await otherUserTestServer.mutate<
+        { addOffer: Offer },
+        { input: OfferCreateInput }
+      >({
+        mutation: ADD_OFFER,
+        variables: {
+          input: {
+            sendingGroupId: captainsGroup.id,
+            shipmentId: shipment.id,
+            contact: { name: 'Savannah', email: 'test@example.com' },
+            photoUris: ['one', 'two', 'three'],
+          },
+        },
+      })
+
+      expect(res.errors?.[0].message).toContain(
+        'not permitted to create offer for group',
+      )
+    })
+
+    it('ensures the shipment exists', async () => {
+      const res = await captainTestServer.mutate<
+        { addOffer: Offer },
+        { input: OfferCreateInput }
+      >({
+        mutation: ADD_OFFER,
+        variables: {
+          input: {
+            sendingGroupId: captainsGroup.id,
+            shipmentId: shipment.id + 1,
+            contact: { name: 'Savannah', email: 'test@example.com' },
+            photoUris: ['one', 'two', 'three'],
+          },
+        },
+      })
+
+      expect(res.errors?.[0].message).toContain(
+        `Shipment ${shipment.id + 1} does not exist`,
+      )
+    })
+
+    it('ensures the shipment is open', async () => {
+      await shipmentRepository.update(
+        { status: ShipmentStatus.InProgress },
+        { where: { id: shipment.id } },
+      )
+
+      const res = await captainTestServer.mutate<
+        { addOffer: Offer },
+        { input: OfferCreateInput }
+      >({
+        mutation: ADD_OFFER,
+        variables: {
+          input: {
+            sendingGroupId: captainsGroup.id,
+            shipmentId: shipment.id,
+            contact: { name: 'Savannah', email: 'test@example.com' },
+            photoUris: ['one', 'two', 'three'],
+          },
+        },
+      })
+
+      expect(res.errors?.[0].message).toContain(
+        `Shipment ${shipment.id} is not accepting offers`,
+      )
+    })
+
+    it('does not allow multiple offers for the same sending group and shipment', async () => {
+      const doMutation = async () =>
+        await captainTestServer.mutate<
+          { addOffer: Offer },
+          { input: OfferCreateInput }
+        >({
+          mutation: ADD_OFFER,
+          variables: {
+            input: {
+              sendingGroupId: captainsGroup.id,
+              shipmentId: shipment.id,
+              contact: { name: 'Savannah', email: 'test@example.com' },
+              photoUris: ['one', 'two', 'three'],
+            },
+          },
+        })
+
+      let res = await doMutation()
+
+      expect(res.errors).toBeUndefined()
+
+      res = await doMutation()
+
+      expect(res.errors?.[0].message).toContain(
+        `Shipment ${shipment.id} already has offer from group ${captainsGroup.id}`,
+      )
     })
   })
 })
