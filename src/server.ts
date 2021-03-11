@@ -1,18 +1,17 @@
-import dotenv from 'dotenv'
-import express from 'express'
-import path from 'path'
-import { createServer } from 'http'
 import compression from 'compression'
 import cors from 'cors'
+import dotenv from 'dotenv'
+import express from 'express'
+import { createServer } from 'http'
+import path from 'path'
+import apolloServer from './apolloServer'
+import findOrCreateProfile from './findOrCreateProfile'
+import getAllFilesSync from './getAllFilesSync'
 
 // Load the env vars before initializing code that depends on them
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config()
 }
-
-import findOrCreateProfile from './findOrCreateProfile'
-import apolloServer from './apolloServer'
-import getAllFilesSync from './getAllFilesSync'
 
 const app = express()
 

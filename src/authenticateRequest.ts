@@ -4,13 +4,10 @@ import { Maybe } from 'graphql/jsutils/Maybe'
 import jwt, { GetPublicKeyOrSecret } from 'jsonwebtoken'
 import jwksClient from 'jwks-rsa'
 import { omit } from 'lodash'
-
 import UserAccount from './models/user_account'
 import { sequelize } from './sequelize'
 
 const userAccountRepository = sequelize.getRepository(UserAccount)
-
-const skipAuth = process.env.AUTH_MODE === 'SKIP'
 
 // These values are from the perspective of Auth0.
 // audience is the Shipment Tracker API, while issuer is the
@@ -134,7 +131,7 @@ export const fakeUserAuth: Auth = {
 }
 
 export const authenticateRequest = async (req: Request): Promise<Auth> => {
-  if (skipAuth) {
+  if (process.env.AUTH_MODE === 'SKIP') {
     return fakeAdminAuth
   }
 
