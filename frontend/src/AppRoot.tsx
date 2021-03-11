@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-
-import ApolloDemoPage from './pages/ApolloDemo'
-import HomePage from './pages/Home'
-import PublicHomePage from './pages/PublicHome'
-import GroupList from './pages/groups/GroupList'
-import PrivateRoute from './components/PrivateRoute'
+import React, { useEffect, useState } from 'react'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import ApolloAuthProvider from './components/ApolloAuthProvider'
-import LoadingPage from './pages/LoadingPage'
-import NotFoundPage from './pages/NotFoundPage'
+import PrivateRoute from './components/PrivateRoute'
 import AdminPage from './pages/AdminPage'
+import ApolloDemoPage from './pages/ApolloDemo'
 import GroupCreatePage from './pages/groups/GroupCreatePage'
 import GroupEditPage from './pages/groups/GroupEditPage'
+import GroupList from './pages/groups/GroupList'
+import HomePage from './pages/Home'
+import LoadingPage from './pages/LoadingPage'
+import NotFoundPage from './pages/NotFoundPage'
+import PublicHomePage from './pages/PublicHome'
+import ROUTES from './utils/routes'
 
 const fetchProfile = (token: string) => {
   return fetch('/profile', {
@@ -47,29 +47,37 @@ const AppRoot = () => {
               <LoadingPage />
             </Route>
           )}
-          <Route path="/" exact>
+          <Route path={ROUTES.HOME} exact>
             {isAuthenticated ? <HomePage /> : <PublicHomePage />}
           </Route>
-          <PrivateRoute path="/admin" isAuthenticated={isAuthenticated} exact>
+          <PrivateRoute
+            path={ROUTES.ADMIN_ROOT}
+            isAuthenticated={isAuthenticated}
+            exact
+          >
             <AdminPage />
           </PrivateRoute>
-          <Route path="/apollo-demo">
+          <Route path={ROUTES.APOLLO_DEMO}>
             <ApolloDemoPage />
           </Route>
-          <PrivateRoute exact isAuthenticated={isAuthenticated} path="/groups">
+          <PrivateRoute
+            path={ROUTES.GROUP_LIST}
+            exact
+            isAuthenticated={isAuthenticated}
+          >
             <GroupList />
           </PrivateRoute>
           <PrivateRoute
+            path={ROUTES.GROUP_CREATE}
             exact
             isAuthenticated={isAuthenticated}
-            path="/group/new"
           >
             <GroupCreatePage />
           </PrivateRoute>
           <PrivateRoute
+            path={ROUTES.GROUP_EDIT}
             exact
             isAuthenticated={isAuthenticated}
-            path="/group/:groupId"
           >
             <GroupEditPage />
           </PrivateRoute>
