@@ -1,5 +1,5 @@
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
-import { omit } from 'lodash'
+import { has } from 'lodash'
 import { AuthenticatedContext } from '../../apolloServer'
 import Group from '../../models/group'
 import Offer, { OfferAttributes } from '../../models/offer'
@@ -68,19 +68,15 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
   { input },
   context: AuthenticatedContext,
 ) => {
-  // TODO figure out a better way to convert attributes before merging
-  // @ts-ignore
-  const updateAttributes: Partial<OfferAttributes> = omit(input, 'id')
-
   const offer = await Offer.findByPk(input.id, {
     include: { association: 'sendingGroup' },
   })
 
-  const group = offer?.sendingGroup
-
   if (!offer) {
     throw new UserInputError(`Offer ${input.id} does not exist`)
   }
+
+  const group = offer?.sendingGroup
 
   if (!group) {
     throw new ApolloError(`Offer ${offer.id} has no group!`)
@@ -93,8 +89,19 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
     throw new ForbiddenError('Not permitted to update group')
   }
 
-  if (input.status != null) {
+  const updateAttributes: Partial<OfferAttributes> = {}
+
+  if (input.status) {
+    updateAttributes.status = input.status
     updateAttributes.statusChangeTime = new Date()
+  }
+
+  if (has(input, 'contact')) {
+    updateAttributes.contact = input.contact
+  }
+
+  if (has(input, 'photoUris')) {
+    updateAttributes.photoUris = input.photoUris || []
   }
 
   return offer.update(updateAttributes)
