@@ -5,6 +5,7 @@ const ROUTES = {
   GROUP_LIST: '/groups',
   GROUP_CREATE: '/group/new',
   GROUP_EDIT: '/group/:groupId',
+  SHIPMENT_LIST: '/shipments',
 }
 
 export default ROUTES

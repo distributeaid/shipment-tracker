@@ -1,59 +1,74 @@
 import { gql, useQuery } from '@apollo/client'
 import cx from 'classnames'
-import { FunctionComponent, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import React, { FunctionComponent, useMemo } from 'react'
 import { useSortBy, useTable } from 'react-table'
+import Badge from '../../components/Badge'
 import TableHeader from '../../components/table/TableHeader'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { Group } from '../../types/api-types'
-import { formatGroupType } from '../../utils/format'
+import { Shipment } from '../../types/api-types'
+import {
+  formatLabelMonth,
+  getShipmentStatusBadgeColor,
+} from '../../utils/format'
 
-const GROUPS_QUERY = gql`
-  query GetAllGroups {
-    listGroups {
+const SHIPMENTS_QUERY = gql`
+  query GetAllShipments {
+    listShipments {
       id
-      name
-      groupType
-      primaryContact {
+      shippingRoute
+      labelYear
+      labelMonth
+      offerSubmissionDeadline
+      status
+      sendingHub {
+        id
         name
       }
-      primaryLocation {
-        countryCode
-        townCity
+      receivingHub {
+        id
+        name
       }
+      statusChangeTime
     }
   }
 `
 
 const COLUMNS = [
   {
-    Header: 'Name',
-    accessor: 'name',
+    Header: 'ID',
+    accessor: 'id',
   },
   {
-    Header: 'Location',
-    accessor: (group: Group) =>
-      `${group.primaryLocation.townCity} (${group.primaryLocation.countryCode})`,
+    Header: 'Route',
+    accessor: 'shippingRoute',
   },
   {
-    Header: 'Type',
-    accessor: (group: Group) => formatGroupType(group.groupType),
+    Header: 'Sending hub',
+    accessor: 'sendingHub.name',
   },
   {
-    Header: 'Contact',
-    accessor: 'primaryContact.name',
-    disableSortBy: true,
+    Header: 'Receiving hub',
+    accessor: 'receivingHub.name',
+  },
+  {
+    Header: 'Date',
+    accessor: (row: Shipment) =>
+      `${formatLabelMonth(row.labelMonth)} ${row.labelYear}`,
+  },
+  {
+    Header: 'Status',
+    accessor: 'status',
+    Cell: ({ value }: any) => (
+      <Badge color={getShipmentStatusBadgeColor(value)}>{value}</Badge>
+    ),
   },
 ]
 
-/**
- * Display a list of all the groups in the database
- */
-const GroupList: FunctionComponent = () => {
-  const { data } = useQuery<{ listGroups: Group[] }>(GROUPS_QUERY)
+const ShipmentList: FunctionComponent = () => {
+  const { data } = useQuery<{ listShipments: Shipment[] }>(SHIPMENTS_QUERY)
 
   // We must memoize the data for react-table to function properly
-  const groups = useMemo(() => data?.listGroups || [], [data])
+  const shipments = useMemo(() => data?.listShipments || [], [data])
 
   const {
     getTableProps,
@@ -61,19 +76,13 @@ const GroupList: FunctionComponent = () => {
     headerGroups,
     rows,
     prepareRow,
-  } = useTable({ columns: COLUMNS as any, data: groups }, useSortBy)
+  } = useTable({ columns: COLUMNS as any, data: shipments }, useSortBy)
 
   return (
     <LayoutWithNav>
       <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
         <header className="p-6 border-b border-gray-200 flex items-center justify-between">
-          <h1 className="text-da-navy-100 text-3xl">Groups</h1>
-          <Link
-            className="border rounded border-da-navy-100 text-da-navy-100 px-2 py-1"
-            to="/group/new"
-          >
-            Create a group
-          </Link>
+          <h1 className="text-da-navy-100 text-3xl">Shipments</h1>
         </header>
         <main>
           <table className="w-full" {...getTableProps()}>
@@ -106,18 +115,10 @@ const GroupList: FunctionComponent = () => {
                       <td
                         {...cell.getCellProps()}
                         className={cx('p-2 first:pl-6 last:pr-6', {
-                          'font-semibold text-da-navy-100':
-                            cell.column.Header === 'Name',
                           'bg-gray-50': cell.column.isSorted,
                         })}
                       >
-                        {cell.column.Header === 'Name' ? (
-                          <Link to={`/group/${row.original.id}`}>
-                            {cell.render('Cell')}
-                          </Link>
-                        ) : (
-                          cell.render('Cell')
-                        )}
+                        {cell.render('Cell')}
                       </td>
                     ))}
                   </tr>
@@ -131,4 +132,4 @@ const GroupList: FunctionComponent = () => {
   )
 }
 
-export default GroupList
+export default ShipmentList
