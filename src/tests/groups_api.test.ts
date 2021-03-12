@@ -19,9 +19,7 @@ describe('Groups API', () => {
   }
 
   beforeEach(async () => {
-    await sequelize
-      .getRepository(Group)
-      .truncate({ cascade: true, force: true })
+    await Group.truncate({ cascade: true, force: true })
     await sequelize.sync({ force: true })
 
     testServer = await makeTestServer()

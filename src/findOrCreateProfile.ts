@@ -5,8 +5,6 @@ import UserAccount from './models/user_account'
 import { authenticateRequest } from './authenticateRequest'
 import { sequelize } from './sequelize'
 
-const userAccountRepository = sequelize.getRepository(UserAccount)
-
 const sendProfile = (
   response: Response,
   userAccount: UserAccount,
@@ -29,7 +27,7 @@ const findOrCreateProfile = async (request: Request, response: Response) => {
 
   console.info('creating account for profile', auth.claims.sub)
 
-  const userAccount = await userAccountRepository.create({
+  const userAccount = await UserAccount.create({
     auth0Id: auth.claims.sub,
   })
 

@@ -9,7 +9,6 @@ const config = require(__dirname + '/../db/config.json')[env]
 export let sequelize: Sequelize
 
 const COMMON_CONFIG: Partial<SequelizeOptions> = {
-  repositoryMode: true,
   models: [__dirname + '/models'],
   dialect: 'postgres',
   protocol: 'postgres',

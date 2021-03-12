@@ -1,16 +1,16 @@
 import { DateResolver } from 'graphql-scalars'
 
-import { Resolvers } from './server-internal-types'
-import { addGroup, group, listGroups } from './resolvers/group'
+import { Resolvers } from '../server-internal-types'
+import { addGroup, group, listGroups } from './group'
 
 import {
   addShipment,
   listShipments,
   receivingHub,
   sendingHub,
-} from './resolvers/shipment'
+} from './shipment'
 
-import { addOffer, updateOffer } from './resolvers/offer'
+import { addOffer, updateOffer } from './offer'
 
 const resolvers: Resolvers = {
   // Third Party Resolvers

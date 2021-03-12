@@ -1,19 +1,14 @@
-import { ForbiddenError, UserInputError } from 'apollo-server'
+import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { omit } from 'lodash'
 import { AuthenticatedContext } from '../../apolloServer'
 import Group from '../../models/group'
 import Offer, { OfferAttributes } from '../../models/offer'
 import Shipment from '../../models/shipment'
-import { sequelize } from '../../sequelize'
 import {
   MutationResolvers,
   OfferStatus,
   ShipmentStatus,
 } from '../../server-internal-types'
-
-const offerRepository = sequelize.getRepository(Offer)
-const groupRepository = sequelize.getRepository(Group)
-const shipmentRepository = sequelize.getRepository(Shipment)
 
 const addOffer: MutationResolvers['addOffer'] = async (
   _parent,
@@ -24,9 +19,9 @@ const addOffer: MutationResolvers['addOffer'] = async (
     throw new UserInputError('Offer arguments invalid')
   }
 
-  const sendingGroupPromise = groupRepository.findByPk(input.sendingGroupId)
-  const shipmentPromise = shipmentRepository.findByPk(input.shipmentId)
-  const existingOfferCountPromise = offerRepository.count({
+  const sendingGroupPromise = Group.findByPk(input.sendingGroupId)
+  const shipmentPromise = Shipment.findByPk(input.shipmentId)
+  const existingOfferCountPromise = Offer.count({
     where: {
       sendingGroupId: input.sendingGroupId,
       shipmentId: input.sendingGroupId,
@@ -58,7 +53,7 @@ const addOffer: MutationResolvers['addOffer'] = async (
     )
   }
 
-  return offerRepository.create({
+  return Offer.create({
     status: OfferStatus.Draft,
     statusChangeTime: new Date(),
     contact: input.contact,
@@ -77,21 +72,23 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
   // @ts-ignore
   const updateAttributes: Partial<OfferAttributes> = omit(input, 'id')
 
-  const offer = await offerRepository.findByPk(input.id)
+  const offer = await Offer.findByPk(input.id, {
+    include: { association: 'sendingGroup' },
+  })
+
+  const group = offer?.sendingGroup
 
   if (!offer) {
     throw new UserInputError(`Offer ${input.id} does not exist`)
   }
 
-  // This sucks, there's apparently a bug making it very annoying to
-  // do eager loading of model associations when using sequelize-typescript
-  // in repository mode. See issue #76.
-  // TODO(#75): stop using sequelize repository mode
-  const group = await groupRepository.findByPk(offer.sendingGroupId)
+  if (!group) {
+    throw new ApolloError(`Offer ${offer.id} has no group!`)
+  }
 
   if (
     !context.auth.isAdmin &&
-    context.auth.userAccount.id !== group?.captainId
+    context.auth.userAccount.id !== group.captainId
   ) {
     throw new ForbiddenError('Not permitted to update group')
   }
@@ -100,7 +97,7 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
     updateAttributes.statusChangeTime = new Date()
   }
 
-  const [_n, updatedOffers] = await offerRepository.update(updateAttributes, {
+  const [_n, updatedOffers] = await Offer.update(updateAttributes, {
     where: { id: offer.id },
     returning: true,
   })
