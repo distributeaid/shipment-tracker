@@ -35,7 +35,6 @@ const PUBLIC_DIR = path.join(__dirname, '../frontend/build')
 
 // Serve static assets for the frontend
 getAllFilesSync(PUBLIC_DIR).forEach((file: string) => {
-  console.log(file)
   app.get(file, (req, res) => {
     res.sendFile(path.join(PUBLIC_DIR, file))
   })
