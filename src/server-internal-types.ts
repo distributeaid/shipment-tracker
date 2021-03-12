@@ -90,6 +90,8 @@ export type Mutation = {
   __typename?: 'Mutation'
   addGroup: Group
   addShipment: Shipment
+  addOffer: Offer
+  updateOffer: Offer
 }
 
 export type MutationAddGroupArgs = {
@@ -98,6 +100,14 @@ export type MutationAddGroupArgs = {
 
 export type MutationAddShipmentArgs = {
   input: ShipmentInput
+}
+
+export type MutationAddOfferArgs = {
+  input: OfferCreateInput
+}
+
+export type MutationUpdateOfferArgs = {
+  input: OfferUpdateInput
 }
 
 export type ShipmentInput = {
@@ -149,6 +159,41 @@ export type UserProfile = {
   __typename?: 'UserProfile'
   id: Scalars['Int']
   isAdmin: Scalars['Boolean']
+}
+
+export enum OfferStatus {
+  Draft = 'DRAFT',
+  Proposed = 'PROPOSED',
+  BeingReviewed = 'BEING_REVIEWED',
+  Rejected = 'REJECTED',
+  Accepted = 'ACCEPTED',
+}
+
+export type Offer = {
+  __typename?: 'Offer'
+  id: Scalars['Int']
+  status: OfferStatus
+  shipmentId: Scalars['Int']
+  sendingGroupId: Scalars['Int']
+  contact?: Maybe<ContactInfo>
+  photoUris: Array<Scalars['String']>
+  statusChangeTime: Scalars['Date']
+  updatedAt: Scalars['Date']
+  createdAt: Scalars['Date']
+}
+
+export type OfferCreateInput = {
+  sendingGroupId: Scalars['Int']
+  shipmentId: Scalars['Int']
+  contact?: Maybe<ContactInfoInput>
+  photoUris?: Maybe<Array<Scalars['String']>>
+}
+
+export type OfferUpdateInput = {
+  id: Scalars['Int']
+  status?: Maybe<OfferStatus>
+  contact?: Maybe<ContactInfoInput>
+  photoUris?: Maybe<Array<Scalars['String']>>
 }
 
 export type WithIndex<TObject> = TObject & Record<string, any>
@@ -288,6 +333,10 @@ export type ResolversTypes = ResolversObject<{
   GroupType: GroupType
   UserProfile: ResolverTypeWrapper<UserProfile>
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>
+  OfferStatus: OfferStatus
+  Offer: ResolverTypeWrapper<Offer>
+  OfferCreateInput: OfferCreateInput
+  OfferUpdateInput: OfferUpdateInput
 }>
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -307,6 +356,9 @@ export type ResolversParentTypes = ResolversObject<{
   Shipment: Shipment
   UserProfile: UserProfile
   Boolean: Scalars['Boolean']
+  Offer: Offer
+  OfferCreateInput: OfferCreateInput
+  OfferUpdateInput: OfferUpdateInput
 }>
 
 export interface DateScalarConfig
@@ -401,6 +453,18 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationAddShipmentArgs, 'input'>
   >
+  addOffer?: Resolver<
+    ResolversTypes['Offer'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddOfferArgs, 'input'>
+  >
+  updateOffer?: Resolver<
+    ResolversTypes['Offer'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateOfferArgs, 'input'>
+  >
 }>
 
 export type ShipmentResolvers<
@@ -440,6 +504,26 @@ export type UserProfileResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
+export type OfferResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  status?: Resolver<ResolversTypes['OfferStatus'], ParentType, ContextType>
+  shipmentId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  sendingGroupId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  contact?: Resolver<
+    Maybe<ResolversTypes['ContactInfo']>,
+    ParentType,
+    ContextType
+  >
+  photoUris?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>
+  statusChangeTime?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
 export type Resolvers<ContextType = any> = ResolversObject<{
   Date?: GraphQLScalarType
   Location?: LocationResolvers<ContextType>
@@ -449,6 +533,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>
   Shipment?: ShipmentResolvers<ContextType>
   UserProfile?: UserProfileResolvers<ContextType>
+  Offer?: OfferResolvers<ContextType>
 }>
 
 /**
