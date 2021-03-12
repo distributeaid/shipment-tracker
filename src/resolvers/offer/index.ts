@@ -97,12 +97,7 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
     updateAttributes.statusChangeTime = new Date()
   }
 
-  const [_n, updatedOffers] = await Offer.update(updateAttributes, {
-    where: { id: offer.id },
-    returning: true,
-  })
-
-  return updatedOffers[0]
+  return offer.update(updateAttributes)
 }
 
 export { addOffer, updateOffer }
