@@ -5,20 +5,16 @@ import {
   MutationResolvers,
   GroupInput,
 } from '../../server-internal-types'
-import { sequelize } from '../../sequelize'
 import Group from '../../models/group'
-import { AuthenticatedContext, Context } from '../../apolloServer'
-import UserAccount from '../../models/user_account'
-
-const groupRepository = sequelize.getRepository(Group)
+import { AuthenticatedContext } from '../../apolloServer'
 
 // Group query resolvers
 const listGroups: QueryResolvers['listGroups'] = async () => {
-  return groupRepository.findAll()
+  return Group.findAll()
 }
 
 const group: QueryResolvers['group'] = async (_, { id }) => {
-  const group = await groupRepository.findByPk(id)
+  const group = await Group.findByPk(id)
   if (!group) {
     throw new ApolloError('No group exists with that ID')
   }
@@ -44,7 +40,7 @@ const addGroup: MutationResolvers['addGroup'] = async (
     })
   }
 
-  return groupRepository.create({
+  return Group.create({
     name: input.name,
     groupType: input.groupType,
     primaryLocation: input.primaryLocation,

@@ -5,9 +5,6 @@ import jwt, { GetPublicKeyOrSecret } from 'jsonwebtoken'
 import jwksClient from 'jwks-rsa'
 import { omit } from 'lodash'
 import UserAccount from './models/user_account'
-import { sequelize } from './sequelize'
-
-const userAccountRepository = sequelize.getRepository(UserAccount)
 
 // These values are from the perspective of Auth0.
 // audience is the Shipment Tracker API, while issuer is the
@@ -105,7 +102,7 @@ export type AuthenticatedAuth = {
   isAdmin: boolean
 }
 
-const fakeAccount = userAccountRepository.build({ auth0Id: '' })
+const fakeAccount = UserAccount.build({ auth0Id: '' })
 const fakeClaims = {
   roles: [],
   iss: '',
@@ -159,7 +156,7 @@ export const authenticateRequest = async (req: Request): Promise<Auth> => {
   }
 
   const rawClaims = authResult.decoded as RawAuthClaims
-  const userAccount = await userAccountRepository.findOne({
+  const userAccount = await UserAccount.findOne({
     where: { auth0Id: rawClaims.sub },
   })
 

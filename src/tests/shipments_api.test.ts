@@ -21,12 +21,8 @@ describe('Shipments API', () => {
 
   beforeEach(async () => {
     await sequelize.sync({ force: true })
-    await sequelize
-      .getRepository(Group)
-      .truncate({ cascade: true, force: true })
-    await sequelize
-      .getRepository(Shipment)
-      .truncate({ cascade: true, force: true })
+    await Group.truncate({ cascade: true, force: true })
+    await Shipment.truncate({ cascade: true, force: true })
 
     testServer = await makeTestServer()
     adminTestServer = await makeAdminTestServer()

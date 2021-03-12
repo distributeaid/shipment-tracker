@@ -3,16 +3,13 @@ import { createTestClient, ApolloServerTestClient } from 'apollo-server-testing'
 import { merge } from 'lodash'
 import { serverConfig } from './apolloServer'
 import { fakeUserAuth, fakeAdminAuth } from './authenticateRequest'
-import { sequelize } from './sequelize'
 import UserAccount from './models/user_account'
-
-const userAccountRepository = sequelize.getRepository(UserAccount)
 
 export const makeTestServer = async (
   overrides: Partial<ApolloServerExpressConfig> = {},
 ): Promise<ApolloServerTestClient> => {
   if (overrides.context == null) {
-    const userAccount = await userAccountRepository.create({
+    const userAccount = await UserAccount.create({
       auth0Id: 'user-auth0-id',
     })
 
@@ -27,7 +24,7 @@ export const makeTestServer = async (
 export const makeAdminTestServer = async (
   overrides: Partial<ApolloServerExpressConfig> = {},
 ) => {
-  const userAccount = await userAccountRepository.create({
+  const userAccount = await UserAccount.create({
     auth0Id: 'admin-auth0-id',
   })
 

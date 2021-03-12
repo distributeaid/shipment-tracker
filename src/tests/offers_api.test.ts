@@ -17,10 +17,6 @@ import { createGroup, createShipment } from './helpers'
 import UserAccount from '../models/user_account'
 import { fakeUserAuth } from '../authenticateRequest'
 
-const offerRepository = sequelize.getRepository(Offer)
-const shipmentRepository = sequelize.getRepository(Shipment)
-const userAccountRepository = sequelize.getRepository(UserAccount)
-
 describe('Offers API', () => {
   let captainTestServer: ApolloServerTestClient,
     otherUserTestServer: ApolloServerTestClient,
@@ -41,7 +37,7 @@ describe('Offers API', () => {
       .getRepository(Shipment)
       .truncate({ cascade: true, force: true })
 
-    captain = await userAccountRepository.create({
+    captain = await UserAccount.create({
       auth0Id: 'captain-id',
     })
 
@@ -201,7 +197,7 @@ describe('Offers API', () => {
     })
 
     it('ensures the shipment is open', async () => {
-      await shipmentRepository.update(
+      await Shipment.update(
         { status: ShipmentStatus.InProgress },
         { where: { id: shipment.id } },
       )
@@ -276,7 +272,7 @@ describe('Offers API', () => {
     `
 
     beforeEach(async () => {
-      offer = await offerRepository.create({
+      offer = await Offer.create({
         status: OfferStatus.Draft,
         statusChangeTime: new Date(),
         photoUris: [],
