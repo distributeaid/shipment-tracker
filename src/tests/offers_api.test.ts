@@ -285,7 +285,7 @@ describe('Offers API', () => {
       })
     })
 
-    it.only('updates the provided attributes', async () => {
+    it('updates the provided attributes', async () => {
       const res = await captainTestServer.mutate<
         { updateOffer: Offer },
         { input: OfferUpdateInput }
@@ -304,6 +304,23 @@ describe('Offers API', () => {
       expect(res?.data?.updateOffer?.status).toEqual(OfferStatus.Proposed)
       expect(res?.data?.updateOffer?.shipmentId).toEqual(shipment.id)
       expect(res?.data?.updateOffer?.sendingGroupId).toEqual(captainsGroup.id)
+    })
+
+    it('restricts access', async () => {
+      const res = await otherUserTestServer.mutate<
+        { updateOffer: Offer },
+        { input: OfferUpdateInput }
+      >({
+        mutation: UPDATE_OFFER,
+        variables: {
+          input: {
+            id: offer.id,
+            status: OfferStatus.Proposed,
+          },
+        },
+      })
+
+      expect(res.errors?.[0].message).toEqual('Not permitted to update group')
     })
   })
 })

@@ -93,7 +93,7 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
     !context.auth.isAdmin &&
     context.auth.userAccount.id !== group?.captainId
   ) {
-    throw new ForbiddenError('Must be admin or group captain')
+    throw new ForbiddenError('Not permitted to update group')
   }
 
   if (input.status != null) {
