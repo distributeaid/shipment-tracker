@@ -1,6 +1,5 @@
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { has } from 'lodash'
-import { AuthenticatedContext } from '../../apolloServer'
 import Group from '../../models/group'
 import Offer, { OfferAttributes } from '../../models/offer'
 import Shipment from '../../models/shipment'
@@ -13,7 +12,7 @@ import {
 const addOffer: MutationResolvers['addOffer'] = async (
   _parent,
   { input },
-  context: AuthenticatedContext,
+  context,
 ) => {
   if (!input.sendingGroupId || !input.shipmentId) {
     throw new UserInputError('Offer arguments invalid')
@@ -66,7 +65,7 @@ const addOffer: MutationResolvers['addOffer'] = async (
 const updateOffer: MutationResolvers['updateOffer'] = async (
   _parent,
   { input },
-  context: AuthenticatedContext,
+  context,
 ) => {
   const offer = await Offer.findByPk(input.id, {
     include: { association: 'sendingGroup' },
