@@ -85,8 +85,15 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     throw new ApolloError('No shipment exists with that ID')
   }
 
-  const { status, receivingHubId, sendingHubId, ...rest } = input
-  const updateAttributes: Partial<ShipmentAttributes> = { ...rest }
+  const {
+    status,
+    receivingHubId,
+    sendingHubId,
+    labelMonth,
+    labelYear,
+    shippingRoute,
+  } = input
+  const updateAttributes: Partial<ShipmentAttributes> = {}
 
   if (status) {
     updateAttributes.status = status
@@ -107,6 +114,15 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     }
 
     updateAttributes.sendingHubId = sendingHubId
+  }
+  if (labelMonth) {
+    updateAttributes.labelMonth = labelMonth
+  }
+  if (labelYear) {
+    updateAttributes.labelYear = labelYear
+  }
+  if (shippingRoute) {
+    updateAttributes.shippingRoute = shippingRoute
   }
 
   return shipment.update(updateAttributes)

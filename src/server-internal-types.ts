@@ -10,7 +10,7 @@ import {
   GraphQLScalarTypeConfig,
 } from 'graphql'
 import { AuthenticatedContext } from './apolloServer'
-export type Maybe<T> = T | undefined
+export type Maybe<T> = T | null
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K]
 }

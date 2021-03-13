@@ -12,7 +12,6 @@ generates:
             */\n"
     config:
       useIndexSignature: true
-      maybeValue: T | undefined
       # Sets the `context` resolver type for all resolvers to be our own custom
       # `AuthenticatedContext`. This lets us avoid doing a `context: AuthenticatedContext`
       # typecast in each resolver.
