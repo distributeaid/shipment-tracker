@@ -8,6 +8,7 @@ import {
   receivingHub,
   sendingHub,
   shipment,
+  updateShipment,
 } from './shipment'
 
 const resolvers: Resolvers = {
@@ -28,6 +29,7 @@ const resolvers: Resolvers = {
     addShipment,
     addOffer,
     updateOffer,
+    updateShipment,
   },
 
   // Custom Resolvers

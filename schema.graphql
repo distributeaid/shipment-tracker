@@ -48,6 +48,15 @@ input GroupInput {
   website: String
 }
 
+input ShipmentUpdateInput {
+  shippingRoute: ShippingRoute
+  labelYear: Int
+  labelMonth: Int
+  sendingHubId: Int
+  receivingHubId: Int
+  status: ShipmentStatus
+}
+
 type Query {
   listGroups: [Group!]!
   listShipments: [Shipment!]!
@@ -60,6 +69,7 @@ type Mutation {
   addShipment(input: ShipmentInput!): Shipment!
   addOffer(input: OfferCreateInput!): Offer!
   updateOffer(input: OfferUpdateInput!): Offer!
+  updateShipment(id: Int!, input: ShipmentUpdateInput!): Shipment!
 }
 
 input ShipmentInput {

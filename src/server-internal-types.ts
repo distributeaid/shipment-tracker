@@ -1,9 +1,16 @@
+/**
+ * ⚠️ These type definitions are generated automatically by graphql-codegen.
+ * The generation is configurated in codegen.yaml. Visit the docs for more information:
+ * https://graphql-code-generator.com/docs/getting-started/index
+ */
+
 import {
   GraphQLResolveInfo,
   GraphQLScalarType,
   GraphQLScalarTypeConfig,
 } from 'graphql'
-export type Maybe<T> = T | null
+import { AuthenticatedContext } from './apolloServer'
+export type Maybe<T> = T | undefined
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K]
 }
@@ -75,6 +82,15 @@ export type GroupInput = {
   website?: Maybe<Scalars['String']>
 }
 
+export type ShipmentUpdateInput = {
+  shippingRoute?: Maybe<ShippingRoute>
+  labelYear?: Maybe<Scalars['Int']>
+  labelMonth?: Maybe<Scalars['Int']>
+  sendingHubId?: Maybe<Scalars['Int']>
+  receivingHubId?: Maybe<Scalars['Int']>
+  status?: Maybe<ShipmentStatus>
+}
+
 export type Query = {
   __typename?: 'Query'
   listGroups: Array<Group>
@@ -97,6 +113,7 @@ export type Mutation = {
   addShipment: Shipment
   addOffer: Offer
   updateOffer: Offer
+  updateShipment: Shipment
 }
 
 export type MutationAddGroupArgs = {
@@ -113,6 +130,11 @@ export type MutationAddOfferArgs = {
 
 export type MutationUpdateOfferArgs = {
   input: OfferUpdateInput
+}
+
+export type MutationUpdateShipmentArgs = {
+  id: Scalars['Int']
+  input: ShipmentUpdateInput
 }
 
 export type ShipmentInput = {
@@ -329,6 +351,7 @@ export type ResolversTypes = ResolversObject<{
   Group: ResolverTypeWrapper<Group>
   Int: ResolverTypeWrapper<Scalars['Int']>
   GroupInput: GroupInput
+  ShipmentUpdateInput: ShipmentUpdateInput
   Query: ResolverTypeWrapper<{}>
   Mutation: ResolverTypeWrapper<{}>
   ShipmentInput: ShipmentInput
@@ -355,6 +378,7 @@ export type ResolversParentTypes = ResolversObject<{
   Group: Group
   Int: Scalars['Int']
   GroupInput: GroupInput
+  ShipmentUpdateInput: ShipmentUpdateInput
   Query: {}
   Mutation: {}
   ShipmentInput: ShipmentInput
@@ -372,7 +396,7 @@ export interface DateScalarConfig
 }
 
 export type LocationResolvers<
-  ContextType = any,
+  ContextType = AuthenticatedContext,
   ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']
 > = ResolversObject<{
   countryCode?: Resolver<
@@ -390,7 +414,7 @@ export type LocationResolvers<
 }>
 
 export type ContactInfoResolvers<
-  ContextType = any,
+  ContextType = AuthenticatedContext,
   ParentType extends ResolversParentTypes['ContactInfo'] = ResolversParentTypes['ContactInfo']
 > = ResolversObject<{
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
@@ -402,7 +426,7 @@ export type ContactInfoResolvers<
 }>
 
 export type GroupResolvers<
-  ContextType = any,
+  ContextType = AuthenticatedContext,
   ParentType extends ResolversParentTypes['Group'] = ResolversParentTypes['Group']
 > = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
@@ -425,7 +449,7 @@ export type GroupResolvers<
 }>
 
 export type QueryResolvers<
-  ContextType = any,
+  ContextType = AuthenticatedContext,
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
 > = ResolversObject<{
   listGroups?: Resolver<Array<ResolversTypes['Group']>, ParentType, ContextType>
@@ -449,7 +473,7 @@ export type QueryResolvers<
 }>
 
 export type MutationResolvers<
-  ContextType = any,
+  ContextType = AuthenticatedContext,
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
 > = ResolversObject<{
   addGroup?: Resolver<
@@ -476,10 +500,16 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationUpdateOfferArgs, 'input'>
   >
+  updateShipment?: Resolver<
+    ResolversTypes['Shipment'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateShipmentArgs, 'id' | 'input'>
+  >
 }>
 
 export type ShipmentResolvers<
-  ContextType = any,
+  ContextType = AuthenticatedContext,
   ParentType extends ResolversParentTypes['Shipment'] = ResolversParentTypes['Shipment']
 > = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
@@ -507,7 +537,7 @@ export type ShipmentResolvers<
 }>
 
 export type UserProfileResolvers<
-  ContextType = any,
+  ContextType = AuthenticatedContext,
   ParentType extends ResolversParentTypes['UserProfile'] = ResolversParentTypes['UserProfile']
 > = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
@@ -516,7 +546,7 @@ export type UserProfileResolvers<
 }>
 
 export type OfferResolvers<
-  ContextType = any,
+  ContextType = AuthenticatedContext,
   ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']
 > = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
@@ -535,7 +565,7 @@ export type OfferResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
-export type Resolvers<ContextType = any> = ResolversObject<{
+export type Resolvers<ContextType = AuthenticatedContext> = ResolversObject<{
   Date?: GraphQLScalarType
   Location?: LocationResolvers<ContextType>
   ContactInfo?: ContactInfoResolvers<ContextType>
@@ -551,4 +581,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
  * @deprecated
  * Use "Resolvers" root object instead. If you wish to get "IResolvers", add "typesPrefix: I" to your config.
  */
-export type IResolvers<ContextType = any> = Resolvers<ContextType>
+export type IResolvers<
+  ContextType = AuthenticatedContext
+> = Resolvers<ContextType>

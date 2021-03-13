@@ -72,6 +72,15 @@ export type GroupInput = {
   website?: Maybe<Scalars['String']>
 }
 
+export type ShipmentUpdateInput = {
+  shippingRoute?: Maybe<ShippingRoute>
+  labelYear?: Maybe<Scalars['Int']>
+  labelMonth?: Maybe<Scalars['Int']>
+  sendingHubId?: Maybe<Scalars['Int']>
+  receivingHubId?: Maybe<Scalars['Int']>
+  status?: Maybe<ShipmentStatus>
+}
+
 export type Query = {
   __typename?: 'Query'
   listGroups: Array<Group>
@@ -94,6 +103,7 @@ export type Mutation = {
   addShipment: Shipment
   addOffer: Offer
   updateOffer: Offer
+  updateShipment: Shipment
 }
 
 export type MutationAddGroupArgs = {
@@ -110,6 +120,11 @@ export type MutationAddOfferArgs = {
 
 export type MutationUpdateOfferArgs = {
   input: OfferUpdateInput
+}
+
+export type MutationUpdateShipmentArgs = {
+  id: Scalars['Int']
+  input: ShipmentUpdateInput
 }
 
 export type ShipmentInput = {

@@ -7,6 +7,7 @@ import {
   GroupType,
   ShipmentInput,
   ShipmentStatus,
+  ShipmentUpdateInput,
   ShippingRoute,
 } from '../server-internal-types'
 import { makeAdminTestServer, makeTestServer } from '../testServer'
@@ -112,6 +113,143 @@ describe('Shipments API', () => {
       expect(res?.data?.addShipment?.labelMonth).toEqual(1)
       expect(res?.data?.addShipment?.sendingHubId).toEqual(group1.id)
       expect(res?.data?.addShipment?.receivingHubId).toEqual(group2.id)
+    })
+  })
+
+  describe('updateShipment', () => {
+    let shipment: Shipment
+
+    const UPDATE_SHIPMENT = gql`
+      mutation($id: Int!, $input: ShipmentUpdateInput!) {
+        updateShipment(id: $id, input: $input) {
+          id
+          status
+          statusChangeTime
+        }
+      }
+    `
+
+    beforeEach(async () => {
+      shipment = await createShipment({
+        shippingRoute: ShippingRoute.Uk,
+        labelYear: 2020,
+        labelMonth: 1,
+        sendingHubId: group1.id,
+        receivingHubId: group2.id,
+        status: ShipmentStatus.Open,
+      })
+    })
+
+    it('forbids non-admin access', async () => {
+      const res = await testServer.mutate<
+        { updateShipment: Shipment },
+        { id: number; input: ShipmentUpdateInput }
+      >({
+        mutation: UPDATE_SHIPMENT,
+        variables: {
+          id: shipment.id,
+          input: {
+            status: ShipmentStatus.Complete,
+          },
+        },
+      })
+
+      expect(res.errors).not.toBeUndefined()
+      expect(res.errors).not.toBeEmpty()
+      expect(res.errors?.[0]?.message).toBe(
+        'updateShipment forbidden to non-admin users',
+      )
+    })
+
+    describe('with a shipment that does not exist', () => {
+      it('returns an error', async () => {
+        const res = await adminTestServer.mutate<
+          { updateShipment: Shipment },
+          { id: number; input: ShipmentUpdateInput }
+        >({
+          mutation: UPDATE_SHIPMENT,
+          variables: {
+            id: 43,
+            input: {
+              status: ShipmentStatus.Complete,
+            },
+          },
+        })
+
+        expect(res.errors).not.toBeUndefined()
+        expect(res.errors).not.toBeEmpty()
+        expect(res.errors?.[0]?.message).toBe('No shipment exists with that ID')
+      })
+    })
+
+    describe('with a sending hub that does not exist', () => {
+      it('returns an error', async () => {
+        const res = await adminTestServer.mutate<
+          { updateShipment: Shipment },
+          { id: number; input: ShipmentUpdateInput }
+        >({
+          mutation: UPDATE_SHIPMENT,
+          variables: {
+            id: shipment.id,
+            input: {
+              sendingHubId: 43,
+            },
+          },
+        })
+
+        expect(res.errors).not.toBeUndefined()
+        expect(res.errors).not.toBeEmpty()
+        expect(res.errors?.[0]?.message).toBe(
+          'No sending group exists with that ID',
+        )
+      })
+    })
+
+    describe('with a receiving hub that does not exist', () => {
+      it('returns an error', async () => {
+        const res = await adminTestServer.mutate<
+          { updateShipment: Shipment },
+          { id: number; input: ShipmentUpdateInput }
+        >({
+          mutation: UPDATE_SHIPMENT,
+          variables: {
+            id: shipment.id,
+            input: {
+              receivingHubId: 43,
+            },
+          },
+        })
+
+        expect(res.errors).not.toBeUndefined()
+        expect(res.errors).not.toBeEmpty()
+        expect(res.errors?.[0]?.message).toBe(
+          'No receiving group exists with that ID',
+        )
+      })
+    })
+
+    describe('with a valid parameter passed in', () => {
+      it('updates the shipment', async () => {
+        const res = await adminTestServer.mutate<
+          { updateShipment: Shipment },
+          { id: number; input: ShipmentUpdateInput }
+        >({
+          mutation: UPDATE_SHIPMENT,
+          variables: {
+            id: shipment.id,
+            input: {
+              status: ShipmentStatus.InProgress,
+            },
+          },
+        })
+
+        expect(res.errors).toBeUndefined()
+        expect(res.data?.updateShipment?.id).toBe(shipment.id)
+        expect(res.data?.updateShipment?.status).toBe(ShipmentStatus.InProgress)
+        expect(res.data?.updateShipment?.statusChangeTime).not.toBe(
+          shipment.statusChangeTime,
+        )
+      })
     })
   })
 
