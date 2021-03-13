@@ -4,8 +4,18 @@ generates:
     plugins:
       - typescript
       - typescript-resolvers
+      - add:
+          content: "/**\n
+            * ⚠️ These type definitions are generated automatically by graphql-codegen.\n
+            * The generation is configurated in codegen.yaml. Visit the docs for more information:\n
+            * https://graphql-code-generator.com/docs/getting-started/index\n
+            */\n"
     config:
       useIndexSignature: true
+      # Sets the `context` resolver type for all resolvers to be our own custom
+      # `AuthenticatedContext`. This lets us avoid doing a `context: AuthenticatedContext`
+      # typecast in each resolver.
+      contextType: ./apolloServer#AuthenticatedContext
   # Generate the types used by the frontend, because react-scripts requires them
   # to exist in the src directory.
   ./frontend/src/types/api-types.ts:

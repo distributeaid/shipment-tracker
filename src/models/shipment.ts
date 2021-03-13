@@ -1,15 +1,14 @@
 import {
-  Model,
+  BelongsTo,
   Column,
-  Table,
   CreatedAt,
-  UpdatedAt,
   DataType,
   ForeignKey,
-  BelongsTo,
+  Model,
+  Table,
+  UpdatedAt,
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
-
 import { ShipmentStatus, ShippingRoute } from '../server-internal-types'
 import Group from './group'
 
@@ -18,7 +17,7 @@ export interface ShipmentAttributes {
   shippingRoute: ShippingRoute
   labelYear: number
   labelMonth: number
-  offerSubmissionDeadline?: Date
+  offerSubmissionDeadline?: Date | null
   status: ShipmentStatus
   sendingHubId: number
   receivingHubId: number

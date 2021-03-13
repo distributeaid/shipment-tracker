@@ -1,12 +1,10 @@
 import { ApolloError, UserInputError } from 'apollo-server'
-
-import {
-  QueryResolvers,
-  MutationResolvers,
-  GroupInput,
-} from '../../server-internal-types'
 import Group from '../../models/group'
-import { AuthenticatedContext } from '../../apolloServer'
+import {
+  GroupInput,
+  MutationResolvers,
+  QueryResolvers,
+} from '../../server-internal-types'
 
 // Group query resolvers
 const listGroups: QueryResolvers['listGroups'] = async () => {
@@ -25,7 +23,7 @@ const group: QueryResolvers['group'] = async (_, { id }) => {
 const addGroup: MutationResolvers['addGroup'] = async (
   _parent,
   { input },
-  context: AuthenticatedContext,
+  context,
 ) => {
   if (
     !input.name ||

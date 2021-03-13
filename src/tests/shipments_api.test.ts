@@ -1,17 +1,17 @@
-import gql from 'graphql-tag'
 import { ApolloServerTestClient } from 'apollo-server-testing'
-
+import gql from 'graphql-tag'
+import Group from '../models/group'
 import Shipment from '../models/shipment'
-import { makeTestServer, makeAdminTestServer } from '../testServer'
 import { sequelize } from '../sequelize'
 import {
   GroupType,
-  ShipmentInput,
+  ShipmentCreateInput,
   ShipmentStatus,
+  ShipmentUpdateInput,
   ShippingRoute,
 } from '../server-internal-types'
+import { makeAdminTestServer, makeTestServer } from '../testServer'
 import { createGroup, createShipment } from './helpers'
-import Group from '../models/group'
 
 describe('Shipments API', () => {
   let testServer: ApolloServerTestClient,
@@ -46,7 +46,7 @@ describe('Shipments API', () => {
 
   describe('addShipment', () => {
     const ADD_SHIPMENT = gql`
-      mutation($input: ShipmentInput!) {
+      mutation($input: ShipmentCreateInput!) {
         addShipment(input: $input) {
           id
           shippingRoute
@@ -62,7 +62,7 @@ describe('Shipments API', () => {
     it('forbids non-admin access', async () => {
       const res = await testServer.mutate<
         { addShipment: Shipment },
-        { input: ShipmentInput }
+        { input: ShipmentCreateInput }
       >({
         mutation: ADD_SHIPMENT,
         variables: {
@@ -92,7 +92,7 @@ describe('Shipments API', () => {
     it('adds a new shipment', async () => {
       const res = await adminTestServer.mutate<
         { addShipment: Shipment },
-        { input: ShipmentInput }
+        { input: ShipmentCreateInput }
       >({
         mutation: ADD_SHIPMENT,
         variables: {
@@ -113,6 +113,143 @@ describe('Shipments API', () => {
       expect(res?.data?.addShipment?.labelMonth).toEqual(1)
       expect(res?.data?.addShipment?.sendingHubId).toEqual(group1.id)
       expect(res?.data?.addShipment?.receivingHubId).toEqual(group2.id)
+    })
+  })
+
+  describe('updateShipment', () => {
+    let shipment: Shipment
+
+    const UPDATE_SHIPMENT = gql`
+      mutation($id: Int!, $input: ShipmentUpdateInput!) {
+        updateShipment(id: $id, input: $input) {
+          id
+          status
+          statusChangeTime
+        }
+      }
+    `
+
+    beforeEach(async () => {
+      shipment = await createShipment({
+        shippingRoute: ShippingRoute.Uk,
+        labelYear: 2020,
+        labelMonth: 1,
+        sendingHubId: group1.id,
+        receivingHubId: group2.id,
+        status: ShipmentStatus.Open,
+      })
+    })
+
+    it('forbids non-admin access', async () => {
+      const res = await testServer.mutate<
+        { updateShipment: Shipment },
+        { id: number; input: ShipmentUpdateInput }
+      >({
+        mutation: UPDATE_SHIPMENT,
+        variables: {
+          id: shipment.id,
+          input: {
+            status: ShipmentStatus.Complete,
+          },
+        },
+      })
+
+      expect(res.errors).not.toBeUndefined()
+      expect(res.errors).not.toBeEmpty()
+      expect(res.errors?.[0]?.message).toBe(
+        'updateShipment forbidden to non-admin users',
+      )
+    })
+
+    describe('with a shipment that does not exist', () => {
+      it('returns an error', async () => {
+        const res = await adminTestServer.mutate<
+          { updateShipment: Shipment },
+          { id: number; input: ShipmentUpdateInput }
+        >({
+          mutation: UPDATE_SHIPMENT,
+          variables: {
+            id: 43,
+            input: {
+              status: ShipmentStatus.Complete,
+            },
+          },
+        })
+
+        expect(res.errors).not.toBeUndefined()
+        expect(res.errors).not.toBeEmpty()
+        expect(res.errors?.[0]?.message).toBe('No shipment exists with that ID')
+      })
+    })
+
+    describe('with a sending hub that does not exist', () => {
+      it('returns an error', async () => {
+        const res = await adminTestServer.mutate<
+          { updateShipment: Shipment },
+          { id: number; input: ShipmentUpdateInput }
+        >({
+          mutation: UPDATE_SHIPMENT,
+          variables: {
+            id: shipment.id,
+            input: {
+              sendingHubId: 43,
+            },
+          },
+        })
+
+        expect(res.errors).not.toBeUndefined()
+        expect(res.errors).not.toBeEmpty()
+        expect(res.errors?.[0]?.message).toBe(
+          'No sending group exists with that ID',
+        )
+      })
+    })
+
+    describe('with a receiving hub that does not exist', () => {
+      it('returns an error', async () => {
+        const res = await adminTestServer.mutate<
+          { updateShipment: Shipment },
+          { id: number; input: ShipmentUpdateInput }
+        >({
+          mutation: UPDATE_SHIPMENT,
+          variables: {
+            id: shipment.id,
+            input: {
+              receivingHubId: 43,
+            },
+          },
+        })
+
+        expect(res.errors).not.toBeUndefined()
+        expect(res.errors).not.toBeEmpty()
+        expect(res.errors?.[0]?.message).toBe(
+          'No receiving group exists with that ID',
+        )
+      })
+    })
+
+    describe('with a valid parameter passed in', () => {
+      it('updates the shipment', async () => {
+        const res = await adminTestServer.mutate<
+          { updateShipment: Shipment },
+          { id: number; input: ShipmentUpdateInput }
+        >({
+          mutation: UPDATE_SHIPMENT,
+          variables: {
+            id: shipment.id,
+            input: {
+              status: ShipmentStatus.InProgress,
+            },
+          },
+        })
+
+        expect(res.errors).toBeUndefined()
+        expect(res.data?.updateShipment?.id).toBe(shipment.id)
+        expect(res.data?.updateShipment?.status).toBe(ShipmentStatus.InProgress)
+        expect(res.data?.updateShipment?.statusChangeTime).not.toBe(
+          shipment.statusChangeTime,
+        )
+      })
     })
   })
 
@@ -184,6 +321,71 @@ describe('Shipments API', () => {
           },
         },
       ])
+    })
+  })
+
+  describe('shipment', () => {
+    let shipment: Shipment
+
+    beforeEach(async () => {
+      shipment = await createShipment({
+        shippingRoute: ShippingRoute.Uk,
+        labelYear: 2020,
+        labelMonth: 1,
+        sendingHubId: group1.id,
+        receivingHubId: group2.id,
+        status: ShipmentStatus.Open,
+      })
+    })
+
+    const SHIPMENT = gql`
+      query($id: Int!) {
+        shipment(id: $id) {
+          shippingRoute
+        }
+      }
+    `
+
+    describe('with no id', () => {
+      it('returns an error', async () => {
+        const res = await testServer.query({ query: SHIPMENT })
+
+        expect(res.errors).not.toBeUndefined()
+        expect(res.errors).not.toBeEmpty()
+
+        expect(res.errors?.[0]?.message).toBe(
+          'Variable "$id" of required type "Int!" was not provided.',
+        )
+      })
+    })
+
+    describe('with a parameter passed in', () => {
+      describe('a valid id', () => {
+        it('returns the correct group', async () => {
+          const res = await testServer.query<{ shipment: Shipment }>({
+            query: SHIPMENT,
+            variables: { id: 1 },
+          })
+
+          expect(res.errors).toBeUndefined()
+          expect(res.data?.shipment?.shippingRoute).toBe(shipment.shippingRoute)
+        })
+      })
+
+      describe('with an invalid id', () => {
+        it('returns a nice error', async () => {
+          const res = await testServer.query<{ shipment: Shipment }>({
+            query: SHIPMENT,
+            variables: { id: 17 },
+          })
+
+          expect(res.errors).not.toBeUndefined()
+          expect(res.errors).not.toBeEmpty()
+          expect(res.errors?.[0]?.message).toBe(
+            'No shipment exists with that ID',
+          )
+        })
+      })
     })
   })
 })
