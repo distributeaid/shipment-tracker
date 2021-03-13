@@ -1,18 +1,26 @@
-import { UserInputError, ApolloError, ForbiddenError } from 'apollo-server'
-
-import {
-  QueryResolvers,
-  MutationResolvers,
-  ShipmentResolvers,
-  ShipmentInput,
-} from '../../server-internal-types'
-import Shipment from '../../models/shipment'
-import Group from '../../models/group'
+import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { AuthenticatedContext } from '../../apolloServer'
+import Group from '../../models/group'
+import Shipment from '../../models/shipment'
+import {
+  MutationResolvers,
+  QueryResolvers,
+  ShipmentInput,
+  ShipmentResolvers,
+} from '../../server-internal-types'
 
 // Shipment query resolvers
 const listShipments: QueryResolvers['listShipments'] = async () => {
   return Shipment.findAll()
+}
+
+const shipment: QueryResolvers['shipment'] = async (_, { id }) => {
+  const shipment = await Shipment.findByPk(id)
+  if (!shipment) {
+    throw new ApolloError('No shipment exists with that ID')
+  }
+
+  return shipment
 }
 
 // Shipment mutation resolvers
@@ -83,4 +91,4 @@ const receivingHub: ShipmentResolvers['receivingHub'] = async (parent) => {
   return receivingHub
 }
 
-export { listShipments, addShipment, sendingHub, receivingHub }
+export { listShipments, shipment, addShipment, sendingHub, receivingHub }

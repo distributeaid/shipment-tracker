@@ -77,9 +77,14 @@ export type Query = {
   listGroups: Array<Group>
   listShipments: Array<Shipment>
   group: Group
+  shipment: Shipment
 }
 
 export type QueryGroupArgs = {
+  id: Scalars['Int']
+}
+
+export type QueryShipmentArgs = {
   id: Scalars['Int']
 }
 

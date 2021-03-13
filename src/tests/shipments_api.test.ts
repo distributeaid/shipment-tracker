@@ -1,8 +1,7 @@
-import gql from 'graphql-tag'
 import { ApolloServerTestClient } from 'apollo-server-testing'
-
+import gql from 'graphql-tag'
+import Group from '../models/group'
 import Shipment from '../models/shipment'
-import { makeTestServer, makeAdminTestServer } from '../testServer'
 import { sequelize } from '../sequelize'
 import {
   GroupType,
@@ -10,8 +9,8 @@ import {
   ShipmentStatus,
   ShippingRoute,
 } from '../server-internal-types'
+import { makeAdminTestServer, makeTestServer } from '../testServer'
 import { createGroup, createShipment } from './helpers'
-import Group from '../models/group'
 
 describe('Shipments API', () => {
   let testServer: ApolloServerTestClient,
@@ -184,6 +183,71 @@ describe('Shipments API', () => {
           },
         },
       ])
+    })
+  })
+
+  describe('shipment', () => {
+    let shipment: Shipment
+
+    beforeEach(async () => {
+      shipment = await createShipment({
+        shippingRoute: ShippingRoute.Uk,
+        labelYear: 2020,
+        labelMonth: 1,
+        sendingHubId: group1.id,
+        receivingHubId: group2.id,
+        status: ShipmentStatus.Open,
+      })
+    })
+
+    const SHIPMENT = gql`
+      query($id: Int!) {
+        shipment(id: $id) {
+          shippingRoute
+        }
+      }
+    `
+
+    describe('with no id', () => {
+      it('returns an error', async () => {
+        const res = await testServer.query({ query: SHIPMENT })
+
+        expect(res.errors).not.toBeUndefined()
+        expect(res.errors).not.toBeEmpty()
+
+        expect(res.errors?.[0]?.message).toBe(
+          'Variable "$id" of required type "Int!" was not provided.',
+        )
+      })
+    })
+
+    describe('with a parameter passed in', () => {
+      describe('a valid id', () => {
+        it('returns the correct group', async () => {
+          const res = await testServer.query<{ shipment: Shipment }>({
+            query: SHIPMENT,
+            variables: { id: 1 },
+          })
+
+          expect(res.errors).toBeUndefined()
+          expect(res.data?.shipment?.shippingRoute).toBe(shipment.shippingRoute)
+        })
+      })
+
+      describe('with an invalid id', () => {
+        it('returns a nice error', async () => {
+          const res = await testServer.query<{ shipment: Shipment }>({
+            query: SHIPMENT,
+            variables: { id: 17 },
+          })
+
+          expect(res.errors).not.toBeUndefined()
+          expect(res.errors).not.toBeEmpty()
+          expect(res.errors?.[0]?.message).toBe(
+            'No shipment exists with that ID',
+          )
+        })
+      })
     })
   })
 })

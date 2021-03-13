@@ -80,9 +80,14 @@ export type Query = {
   listGroups: Array<Group>
   listShipments: Array<Shipment>
   group: Group
+  shipment: Shipment
 }
 
 export type QueryGroupArgs = {
+  id: Scalars['Int']
+}
+
+export type QueryShipmentArgs = {
   id: Scalars['Int']
 }
 
@@ -434,6 +439,12 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QueryGroupArgs, 'id'>
+  >
+  shipment?: Resolver<
+    ResolversTypes['Shipment'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryShipmentArgs, 'id'>
   >
 }>
 

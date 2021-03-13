@@ -52,6 +52,7 @@ type Query {
   listGroups: [Group!]!
   listShipments: [Shipment!]!
   group(id: Int!): Group!
+  shipment(id: Int!): Shipment!
 }
 
 type Mutation {
