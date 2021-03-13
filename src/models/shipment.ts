@@ -17,7 +17,7 @@ export interface ShipmentAttributes {
   shippingRoute: ShippingRoute
   labelYear: number
   labelMonth: number
-  offerSubmissionDeadline?: Date
+  offerSubmissionDeadline?: Date | null
   status: ShipmentStatus
   sendingHubId: number
   receivingHubId: number
