@@ -111,7 +111,7 @@ export type MutationAddGroupArgs = {
 }
 
 export type MutationAddShipmentArgs = {
-  input: ShipmentInput
+  input: ShipmentCreateInput
 }
 
 export type MutationAddOfferArgs = {
@@ -127,7 +127,7 @@ export type MutationUpdateShipmentArgs = {
   input: ShipmentUpdateInput
 }
 
-export type ShipmentInput = {
+export type ShipmentCreateInput = {
   shippingRoute: ShippingRoute
   labelYear: Scalars['Int']
   labelMonth: Scalars['Int']

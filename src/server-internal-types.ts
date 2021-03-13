@@ -121,7 +121,7 @@ export type MutationAddGroupArgs = {
 }
 
 export type MutationAddShipmentArgs = {
-  input: ShipmentInput
+  input: ShipmentCreateInput
 }
 
 export type MutationAddOfferArgs = {
@@ -137,7 +137,7 @@ export type MutationUpdateShipmentArgs = {
   input: ShipmentUpdateInput
 }
 
-export type ShipmentInput = {
+export type ShipmentCreateInput = {
   shippingRoute: ShippingRoute
   labelYear: Scalars['Int']
   labelMonth: Scalars['Int']
@@ -354,7 +354,7 @@ export type ResolversTypes = ResolversObject<{
   ShipmentUpdateInput: ShipmentUpdateInput
   Query: ResolverTypeWrapper<{}>
   Mutation: ResolverTypeWrapper<{}>
-  ShipmentInput: ShipmentInput
+  ShipmentCreateInput: ShipmentCreateInput
   ShippingRoute: ShippingRoute
   ShipmentStatus: ShipmentStatus
   Shipment: ResolverTypeWrapper<Shipment>
@@ -381,7 +381,7 @@ export type ResolversParentTypes = ResolversObject<{
   ShipmentUpdateInput: ShipmentUpdateInput
   Query: {}
   Mutation: {}
-  ShipmentInput: ShipmentInput
+  ShipmentCreateInput: ShipmentCreateInput
   Shipment: Shipment
   UserProfile: UserProfile
   Boolean: Scalars['Boolean']

@@ -5,7 +5,7 @@ import Shipment from '../models/shipment'
 import { sequelize } from '../sequelize'
 import {
   GroupType,
-  ShipmentInput,
+  ShipmentCreateInput,
   ShipmentStatus,
   ShipmentUpdateInput,
   ShippingRoute,
@@ -46,7 +46,7 @@ describe('Shipments API', () => {
 
   describe('addShipment', () => {
     const ADD_SHIPMENT = gql`
-      mutation($input: ShipmentInput!) {
+      mutation($input: ShipmentCreateInput!) {
         addShipment(input: $input) {
           id
           shippingRoute
@@ -62,7 +62,7 @@ describe('Shipments API', () => {
     it('forbids non-admin access', async () => {
       const res = await testServer.mutate<
         { addShipment: Shipment },
-        { input: ShipmentInput }
+        { input: ShipmentCreateInput }
       >({
         mutation: ADD_SHIPMENT,
         variables: {
@@ -92,7 +92,7 @@ describe('Shipments API', () => {
     it('adds a new shipment', async () => {
       const res = await adminTestServer.mutate<
         { addShipment: Shipment },
-        { input: ShipmentInput }
+        { input: ShipmentCreateInput }
       >({
         mutation: ADD_SHIPMENT,
         variables: {

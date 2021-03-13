@@ -4,7 +4,7 @@ import Shipment, { ShipmentAttributes } from '../../models/shipment'
 import {
   MutationResolvers,
   QueryResolvers,
-  ShipmentInput,
+  ShipmentCreateInput,
   ShipmentResolvers,
 } from '../../server-internal-types'
 
@@ -42,7 +42,7 @@ const addShipment: MutationResolvers['addShipment'] = async (
   ) {
     throw new UserInputError('Shipment arguments invalid', {
       invalidArgs: Object.keys(input).filter(
-        (key) => !input[key as keyof ShipmentInput],
+        (key) => !input[key as keyof ShipmentCreateInput],
       ),
     })
   }

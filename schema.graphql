@@ -66,13 +66,13 @@ type Query {
 
 type Mutation {
   addGroup(input: GroupInput!): Group!
-  addShipment(input: ShipmentInput!): Shipment!
+  addShipment(input: ShipmentCreateInput!): Shipment!
   addOffer(input: OfferCreateInput!): Offer!
   updateOffer(input: OfferUpdateInput!): Offer!
   updateShipment(id: Int!, input: ShipmentUpdateInput!): Shipment!
 }
 
-input ShipmentInput {
+input ShipmentCreateInput {
   shippingRoute: ShippingRoute!
   labelYear: Int!
   labelMonth: Int!
