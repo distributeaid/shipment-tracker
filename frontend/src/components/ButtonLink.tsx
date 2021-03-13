@@ -1,9 +1,10 @@
 import cx from 'classnames'
-import { ButtonHTMLAttributes, FunctionComponent, Ref } from 'react'
+import { FunctionComponent } from 'react'
+import { Link, LinkProps } from 'react-router-dom'
 import ButtonIcon from './ButtonIcon'
 
 /**
- * By default, it should look like a neutral button
+ * A link that looks like a button!
  *
  * If it needs added weight, use the primary variant
  * If it's in a table row and needs to be shorter, use the slim variant
@@ -14,7 +15,7 @@ import ButtonIcon from './ButtonIcon'
  *
  */
 
-export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+export type ButtonProps = LinkProps & {
   /**
    * Use this in a table or list to avoid increasing the height of the container.
    */
@@ -25,20 +26,12 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
    * @param primary Used to highlight the most important actions. Use sparingly! Avoid showing multiple primary buttons in the same section.
    */
   variant?: 'default' | 'primary'
-  /**
-   * An optional way to pass a ref down to the <button> element
-   */
-  forwardRef?: Ref<HTMLButtonElement>
 }
 
-const Button: FunctionComponent<ButtonProps> & { Icon: typeof ButtonIcon } = ({
-  variant = 'default',
-  slim = false,
-  type = 'button',
-  forwardRef,
-  ...otherProps
-}) => {
-  const { disabled, className, children } = otherProps
+const ButtonLink: FunctionComponent<ButtonProps> & {
+  Icon: typeof ButtonIcon
+} = ({ variant = 'default', slim = false, type = 'button', ...otherProps }) => {
+  const { className, children } = otherProps
 
   const classes = cx(
     'inline-flex items-center border text-center text-sm leading-5 font-medium rounded whitespace-no-wrap focus:outline-none focus:ring-4 transition ease-in-out duration-100',
@@ -46,33 +39,23 @@ const Button: FunctionComponent<ButtonProps> & { Icon: typeof ButtonIcon } = ({
     {
       // Default
       'bg-white border-gray-300 text-gray-600 shadow-sm ring-gray-200 hover:text-gray-700 hover:shadow active:bg-gray-100 active:text-gray-900':
-        variant === 'default' && !disabled,
-      'bg-gray-50 border-gray-300 text-gray-400':
-        variant === 'default' && disabled,
+        variant === 'default',
       // Primary variant
       'bg-navy-700 border-transparent text-white ring-navy-300 hover:bg-navy-800 active:bg-navy-900':
-        variant === 'primary' && !disabled,
-      'bg-navy-500 border-transparent text-navy-100':
-        variant === 'primary' && disabled,
+        variant === 'primary',
       // Sizing
       'px-4 py-2': !slim,
       'px-3 py-1': slim,
-      // Disabled stuff
-      'cursor-not-allowed': disabled,
     },
   )
 
-  if (disabled) {
-    otherProps['aria-disabled'] = 'true'
-  }
-
   return (
-    <button {...otherProps} ref={forwardRef} type={type} className={classes}>
+    <Link {...otherProps} className={classes}>
       {children}
-    </button>
+    </Link>
   )
 }
 
-Button.Icon = ButtonIcon
+ButtonLink.Icon = ButtonIcon
 
-export default Button
+export default ButtonLink

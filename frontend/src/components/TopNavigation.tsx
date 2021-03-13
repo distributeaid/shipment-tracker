@@ -1,14 +1,14 @@
+import { useAuth0 } from '@auth0/auth0-react'
 import { FunctionComponent, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { useAuth0 } from '@auth0/auth0-react'
 import DistributeAidLogo from './branding/DistributeAidLogo'
 import DropdownMenu from './DropdownMenu'
-import TruckIcon from './icons/TruckIcon'
-import PackageIcon from './icons/PackageIcon'
 import CogIcon from './icons/CogIcon'
+import PackageIcon from './icons/PackageIcon'
+import TruckIcon from './icons/TruckIcon'
 import UserIcon from './icons/UserIcon'
-import MobileNavigation from './navigation/MobileNavigation'
 import DesktopNavigation from './navigation/DesktopNavigation'
+import MobileNavigation from './navigation/MobileNavigation'
 
 export interface NavLinkItem {
   path: string
@@ -51,7 +51,7 @@ const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
   const { user, logout } = useAuth0()
 
   return (
-    <header className="py-2 bg-da-navy-100 h-nav sticky top-0">
+    <header className="py-2 bg-navy-800 h-nav sticky top-0">
       <div className="max-w-5xl px-4 mx-auto h-full flex items-center justify-between">
         <MobileNavigation navLinks={NAV_LINKS} />
         <div className="flex items-center">
@@ -60,7 +60,7 @@ const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
           </Link>
         </div>
         <DesktopNavigation navLinks={NAV_LINKS} />
-        {!hideControls && (
+        {!hideControls && user && (
           <div className="flex items-center text-white">
             <DropdownMenu
               buttonClassname="p-2"

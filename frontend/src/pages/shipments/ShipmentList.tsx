@@ -82,7 +82,7 @@ const ShipmentList: FunctionComponent = () => {
     <LayoutWithNav>
       <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
         <header className="p-6 border-b border-gray-200 flex items-center justify-between">
-          <h1 className="text-da-navy-100 text-3xl">Shipments</h1>
+          <h1 className="text-navy-800 text-3xl">Shipments</h1>
         </header>
         <main>
           <table className="w-full" {...getTableProps()}>

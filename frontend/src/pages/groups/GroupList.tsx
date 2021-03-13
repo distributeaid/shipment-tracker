@@ -3,6 +3,7 @@ import cx from 'classnames'
 import { FunctionComponent, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useSortBy, useTable } from 'react-table'
+import ButtonLink from '../../components/ButtonLink'
 import TableHeader from '../../components/table/TableHeader'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { Group } from '../../types/api-types'
@@ -67,13 +68,8 @@ const GroupList: FunctionComponent = () => {
     <LayoutWithNav>
       <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
         <header className="p-6 border-b border-gray-200 flex items-center justify-between">
-          <h1 className="text-da-navy-100 text-3xl">Groups</h1>
-          <Link
-            className="border rounded border-da-navy-100 text-da-navy-100 px-2 py-1"
-            to="/group/new"
-          >
-            Create a group
-          </Link>
+          <h1 className="text-navy-800 text-3xl">Groups</h1>
+          <ButtonLink to="/group/new">Create a group</ButtonLink>
         </header>
         <main>
           <table className="w-full" {...getTableProps()}>
@@ -106,7 +102,7 @@ const GroupList: FunctionComponent = () => {
                       <td
                         {...cell.getCellProps()}
                         className={cx('p-2 first:pl-6 last:pr-6', {
-                          'font-semibold text-da-navy-100':
+                          'font-semibold text-navy-800':
                             cell.column.Header === 'Name',
                           'bg-gray-50': cell.column.isSorted,
                         })}

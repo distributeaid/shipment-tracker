@@ -6,6 +6,7 @@ const ROUTES = {
   GROUP_CREATE: '/group/new',
   GROUP_EDIT: '/group/:groupId',
   SHIPMENT_LIST: '/shipments',
+  KITCHEN_SINK: '/kitchen-sink',
 }
 
 export default ROUTES

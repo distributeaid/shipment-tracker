@@ -70,7 +70,7 @@ const GroupEditPage: FunctionComponent = () => {
     <LayoutWithNav>
       <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
         <header className="p-4 md:p-6 border-b border-gray-200">
-          <h1 className="text-da-navy-100 text-3xl mb-2">
+          <h1 className="text-navy-800 text-3xl mb-2">
             {originalGroupData ? originalGroupData.group.name : 'Group'}
           </h1>
           <p className="text-gray-700">

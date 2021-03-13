@@ -1,5 +1,5 @@
-import { FunctionComponent, InputHTMLAttributes } from 'react'
 import cx from 'classnames'
+import { FunctionComponent, InputHTMLAttributes } from 'react'
 import { FormRegisterType } from '../../types/form-types'
 
 type Props = InputHTMLAttributes<HTMLSelectElement> & {
@@ -22,7 +22,7 @@ const SelectInput: FunctionComponent<Props> = ({
 
   const classes = cx(
     className,
-    'appearance-none w-full border px-3 py-2 rounded focus:outline-none focus:shadow-outline focus:border-da-navy-200',
+    'appearance-none w-full border px-3 py-2 rounded transition focus:outline-none focus:shadow-outline focus:ring ring-navy-300 focus:border-navy-600',
     {
       'border-gray-300 hover:border-gray-400':
         !hasError && !readOnly && !disabled,

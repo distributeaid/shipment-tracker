@@ -8,7 +8,7 @@ import LayoutWithNav from '../layouts/LayoutWithNav'
 const AdminPage: FunctionComponent = () => {
   return (
     <LayoutWithNav>
-      <div className="text-da-navy-100 flex flex-col space-y-2">
+      <div className="text-navy-800 flex flex-col space-y-2">
         <Link to="/groups">Groups</Link>
         <Link to="/users">Users (in construction)</Link>
       </div>

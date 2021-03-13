@@ -1,5 +1,5 @@
-import { FunctionComponent, useState } from 'react'
 import cx from 'classnames'
+import { FunctionComponent, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { NavLinkItem } from '../TopNavigation'
 
@@ -30,7 +30,7 @@ const MobileNavigation: FunctionComponent<Props> = ({ navLinks }) => {
       <div
         onClick={toggleMobileNav}
         className={cx(
-          'fixed inset-x-0 top-16 bg-da-navy-100 transition-all duration-200',
+          'fixed inset-x-0 top-16 bg-navy-900 transition-all duration-200',
           {
             'pointer-events-none h-0 delay-200': !showMobileNav,
             'h-content': showMobileNav,
@@ -39,7 +39,7 @@ const MobileNavigation: FunctionComponent<Props> = ({ navLinks }) => {
       ></div>
       <ul
         className={cx(
-          'fixed left-0 right-0 py-4 top-16 border-t border-da-navy-200 transform-gpu transition-all duration-200',
+          'fixed left-0 right-0 py-4 top-16 border-t border-navy-700 transform-gpu transition-all duration-200',
           {
             'pointer-events-none opacity-0 -translate-y-4': !showMobileNav,
             'opacity-100 translate-y-0 delay-200': showMobileNav,
@@ -50,7 +50,7 @@ const MobileNavigation: FunctionComponent<Props> = ({ navLinks }) => {
           <li key={link.path}>
             <Link
               to={link.path}
-              className="py-2 px-4 flex items-center bg-da-navy-100 text-white"
+              className="py-2 px-4 flex items-center text-white"
             >
               {link.icon}
               {link.label}

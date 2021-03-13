@@ -1,5 +1,5 @@
-import { FunctionComponent } from 'react'
 import cx from 'classnames'
+import { FunctionComponent } from 'react'
 
 interface Props {
   className?: string
@@ -8,7 +8,7 @@ interface Props {
 const Spinner: FunctionComponent<Props> = ({ className }) => {
   return (
     <svg
-      className={cx('animate-spin h-5 w-5 text-da-navy-100', className)}
+      className={cx('animate-spin h-5 w-5 text-navy-700', className)}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

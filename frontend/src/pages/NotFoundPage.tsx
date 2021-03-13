@@ -17,7 +17,7 @@ const NotFoundPage: FunctionComponent<RouteComponentProps> = (props) => (
         </p>
         <p>
           <button
-            className="text-da-navy-100 font-semibold"
+            className="text-navy-800 font-semibold"
             onClick={props.history.goBack}
           >
             Go back
