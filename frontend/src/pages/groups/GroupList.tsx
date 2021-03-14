@@ -102,7 +102,7 @@ const GroupList: FunctionComponent = () => {
                       <td
                         {...cell.getCellProps()}
                         className={cx('p-2 first:pl-6 last:pr-6', {
-                          'font-semibold text-navy-800':
+                          'font-semibold text-navy-700 hover:underline':
                             cell.column.Header === 'Name',
                           'bg-gray-50': cell.column.isSorted,
                         })}

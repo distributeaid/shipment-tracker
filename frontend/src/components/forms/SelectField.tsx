@@ -1,15 +1,15 @@
-import {
-  FunctionComponent,
-  useState,
-  ReactNode,
-  ChangeEvent,
-  InputHTMLAttributes,
-} from 'react'
 import { nanoid } from 'nanoid'
-import SelectInput from './SelectInput'
-import Label from './Label'
-import InlineError from './InlineError'
+import {
+  ChangeEvent,
+  FunctionComponent,
+  ReactNode,
+  SelectHTMLAttributes,
+  useState,
+} from 'react'
 import { FormRegisterType } from '../../types/form-types'
+import InlineError from './InlineError'
+import Label from './Label'
+import SelectInput from './SelectInput'
 
 export interface SelectOption {
   label: ReactNode
@@ -17,7 +17,7 @@ export interface SelectOption {
   disabled?: boolean
 }
 
-type Props = InputHTMLAttributes<HTMLSelectElement> & {
+type Props = SelectHTMLAttributes<HTMLSelectElement> & {
   /**
    * The ID of the input, used to map the label to the input element
    */
@@ -61,6 +61,10 @@ type Props = InputHTMLAttributes<HTMLSelectElement> & {
    * The register function from `react-hook-form`'s `useForm()` hook used for validation and submission
    */
   register?: FormRegisterType
+  /**
+   * If true, the value of each option will be cast to a number using parseInt()
+   */
+  castAsNumber?: boolean
 }
 
 const SelectField: FunctionComponent<Props> = ({
