@@ -316,7 +316,7 @@ describe('Offers API', () => {
         },
       })
 
-      expect(res.errors?.[0].message).toEqual('Not permitted to update group')
+      expect(res.errors?.[0].message).toEqual('Not permitted to update offer')
     })
   })
 })

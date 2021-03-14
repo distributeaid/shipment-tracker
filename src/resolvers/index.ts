@@ -1,6 +1,6 @@
 import { DateResolver } from 'graphql-scalars'
 import { Resolvers } from '../server-internal-types'
-import { addGroup, group, listGroups } from './group'
+import { addGroup, updateGroup, group, listGroups } from './group'
 import { addOffer, updateOffer } from './offer'
 import {
   addShipment,
@@ -26,10 +26,11 @@ const resolvers: Resolvers = {
   // Mutation Resolvers
   Mutation: {
     addGroup,
+    updateGroup,
     addShipment,
+    updateShipment,
     addOffer,
     updateOffer,
-    updateShipment,
   },
 
   // Custom Resolvers

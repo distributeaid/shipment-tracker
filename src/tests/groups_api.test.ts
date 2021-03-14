@@ -1,14 +1,20 @@
 import gql from 'graphql-tag'
 import { ApolloServerTestClient } from 'apollo-server-testing'
-
-import { makeTestServer } from '../testServer'
+import { omit } from 'lodash'
+import { makeAdminTestServer, makeTestServer } from '../testServer'
 import { sequelize } from '../sequelize'
-import Group from '../models/group'
+import Group, { GroupAttributes } from '../models/group'
 import { createGroup } from './helpers'
 import { GroupType } from '../server-internal-types'
+import UserAccount from '../models/user_account'
+import { fakeUserAuth } from '../authenticateRequest'
 
 describe('Groups API', () => {
-  let testServer: ApolloServerTestClient
+  let otherUserTestServer: ApolloServerTestClient,
+    testServer: ApolloServerTestClient,
+    adminTestServer: ApolloServerTestClient,
+    captain: UserAccount,
+    newCaptain: UserAccount
 
   const group1Name: string = 'group1'
   const group1Params = {
@@ -16,13 +22,27 @@ describe('Groups API', () => {
     groupType: GroupType.DaHub,
     primaryLocation: { countryCode: 'UK', townCity: 'Bristol' },
     primaryContact: { name: 'Contact', email: 'contact@example.com' },
+    website: 'www.example.com',
   }
 
   beforeEach(async () => {
+    await UserAccount.truncate({ cascade: true, force: true })
     await Group.truncate({ cascade: true, force: true })
     await sequelize.sync({ force: true })
 
-    testServer = await makeTestServer()
+    captain = await UserAccount.create({
+      auth0Id: 'captain-id',
+    })
+
+    newCaptain = await UserAccount.create({
+      auth0Id: 'new-captain-id',
+    })
+
+    testServer = await makeTestServer({
+      context: () => ({ auth: { ...fakeUserAuth, userAccount: captain } }),
+    })
+    otherUserTestServer = await makeTestServer()
+    adminTestServer = await makeAdminTestServer()
   })
 
   describe('addGroup', () => {
@@ -57,6 +77,142 @@ describe('Groups API', () => {
       expect(res.errors).toBeUndefined()
       expect(res?.data?.addGroup?.name).toEqual(group1Name)
       expect(res?.data?.addGroup?.id).not.toBeNull()
+    })
+  })
+
+  describe('updateGroup', () => {
+    let existingGroup: Group
+    let updateParams: Partial<GroupAttributes>
+
+    const UPDATE_GROUP = gql`
+      mutation($id: Int!, $input: GroupUpdateInput!) {
+        updateGroup(id: $id, input: $input) {
+          id
+          name
+          groupType
+          primaryLocation {
+            countryCode
+            townCity
+          }
+          primaryContact {
+            name
+            email
+          }
+          website
+          captainId
+        }
+      }
+    `
+
+    beforeEach(async () => {
+      updateParams = {
+        name: 'updated-name',
+        groupType: GroupType.ReceivingGroup,
+        primaryContact: {
+          name: 'updated-contact-name',
+          email: 'updated@example.com',
+        },
+        primaryLocation: { countryCode: 'US', townCity: 'Bellingham' },
+        captainId: newCaptain.id,
+      }
+
+      existingGroup = await Group.create({
+        ...group1Params,
+        captainId: captain.id,
+      })
+    })
+
+    it('updates the group', async () => {
+      const res = await adminTestServer.mutate({
+        mutation: UPDATE_GROUP,
+        variables: {
+          id: existingGroup.id,
+          input: updateParams,
+        },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res.data?.updateGroup?.name).toEqual(updateParams.name)
+      expect(res.data?.updateGroup?.groupType).toEqual(GroupType.ReceivingGroup)
+      expect(res.data?.updateGroup?.primaryContact?.name).toEqual(
+        updateParams?.primaryContact?.name,
+      )
+      expect(res.data?.updateGroup?.primaryContact?.email).toEqual(
+        updateParams?.primaryContact?.email,
+      )
+      expect(res.data?.updateGroup?.primaryLocation?.countryCode).toEqual(
+        updateParams?.primaryLocation?.countryCode,
+      )
+      expect(res.data?.updateGroup?.primaryLocation?.townCity).toEqual(
+        updateParams?.primaryLocation?.townCity,
+      )
+      expect(res.data?.updateGroup?.captainId).toEqual(newCaptain.id)
+    })
+
+    it('updates the group not including type for captains', async () => {
+      const res = await testServer.mutate({
+        mutation: UPDATE_GROUP,
+        variables: {
+          id: existingGroup.id,
+          input: omit(updateParams, 'groupType'),
+        },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res.data?.updateGroup?.name).toEqual(updateParams.name)
+    })
+
+    it('supports setting website to null', async () => {
+      const res = await adminTestServer.mutate({
+        mutation: UPDATE_GROUP,
+        variables: {
+          id: existingGroup.id,
+          input: { ...updateParams, website: null },
+        },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res.data?.updateGroup?.website).toBeNull()
+    })
+
+    it('validates the website look like a URL', async () => {
+      const res = await adminTestServer.mutate({
+        mutation: UPDATE_GROUP,
+        variables: {
+          id: existingGroup.id,
+          input: { ...updateParams, website: 'www.-example.com' },
+        },
+      })
+
+      expect(res.errors?.[0].message).toEqual(
+        'URL is not valid: www.-example.com',
+      )
+    })
+
+    it('disallows non-admins from updating group type', async () => {
+      const res = await testServer.mutate({
+        mutation: UPDATE_GROUP,
+        variables: {
+          id: existingGroup.id,
+          input: updateParams,
+        },
+      })
+
+      expect(res.errors?.[0].message).toEqual(
+        'Not permitted to change group type',
+      )
+    })
+
+    it('disallows non-admin non-captains from updating', async () => {
+      const res = await otherUserTestServer.mutate({
+        mutation: UPDATE_GROUP,
+        variables: {
+          id: existingGroup.id,
+          input: updateParams,
+        },
+      })
+
+      expect(res.errors?.[0].message).toEqual('Not permitted to update group')
     })
   })
 
