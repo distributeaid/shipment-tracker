@@ -60,6 +60,7 @@ export type Group = {
   primaryLocation: Location
   primaryContact: ContactInfo
   website?: Maybe<Scalars['String']>
+  captainId: Scalars['Int']
   createdAt: Scalars['Date']
   updatedAt: Scalars['Date']
 }
@@ -92,10 +93,12 @@ export type ShipmentUpdateInput = {
 
 export type Query = {
   __typename?: 'Query'
-  listGroups: Array<Group>
-  listShipments: Array<Shipment>
   group: Group
+  listGroups: Array<Group>
   shipment: Shipment
+  listShipments: Array<Shipment>
+  offer: Offer
+  listOffers: Array<Offer>
 }
 
 export type QueryGroupArgs = {
@@ -104,6 +107,14 @@ export type QueryGroupArgs = {
 
 export type QueryShipmentArgs = {
   id: Scalars['Int']
+}
+
+export type QueryOfferArgs = {
+  id: Scalars['Int']
+}
+
+export type QueryListOffersArgs = {
+  shipmentId: Scalars['Int']
 }
 
 export type Mutation = {

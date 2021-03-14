@@ -1,9 +1,11 @@
 import { Maybe } from 'graphql/jsutils/Maybe'
 import Group from '../../models/group'
+import Offer from '../../models/offer'
 import Shipment from '../../models/shipment'
 import UserAccount from '../../models/user_account'
 import {
   GroupCreateInput,
+  OfferCreateInput,
   ShipmentCreateInput,
 } from '../../server-internal-types'
 

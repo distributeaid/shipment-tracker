@@ -70,6 +70,7 @@ export type Group = {
   primaryLocation: Location
   primaryContact: ContactInfo
   website?: Maybe<Scalars['String']>
+  captainId: Scalars['Int']
   createdAt: Scalars['Date']
   updatedAt: Scalars['Date']
 }
@@ -102,10 +103,12 @@ export type ShipmentUpdateInput = {
 
 export type Query = {
   __typename?: 'Query'
-  listGroups: Array<Group>
-  listShipments: Array<Shipment>
   group: Group
+  listGroups: Array<Group>
   shipment: Shipment
+  listShipments: Array<Shipment>
+  offer: Offer
+  listOffers: Array<Offer>
 }
 
 export type QueryGroupArgs = {
@@ -114,6 +117,14 @@ export type QueryGroupArgs = {
 
 export type QueryShipmentArgs = {
   id: Scalars['Int']
+}
+
+export type QueryOfferArgs = {
+  id: Scalars['Int']
+}
+
+export type QueryListOffersArgs = {
+  shipmentId: Scalars['Int']
 }
 
 export type Mutation = {
@@ -460,6 +471,7 @@ export type GroupResolvers<
     ContextType
   >
   website?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  captainId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
   updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
@@ -469,23 +481,35 @@ export type QueryResolvers<
   ContextType = AuthenticatedContext,
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
 > = ResolversObject<{
-  listGroups?: Resolver<Array<ResolversTypes['Group']>, ParentType, ContextType>
-  listShipments?: Resolver<
-    Array<ResolversTypes['Shipment']>,
-    ParentType,
-    ContextType
-  >
   group?: Resolver<
     ResolversTypes['Group'],
     ParentType,
     ContextType,
     RequireFields<QueryGroupArgs, 'id'>
   >
+  listGroups?: Resolver<Array<ResolversTypes['Group']>, ParentType, ContextType>
   shipment?: Resolver<
     ResolversTypes['Shipment'],
     ParentType,
     ContextType,
     RequireFields<QueryShipmentArgs, 'id'>
+  >
+  listShipments?: Resolver<
+    Array<ResolversTypes['Shipment']>,
+    ParentType,
+    ContextType
+  >
+  offer?: Resolver<
+    ResolversTypes['Offer'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryOfferArgs, 'id'>
+  >
+  listOffers?: Resolver<
+    Array<ResolversTypes['Offer']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryListOffersArgs, 'shipmentId'>
   >
 }>
 
