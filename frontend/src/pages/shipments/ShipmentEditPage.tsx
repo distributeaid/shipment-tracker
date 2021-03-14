@@ -68,7 +68,6 @@ const ShipmentEditPage: FunctionComponent = () => {
               ? formatShipmentName(originalShipmentData.shipment)
               : 'Shipment'}
           </h1>
-          <p className="text-gray-700">TODO describe what a shipment is</p>
         </header>
         <main className="p-4 md:p-6 max-w-lg pb-20">
           <ShipmentForm
