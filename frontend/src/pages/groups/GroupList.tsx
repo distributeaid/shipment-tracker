@@ -1,49 +1,31 @@
-import { gql, useQuery } from '@apollo/client'
 import cx from 'classnames'
 import { FunctionComponent, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { useSortBy, useTable } from 'react-table'
+import { Column, useSortBy, useTable } from 'react-table'
 import ButtonLink from '../../components/ButtonLink'
 import TableHeader from '../../components/table/TableHeader'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { Group } from '../../types/api-types'
+import { AllGroupsQuery, useAllGroupsQuery } from '../../types/api-types'
 import { formatGroupType } from '../../utils/format'
 import ROUTES, { groupEditRoute } from '../../utils/routes'
 
-const GROUPS_QUERY = gql`
-  query GetAllGroups {
-    listGroups {
-      id
-      name
-      groupType
-      primaryContact {
-        name
-      }
-      primaryLocation {
-        countryCode
-        townCity
-      }
-    }
-  }
-`
-
-const COLUMNS = [
+const COLUMNS: Column<AllGroupsQuery['listGroups'][0]>[] = [
   {
     Header: 'Name',
     accessor: 'name',
   },
   {
     Header: 'Location',
-    accessor: (group: Group) =>
+    accessor: (group) =>
       `${group.primaryLocation.townCity} (${group.primaryLocation.countryCode})`,
   },
   {
     Header: 'Type',
-    accessor: (group: Group) => formatGroupType(group.groupType),
+    accessor: (group) => formatGroupType(group.groupType),
   },
   {
     Header: 'Contact',
-    accessor: 'primaryContact.name',
+    accessor: (group) => group.primaryContact.name,
     disableSortBy: true,
   },
 ]
@@ -52,7 +34,7 @@ const COLUMNS = [
  * Display a list of all the groups in the database
  */
 const GroupList: FunctionComponent = () => {
-  const { data } = useQuery<{ listGroups: Group[] }>(GROUPS_QUERY)
+  const { data } = useAllGroupsQuery()
 
   // We must memoize the data for react-table to function properly
   const groups = useMemo(() => data?.listGroups || [], [data])
@@ -63,7 +45,7 @@ const GroupList: FunctionComponent = () => {
     headerGroups,
     rows,
     prepareRow,
-  } = useTable({ columns: COLUMNS as any, data: groups }, useSortBy)
+  } = useTable({ columns: COLUMNS, data: groups }, useSortBy)
 
   return (
     <LayoutWithNav>

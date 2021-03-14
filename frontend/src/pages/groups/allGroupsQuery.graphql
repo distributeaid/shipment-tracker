@@ -1,0 +1,22 @@
+query AllGroups {
+  listGroups {
+    id
+    name
+    groupType
+    primaryContact {
+      name
+    }
+    primaryLocation {
+      countryCode
+      townCity
+    }
+  }
+}
+
+query AllGroupsMinimal {
+  listGroups {
+    id
+    name
+    groupType
+  }
+}

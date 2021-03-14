@@ -1,0 +1,5 @@
+query Shipment($id: Int!) {
+  shipment(id: $id) {
+    ...AllShipmentFields
+  }
+}

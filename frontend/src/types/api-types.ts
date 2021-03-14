@@ -4,6 +4,8 @@
  * https://graphql-code-generator.com/docs/getting-started/index
  */
 
+import * as Apollo from '@apollo/client'
+import { gql } from '@apollo/client'
 export type Maybe<T> = T | null
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K]
@@ -12,6 +14,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
   { [SubKey in K]?: Maybe<T[SubKey]> }
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
   { [SubKey in K]: Maybe<T[SubKey]> }
+const defaultOptions = {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string
@@ -238,3 +241,532 @@ export type OfferUpdateInput = {
   contact?: Maybe<ContactInfoInput>
   photoUris?: Maybe<Array<Scalars['String']>>
 }
+
+export type CreateGroupMutationVariables = Exact<{
+  input: GroupCreateInput
+}>
+
+export type CreateGroupMutation = { __typename?: 'Mutation' } & {
+  addGroup: { __typename?: 'Group' } & Pick<Group, 'id'>
+}
+
+export type AllGroupFieldsFragment = { __typename?: 'Group' } & Pick<
+  Group,
+  'id' | 'name' | 'groupType'
+> & {
+    primaryLocation: { __typename?: 'Location' } & Pick<
+      Location,
+      'townCity' | 'countryCode' | 'openLocationCode'
+    >
+    primaryContact: { __typename?: 'ContactInfo' } & Pick<
+      ContactInfo,
+      'name' | 'email' | 'whatsApp' | 'phone' | 'signal'
+    >
+  }
+
+export type AllGroupsQueryVariables = Exact<{ [key: string]: never }>
+
+export type AllGroupsQuery = { __typename?: 'Query' } & {
+  listGroups: Array<
+    { __typename?: 'Group' } & Pick<Group, 'id' | 'name' | 'groupType'> & {
+        primaryContact: { __typename?: 'ContactInfo' } & Pick<
+          ContactInfo,
+          'name'
+        >
+        primaryLocation: { __typename?: 'Location' } & Pick<
+          Location,
+          'countryCode' | 'townCity'
+        >
+      }
+  >
+}
+
+export type AllGroupsMinimalQueryVariables = Exact<{ [key: string]: never }>
+
+export type AllGroupsMinimalQuery = { __typename?: 'Query' } & {
+  listGroups: Array<
+    { __typename?: 'Group' } & Pick<Group, 'id' | 'name' | 'groupType'>
+  >
+}
+
+export type GroupQueryVariables = Exact<{
+  id: Scalars['Int']
+}>
+
+export type GroupQuery = { __typename?: 'Query' } & {
+  group: { __typename?: 'Group' } & AllGroupFieldsFragment
+}
+
+export type AllShipmentFieldsFragment = { __typename?: 'Shipment' } & Pick<
+  Shipment,
+  | 'id'
+  | 'shippingRoute'
+  | 'labelYear'
+  | 'labelMonth'
+  | 'offerSubmissionDeadline'
+  | 'status'
+>
+
+export type AllShipmentsQueryVariables = Exact<{ [key: string]: never }>
+
+export type AllShipmentsQuery = { __typename?: 'Query' } & {
+  listShipments: Array<
+    { __typename?: 'Shipment' } & Pick<
+      Shipment,
+      | 'id'
+      | 'shippingRoute'
+      | 'labelYear'
+      | 'labelMonth'
+      | 'offerSubmissionDeadline'
+      | 'status'
+      | 'statusChangeTime'
+    > & {
+        sendingHub: { __typename?: 'Group' } & Pick<Group, 'id' | 'name'>
+        receivingHub: { __typename?: 'Group' } & Pick<Group, 'id' | 'name'>
+      }
+  >
+}
+
+export type ShipmentQueryVariables = Exact<{
+  id: Scalars['Int']
+}>
+
+export type ShipmentQuery = { __typename?: 'Query' } & {
+  shipment: { __typename?: 'Shipment' } & AllShipmentFieldsFragment
+}
+
+export type UpdateShipmentMutationVariables = Exact<{
+  id: Scalars['Int']
+  input: ShipmentUpdateInput
+}>
+
+export type UpdateShipmentMutation = { __typename?: 'Mutation' } & {
+  updateShipment: { __typename?: 'Shipment' } & AllShipmentFieldsFragment
+}
+
+export const AllGroupFieldsFragmentDoc = gql`
+  fragment AllGroupFields on Group {
+    id
+    name
+    groupType
+    primaryLocation {
+      townCity
+      countryCode
+      openLocationCode
+    }
+    primaryContact {
+      name
+      email
+      whatsApp
+      phone
+      signal
+    }
+  }
+`
+export const AllShipmentFieldsFragmentDoc = gql`
+  fragment AllShipmentFields on Shipment {
+    id
+    shippingRoute
+    labelYear
+    labelMonth
+    offerSubmissionDeadline
+    status
+  }
+`
+export const CreateGroupDocument = gql`
+  mutation CreateGroup($input: GroupCreateInput!) {
+    addGroup(input: $input) {
+      id
+    }
+  }
+`
+export type CreateGroupMutationFn = Apollo.MutationFunction<
+  CreateGroupMutation,
+  CreateGroupMutationVariables
+>
+
+/**
+ * __useCreateGroupMutation__
+ *
+ * To run a mutation, you first call `useCreateGroupMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateGroupMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createGroupMutation, { data, loading, error }] = useCreateGroupMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateGroupMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateGroupMutation,
+    CreateGroupMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreateGroupMutation, CreateGroupMutationVariables>(
+    CreateGroupDocument,
+    options,
+  )
+}
+export type CreateGroupMutationHookResult = ReturnType<
+  typeof useCreateGroupMutation
+>
+export type CreateGroupMutationResult = Apollo.MutationResult<CreateGroupMutation>
+export type CreateGroupMutationOptions = Apollo.BaseMutationOptions<
+  CreateGroupMutation,
+  CreateGroupMutationVariables
+>
+export const AllGroupsDocument = gql`
+  query AllGroups {
+    listGroups {
+      id
+      name
+      groupType
+      primaryContact {
+        name
+      }
+      primaryLocation {
+        countryCode
+        townCity
+      }
+    }
+  }
+`
+
+/**
+ * __useAllGroupsQuery__
+ *
+ * To run a query within a React component, call `useAllGroupsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAllGroupsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAllGroupsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    AllGroupsQuery,
+    AllGroupsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<AllGroupsQuery, AllGroupsQueryVariables>(
+    AllGroupsDocument,
+    options,
+  )
+}
+export function useAllGroupsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    AllGroupsQuery,
+    AllGroupsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<AllGroupsQuery, AllGroupsQueryVariables>(
+    AllGroupsDocument,
+    options,
+  )
+}
+export type AllGroupsQueryHookResult = ReturnType<typeof useAllGroupsQuery>
+export type AllGroupsLazyQueryHookResult = ReturnType<
+  typeof useAllGroupsLazyQuery
+>
+export type AllGroupsQueryResult = Apollo.QueryResult<
+  AllGroupsQuery,
+  AllGroupsQueryVariables
+>
+export const AllGroupsMinimalDocument = gql`
+  query AllGroupsMinimal {
+    listGroups {
+      id
+      name
+      groupType
+    }
+  }
+`
+
+/**
+ * __useAllGroupsMinimalQuery__
+ *
+ * To run a query within a React component, call `useAllGroupsMinimalQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllGroupsMinimalQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAllGroupsMinimalQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAllGroupsMinimalQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    AllGroupsMinimalQuery,
+    AllGroupsMinimalQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<AllGroupsMinimalQuery, AllGroupsMinimalQueryVariables>(
+    AllGroupsMinimalDocument,
+    options,
+  )
+}
+export function useAllGroupsMinimalLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    AllGroupsMinimalQuery,
+    AllGroupsMinimalQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    AllGroupsMinimalQuery,
+    AllGroupsMinimalQueryVariables
+  >(AllGroupsMinimalDocument, options)
+}
+export type AllGroupsMinimalQueryHookResult = ReturnType<
+  typeof useAllGroupsMinimalQuery
+>
+export type AllGroupsMinimalLazyQueryHookResult = ReturnType<
+  typeof useAllGroupsMinimalLazyQuery
+>
+export type AllGroupsMinimalQueryResult = Apollo.QueryResult<
+  AllGroupsMinimalQuery,
+  AllGroupsMinimalQueryVariables
+>
+export const GroupDocument = gql`
+  query Group($id: Int!) {
+    group(id: $id) {
+      ...AllGroupFields
+    }
+  }
+  ${AllGroupFieldsFragmentDoc}
+`
+
+/**
+ * __useGroupQuery__
+ *
+ * To run a query within a React component, call `useGroupQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGroupQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGroupQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGroupQuery(
+  baseOptions: Apollo.QueryHookOptions<GroupQuery, GroupQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GroupQuery, GroupQueryVariables>(
+    GroupDocument,
+    options,
+  )
+}
+export function useGroupLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GroupQuery, GroupQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GroupQuery, GroupQueryVariables>(
+    GroupDocument,
+    options,
+  )
+}
+export type GroupQueryHookResult = ReturnType<typeof useGroupQuery>
+export type GroupLazyQueryHookResult = ReturnType<typeof useGroupLazyQuery>
+export type GroupQueryResult = Apollo.QueryResult<
+  GroupQuery,
+  GroupQueryVariables
+>
+export const AllShipmentsDocument = gql`
+  query AllShipments {
+    listShipments {
+      id
+      shippingRoute
+      labelYear
+      labelMonth
+      offerSubmissionDeadline
+      status
+      sendingHub {
+        id
+        name
+      }
+      receivingHub {
+        id
+        name
+      }
+      statusChangeTime
+    }
+  }
+`
+
+/**
+ * __useAllShipmentsQuery__
+ *
+ * To run a query within a React component, call `useAllShipmentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllShipmentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAllShipmentsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAllShipmentsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    AllShipmentsQuery,
+    AllShipmentsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<AllShipmentsQuery, AllShipmentsQueryVariables>(
+    AllShipmentsDocument,
+    options,
+  )
+}
+export function useAllShipmentsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    AllShipmentsQuery,
+    AllShipmentsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<AllShipmentsQuery, AllShipmentsQueryVariables>(
+    AllShipmentsDocument,
+    options,
+  )
+}
+export type AllShipmentsQueryHookResult = ReturnType<
+  typeof useAllShipmentsQuery
+>
+export type AllShipmentsLazyQueryHookResult = ReturnType<
+  typeof useAllShipmentsLazyQuery
+>
+export type AllShipmentsQueryResult = Apollo.QueryResult<
+  AllShipmentsQuery,
+  AllShipmentsQueryVariables
+>
+export const ShipmentDocument = gql`
+  query Shipment($id: Int!) {
+    shipment(id: $id) {
+      ...AllShipmentFields
+    }
+  }
+  ${AllShipmentFieldsFragmentDoc}
+`
+
+/**
+ * __useShipmentQuery__
+ *
+ * To run a query within a React component, call `useShipmentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useShipmentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useShipmentQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useShipmentQuery(
+  baseOptions: Apollo.QueryHookOptions<ShipmentQuery, ShipmentQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ShipmentQuery, ShipmentQueryVariables>(
+    ShipmentDocument,
+    options,
+  )
+}
+export function useShipmentLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    ShipmentQuery,
+    ShipmentQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ShipmentQuery, ShipmentQueryVariables>(
+    ShipmentDocument,
+    options,
+  )
+}
+export type ShipmentQueryHookResult = ReturnType<typeof useShipmentQuery>
+export type ShipmentLazyQueryHookResult = ReturnType<
+  typeof useShipmentLazyQuery
+>
+export type ShipmentQueryResult = Apollo.QueryResult<
+  ShipmentQuery,
+  ShipmentQueryVariables
+>
+export const UpdateShipmentDocument = gql`
+  mutation UpdateShipment($id: Int!, $input: ShipmentUpdateInput!) {
+    updateShipment(id: $id, input: $input) {
+      ...AllShipmentFields
+    }
+  }
+  ${AllShipmentFieldsFragmentDoc}
+`
+export type UpdateShipmentMutationFn = Apollo.MutationFunction<
+  UpdateShipmentMutation,
+  UpdateShipmentMutationVariables
+>
+
+/**
+ * __useUpdateShipmentMutation__
+ *
+ * To run a mutation, you first call `useUpdateShipmentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateShipmentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateShipmentMutation, { data, loading, error }] = useUpdateShipmentMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateShipmentMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateShipmentMutation,
+    UpdateShipmentMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    UpdateShipmentMutation,
+    UpdateShipmentMutationVariables
+  >(UpdateShipmentDocument, options)
+}
+export type UpdateShipmentMutationHookResult = ReturnType<
+  typeof useUpdateShipmentMutation
+>
+export type UpdateShipmentMutationResult = Apollo.MutationResult<UpdateShipmentMutation>
+export type UpdateShipmentMutationOptions = Apollo.BaseMutationOptions<
+  UpdateShipmentMutation,
+  UpdateShipmentMutationVariables
+>
