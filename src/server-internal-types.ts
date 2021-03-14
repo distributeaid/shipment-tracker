@@ -249,6 +249,29 @@ export type OfferUpdateInput = {
   photoUris?: Maybe<Array<Scalars['String']>>
 }
 
+export enum PalletType {
+  Standard = 'STANDARD',
+  Euro = 'EURO',
+  Custom = 'CUSTOM',
+}
+
+export enum PaymentStatus {
+  WontPay = 'WONT_PAY',
+  Uninitiated = 'UNINITIATED',
+  Invoiced = 'INVOICED',
+  Paid = 'PAID',
+}
+
+export type Pallet = {
+  __typename?: 'Pallet'
+  id: Scalars['Int']
+  offerId: Scalars['Int']
+  palletType: PalletType
+  paymentStatus: PaymentStatus
+  createdAt: Scalars['Date']
+  updatedAt: Scalars['Date']
+}
+
 export type WithIndex<TObject> = TObject & Record<string, any>
 export type ResolversObject<TObject> = WithIndex<TObject>
 
@@ -392,6 +415,9 @@ export type ResolversTypes = ResolversObject<{
   Offer: ResolverTypeWrapper<Offer>
   OfferCreateInput: OfferCreateInput
   OfferUpdateInput: OfferUpdateInput
+  PalletType: PalletType
+  PaymentStatus: PaymentStatus
+  Pallet: ResolverTypeWrapper<Pallet>
 }>
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -416,6 +442,7 @@ export type ResolversParentTypes = ResolversObject<{
   Offer: Offer
   OfferCreateInput: OfferCreateInput
   OfferUpdateInput: OfferUpdateInput
+  Pallet: Pallet
 }>
 
 export interface DateScalarConfig
@@ -612,6 +639,23 @@ export type OfferResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
+export type PalletResolvers<
+  ContextType = AuthenticatedContext,
+  ParentType extends ResolversParentTypes['Pallet'] = ResolversParentTypes['Pallet']
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  offerId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  palletType?: Resolver<ResolversTypes['PalletType'], ParentType, ContextType>
+  paymentStatus?: Resolver<
+    ResolversTypes['PaymentStatus'],
+    ParentType,
+    ContextType
+  >
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
 export type Resolvers<ContextType = AuthenticatedContext> = ResolversObject<{
   Date?: GraphQLScalarType
   Location?: LocationResolvers<ContextType>
@@ -622,6 +666,7 @@ export type Resolvers<ContextType = AuthenticatedContext> = ResolversObject<{
   Shipment?: ShipmentResolvers<ContextType>
   UserProfile?: UserProfileResolvers<ContextType>
   Offer?: OfferResolvers<ContextType>
+  Pallet?: PalletResolvers<ContextType>
 }>
 
 /**

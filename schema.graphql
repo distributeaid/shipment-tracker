@@ -179,3 +179,27 @@ input OfferUpdateInput {
   contact: ContactInfoInput
   photoUris: [String!]
 }
+
+enum PalletType {
+  STANDARD
+  EURO
+  CUSTOM
+}
+
+enum PaymentStatus {
+  WONT_PAY
+  UNINITIATED
+  INVOICED
+  PAID
+}
+
+type Pallet {
+  id: Int!
+  offerId: Int!
+
+  palletType: PalletType!
+  paymentStatus: PaymentStatus!
+
+  createdAt: Date!
+  updatedAt: Date!
+}

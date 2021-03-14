@@ -238,3 +238,26 @@ export type OfferUpdateInput = {
   contact?: Maybe<ContactInfoInput>
   photoUris?: Maybe<Array<Scalars['String']>>
 }
+
+export enum PalletType {
+  Standard = 'STANDARD',
+  Euro = 'EURO',
+  Custom = 'CUSTOM',
+}
+
+export enum PaymentStatus {
+  WontPay = 'WONT_PAY',
+  Uninitiated = 'UNINITIATED',
+  Invoiced = 'INVOICED',
+  Paid = 'PAID',
+}
+
+export type Pallet = {
+  __typename?: 'Pallet'
+  id: Scalars['Int']
+  offerId: Scalars['Int']
+  palletType: PalletType
+  paymentStatus: PaymentStatus
+  createdAt: Scalars['Date']
+  updatedAt: Scalars['Date']
+}
