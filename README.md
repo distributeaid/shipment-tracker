@@ -46,7 +46,7 @@ If the pull request does not require additional changes, the reviewer should mer
 
 Install system dependencies:
 
-- node.js v14.15.5
+- node.js v14
 - yarn v1.22.5: `brew install yarn`
 - postgresql v13.2: `brew install postgresql`
 
