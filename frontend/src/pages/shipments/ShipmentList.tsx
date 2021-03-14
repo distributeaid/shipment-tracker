@@ -12,6 +12,7 @@ import {
   formatShipmentName,
   getShipmentStatusBadgeColor,
 } from '../../utils/format'
+import { shipmentEditRoute } from '../../utils/routes'
 
 const SHIPMENTS_QUERY = gql`
   query GetAllShipments {
@@ -122,7 +123,7 @@ const ShipmentList: FunctionComponent = () => {
                         })}
                       >
                         {cell.column.Header === 'Name' ? (
-                          <Link to={`/shipment/${row.original.id}`}>
+                          <Link to={shipmentEditRoute(row.original.id)}>
                             {cell.render('Cell')}
                           </Link>
                         ) : (

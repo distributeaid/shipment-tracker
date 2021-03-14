@@ -13,6 +13,7 @@ import {
   ShipmentUpdateInput,
   ShippingRoute,
 } from '../../types/api-types'
+import { enumValues } from '../../utils/types'
 
 interface Props {
   /**
@@ -43,9 +44,9 @@ const STATUS_OPTIONS = [
   { label: 'In staging', value: ShipmentStatus.Staging },
 ]
 
-const SHIPPING_ROUTE_OPTIONS = Object.keys(ShippingRoute).map((routeKey) => ({
-  label: (ShippingRoute as any)[routeKey],
-  value: (ShippingRoute as any)[routeKey],
+const SHIPPING_ROUTE_OPTIONS = enumValues(ShippingRoute).map((routeKey) => ({
+  label: routeKey,
+  value: routeKey,
 }))
 
 const GET_ALL_GROUPS = gql`
@@ -96,8 +97,6 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
   useEffect(
     function resetFormValues() {
       if (props.defaultValues) {
-        console.log(props.defaultValues)
-
         // Update the values of the fields
         reset(props.defaultValues)
       }

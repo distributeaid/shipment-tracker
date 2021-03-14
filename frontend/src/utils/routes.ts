@@ -4,10 +4,18 @@ const ROUTES = {
   APOLLO_DEMO: '/apollo-demo',
   GROUP_LIST: '/groups',
   GROUP_CREATE: '/group/new',
-  GROUP_EDIT: '/group/:groupId',
+  GROUP_EDIT: '/group/:groupId/edit',
   SHIPMENT_LIST: '/shipments',
-  SHIPMENT_EDIT: '/shipment/:shipmentId',
+  SHIPMENT_EDIT: '/shipment/:shipmentId/edit',
   KITCHEN_SINK: '/kitchen-sink',
+}
+
+export function groupEditRoute(groupId: number | string) {
+  return ROUTES.GROUP_EDIT.replace(':groupId', groupId.toString())
+}
+
+export function shipmentEditRoute(shipmentId: number | string) {
+  return ROUTES.SHIPMENT_EDIT.replace(':shipmentId', shipmentId.toString())
 }
 
 export default ROUTES
