@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client'
 import React, { FunctionComponent, ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
@@ -6,12 +5,13 @@ import SelectField, { SelectOption } from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
 import { MONTH_OPTIONS } from '../../data/constants'
 import {
-  Group,
+  GroupQuery,
   GroupType,
-  Shipment,
+  ShipmentQuery,
   ShipmentStatus,
   ShipmentUpdateInput,
   ShippingRoute,
+  useAllGroupsQuery,
 } from '../../types/api-types'
 import { enumValues } from '../../utils/types'
 
@@ -28,7 +28,7 @@ interface Props {
    * The values to display in the fields of the form. Note that this is NOT a
    * controlled component.
    */
-  defaultValues?: Shipment
+  defaultValues?: ShipmentQuery
   /**
    * The callback triggered when the user submits the form
    */
@@ -49,17 +49,7 @@ const SHIPPING_ROUTE_OPTIONS = enumValues(ShippingRoute).map((routeKey) => ({
   value: routeKey,
 }))
 
-const GET_ALL_GROUPS = gql`
-  query Groups {
-    listGroups {
-      id
-      name
-      groupType
-    }
-  }
-`
-
-function groupToSelectOption(group: Group): SelectOption {
+function groupToSelectOption(group: GroupQuery['group']): SelectOption {
   return { value: group.id, label: group.name }
 }
 
@@ -68,28 +58,26 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
   const [sendingGroups, setSendingGroups] = useState<SelectOption[]>([])
 
   // Load the list of groups
-  const { data: hubs, loading: hubListIsLoading } = useQuery<{
-    listGroups: Group[]
-  }>(GET_ALL_GROUPS)
+  const { data: groups, loading: hubListIsLoading } = useAllGroupsQuery()
 
   // When the groups are loaded, organize them by type so we can present them
   // in the form
   useEffect(
     function organizeGroups() {
-      if (hubs && hubs.listGroups) {
+      if (groups && groups.listGroups) {
         setReceivingGroups(
-          hubs.listGroups
+          groups.listGroups
             .filter((group) => group.groupType === GroupType.ReceivingGroup)
             .map(groupToSelectOption),
         )
         setSendingGroups(
-          hubs.listGroups
+          groups.listGroups
             .filter((group) => group.groupType === GroupType.SendingGroup)
             .map(groupToSelectOption),
         )
       }
     },
-    [hubListIsLoading, hubs],
+    [hubListIsLoading, groups],
   )
 
   const { register, handleSubmit, reset } = useForm()
@@ -98,7 +86,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
     function resetFormValues() {
       if (props.defaultValues) {
         // Update the values of the fields
-        reset(props.defaultValues)
+        reset(props.defaultValues.shipment)
       }
     },
     [props.defaultValues, reset],

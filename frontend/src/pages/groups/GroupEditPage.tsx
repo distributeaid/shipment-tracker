@@ -1,56 +1,15 @@
-import { gql, useQuery } from '@apollo/client'
 import { FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { Group, GroupUpdateInput } from '../../types/api-types'
+import { GroupUpdateInput, useGroupQuery } from '../../types/api-types'
 import GroupForm from './GroupForm'
-
-const ALL_GROUP_FIELDS = gql`
-  fragment AllGroupFields on Group {
-    id
-    name
-    groupType
-    primaryLocation {
-      townCity
-      countryCode
-      openLocationCode
-    }
-    primaryContact {
-      name
-      email
-      whatsApp
-      phone
-      signal
-    }
-  }
-`
-
-const GET_GROUP = gql`
-  ${ALL_GROUP_FIELDS}
-  query Group($id: Int!) {
-    group(id: $id) {
-      ...AllGroupFields
-    }
-  }
-`
-
-// const UPDATE_GROUP = gql`
-//   ${ALL_GROUP_FIELDS}
-//   mutation Group($input: GroupUpdateInput!) {
-//     updateGroup(input: $input) {
-//       ...AllGroupFields
-//     }
-//   }
-// `
 
 const GroupEditPage: FunctionComponent = () => {
   // Extract the group's ID from the URL
   const { groupId } = useParams<{ groupId: string }>()
 
   // Load the group's information
-  const { data: originalGroupData, loading: queryIsLoading } = useQuery<{
-    group: Group
-  }>(GET_GROUP, {
+  const { data: originalGroupData, loading: queryIsLoading } = useGroupQuery({
     variables: { id: parseInt(groupId, 10) },
   })
 
@@ -83,7 +42,7 @@ const GroupEditPage: FunctionComponent = () => {
             isLoading={queryIsLoading}
             submitButtonLabel="Save changes"
             onSubmit={onSubmit}
-            defaultValues={originalGroupData?.group}
+            defaultValues={originalGroupData}
           />
         </main>
       </div>

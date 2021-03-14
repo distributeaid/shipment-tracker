@@ -1,0 +1,19 @@
+query AllShipments {
+  listShipments {
+    id
+    shippingRoute
+    labelYear
+    labelMonth
+    offerSubmissionDeadline
+    status
+    sendingHub {
+      id
+      name
+    }
+    receivingHub {
+      id
+      name
+    }
+    statusChangeTime
+  }
+}

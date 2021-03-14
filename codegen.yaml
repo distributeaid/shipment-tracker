@@ -19,6 +19,7 @@ generates:
   # Generate the types used by the frontend, because react-scripts requires them
   # to exist in the src directory.
   ./frontend/src/types/api-types.ts:
+    documents: frontend/src/**/*.graphql
     plugins:
       - add:
           content: "/**\n
@@ -27,3 +28,7 @@ generates:
             * https://graphql-code-generator.com/docs/getting-started/index\n
             */\n"
       - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      withHooks: true # Generate react hooks for queries and mutations

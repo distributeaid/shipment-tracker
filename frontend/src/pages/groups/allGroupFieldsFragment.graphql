@@ -1,0 +1,17 @@
+fragment AllGroupFields on Group {
+  id
+  name
+  groupType
+  primaryLocation {
+    townCity
+    countryCode
+    openLocationCode
+  }
+  primaryContact {
+    name
+    email
+    whatsApp
+    phone
+    signal
+  }
+}
