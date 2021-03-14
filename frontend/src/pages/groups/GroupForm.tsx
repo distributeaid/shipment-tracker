@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
-import { Group, GroupInput, GroupType } from '../../types/api-types'
+import { Group, GroupCreateInput, GroupType } from '../../types/api-types'
 
 interface Props {
   /**
@@ -22,7 +22,7 @@ interface Props {
   /**
    * The callback triggered when the user submits the form
    */
-  onSubmit: (input: GroupInput) => void
+  onSubmit: (input: GroupCreateInput) => void
 }
 
 /**

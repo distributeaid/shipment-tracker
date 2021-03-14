@@ -2,11 +2,11 @@ import { gql, useMutation } from '@apollo/client'
 import { FunctionComponent } from 'react'
 import { useHistory } from 'react-router-dom'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { Group, GroupInput } from '../../types/api-types'
+import { Group, GroupCreateInput } from '../../types/api-types'
 import GroupForm from './GroupForm'
 
 const ADD_GROUP = gql`
-  mutation Groups($input: GroupInput!) {
+  mutation Groups($input: GroupCreateInput!) {
     addGroup(input: $input) {
       id
     }
@@ -19,9 +19,9 @@ const GroupCreatePage: FunctionComponent = () => {
   const [
     addGroup,
     { loading: mutationIsLoading, error: mutationError },
-  ] = useMutation<{ addGroup: Group }>(ADD_GROUP)
+  ] = useMutation<{ addGroup: Group }, { input: GroupCreateInput }>(ADD_GROUP)
 
-  const onSubmit = (input: GroupInput) => {
+  const onSubmit = (input: GroupCreateInput) => {
     // Create the group and then redirect to its view/edit page
     addGroup({ variables: { input } })
       .then(({ data }) => {

@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import { FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { Group, GroupInput } from '../../types/api-types'
+import { Group, GroupUpdateInput } from '../../types/api-types'
 import GroupForm from './GroupForm'
 
 const ALL_GROUP_FIELDS = gql`
@@ -36,7 +36,7 @@ const GET_GROUP = gql`
 
 // const UPDATE_GROUP = gql`
 //   ${ALL_GROUP_FIELDS}
-//   mutation Group($input: GroupInput!) {
+//   mutation Group($input: GroupUpdateInput!) {
 //     updateGroup(input: $input) {
 //       ...AllGroupFields
 //     }
@@ -59,7 +59,7 @@ const GroupEditPage: FunctionComponent = () => {
   //   UPDATE_GROUP,
   // )
 
-  const onSubmit = (input: GroupInput) => {
+  const onSubmit = (input: GroupUpdateInput) => {
     // TODO support an updateGroup resolver on the backend
     // updateGroup({ variables: { input } }).catch((error) => {
     //   console.log(error)
