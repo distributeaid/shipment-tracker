@@ -9,6 +9,7 @@ import {
   QueryResolvers,
   ShipmentStatus,
 } from '../../server-internal-types'
+import stringIsUrl from '../group/stringIsUrl'
 
 const addOffer: MutationResolvers['addOffer'] = async (
   _parent,
@@ -17,6 +18,16 @@ const addOffer: MutationResolvers['addOffer'] = async (
 ) => {
   if (!input.sendingGroupId || !input.shipmentId) {
     throw new UserInputError('Offer arguments invalid')
+  }
+
+  if (input.photoUris) {
+    const invalidUris = input.photoUris.filter((uri) => !stringIsUrl(uri))
+
+    if (invalidUris.length > 0) {
+      throw new UserInputError(
+        `Invalid photo URI(s): ${invalidUris.join(', ')}`,
+      )
+    }
   }
 
   const sendingGroupPromise = Group.findByPk(input.sendingGroupId)
