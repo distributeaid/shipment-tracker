@@ -12,7 +12,7 @@ import {
   ShipmentStatus,
   ShippingRoute,
 } from '../server-internal-types'
-import { makeTestServer } from '../testServer'
+import { makeAdminTestServer, makeTestServer } from '../testServer'
 import { createGroup, createShipment } from './helpers'
 import UserAccount from '../models/user_account'
 import { fakeUserAuth } from '../authenticateRequest'
@@ -20,10 +20,12 @@ import { fakeUserAuth } from '../authenticateRequest'
 describe('Offers API', () => {
   let captainTestServer: ApolloServerTestClient,
     otherUserTestServer: ApolloServerTestClient,
+    adminTestServer: ApolloServerTestClient,
     captain: UserAccount,
     captainsGroup: Group,
     group2: Group,
-    shipment: Shipment
+    shipment: Shipment,
+    offer: Offer
 
   beforeEach(async () => {
     await sequelize.sync({ force: true })
@@ -45,6 +47,7 @@ describe('Offers API', () => {
       context: () => ({ auth: { ...fakeUserAuth, userAccount: captain } }),
     })
     otherUserTestServer = await makeTestServer()
+    adminTestServer = await makeAdminTestServer()
 
     captainsGroup = await createGroup(
       {
@@ -252,8 +255,6 @@ describe('Offers API', () => {
   })
 
   describe('updateOffer', () => {
-    let offer: Offer
-
     const UPDATE_OFFER = gql`
       mutation($input: OfferUpdateInput!) {
         updateOffer(input: $input) {
@@ -317,6 +318,167 @@ describe('Offers API', () => {
       })
 
       expect(res.errors?.[0].message).toEqual('Not permitted to update offer')
+    })
+  })
+
+  describe('listOffers', () => {
+    let otherOfferInShipment: Offer,
+      otherShipment: Shipment,
+      otherShipmentOffer: Offer
+
+    const LIST_OFFERS_QUERY = gql`
+      query($shipmentId: Int!) {
+        listOffers(shipmentId: $shipmentId) {
+          id
+          status
+          shipmentId
+          sendingGroupId
+          photoUris
+          contact {
+            name
+            email
+            signal
+          }
+        }
+      }
+    `
+
+    beforeEach(async () => {
+      otherShipment = await createShipment({
+        labelYear: 2021,
+        labelMonth: 1,
+        shippingRoute: ShippingRoute.Uk,
+        sendingHubId: captainsGroup.id,
+        receivingHubId: captainsGroup.id,
+        status: ShipmentStatus.Open,
+      })
+
+      otherOfferInShipment = await Offer.create({
+        status: OfferStatus.Draft,
+        statusChangeTime: new Date(),
+        photoUris: [],
+        shipmentId: shipment.id,
+        sendingGroupId: group2.id,
+      })
+
+      otherShipmentOffer = await Offer.create({
+        status: OfferStatus.Draft,
+        statusChangeTime: new Date(),
+        photoUris: [],
+        shipmentId: otherShipment.id,
+        sendingGroupId: captainsGroup.id,
+      })
+
+      offer = await Offer.create({
+        status: OfferStatus.Draft,
+        statusChangeTime: new Date(),
+        photoUris: [],
+        shipmentId: shipment.id,
+        sendingGroupId: captainsGroup.id,
+      })
+    })
+
+    it('returns the offers for the group the user is captain of', async () => {
+      const res = await captainTestServer.query({
+        query: LIST_OFFERS_QUERY,
+        variables: { shipmentId: shipment.id },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res?.data?.listOffers?.length).toEqual(1)
+
+      const foundOffer = res.data?.listOffers?.[0]
+
+      expect(foundOffer.id).toEqual(offer.id)
+    })
+
+    it('admins get all offers for the shipment', async () => {
+      const res = await adminTestServer.query({
+        query: LIST_OFFERS_QUERY,
+        variables: { shipmentId: shipment.id },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res?.data?.listOffers?.length).toEqual(2)
+
+      const ids = res.data?.listOffers?.map((offer: Offer) => offer.id)
+      expect(ids.sort()).toEqual([offer.id, otherOfferInShipment.id].sort())
+    })
+
+    it('returns empty if user has no authorized offers for shipment', async () => {
+      const res = await otherUserTestServer.query({
+        query: LIST_OFFERS_QUERY,
+        variables: { shipmentId: shipment.id },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res?.data?.listOffers?.length).toEqual(0)
+    })
+  })
+
+  describe('offer', () => {
+    const OFFER_QUERY = gql`
+      query($id: Int!) {
+        offer(id: $id) {
+          id
+          status
+          shipmentId
+          sendingGroupId
+          photoUris
+          contact {
+            name
+            email
+            signal
+          }
+        }
+      }
+    `
+
+    beforeEach(async () => {
+      offer = await Offer.create({
+        status: OfferStatus.Draft,
+        statusChangeTime: new Date(),
+        photoUris: [],
+        shipmentId: shipment.id,
+        sendingGroupId: captainsGroup.id,
+      })
+    })
+
+    it('returns the offer for captain', async () => {
+      const res = await captainTestServer.query({
+        query: OFFER_QUERY,
+        variables: { id: offer.id },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res?.data?.offer?.id).toBeNumber()
+      expect(res?.data?.offer?.status).toEqual(OfferStatus.Draft)
+      expect(res?.data?.offer?.shipmentId).toEqual(shipment.id)
+      expect(res?.data?.offer?.sendingGroupId).toEqual(captainsGroup.id)
+    })
+
+    it('returns the offer for admins', async () => {
+      const res = await adminTestServer.query({
+        query: OFFER_QUERY,
+        variables: { id: offer.id },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res?.data?.offer?.id).toBeNumber()
+      expect(res?.data?.offer?.status).toEqual(OfferStatus.Draft)
+      expect(res?.data?.offer?.shipmentId).toEqual(shipment.id)
+      expect(res?.data?.offer?.sendingGroupId).toEqual(captainsGroup.id)
+    })
+
+    it('forbids other users', async () => {
+      const res = await otherUserTestServer.query({
+        query: OFFER_QUERY,
+        variables: { id: offer.id },
+      })
+
+      expect(res.errors?.[0].message).toEqual(
+        'Not permitted to view that offer',
+      )
     })
   })
 })

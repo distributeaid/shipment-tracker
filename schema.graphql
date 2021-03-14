@@ -68,10 +68,14 @@ input ShipmentUpdateInput {
 }
 
 type Query {
-  listGroups: [Group!]!
-  listShipments: [Shipment!]!
   group(id: Int!): Group!
+  listGroups: [Group!]!
+
   shipment(id: Int!): Shipment!
+  listShipments: [Shipment!]!
+
+  offer(id: Int!): Offer!
+  listOffers(shipmentId: Int!): [Offer!]!
 }
 
 type Mutation {

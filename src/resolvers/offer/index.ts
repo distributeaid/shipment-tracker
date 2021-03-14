@@ -6,6 +6,7 @@ import Shipment from '../../models/shipment'
 import {
   MutationResolvers,
   OfferStatus,
+  QueryResolvers,
   ShipmentStatus,
 } from '../../server-internal-types'
 
@@ -106,4 +107,50 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
   return offer.update(updateAttributes)
 }
 
-export { addOffer, updateOffer }
+const offer: QueryResolvers['offer'] = async (_, { id }, context) => {
+  const offer = await Offer.findByPk(id, {
+    include: { association: 'sendingGroup' },
+  })
+
+  if (!offer) {
+    throw new UserInputError(`Offer ${id} does not exist`)
+  }
+
+  if (!offer.sendingGroup) {
+    throw new ApolloError(`Offer ${id} has no group!`)
+  }
+
+  if (
+    offer.sendingGroup.captainId !== context.auth.userAccount.id &&
+    !context.auth.isAdmin
+  ) {
+    throw new ForbiddenError('Not permitted to view that offer')
+  }
+
+  return offer
+}
+
+const listOffers: QueryResolvers['listOffers'] = async (
+  _,
+  { shipmentId },
+  context,
+) => {
+  const groupsPromise = Group.findAll({
+    where: { captainId: context.auth.userAccount.id },
+  })
+  const shipment = await Shipment.findByPk(shipmentId)
+
+  if (!shipment) {
+    throw new UserInputError(`Shipment ${shipmentId} does not exist`)
+  }
+
+  const groupIds = (await groupsPromise).map((group) => group.id)
+
+  if (context.auth.isAdmin) {
+    return Offer.findAll({ where: { shipmentId } })
+  }
+
+  return Offer.findAll({ where: { shipmentId, sendingGroupId: groupIds } })
+}
+
+export { addOffer, updateOffer, offer, listOffers }
