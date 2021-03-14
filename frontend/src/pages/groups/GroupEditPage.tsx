@@ -44,7 +44,7 @@ const GET_GROUP = gql`
 // `
 
 const GroupEditPage: FunctionComponent = () => {
-  // Extract the group's ID from teh URL
+  // Extract the group's ID from the URL
   const { groupId } = useParams<{ groupId: string }>()
 
   // Load the group's information

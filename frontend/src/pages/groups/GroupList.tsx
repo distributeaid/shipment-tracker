@@ -8,6 +8,7 @@ import TableHeader from '../../components/table/TableHeader'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { Group } from '../../types/api-types'
 import { formatGroupType } from '../../utils/format'
+import ROUTES, { groupEditRoute } from '../../utils/routes'
 
 const GROUPS_QUERY = gql`
   query GetAllGroups {
@@ -69,7 +70,7 @@ const GroupList: FunctionComponent = () => {
       <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
         <header className="p-6 border-b border-gray-200 flex items-center justify-between">
           <h1 className="text-navy-800 text-3xl">Groups</h1>
-          <ButtonLink to="/group/new">Create a group</ButtonLink>
+          <ButtonLink to={ROUTES.GROUP_CREATE}>Create a group</ButtonLink>
         </header>
         <main>
           <table className="w-full" {...getTableProps()}>
@@ -102,13 +103,13 @@ const GroupList: FunctionComponent = () => {
                       <td
                         {...cell.getCellProps()}
                         className={cx('p-2 first:pl-6 last:pr-6', {
-                          'font-semibold text-navy-800':
+                          'font-semibold text-navy-700 hover:underline':
                             cell.column.Header === 'Name',
                           'bg-gray-50': cell.column.isSorted,
                         })}
                       >
                         {cell.column.Header === 'Name' ? (
-                          <Link to={`/group/${row.original.id}`}>
+                          <Link to={groupEditRoute(row.original.id)}>
                             {cell.render('Cell')}
                           </Link>
                         ) : (

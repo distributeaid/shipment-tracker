@@ -1,5 +1,6 @@
 import { BadgeColor } from '../components/Badge'
-import { GroupType, ShipmentStatus } from '../types/api-types'
+import { MONTHS } from '../data/constants'
+import { GroupType, Shipment, ShipmentStatus } from '../types/api-types'
 
 export function formatGroupType(type: GroupType) {
   switch (type) {
@@ -20,20 +21,7 @@ export function formatGroupType(type: GroupType) {
  * @example formatLabelMonth(1) // January
  */
 export function formatLabelMonth(labelMonth: number) {
-  return [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ][labelMonth - 1]
+  return MONTHS[labelMonth - 1]
 }
 
 /**
@@ -58,4 +46,16 @@ export function getShipmentStatusBadgeColor(
     default:
       return 'gray'
   }
+}
+
+/**
+ * Formats a shipment name for quick identification. Note that this is NOT a
+ * unique identifier!
+ * @param shipment
+ * @returns A non-unique identifier for the shipment
+ * @example "UK-2021-03"
+ */
+export function formatShipmentName(shipment: Shipment) {
+  const month = shipment.labelMonth.toString().padStart(2, '0')
+  return `${shipment.shippingRoute}-${shipment.labelYear}-${month}`
 }

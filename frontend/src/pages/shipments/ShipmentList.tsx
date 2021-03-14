@@ -1,15 +1,18 @@
 import { gql, useQuery } from '@apollo/client'
 import cx from 'classnames'
-import React, { FunctionComponent, useMemo } from 'react'
-import { useSortBy, useTable } from 'react-table'
+import { FunctionComponent, useMemo } from 'react'
+import { Link } from 'react-router-dom'
+import { Column, useSortBy, useTable } from 'react-table'
 import Badge from '../../components/Badge'
 import TableHeader from '../../components/table/TableHeader'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { Shipment } from '../../types/api-types'
 import {
   formatLabelMonth,
+  formatShipmentName,
   getShipmentStatusBadgeColor,
 } from '../../utils/format'
+import { shipmentEditRoute } from '../../utils/routes'
 
 const SHIPMENTS_QUERY = gql`
   query GetAllShipments {
@@ -33,10 +36,10 @@ const SHIPMENTS_QUERY = gql`
   }
 `
 
-const COLUMNS = [
+const COLUMNS: Column<Shipment>[] = [
   {
-    Header: 'ID',
-    accessor: 'id',
+    Header: 'Name',
+    accessor: (row) => formatShipmentName(row),
   },
   {
     Header: 'Route',
@@ -44,16 +47,15 @@ const COLUMNS = [
   },
   {
     Header: 'Sending hub',
-    accessor: 'sendingHub.name',
+    accessor: (row) => row.sendingHub.name,
   },
   {
     Header: 'Receiving hub',
-    accessor: 'receivingHub.name',
+    accessor: (row) => row.receivingHub.name,
   },
   {
     Header: 'Date',
-    accessor: (row: Shipment) =>
-      `${formatLabelMonth(row.labelMonth)} ${row.labelYear}`,
+    accessor: (row) => `${formatLabelMonth(row.labelMonth)} ${row.labelYear}`,
   },
   {
     Header: 'Status',
@@ -76,7 +78,7 @@ const ShipmentList: FunctionComponent = () => {
     headerGroups,
     rows,
     prepareRow,
-  } = useTable({ columns: COLUMNS as any, data: shipments }, useSortBy)
+  } = useTable({ columns: COLUMNS, data: shipments }, useSortBy)
 
   return (
     <LayoutWithNav>
@@ -115,10 +117,18 @@ const ShipmentList: FunctionComponent = () => {
                       <td
                         {...cell.getCellProps()}
                         className={cx('p-2 first:pl-6 last:pr-6', {
+                          'font-semibold text-navy-700 hover:underline':
+                            cell.column.Header === 'Name',
                           'bg-gray-50': cell.column.isSorted,
                         })}
                       >
-                        {cell.render('Cell')}
+                        {cell.column.Header === 'Name' ? (
+                          <Link to={shipmentEditRoute(row.original.id)}>
+                            {cell.render('Cell')}
+                          </Link>
+                        ) : (
+                          cell.render('Cell')
+                        )}
                       </td>
                     ))}
                   </tr>

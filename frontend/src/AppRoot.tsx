@@ -13,6 +13,7 @@ import KitchenSink from './pages/KitchenSink'
 import LoadingPage from './pages/LoadingPage'
 import NotFoundPage from './pages/NotFoundPage'
 import PublicHomePage from './pages/PublicHome'
+import ShipmentEditPage from './pages/shipments/ShipmentEditPage'
 import ShipmentList from './pages/shipments/ShipmentList'
 import ROUTES from './utils/routes'
 
@@ -92,6 +93,12 @@ const AppRoot = () => {
             isAuthenticated={isAuthenticated}
           >
             <ShipmentList />
+          </PrivateRoute>
+          <PrivateRoute
+            path={ROUTES.SHIPMENT_EDIT}
+            isAuthenticated={isAuthenticated}
+          >
+            <ShipmentEditPage />
           </PrivateRoute>
           <PrivateRoute isAuthenticated={isAuthenticated} path="*">
             <NotFoundPage />

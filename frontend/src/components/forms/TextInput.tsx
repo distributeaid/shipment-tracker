@@ -1,5 +1,6 @@
 import cx from 'classnames'
 import { FunctionComponent, InputHTMLAttributes } from 'react'
+import { RegisterOptions } from 'react-hook-form'
 import { FormRegisterType } from '../../types/form-types'
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
@@ -33,10 +34,15 @@ const TextInput: FunctionComponent<Props> = ({
     },
   )
 
+  const registerOptions: RegisterOptions = {
+    required: otherProps.required,
+    valueAsNumber: type === 'number',
+  }
+
   return (
     <input
       {...otherProps}
-      ref={register ? register({ required: otherProps.required }) : undefined}
+      ref={register ? register(registerOptions) : undefined}
       type={type}
       className={classes}
     />
