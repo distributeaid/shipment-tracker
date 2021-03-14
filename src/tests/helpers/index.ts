@@ -2,12 +2,15 @@ import { Maybe } from 'graphql/jsutils/Maybe'
 import Group from '../../models/group'
 import Shipment from '../../models/shipment'
 import UserAccount from '../../models/user_account'
-import { GroupInput, ShipmentCreateInput } from '../../server-internal-types'
+import {
+  GroupCreateInput,
+  ShipmentCreateInput,
+} from '../../server-internal-types'
 
 let fakeAuth0Id = 1
 
 async function createGroup(
-  input: GroupInput,
+  input: GroupCreateInput,
   captainId: Maybe<number> = null,
 ): Promise<Group> {
   if (!captainId) {

@@ -74,12 +74,21 @@ export type Group = {
   updatedAt: Scalars['Date']
 }
 
-export type GroupInput = {
+export type GroupCreateInput = {
   name: Scalars['String']
   groupType: GroupType
   primaryLocation: LocationInput
   primaryContact: ContactInfoInput
   website?: Maybe<Scalars['String']>
+}
+
+export type GroupUpdateInput = {
+  name?: Maybe<Scalars['String']>
+  groupType?: Maybe<GroupType>
+  primaryLocation?: Maybe<LocationInput>
+  primaryContact?: Maybe<ContactInfoInput>
+  website?: Maybe<Scalars['String']>
+  captainId?: Maybe<Scalars['Int']>
 }
 
 export type ShipmentUpdateInput = {
@@ -110,18 +119,29 @@ export type QueryShipmentArgs = {
 export type Mutation = {
   __typename?: 'Mutation'
   addGroup: Group
+  updateGroup: Group
   addShipment: Shipment
+  updateShipment: Shipment
   addOffer: Offer
   updateOffer: Offer
-  updateShipment: Shipment
 }
 
 export type MutationAddGroupArgs = {
-  input: GroupInput
+  input: GroupCreateInput
+}
+
+export type MutationUpdateGroupArgs = {
+  id: Scalars['Int']
+  input: GroupUpdateInput
 }
 
 export type MutationAddShipmentArgs = {
   input: ShipmentCreateInput
+}
+
+export type MutationUpdateShipmentArgs = {
+  id: Scalars['Int']
+  input: ShipmentUpdateInput
 }
 
 export type MutationAddOfferArgs = {
@@ -130,11 +150,6 @@ export type MutationAddOfferArgs = {
 
 export type MutationUpdateOfferArgs = {
   input: OfferUpdateInput
-}
-
-export type MutationUpdateShipmentArgs = {
-  id: Scalars['Int']
-  input: ShipmentUpdateInput
 }
 
 export type ShipmentCreateInput = {
@@ -350,7 +365,8 @@ export type ResolversTypes = ResolversObject<{
   ContactInfoInput: ContactInfoInput
   Group: ResolverTypeWrapper<Group>
   Int: ResolverTypeWrapper<Scalars['Int']>
-  GroupInput: GroupInput
+  GroupCreateInput: GroupCreateInput
+  GroupUpdateInput: GroupUpdateInput
   ShipmentUpdateInput: ShipmentUpdateInput
   Query: ResolverTypeWrapper<{}>
   Mutation: ResolverTypeWrapper<{}>
@@ -377,7 +393,8 @@ export type ResolversParentTypes = ResolversObject<{
   ContactInfoInput: ContactInfoInput
   Group: Group
   Int: Scalars['Int']
-  GroupInput: GroupInput
+  GroupCreateInput: GroupCreateInput
+  GroupUpdateInput: GroupUpdateInput
   ShipmentUpdateInput: ShipmentUpdateInput
   Query: {}
   Mutation: {}
@@ -482,11 +499,23 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationAddGroupArgs, 'input'>
   >
+  updateGroup?: Resolver<
+    ResolversTypes['Group'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateGroupArgs, 'id' | 'input'>
+  >
   addShipment?: Resolver<
     ResolversTypes['Shipment'],
     ParentType,
     ContextType,
     RequireFields<MutationAddShipmentArgs, 'input'>
+  >
+  updateShipment?: Resolver<
+    ResolversTypes['Shipment'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateShipmentArgs, 'id' | 'input'>
   >
   addOffer?: Resolver<
     ResolversTypes['Offer'],
@@ -499,12 +528,6 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationUpdateOfferArgs, 'input'>
-  >
-  updateShipment?: Resolver<
-    ResolversTypes['Shipment'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationUpdateShipmentArgs, 'id' | 'input'>
   >
 }>
 

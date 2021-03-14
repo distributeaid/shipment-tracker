@@ -35,17 +35,27 @@ type Group {
   primaryLocation: Location!
   primaryContact: ContactInfo!
   website: String
+  captainId: Int!
 
   createdAt: Date!
   updatedAt: Date!
 }
 
-input GroupInput {
+input GroupCreateInput {
   name: String!
   groupType: GroupType!
   primaryLocation: LocationInput!
   primaryContact: ContactInfoInput!
   website: String
+}
+
+input GroupUpdateInput {
+  name: String
+  groupType: GroupType
+  primaryLocation: LocationInput
+  primaryContact: ContactInfoInput
+  website: String
+  captainId: Int
 }
 
 input ShipmentUpdateInput {
@@ -65,11 +75,14 @@ type Query {
 }
 
 type Mutation {
-  addGroup(input: GroupInput!): Group!
+  addGroup(input: GroupCreateInput!): Group!
+  updateGroup(id: Int!, input: GroupUpdateInput!): Group!
+
   addShipment(input: ShipmentCreateInput!): Shipment!
+  updateShipment(id: Int!, input: ShipmentUpdateInput!): Shipment!
+
   addOffer(input: OfferCreateInput!): Offer!
   updateOffer(input: OfferUpdateInput!): Offer!
-  updateShipment(id: Int!, input: ShipmentUpdateInput!): Shipment!
 }
 
 input ShipmentCreateInput {

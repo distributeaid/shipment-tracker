@@ -85,7 +85,7 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
     !context.auth.isAdmin &&
     context.auth.userAccount.id !== group.captainId
   ) {
-    throw new ForbiddenError('Not permitted to update group')
+    throw new ForbiddenError('Not permitted to update offer')
   }
 
   const updateAttributes: Partial<OfferAttributes> = {}
