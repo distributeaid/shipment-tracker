@@ -293,6 +293,7 @@ export type PalletCreateInput = {
 }
 
 export type PalletUpdateInput = {
+  id: Scalars['Int']
   paymentStatus?: Maybe<PaymentStatus>
   palletType?: Maybe<PalletType>
 }

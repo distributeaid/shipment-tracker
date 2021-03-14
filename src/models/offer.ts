@@ -46,6 +46,9 @@ export default class Offer extends Model {
   @Column
   public shipmentId!: number
 
+  @BelongsTo(() => Shipment, 'shipmentId')
+  public shipment!: Shipment
+
   @ForeignKey(() => Group)
   @Column
   public sendingGroupId!: number
