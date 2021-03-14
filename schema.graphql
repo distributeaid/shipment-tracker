@@ -40,7 +40,7 @@ type Group {
   updatedAt: Date!
 }
 
-input GroupInput {
+input GroupCreateInput {
   name: String!
   groupType: GroupType!
   primaryLocation: LocationInput!
@@ -65,7 +65,7 @@ type Query {
 }
 
 type Mutation {
-  addGroup(input: GroupInput!): Group!
+  addGroup(input: GroupCreateInput!): Group!
   addShipment(input: ShipmentCreateInput!): Shipment!
   addOffer(input: OfferCreateInput!): Offer!
   updateOffer(input: OfferUpdateInput!): Offer!

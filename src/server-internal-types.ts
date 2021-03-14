@@ -74,7 +74,7 @@ export type Group = {
   updatedAt: Scalars['Date']
 }
 
-export type GroupInput = {
+export type GroupCreateInput = {
   name: Scalars['String']
   groupType: GroupType
   primaryLocation: LocationInput
@@ -117,7 +117,7 @@ export type Mutation = {
 }
 
 export type MutationAddGroupArgs = {
-  input: GroupInput
+  input: GroupCreateInput
 }
 
 export type MutationAddShipmentArgs = {
@@ -350,7 +350,7 @@ export type ResolversTypes = ResolversObject<{
   ContactInfoInput: ContactInfoInput
   Group: ResolverTypeWrapper<Group>
   Int: ResolverTypeWrapper<Scalars['Int']>
-  GroupInput: GroupInput
+  GroupCreateInput: GroupCreateInput
   ShipmentUpdateInput: ShipmentUpdateInput
   Query: ResolverTypeWrapper<{}>
   Mutation: ResolverTypeWrapper<{}>
@@ -377,7 +377,7 @@ export type ResolversParentTypes = ResolversObject<{
   ContactInfoInput: ContactInfoInput
   Group: Group
   Int: Scalars['Int']
-  GroupInput: GroupInput
+  GroupCreateInput: GroupCreateInput
   ShipmentUpdateInput: ShipmentUpdateInput
   Query: {}
   Mutation: {}

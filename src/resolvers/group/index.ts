@@ -1,7 +1,7 @@
 import { ApolloError, UserInputError } from 'apollo-server'
 import Group from '../../models/group'
 import {
-  GroupInput,
+  GroupCreateInput,
   MutationResolvers,
   QueryResolvers,
 } from '../../server-internal-types'
@@ -33,7 +33,7 @@ const addGroup: MutationResolvers['addGroup'] = async (
   ) {
     throw new UserInputError('Group arguments invalid', {
       invalidArgs: Object.keys(input).filter(
-        (key) => !input[key as keyof GroupInput],
+        (key) => !input[key as keyof GroupCreateInput],
       ),
     })
   }

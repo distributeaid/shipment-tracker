@@ -64,7 +64,7 @@ export type Group = {
   updatedAt: Scalars['Date']
 }
 
-export type GroupInput = {
+export type GroupCreateInput = {
   name: Scalars['String']
   groupType: GroupType
   primaryLocation: LocationInput
@@ -107,7 +107,7 @@ export type Mutation = {
 }
 
 export type MutationAddGroupArgs = {
-  input: GroupInput
+  input: GroupCreateInput
 }
 
 export type MutationAddShipmentArgs = {
