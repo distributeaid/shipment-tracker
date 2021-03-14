@@ -1,0 +1,51 @@
+#! /usr/bin/env bash
+
+database_exists() {
+    psql -lqt | cut -d \| -f 1 | grep -qw $1
+}
+
+ensure_database() {
+    local db_name=$1
+
+    database_exists "$db_name"
+    if [ "$?" -eq 0 ]; then
+        echo database $db_name already exists.
+    else
+        printf "creating $db_name... "
+        createdb "$db_name"
+        echo done.
+    fi
+}
+
+ensure_database "distributeaid_test"
+ensure_database "distributeaid_dev"
+
+user_exists() {
+    psql -d postgres -t -c '\du' | cut -d \| -f 1 | grep -qw $1
+}
+
+grant_db_privileges () {
+    psql -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE $1 TO $2;"
+}
+
+user_exists "distributeaid"
+if [ "$?" -eq 0 ]; then
+    echo pg user "distributeaid" already exists.
+else
+    printf 'creating pg user distributeaid... '
+    createuser distributeaid
+    echo done.
+
+    printf 'granting access privileges to pg user distributeaid... '
+    grant_db_privileges "distributeaid_dev" "distributeaid" > /dev/null
+    grant_db_privileges "distributeaid_test" "distributeaid" > /dev/null
+    echo done.
+fi
+
+echo
+echo Running sequelize migrations...
+npx sequelize-cli db:migrate
+
+echo
+echo Running sequelize seeders...
+npx sequelize-cli db:seed:all

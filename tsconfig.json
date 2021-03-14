@@ -6,6 +6,7 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "lib": ["esnext"],
+    "module": "CommonJS",
     "moduleResolution": "node",
     "strict": true,
     "target": "ES6"

@@ -1,0 +1,9 @@
+{
+  "short_name": "Shipment Tracker",
+  "name": "Shipment Tracker for Distribute Aid",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

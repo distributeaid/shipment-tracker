@@ -2,43 +2,121 @@
 
 # Distribute Aid Shipment Tracker
 
-[Project goals and background](https://www.notion.so/distributeaid/1-Online-Offer-Submission-form-4f40e406e5124d23a4d35280585ec88d)
+The goal of this project is to provide a system for collecting aid offers and organizing them into pallets appropriate for a shipment. Using the system, Distribute Aid administrators can create shipments, aid donors can organize their aid for donation into offers for a shipment and provide the information necessary for a Distribute Aid hub coordinator and logistics coordinator to process it for international shipping to refugees.
 
-[Project requirements document with user stories and proposed GraphQL schema](https://www.notion.so/distributeaid/Technical-requirements-c2fd190e0a8d4f708119c6944fa654dd)
+Key documents:
+
+- [Project goals and background](https://www.notion.so/distributeaid/1-Online-Offer-Submission-form-4f40e406e5124d23a4d35280585ec88d)
+
+- [Project requirements document with user stories and proposed GraphQL schema](https://www.notion.so/distributeaid/Technical-requirements-c2fd190e0a8d4f708119c6944fa654dd)
+
+## Deployments
+
+### Staging
+
+The main `saga` branch is deployed automatically to Heroku by CI. Staging can be accessed here: https://shipment-tracker-dev.herokuapp.com
+
+## Devopment process
+
+### Code of conduct
+
+First, please read our [code of conduct](https://www.notion.so/distributeaid/Code-of-Conduct-6ba4ca07a6fa4e4da9ef8ad91757c5b4).
+
+### Issue tracking
+
+Development tasks are managed in the github issues for this repository. The issues themselves are fairly light on detail in favor of a simple description of scope (i.e. the conditions for the task being considered "done"). For specifics on task requirements, please reference the [project requirements document](https://www.notion.so/distributeaid/Technical-requirements-c2fd190e0a8d4f708119c6944fa654dd) early and often.
+
+Issues tagged `front end` will also be tagged with either `needs UI mock`, indicating the task still needs design work to be ready for development, or `has UI mock` indicating it's ready for dev work.
+
+When you begin working on an issue, please self-assign or comment on it indicating you're beginning work to avoid duplicate effort.
+
+### Pull requests
+
+When you're ready to submit your code, open a pull request with "Closes #X" to link the relavant issue. When your PR is approved by at least one maintainer it is ready to submit.
+
+It's easy for the intention of code review comments to be unclear or get misinterpreted. To help with communication, reviewers are encouraged to use [conventional comments](https://conventionalcomments.org/) and explicitly indicate that comments are `(blocking)`, where the discussion must be resolved for PR to be merged, or `(non-blocking)` where resolving the discussion is optional for the implementer.
+
+#### Approval and merging
+
+Reviewers should grant approval if they do not feel additional review is necessary before merging. This does not necessarily mean no more changes are required before merging, but that any further changes are expected to be minor enough to not require review.
+
+If the pull request does not require additional changes, the reviewer should merge it immediately after approving. Otherwise, the pull request author should merge (if able) once they have addressed all comments marked `(blocking)` or `nit`. Contributors are encouraged to at least reply to `(non-blocking)` and `(if-minor)` comments if they do not address them with code changes.
 
 ## Dev setup
 
 Install system dependencies:
 
-- node.js v14
-- yarn v1.22.5
-- postgresql v13.2
+- node.js v14.15.5
+- yarn v1.22.5: `brew install yarn`
+- postgresql v13.2: `brew install postgresql`
 
 Install project dependencies:
 
 - `yarn install`
 
-Initialize postgres databases for development:
+Start postgres daemon:
 
 - macOS: `brew services start postgresql`
 - linux: `sudo service postgresql-13.2 start`
 
-then
+Next set up the development and test databases. (Make
+sure `npx` is working first by running `npx --version`.)
 
-```
-createdb distributeaid_dev &&
-  createdb distributeaid_test &&
-  psql -d distributeaid_dev -c "create user distributeaid;" &&
-  psql -d distributeaid_dev -c "grant all privileges on database distributeaid_dev to distributeaid;" &&
-  psql -d distributeaid_dev -c "grant all privileges on database distributeaid_test to distributeaid;" &&
-  npx sequelize-cli db:migrate
-```
+- `./script/init_db`
 
-If these command fail due to `could not connect to server: No such file or directory`, check the log file at `/usr/local/var/log/postgres.log`. If you see an error that looks similar to `The data directory was initialized by PostgreSQL version 11, which is not compatible with this version 13.2`, you have a previous version of postgresql installed that is conflicting with this one. The easiest way to resolve this is to `mv` the old data directory and run `initdb` with the new version of postgres. See https://gist.github.com/olivierlacan/e1bf5c34bc9f82e06bc0 for more details.
+Create your local environment file:
 
+- `cp .env.example .env`
 
 Run the dev server:
 
-`npm run dev`
+`yarn dev`
 
 And then view graphql sandbox at http://localhost:3000/graphql
+
+If you run into problems setting up your development environment please create an issue describing any errors you encounter.
+
+See the README in the `frontend` directory for instructions on setting up for front end development.
+
+## Technical documentation
+
+- [Database Migrations](./docs/migrations.md)
+- [Graphql Codegen](./docs/codegen.md)
+
+### Type definitions
+
+We want to maintain a single source of truth defining types used on both the API server and browser client. We use [GraphQL Codegen](https://graphql-code-generator.com/) for that purpose.
+
+Types are defined in `schema.graphql`. Type code for TypeScript is generated from that schema file using the command `yarn codegen`. This will update the type definition files at
+
+- `./src/server-internal-types.ts` for the server
+- `./frontend/src/types/api-types.ts` for the browser client
+
+Make sure to run `yarn codegen` and include the generated code changes in any commits that alter the GraphQL schema.
+
+## Technologies
+
+Shipment Tracker is a full stack TypeScript web app backed by a PostgreSQL database.
+
+General tools:
+
+- [TypeScript](https://www.typescriptlang.org/)
+- [Yarn package manager](https://yarnpkg.com/)
+- [GraphQL](https://graphql.org/)
+- [GraphQL Codegen](https://graphql-code-generator.com/)
+- [Prettier code formatter](https://prettier.io/)
+- [Jest test framework](https://jestjs.io/)
+
+Back end:
+
+- [Node.js](https://nodejs.org/en/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Sequelize ORM](https://sequelize.org/)
+- [Apollo Server](https://www.apollographql.com/docs/apollo-server/)
+
+Front end:
+
+- [React.js](https://reactjs.org/)
+- [React Router](https://reactrouter.com/web/guides/quick-start)
+- [Apollo Client](https://www.apollographql.com/docs/react/)
+- [Tailwind CSS](https://tailwindcss.com)

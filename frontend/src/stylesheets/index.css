@@ -1,0 +1,6 @@
+/* Import Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './burger.css';

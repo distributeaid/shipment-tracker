@@ -1,30 +1,60 @@
-import express from 'express'
-import { ApolloServer } from 'apollo-server-express'
-import depthLimit from 'graphql-depth-limit'
-import { createServer } from 'http'
 import compression from 'compression'
 import cors from 'cors'
-import { readFileSync } from 'fs'
-import resolvers from './resolvers'
+import dotenv from 'dotenv'
+import express from 'express'
+import { createServer } from 'http'
+import path from 'path'
 
-const typeDefs = readFileSync('./schema.graphql').toString('utf-8')
+// Load the env vars before initializing code that depends on them
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config()
+}
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  validationRules: [depthLimit(7)],
-})
+// Initialize the models
+import './sequelize'
+
+import findOrCreateProfile from './findOrCreateProfile'
+import apolloServer from './apolloServer'
+import getAllFilesSync from './getAllFilesSync'
 
 const app = express()
-app.use('*', cors())
+
+app.get('/profile', findOrCreateProfile)
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:8080',
+    credentials: true,
+  }),
+)
 app.use(compression())
 
-server.applyMiddleware({ app, path: '/graphql' })
+apolloServer.applyMiddleware({
+  app,
+  path: '/graphql',
+  cors: false, // We use the cors plugin for this
+})
+
+const PUBLIC_DIR = path.join(__dirname, '../frontend/build')
+
+// Serve static assets for the frontend
+getAllFilesSync(PUBLIC_DIR).forEach((file: string) => {
+  app.get(file, (req, res) => {
+    res.sendFile(path.join(PUBLIC_DIR, file))
+  })
+})
+
+// Serve the browser client for any other path
+app.get('*', (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'index.html'))
+})
 
 const httpServer = createServer(app)
 
-httpServer.listen({ port: 3000 }, (): void =>
+const port = process.env.PORT || 3000
+
+httpServer.listen({ port }, (): void =>
   console.log(
-    `\n🚀      GraphQL is now running on http://localhost:3000/graphql`,
+    `\n🚀      GraphQL is now running on http://localhost:${port}/graphql`,
   ),
 )
