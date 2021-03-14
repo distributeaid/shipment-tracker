@@ -87,6 +87,10 @@ type Mutation {
 
   addOffer(input: OfferCreateInput!): Offer!
   updateOffer(input: OfferUpdateInput!): Offer!
+
+  addPallet(input: PalletCreateInput!): Pallet!
+  updatePallet(input: PalletUpdateInput!): Pallet!
+  destroyPallet(id: Int!): Offer! # return the destroyed pallet's offer
 }
 
 input ShipmentCreateInput {
@@ -196,10 +200,18 @@ enum PaymentStatus {
 type Pallet {
   id: Int!
   offerId: Int!
-
   palletType: PalletType!
   paymentStatus: PaymentStatus!
-
   createdAt: Date!
   updatedAt: Date!
+}
+
+input PalletCreateInput {
+  offerId: Int!
+  palletType: PalletType!
+}
+
+input PalletUpdateInput {
+  paymentStatus: PaymentStatus
+  palletType: PalletType
 }

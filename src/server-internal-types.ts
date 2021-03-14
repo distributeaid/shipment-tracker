@@ -135,6 +135,9 @@ export type Mutation = {
   updateShipment: Shipment
   addOffer: Offer
   updateOffer: Offer
+  addPallet: Pallet
+  updatePallet: Pallet
+  destroyPallet: Offer
 }
 
 export type MutationAddGroupArgs = {
@@ -161,6 +164,18 @@ export type MutationAddOfferArgs = {
 
 export type MutationUpdateOfferArgs = {
   input: OfferUpdateInput
+}
+
+export type MutationAddPalletArgs = {
+  input: PalletCreateInput
+}
+
+export type MutationUpdatePalletArgs = {
+  input: PalletUpdateInput
+}
+
+export type MutationDestroyPalletArgs = {
+  id: Scalars['Int']
 }
 
 export type ShipmentCreateInput = {
@@ -270,6 +285,16 @@ export type Pallet = {
   paymentStatus: PaymentStatus
   createdAt: Scalars['Date']
   updatedAt: Scalars['Date']
+}
+
+export type PalletCreateInput = {
+  offerId: Scalars['Int']
+  palletType: PalletType
+}
+
+export type PalletUpdateInput = {
+  paymentStatus?: Maybe<PaymentStatus>
+  palletType?: Maybe<PalletType>
 }
 
 export type WithIndex<TObject> = TObject & Record<string, any>
@@ -418,6 +443,8 @@ export type ResolversTypes = ResolversObject<{
   PalletType: PalletType
   PaymentStatus: PaymentStatus
   Pallet: ResolverTypeWrapper<Pallet>
+  PalletCreateInput: PalletCreateInput
+  PalletUpdateInput: PalletUpdateInput
 }>
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -443,6 +470,8 @@ export type ResolversParentTypes = ResolversObject<{
   OfferCreateInput: OfferCreateInput
   OfferUpdateInput: OfferUpdateInput
   Pallet: Pallet
+  PalletCreateInput: PalletCreateInput
+  PalletUpdateInput: PalletUpdateInput
 }>
 
 export interface DateScalarConfig
@@ -579,6 +608,24 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationUpdateOfferArgs, 'input'>
+  >
+  addPallet?: Resolver<
+    ResolversTypes['Pallet'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddPalletArgs, 'input'>
+  >
+  updatePallet?: Resolver<
+    ResolversTypes['Pallet'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdatePalletArgs, 'input'>
+  >
+  destroyPallet?: Resolver<
+    ResolversTypes['Offer'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDestroyPalletArgs, 'id'>
   >
 }>
 
