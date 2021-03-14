@@ -112,6 +112,16 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
   }
 
   if (has(input, 'photoUris')) {
+    const invalidUris = (input.photoUris || []).filter(
+      (uri) => !stringIsUrl(uri),
+    )
+
+    if (invalidUris.length > 0) {
+      throw new UserInputError(
+        `Invalid photo URI(s): ${invalidUris.join(', ')}`,
+      )
+    }
+
     updateAttributes.photoUris = input.photoUris || []
   }
 
