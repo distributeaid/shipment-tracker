@@ -22,7 +22,7 @@ describe('Groups API', () => {
     groupType: GroupType.DaHub,
     primaryLocation: { countryCode: 'UK', townCity: 'Bristol' },
     primaryContact: { name: 'Contact', email: 'contact@example.com' },
-    website: 'www.example.com',
+    website: 'http://www.example.com',
   }
 
   beforeEach(async () => {
@@ -53,6 +53,7 @@ describe('Groups API', () => {
           $groupType: GroupType!
           $primaryLocation: LocationInput!
           $primaryContact: ContactInfoInput!
+          $website: String
         ) {
           addGroup(
             input: {
@@ -60,6 +61,7 @@ describe('Groups API', () => {
               groupType: $groupType
               primaryLocation: $primaryLocation
               primaryContact: $primaryContact
+              website: $website
             }
           ) {
             id

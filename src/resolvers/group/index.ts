@@ -41,6 +41,10 @@ const addGroup: MutationResolvers['addGroup'] = async (
     })
   }
 
+  if (input.website && !stringIsUrl(input.website)) {
+    throw new UserInputError(`URL is not valid: ${input.website}`)
+  }
+
   return Group.create({
     name: input.name,
     groupType: input.groupType,

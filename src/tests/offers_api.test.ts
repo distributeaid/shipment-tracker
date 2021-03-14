@@ -27,6 +27,8 @@ describe('Offers API', () => {
     shipment: Shipment,
     offer: Offer
 
+  const validPhotoUris = ['http://www.example.com', 'http://www.zombo.com']
+
   beforeEach(async () => {
     await sequelize.sync({ force: true })
     await sequelize
@@ -107,7 +109,7 @@ describe('Offers API', () => {
             sendingGroupId: captainsGroup.id,
             shipmentId: shipment.id,
             contact: { name: 'Savannah', email: 'test@example.com' },
-            photoUris: ['one', 'two', 'three'],
+            photoUris: validPhotoUris,
           },
         },
       })
@@ -118,11 +120,28 @@ describe('Offers API', () => {
       expect(res?.data?.addOffer?.contact?.name).toEqual('Savannah')
       expect(res?.data?.addOffer?.contact?.email).toEqual('test@example.com')
       expect(res?.data?.addOffer?.contact?.signal).toBeNull
-      expect(res?.data?.addOffer?.photoUris).toContain('one')
-      expect(res?.data?.addOffer?.photoUris).toContain('two')
-      expect(res?.data?.addOffer?.photoUris).toContain('three')
+      expect(res?.data?.addOffer?.photoUris).toContain(validPhotoUris[0])
+      expect(res?.data?.addOffer?.photoUris).toContain(validPhotoUris[1])
       expect(res?.data?.addOffer?.shipmentId).toEqual(shipment.id)
       expect(res?.data?.addOffer?.sendingGroupId).toEqual(captainsGroup.id)
+    })
+
+    it('fails validation if photoUris are not valid URLs', async () => {
+      const res = await captainTestServer.mutate({
+        mutation: ADD_OFFER,
+        variables: {
+          input: {
+            sendingGroupId: captainsGroup.id,
+            shipmentId: shipment.id,
+            contact: { name: 'Savannah', email: 'test@example.com' },
+            photoUris: validPhotoUris.concat(['one', 'www.example.com']),
+          },
+        },
+      })
+
+      expect(res.errors?.[0].message).toContain(
+        'Invalid photo URI(s): one, www.example.com',
+      )
     })
 
     it('fails validation if missing required inputs', async () => {
@@ -132,7 +151,7 @@ describe('Offers API', () => {
           input: {
             shipmentId: shipment.id,
             contact: { name: 'Savannah', email: 'test@example.com' },
-            photoUris: ['one', 'two', 'three'],
+            photoUris: validPhotoUris,
           },
         },
       })
@@ -147,7 +166,7 @@ describe('Offers API', () => {
           input: {
             sendingGroupId: captainsGroup.id,
             contact: { name: 'Savannah', email: 'test@example.com' },
-            photoUris: ['one', 'two', 'three'],
+            photoUris: validPhotoUris,
           },
         },
       })
@@ -168,7 +187,7 @@ describe('Offers API', () => {
             sendingGroupId: captainsGroup.id,
             shipmentId: shipment.id,
             contact: { name: 'Savannah', email: 'test@example.com' },
-            photoUris: ['one', 'two', 'three'],
+            photoUris: validPhotoUris,
           },
         },
       })
@@ -189,7 +208,7 @@ describe('Offers API', () => {
             sendingGroupId: captainsGroup.id,
             shipmentId: shipment.id + 1,
             contact: { name: 'Savannah', email: 'test@example.com' },
-            photoUris: ['one', 'two', 'three'],
+            photoUris: validPhotoUris,
           },
         },
       })
@@ -215,7 +234,7 @@ describe('Offers API', () => {
             sendingGroupId: captainsGroup.id,
             shipmentId: shipment.id,
             contact: { name: 'Savannah', email: 'test@example.com' },
-            photoUris: ['one', 'two', 'three'],
+            photoUris: validPhotoUris,
           },
         },
       })
@@ -237,7 +256,7 @@ describe('Offers API', () => {
               sendingGroupId: captainsGroup.id,
               shipmentId: shipment.id,
               contact: { name: 'Savannah', email: 'test@example.com' },
-              photoUris: ['one', 'two', 'three'],
+              photoUris: validPhotoUris,
             },
           },
         })
