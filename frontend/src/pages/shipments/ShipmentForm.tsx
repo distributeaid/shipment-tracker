@@ -5,13 +5,13 @@ import SelectField, { SelectOption } from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
 import { MONTH_OPTIONS } from '../../data/constants'
 import {
-  GroupQuery,
+  AllGroupsMinimalQuery,
   GroupType,
   ShipmentQuery,
   ShipmentStatus,
   ShipmentUpdateInput,
   ShippingRoute,
-  useAllGroupsQuery,
+  useAllGroupsMinimalQuery,
 } from '../../types/api-types'
 import { enumValues } from '../../utils/types'
 
@@ -49,7 +49,9 @@ const SHIPPING_ROUTE_OPTIONS = enumValues(ShippingRoute).map((routeKey) => ({
   value: routeKey,
 }))
 
-function groupToSelectOption(group: GroupQuery['group']): SelectOption {
+function groupToSelectOption(
+  group: AllGroupsMinimalQuery['listGroups'][0],
+): SelectOption {
   return { value: group.id, label: group.name }
 }
 
@@ -58,7 +60,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
   const [sendingGroups, setSendingGroups] = useState<SelectOption[]>([])
 
   // Load the list of groups
-  const { data: groups, loading: hubListIsLoading } = useAllGroupsQuery()
+  const { data: groups, loading: hubListIsLoading } = useAllGroupsMinimalQuery()
 
   // When the groups are loaded, organize them by type so we can present them
   // in the form

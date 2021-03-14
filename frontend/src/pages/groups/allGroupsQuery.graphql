@@ -12,3 +12,11 @@ query AllGroups {
     }
   }
 }
+
+query AllGroupsMinimal {
+  listGroups {
+    id
+    name
+    groupType
+  }
+}

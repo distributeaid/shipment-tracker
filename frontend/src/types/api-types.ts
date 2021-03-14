@@ -281,6 +281,14 @@ export type AllGroupsQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type AllGroupsMinimalQueryVariables = Exact<{ [key: string]: never }>
+
+export type AllGroupsMinimalQuery = { __typename?: 'Query' } & {
+  listGroups: Array<
+    { __typename?: 'Group' } & Pick<Group, 'id' | 'name' | 'groupType'>
+  >
+}
+
 export type GroupQueryVariables = Exact<{
   id: Scalars['Int']
 }>
@@ -477,6 +485,65 @@ export type AllGroupsLazyQueryHookResult = ReturnType<
 export type AllGroupsQueryResult = Apollo.QueryResult<
   AllGroupsQuery,
   AllGroupsQueryVariables
+>
+export const AllGroupsMinimalDocument = gql`
+  query AllGroupsMinimal {
+    listGroups {
+      id
+      name
+      groupType
+    }
+  }
+`
+
+/**
+ * __useAllGroupsMinimalQuery__
+ *
+ * To run a query within a React component, call `useAllGroupsMinimalQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllGroupsMinimalQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAllGroupsMinimalQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAllGroupsMinimalQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    AllGroupsMinimalQuery,
+    AllGroupsMinimalQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<AllGroupsMinimalQuery, AllGroupsMinimalQueryVariables>(
+    AllGroupsMinimalDocument,
+    options,
+  )
+}
+export function useAllGroupsMinimalLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    AllGroupsMinimalQuery,
+    AllGroupsMinimalQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    AllGroupsMinimalQuery,
+    AllGroupsMinimalQueryVariables
+  >(AllGroupsMinimalDocument, options)
+}
+export type AllGroupsMinimalQueryHookResult = ReturnType<
+  typeof useAllGroupsMinimalQuery
+>
+export type AllGroupsMinimalLazyQueryHookResult = ReturnType<
+  typeof useAllGroupsMinimalLazyQuery
+>
+export type AllGroupsMinimalQueryResult = Apollo.QueryResult<
+  AllGroupsMinimalQuery,
+  AllGroupsMinimalQueryVariables
 >
 export const GroupDocument = gql`
   query Group($id: Int!) {
