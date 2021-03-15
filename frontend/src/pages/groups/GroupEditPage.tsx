@@ -1,7 +1,9 @@
 import { FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom'
+import InternalLink from '../../components/InternalLink'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { GroupUpdateInput, useGroupQuery } from '../../types/api-types'
+import { groupViewRoute } from '../../utils/routes'
 import GroupForm from './GroupForm'
 
 const GroupEditPage: FunctionComponent = () => {
@@ -29,6 +31,12 @@ const GroupEditPage: FunctionComponent = () => {
     <LayoutWithNav>
       <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
         <header className="p-4 md:p-6 border-b border-gray-200">
+          <InternalLink
+            className="inline-block mb-2"
+            to={groupViewRoute(groupId)}
+          >
+            ← back to view
+          </InternalLink>
           <h1 className="text-navy-800 text-3xl mb-2">
             {originalGroupData ? originalGroupData.group.name : 'Group'}
           </h1>

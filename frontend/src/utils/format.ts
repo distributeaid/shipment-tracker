@@ -1,7 +1,8 @@
 import { BadgeColor } from '../components/Badge'
-import { MONTHS } from '../data/constants'
+import { COUNTRY_CODES_TO_NAME, MONTHS } from '../data/constants'
 import {
   GroupType,
+  Maybe,
   Shipment,
   ShipmentQuery,
   ShipmentStatus,
@@ -27,6 +28,16 @@ export function formatGroupType(type: GroupType) {
  */
 export function formatLabelMonth(labelMonth: number) {
   return MONTHS[labelMonth - 1]
+}
+
+export function formatCountryCodeToName(countryCode?: Maybe<string>) {
+  if (countryCode && COUNTRY_CODES_TO_NAME.hasOwnProperty(countryCode)) {
+    return COUNTRY_CODES_TO_NAME[
+      countryCode as keyof typeof COUNTRY_CODES_TO_NAME
+    ]
+  }
+
+  return 'Unknown Country'
 }
 
 /**

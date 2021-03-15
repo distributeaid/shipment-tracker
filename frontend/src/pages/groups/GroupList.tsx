@@ -7,7 +7,7 @@ import TableHeader from '../../components/table/TableHeader'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { AllGroupsQuery, useAllGroupsQuery } from '../../types/api-types'
 import { formatGroupType } from '../../utils/format'
-import ROUTES, { groupEditRoute } from '../../utils/routes'
+import ROUTES, { groupViewRoute } from '../../utils/routes'
 
 const COLUMNS: Column<AllGroupsQuery['listGroups'][0]>[] = [
   {
@@ -91,7 +91,7 @@ const GroupList: FunctionComponent = () => {
                         })}
                       >
                         {cell.column.Header === 'Name' ? (
-                          <Link to={groupEditRoute(row.original.id)}>
+                          <Link to={groupViewRoute(row.original.id)}>
                             {cell.render('Cell')}
                           </Link>
                         ) : (
