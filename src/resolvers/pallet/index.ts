@@ -1,48 +1,8 @@
-import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
-import { updateArgument } from 'graphql-tools'
-import { AuthenticatedContext } from '../../apolloServer'
+import { ApolloError, UserInputError } from 'apollo-server'
 import Offer from '../../models/offer'
 import Pallet, { PalletAttributes } from '../../models/pallet'
-import {
-  MutationResolvers,
-  OfferStatus,
-  PaymentStatus,
-  ShipmentStatus,
-} from '../../server-internal-types'
-
-const authorizePalletMutation = (
-  offer: Offer,
-  context: AuthenticatedContext,
-): void => {
-  if (!offer.sendingGroup) {
-    throw new ApolloError(`Offer ${offer.id} has no sending group!`)
-  }
-
-  if (!offer.shipment) {
-    throw new ApolloError(`Offer ${offer.id} has no shipment!`)
-  }
-
-  if (
-    offer.sendingGroup.captainId !== context.auth.userAccount.id &&
-    !context.auth.isAdmin
-  ) {
-    throw new ForbiddenError('Forbidden to modify pallets for this offer')
-  }
-
-  if (!context.auth.isAdmin) {
-    if (offer.status !== OfferStatus.Draft) {
-      throw new ForbiddenError(
-        'Cannot modify pallets for offer not in draft state',
-      )
-    }
-
-    if (offer.shipment.status !== ShipmentStatus.Open) {
-      throw new ForbiddenError(
-        'Cannot modify pallets when the shipment is not open',
-      )
-    }
-  }
-}
+import { MutationResolvers, PaymentStatus } from '../../server-internal-types'
+import { authorizeOfferMutation } from '../offer/offer_authorization'
 
 const addPallet: MutationResolvers['addPallet'] = async (
   _,
@@ -57,7 +17,7 @@ const addPallet: MutationResolvers['addPallet'] = async (
     throw new UserInputError(`Offer ${input.offerId} does not exist`)
   }
 
-  authorizePalletMutation(offer, context)
+  authorizeOfferMutation(offer, context)
 
   return Pallet.create({
     ...input,
@@ -92,7 +52,7 @@ const updatePallet: MutationResolvers['updatePallet'] = async (
     throw new ApolloError(`Pallet ${pallet.offerId} has no offer!`)
   }
 
-  authorizePalletMutation(offer, context)
+  authorizeOfferMutation(offer, context)
 
   const updateAttributes: Partial<PalletAttributes> = {}
 
@@ -125,7 +85,7 @@ const destroyPallet: MutationResolvers['destroyPallet'] = async (
     throw new ApolloError(`Pallet ${pallet.offerId} has no offer!`)
   }
 
-  authorizePalletMutation(offer, context)
+  authorizeOfferMutation(offer, context)
 
   await pallet.destroy()
   return offer

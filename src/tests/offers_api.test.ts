@@ -1,8 +1,10 @@
-import gql from 'graphql-tag'
 import { ApolloServerTestClient } from 'apollo-server-testing'
+import gql from 'graphql-tag'
+import { fakeUserAuth } from '../authenticateRequest'
 import Group from '../models/group'
 import Offer from '../models/offer'
 import Shipment from '../models/shipment'
+import UserAccount from '../models/user_account'
 import { sequelize } from '../sequelize'
 import {
   GroupType,
@@ -14,8 +16,6 @@ import {
 } from '../server-internal-types'
 import { makeAdminTestServer, makeTestServer } from '../testServer'
 import { createGroup, createShipment } from './helpers'
-import UserAccount from '../models/user_account'
-import { fakeUserAuth } from '../authenticateRequest'
 
 describe('Offers API', () => {
   let captainTestServer: ApolloServerTestClient,
@@ -330,7 +330,7 @@ describe('Offers API', () => {
         },
       })
 
-      expect(res.errors?.[0].message).toEqual('Not permitted to update offer')
+      expect(res.errors?.[0].message).toEqual('Forbidden to access this offer')
     })
   })
 
@@ -489,9 +489,7 @@ describe('Offers API', () => {
         variables: { id: offer.id },
       })
 
-      expect(res.errors?.[0].message).toEqual(
-        'Not permitted to view that offer',
-      )
+      expect(res.errors?.[0].message).toEqual('Forbidden to access this offer')
     })
   })
 })

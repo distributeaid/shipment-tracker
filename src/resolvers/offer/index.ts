@@ -1,4 +1,4 @@
-import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
+import { ForbiddenError, UserInputError } from 'apollo-server'
 import { has } from 'lodash'
 import Group from '../../models/group'
 import Offer, { OfferAttributes } from '../../models/offer'
@@ -6,12 +6,16 @@ import Pallet from '../../models/pallet'
 import Shipment from '../../models/shipment'
 import {
   MutationResolvers,
-  OfferStatus,
   OfferResolvers,
+  OfferStatus,
   QueryResolvers,
   ShipmentStatus,
 } from '../../server-internal-types'
 import stringIsUrl from '../group/stringIsUrl'
+import {
+  authorizeOfferMutation,
+  authorizeOfferQuery,
+} from './offer_authorization'
 
 const addOffer: MutationResolvers['addOffer'] = async (
   _parent,
@@ -82,25 +86,14 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
   context,
 ) => {
   const offer = await Offer.findByPk(input.id, {
-    include: { association: 'sendingGroup' },
+    include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
   })
 
   if (!offer) {
     throw new UserInputError(`Offer ${input.id} does not exist`)
   }
 
-  const group = offer?.sendingGroup
-
-  if (!group) {
-    throw new ApolloError(`Offer ${offer.id} has no group!`)
-  }
-
-  if (
-    !context.auth.isAdmin &&
-    context.auth.userAccount.id !== group.captainId
-  ) {
-    throw new ForbiddenError('Not permitted to update offer')
-  }
+  authorizeOfferMutation(offer, context)
 
   const updateAttributes: Partial<OfferAttributes> = {}
 
@@ -132,23 +125,14 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
 
 const offer: QueryResolvers['offer'] = async (_, { id }, context) => {
   const offer = await Offer.findByPk(id, {
-    include: { association: 'sendingGroup' },
+    include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
   })
 
   if (!offer) {
     throw new UserInputError(`Offer ${id} does not exist`)
   }
 
-  if (!offer.sendingGroup) {
-    throw new ApolloError(`Offer ${id} has no group!`)
-  }
-
-  if (
-    offer.sendingGroup.captainId !== context.auth.userAccount.id &&
-    !context.auth.isAdmin
-  ) {
-    throw new ForbiddenError('Not permitted to view that offer')
-  }
+  authorizeOfferQuery(offer, context)
 
   return offer
 }
