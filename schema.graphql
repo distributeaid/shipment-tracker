@@ -217,3 +217,59 @@ input PalletUpdateInput {
   paymentStatus: PaymentStatus
   palletType: PalletType
 }
+
+enum LineItemStatus {
+  PROPOSED
+  AWAITING_APPROVAL
+  ACCEPTED
+  NOT_ACCEPTED
+}
+
+enum LineItemCategory {
+  UNSET
+}
+
+enum DangerousGoods {
+  FLAMMABLE
+  EXPLOSIVE
+  MEDICINE
+  BATTERIES
+  LIQUIDS
+  OTHER
+}
+
+enum LineItemContainerType {
+  UNSET
+  BULK_BAG
+  BOX
+  FULL_PALLET
+}
+
+type LineItem {
+  id: Int!
+  offerPalletId: Int!
+  status: LineItemStatus!
+
+  proposedReceivingGroupId: Int
+  proposedReceivingGroup: Group
+  acceptedReceivingGroupId: Int
+  acceptedReceivingGroup: Group
+
+  containerType: LineItemContainerType!
+  category: LineItemCategory!
+  description: String!
+  itemCount: Int!
+  boxCount: Int
+  boxWeightKg: Float
+  lengthCm: Float
+  widthCm: Float
+  heightCm: Float
+  affirmLiability: Boolean!
+  tosAccepted: Boolean!
+  dangerousGoods: [DangerousGoods!]!
+  photoUris: [String!]!
+
+  statusChangeTime: Date!
+  createdAt: Date!
+  updatedAt: Date!
+}

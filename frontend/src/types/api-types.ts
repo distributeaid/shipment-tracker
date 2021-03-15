@@ -293,6 +293,60 @@ export type PalletUpdateInput = {
   palletType?: Maybe<PalletType>
 }
 
+export enum LineItemStatus {
+  Proposed = 'PROPOSED',
+  AwaitingApproval = 'AWAITING_APPROVAL',
+  Accepted = 'ACCEPTED',
+  NotAccepted = 'NOT_ACCEPTED',
+}
+
+export enum LineItemCategory {
+  Unset = 'UNSET',
+}
+
+export enum DangerousGoods {
+  Flammable = 'FLAMMABLE',
+  Explosive = 'EXPLOSIVE',
+  Medicine = 'MEDICINE',
+  Batteries = 'BATTERIES',
+  Liquids = 'LIQUIDS',
+  Other = 'OTHER',
+}
+
+export enum LineItemContainerType {
+  Unset = 'UNSET',
+  BulkBag = 'BULK_BAG',
+  Box = 'BOX',
+  FullPallet = 'FULL_PALLET',
+}
+
+export type LineItem = {
+  __typename?: 'LineItem'
+  id: Scalars['Int']
+  offerPalletId: Scalars['Int']
+  status: LineItemStatus
+  proposedReceivingGroupId?: Maybe<Scalars['Int']>
+  proposedReceivingGroup?: Maybe<Group>
+  acceptedReceivingGroupId?: Maybe<Scalars['Int']>
+  acceptedReceivingGroup?: Maybe<Group>
+  containerType: LineItemContainerType
+  category: LineItemCategory
+  description: Scalars['String']
+  itemCount: Scalars['Int']
+  boxCount?: Maybe<Scalars['Int']>
+  boxWeightKg?: Maybe<Scalars['Float']>
+  lengthCm?: Maybe<Scalars['Float']>
+  widthCm?: Maybe<Scalars['Float']>
+  heightCm?: Maybe<Scalars['Float']>
+  affirmLiability: Scalars['Boolean']
+  tosAccepted: Scalars['Boolean']
+  dangerousGoods: Array<DangerousGoods>
+  photoUris: Array<Scalars['String']>
+  statusChangeTime: Scalars['Date']
+  createdAt: Scalars['Date']
+  updatedAt: Scalars['Date']
+}
+
 export type CreateGroupMutationVariables = Exact<{
   input: GroupCreateInput
 }>
