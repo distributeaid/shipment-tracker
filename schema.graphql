@@ -87,6 +87,10 @@ type Mutation {
 
   addOffer(input: OfferCreateInput!): Offer!
   updateOffer(input: OfferUpdateInput!): Offer!
+
+  addPallet(input: PalletCreateInput!): Pallet!
+  updatePallet(id: Int!, input: PalletUpdateInput!): Pallet!
+  destroyPallet(id: Int!): Offer! # return the destroyed pallet's offer
 }
 
 input ShipmentCreateInput {
@@ -160,6 +164,7 @@ type Offer {
   contact: ContactInfo
 
   photoUris: [String!]!
+  pallets: [Pallet!]!
 
   statusChangeTime: Date!
   updatedAt: Date!
@@ -178,4 +183,37 @@ input OfferUpdateInput {
   status: OfferStatus
   contact: ContactInfoInput
   photoUris: [String!]
+}
+
+enum PalletType {
+  STANDARD
+  EURO
+  CUSTOM
+}
+
+enum PaymentStatus {
+  WONT_PAY
+  UNINITIATED
+  INVOICED
+  PAID
+}
+
+type Pallet {
+  id: Int!
+  offerId: Int!
+  palletType: PalletType!
+  paymentStatus: PaymentStatus!
+  paymentStatusChangeTime: Date!
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+input PalletCreateInput {
+  offerId: Int!
+  palletType: PalletType!
+}
+
+input PalletUpdateInput {
+  paymentStatus: PaymentStatus
+  palletType: PalletType
 }

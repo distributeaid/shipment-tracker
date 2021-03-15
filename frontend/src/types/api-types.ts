@@ -128,6 +128,9 @@ export type Mutation = {
   updateShipment: Shipment
   addOffer: Offer
   updateOffer: Offer
+  addPallet: Pallet
+  updatePallet: Pallet
+  destroyPallet: Offer
 }
 
 export type MutationAddGroupArgs = {
@@ -154,6 +157,19 @@ export type MutationAddOfferArgs = {
 
 export type MutationUpdateOfferArgs = {
   input: OfferUpdateInput
+}
+
+export type MutationAddPalletArgs = {
+  input: PalletCreateInput
+}
+
+export type MutationUpdatePalletArgs = {
+  id: Scalars['Int']
+  input: PalletUpdateInput
+}
+
+export type MutationDestroyPalletArgs = {
+  id: Scalars['Int']
 }
 
 export type ShipmentCreateInput = {
@@ -223,6 +239,7 @@ export type Offer = {
   sendingGroupId: Scalars['Int']
   contact?: Maybe<ContactInfo>
   photoUris: Array<Scalars['String']>
+  pallets: Array<Pallet>
   statusChangeTime: Scalars['Date']
   updatedAt: Scalars['Date']
   createdAt: Scalars['Date']
@@ -240,6 +257,40 @@ export type OfferUpdateInput = {
   status?: Maybe<OfferStatus>
   contact?: Maybe<ContactInfoInput>
   photoUris?: Maybe<Array<Scalars['String']>>
+}
+
+export enum PalletType {
+  Standard = 'STANDARD',
+  Euro = 'EURO',
+  Custom = 'CUSTOM',
+}
+
+export enum PaymentStatus {
+  WontPay = 'WONT_PAY',
+  Uninitiated = 'UNINITIATED',
+  Invoiced = 'INVOICED',
+  Paid = 'PAID',
+}
+
+export type Pallet = {
+  __typename?: 'Pallet'
+  id: Scalars['Int']
+  offerId: Scalars['Int']
+  palletType: PalletType
+  paymentStatus: PaymentStatus
+  paymentStatusChangeTime: Scalars['Date']
+  createdAt: Scalars['Date']
+  updatedAt: Scalars['Date']
+}
+
+export type PalletCreateInput = {
+  offerId: Scalars['Int']
+  palletType: PalletType
+}
+
+export type PalletUpdateInput = {
+  paymentStatus?: Maybe<PaymentStatus>
+  palletType?: Maybe<PalletType>
 }
 
 export type CreateGroupMutationVariables = Exact<{

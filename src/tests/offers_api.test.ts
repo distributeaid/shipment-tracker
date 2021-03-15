@@ -31,15 +31,9 @@ describe('Offers API', () => {
 
   beforeEach(async () => {
     await sequelize.sync({ force: true })
-    await sequelize
-      .getRepository(Offer)
-      .truncate({ cascade: true, force: true })
-    await sequelize
-      .getRepository(Group)
-      .truncate({ cascade: true, force: true })
-    await sequelize
-      .getRepository(Shipment)
-      .truncate({ cascade: true, force: true })
+    await Offer.truncate({ cascade: true, force: true })
+    await Group.truncate({ cascade: true, force: true })
+    await Shipment.truncate({ cascade: true, force: true })
 
     captain = await UserAccount.create({
       auth0Id: 'captain-id',

@@ -2,10 +2,12 @@ import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { has } from 'lodash'
 import Group from '../../models/group'
 import Offer, { OfferAttributes } from '../../models/offer'
+import Pallet from '../../models/pallet'
 import Shipment from '../../models/shipment'
 import {
   MutationResolvers,
   OfferStatus,
+  OfferResolvers,
   QueryResolvers,
   ShipmentStatus,
 } from '../../server-internal-types'
@@ -174,4 +176,8 @@ const listOffers: QueryResolvers['listOffers'] = async (
   return Offer.findAll({ where: { shipmentId, sendingGroupId: groupIds } })
 }
 
-export { addOffer, updateOffer, offer, listOffers }
+const offerPallets: OfferResolvers['pallets'] = async (parent) => {
+  return Pallet.findAll({ where: { offerId: parent.id } })
+}
+
+export { addOffer, updateOffer, offer, listOffers, offerPallets }

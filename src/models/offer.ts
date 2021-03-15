@@ -7,11 +7,13 @@ import {
   DataType,
   ForeignKey,
   BelongsTo,
+  HasMany,
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
 
 import { OfferStatus, ContactInfo } from '../server-internal-types'
 import Group from './group'
+import Pallet from './pallet'
 import Shipment from './shipment'
 
 export interface OfferAttributes {
@@ -46,6 +48,9 @@ export default class Offer extends Model {
   @Column
   public shipmentId!: number
 
+  @BelongsTo(() => Shipment, 'shipmentId')
+  public shipment!: Shipment
+
   @ForeignKey(() => Group)
   @Column
   public sendingGroupId!: number
@@ -55,6 +60,9 @@ export default class Offer extends Model {
 
   @Column
   public statusChangeTime!: Date
+
+  @HasMany(() => Pallet)
+  public pallets!: Pallet[]
 
   @CreatedAt
   @Column
