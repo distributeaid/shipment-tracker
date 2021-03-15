@@ -1,0 +1,5 @@
+mutation UpdateGroup($id: Int!, $input: GroupUpdateInput!) {
+  updateGroup(id: $id, input: $input) {
+    ...AllGroupFields
+  }
+}
