@@ -235,6 +235,7 @@ export type Offer = {
   sendingGroupId: Scalars['Int']
   contact?: Maybe<ContactInfo>
   photoUris: Array<Scalars['String']>
+  pallets: Array<Pallet>
   statusChangeTime: Scalars['Date']
   updatedAt: Scalars['Date']
   createdAt: Scalars['Date']

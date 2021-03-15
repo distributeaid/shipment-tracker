@@ -164,6 +164,7 @@ type Offer {
   contact: ContactInfo
 
   photoUris: [String!]!
+  pallets: [Pallet!]!
 
   statusChangeTime: Date!
   updatedAt: Date!

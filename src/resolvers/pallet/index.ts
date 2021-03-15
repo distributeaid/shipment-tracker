@@ -1,16 +1,11 @@
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
-import { has } from 'lodash'
 import { AuthenticatedContext } from '../../apolloServer'
-import { authenticateRequest } from '../../authenticateRequest'
-import Group from '../../models/group'
 import Offer from '../../models/offer'
 import Pallet from '../../models/pallet'
 import {
   MutationResolvers,
   OfferStatus,
-  PalletCreateInput,
   PaymentStatus,
-  QueryResolvers,
   ShipmentStatus,
 } from '../../server-internal-types'
 
@@ -114,7 +109,7 @@ const destroyPallet: MutationResolvers['destroyPallet'] = async (
 
   await pallet.destroy()
 
-  return offer
+  return offer.reload({ include: 'pallets' })
 }
 
 export { addPallet, updatePallet, destroyPallet }

@@ -1,7 +1,7 @@
 import { DateResolver } from 'graphql-scalars'
 import { Resolvers } from '../server-internal-types'
 import { addGroup, updateGroup, group, listGroups } from './group'
-import { addOffer, updateOffer, offer, listOffers } from './offer'
+import { addOffer, updateOffer, offer, listOffers, offerPallets } from './offer'
 import { addPallet, updatePallet, destroyPallet } from './pallet'
 import {
   addShipment,
@@ -43,6 +43,10 @@ const resolvers: Resolvers = {
   Shipment: {
     sendingHub,
     receivingHub,
+  },
+
+  Offer: {
+    pallets: offerPallets,
   },
 }
 

@@ -245,6 +245,7 @@ export type Offer = {
   sendingGroupId: Scalars['Int']
   contact?: Maybe<ContactInfo>
   photoUris: Array<Scalars['String']>
+  pallets: Array<Pallet>
   statusChangeTime: Scalars['Date']
   updatedAt: Scalars['Date']
   createdAt: Scalars['Date']
@@ -681,6 +682,7 @@ export type OfferResolvers<
     ContextType
   >
   photoUris?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>
+  pallets?: Resolver<Array<ResolversTypes['Pallet']>, ParentType, ContextType>
   statusChangeTime?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
   updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
