@@ -69,7 +69,15 @@ const GroupForm: FunctionComponent<Props> = (props) => {
         <SelectField
           label="Country"
           name="primaryLocation.countryCode"
-          options={COUNTRY_CODE_OPTIONS}
+          defaultValue=""
+          options={[
+            {
+              label: 'Pick a country',
+              value: '',
+              disabled: true,
+            },
+            ...COUNTRY_CODE_OPTIONS,
+          ]}
           register={register}
         />
       </fieldset>

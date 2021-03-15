@@ -20,7 +20,10 @@ const GroupEditPage: FunctionComponent = () => {
   })
 
   // Set up the mutation to update the group
-  const [updateGroup, { loading: mutationIsLoading }] = useUpdateGroupMutation()
+  const [
+    updateGroup,
+    { loading: mutationIsLoading, error: mutationError },
+  ] = useUpdateGroupMutation()
 
   const onSubmit = (input: GroupUpdateInput) => {
     updateGroup({ variables: { id: parseInt(groupId, 10), input } }).catch(
@@ -49,6 +52,12 @@ const GroupEditPage: FunctionComponent = () => {
           </p>
         </header>
         <main className="p-4 md:p-6 max-w-lg pb-20">
+          {mutationError && (
+            <div className="p-4 rounded bg-red-50 mb-6 text-red-800">
+              <p className="font-semibold">Error:</p>
+              <p>{mutationError.message}</p>
+            </div>
+          )}
           <GroupForm
             isLoading={queryIsLoading || mutationIsLoading}
             submitButtonLabel="Save changes"
