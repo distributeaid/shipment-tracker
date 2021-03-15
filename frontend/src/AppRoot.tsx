@@ -8,6 +8,7 @@ import ApolloDemoPage from './pages/ApolloDemo'
 import GroupCreatePage from './pages/groups/GroupCreatePage'
 import GroupEditPage from './pages/groups/GroupEditPage'
 import GroupList from './pages/groups/GroupList'
+import GroupViewPage from './pages/groups/GroupViewPage'
 import HomePage from './pages/Home'
 import KitchenSink from './pages/KitchenSink'
 import LoadingPage from './pages/LoadingPage'
@@ -87,6 +88,12 @@ const AppRoot = () => {
             isAuthenticated={isAuthenticated}
           >
             <GroupEditPage />
+          </PrivateRoute>
+          <PrivateRoute
+            path={ROUTES.GROUP_VIEW}
+            isAuthenticated={isAuthenticated}
+          >
+            <GroupViewPage />
           </PrivateRoute>
           <PrivateRoute
             path={ROUTES.SHIPMENT_LIST}

@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
-import { GroupCreateInput, GroupQuery, GroupType } from '../../types/api-types'
+import { GROUP_TYPE_OPTIONS } from '../../data/constants'
+import { GroupCreateInput, GroupQuery } from '../../types/api-types'
 
 interface Props {
   /**
@@ -53,11 +54,7 @@ const GroupForm: FunctionComponent<Props> = (props) => {
       <SelectField
         label="Type"
         name="groupType"
-        options={[
-          { label: 'Receiving group', value: GroupType.ReceivingGroup },
-          { label: 'Sending group', value: GroupType.SendingGroup },
-          { label: 'DA hub', value: GroupType.DaHub },
-        ]}
+        options={GROUP_TYPE_OPTIONS}
         required
         register={register}
       />
