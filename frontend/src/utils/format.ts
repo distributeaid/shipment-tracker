@@ -1,6 +1,12 @@
 import { BadgeColor } from '../components/Badge'
-import { MONTHS } from '../data/constants'
-import { GroupType, Shipment, ShipmentStatus } from '../types/api-types'
+import { COUNTRY_CODES_TO_NAME, MONTHS } from '../data/constants'
+import {
+  GroupType,
+  Maybe,
+  Shipment,
+  ShipmentQuery,
+  ShipmentStatus,
+} from '../types/api-types'
 
 export function formatGroupType(type: GroupType) {
   switch (type) {
@@ -22,6 +28,16 @@ export function formatGroupType(type: GroupType) {
  */
 export function formatLabelMonth(labelMonth: number) {
   return MONTHS[labelMonth - 1]
+}
+
+export function formatCountryCodeToName(countryCode?: Maybe<string>) {
+  if (countryCode && COUNTRY_CODES_TO_NAME.hasOwnProperty(countryCode)) {
+    return COUNTRY_CODES_TO_NAME[
+      countryCode as keyof typeof COUNTRY_CODES_TO_NAME
+    ]
+  }
+
+  return 'Unknown Country'
 }
 
 /**
@@ -55,7 +71,9 @@ export function getShipmentStatusBadgeColor(
  * @returns A non-unique identifier for the shipment
  * @example "UK-2021-03"
  */
-export function formatShipmentName(shipment: Shipment) {
+export function formatShipmentName(
+  shipment: Shipment | ShipmentQuery['shipment'],
+) {
   const month = shipment.labelMonth.toString().padStart(2, '0')
   return `${shipment.shippingRoute}-${shipment.labelYear}-${month}`
 }

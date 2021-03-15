@@ -1,56 +1,17 @@
-import { gql, useQuery } from '@apollo/client'
 import { FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom'
+import InternalLink from '../../components/InternalLink'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { Group, GroupUpdateInput } from '../../types/api-types'
+import { GroupUpdateInput, useGroupQuery } from '../../types/api-types'
+import { groupViewRoute } from '../../utils/routes'
 import GroupForm from './GroupForm'
-
-const ALL_GROUP_FIELDS = gql`
-  fragment AllGroupFields on Group {
-    id
-    name
-    groupType
-    primaryLocation {
-      townCity
-      countryCode
-      openLocationCode
-    }
-    primaryContact {
-      name
-      email
-      whatsApp
-      phone
-      signal
-    }
-  }
-`
-
-const GET_GROUP = gql`
-  ${ALL_GROUP_FIELDS}
-  query Group($id: Int!) {
-    group(id: $id) {
-      ...AllGroupFields
-    }
-  }
-`
-
-// const UPDATE_GROUP = gql`
-//   ${ALL_GROUP_FIELDS}
-//   mutation Group($input: GroupUpdateInput!) {
-//     updateGroup(input: $input) {
-//       ...AllGroupFields
-//     }
-//   }
-// `
 
 const GroupEditPage: FunctionComponent = () => {
   // Extract the group's ID from the URL
   const { groupId } = useParams<{ groupId: string }>()
 
   // Load the group's information
-  const { data: originalGroupData, loading: queryIsLoading } = useQuery<{
-    group: Group
-  }>(GET_GROUP, {
+  const { data: originalGroupData, loading: queryIsLoading } = useGroupQuery({
     variables: { id: parseInt(groupId, 10) },
   })
 
@@ -70,6 +31,12 @@ const GroupEditPage: FunctionComponent = () => {
     <LayoutWithNav>
       <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
         <header className="p-4 md:p-6 border-b border-gray-200">
+          <InternalLink
+            className="inline-block mb-2"
+            to={groupViewRoute(groupId)}
+          >
+            ← back to view
+          </InternalLink>
           <h1 className="text-navy-800 text-3xl mb-2">
             {originalGroupData ? originalGroupData.group.name : 'Group'}
           </h1>
@@ -83,7 +50,7 @@ const GroupEditPage: FunctionComponent = () => {
             isLoading={queryIsLoading}
             submitButtonLabel="Save changes"
             onSubmit={onSubmit}
-            defaultValues={originalGroupData?.group}
+            defaultValues={originalGroupData}
           />
         </main>
       </div>

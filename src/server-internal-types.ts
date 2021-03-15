@@ -285,6 +285,7 @@ export type Pallet = {
   offerId: Scalars['Int']
   palletType: PalletType
   paymentStatus: PaymentStatus
+  paymentStatusChangeTime: Scalars['Date']
   createdAt: Scalars['Date']
   updatedAt: Scalars['Date']
 }
@@ -698,6 +699,11 @@ export type PalletResolvers<
   palletType?: Resolver<ResolversTypes['PalletType'], ParentType, ContextType>
   paymentStatus?: Resolver<
     ResolversTypes['PaymentStatus'],
+    ParentType,
+    ContextType
+  >
+  paymentStatusChangeTime?: Resolver<
+    ResolversTypes['Date'],
     ParentType,
     ContextType
   >

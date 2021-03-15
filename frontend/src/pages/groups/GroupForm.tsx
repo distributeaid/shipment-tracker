@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
-import { Group, GroupCreateInput, GroupType } from '../../types/api-types'
+import { GROUP_TYPE_OPTIONS } from '../../data/constants'
+import { GroupCreateInput, GroupQuery } from '../../types/api-types'
 
 interface Props {
   /**
@@ -18,7 +19,7 @@ interface Props {
    * The values to display in the fields of the form. Note that this is NOT a
    * controlled component.
    */
-  defaultValues?: Group
+  defaultValues?: GroupQuery
   /**
    * The callback triggered when the user submits the form
    */
@@ -35,7 +36,7 @@ const GroupForm: FunctionComponent<Props> = (props) => {
     function resetFormValues() {
       if (props.defaultValues) {
         // Update the values of the fields
-        reset(props.defaultValues)
+        reset(props.defaultValues.group)
       }
     },
     [props.defaultValues, reset],
@@ -53,11 +54,7 @@ const GroupForm: FunctionComponent<Props> = (props) => {
       <SelectField
         label="Type"
         name="groupType"
-        options={[
-          { label: 'Receiving group', value: GroupType.ReceivingGroup },
-          { label: 'Sending group', value: GroupType.SendingGroup },
-          { label: 'DA hub', value: GroupType.DaHub },
-        ]}
+        options={GROUP_TYPE_OPTIONS}
         required
         register={register}
       />

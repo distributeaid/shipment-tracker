@@ -1,0 +1,8 @@
+fragment AllShipmentFields on Shipment {
+  id
+  shippingRoute
+  labelYear
+  labelMonth
+  offerSubmissionDeadline
+  status
+}

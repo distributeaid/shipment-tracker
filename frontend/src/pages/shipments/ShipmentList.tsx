@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client'
 import cx from 'classnames'
 import { FunctionComponent, useMemo } from 'react'
 import { Link } from 'react-router-dom'
@@ -6,7 +5,7 @@ import { Column, useSortBy, useTable } from 'react-table'
 import Badge from '../../components/Badge'
 import TableHeader from '../../components/table/TableHeader'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { Shipment } from '../../types/api-types'
+import { AllShipmentsQuery, useAllShipmentsQuery } from '../../types/api-types'
 import {
   formatLabelMonth,
   formatShipmentName,
@@ -14,29 +13,7 @@ import {
 } from '../../utils/format'
 import { shipmentEditRoute } from '../../utils/routes'
 
-const SHIPMENTS_QUERY = gql`
-  query GetAllShipments {
-    listShipments {
-      id
-      shippingRoute
-      labelYear
-      labelMonth
-      offerSubmissionDeadline
-      status
-      sendingHub {
-        id
-        name
-      }
-      receivingHub {
-        id
-        name
-      }
-      statusChangeTime
-    }
-  }
-`
-
-const COLUMNS: Column<Shipment>[] = [
+const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
   {
     Header: 'Name',
     accessor: (row) => formatShipmentName(row),
@@ -67,7 +44,7 @@ const COLUMNS: Column<Shipment>[] = [
 ]
 
 const ShipmentList: FunctionComponent = () => {
-  const { data } = useQuery<{ listShipments: Shipment[] }>(SHIPMENTS_QUERY)
+  const { data } = useAllShipmentsQuery()
 
   // We must memoize the data for react-table to function properly
   const shipments = useMemo(() => data?.listShipments || [], [data])

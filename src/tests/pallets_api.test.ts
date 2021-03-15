@@ -1,23 +1,23 @@
-import gql from 'graphql-tag'
 import { ApolloServerTestClient } from 'apollo-server-testing'
+import gql from 'graphql-tag'
 import { fakeUserAuth } from '../authenticateRequest'
 import Group from '../models/group'
 import Offer from '../models/offer'
+import Pallet from '../models/pallet'
 import Shipment from '../models/shipment'
 import UserAccount from '../models/user_account'
 import { sequelize } from '../sequelize'
 import {
   GroupType,
   OfferStatus,
-  ShipmentStatus,
-  ShippingRoute,
   PalletCreateInput,
   PalletType,
-  PaymentStatus,
   PalletUpdateInput,
+  PaymentStatus,
+  ShipmentStatus,
+  ShippingRoute,
 } from '../server-internal-types'
 import { makeAdminTestServer, makeTestServer } from '../testServer'
-import Pallet from '../models/pallet'
 
 describe('Pallets API', () => {
   let adminTestServer: ApolloServerTestClient,
@@ -30,9 +30,11 @@ describe('Pallets API', () => {
 
   beforeEach(async () => {
     await sequelize.sync({ force: true })
+    await UserAccount.truncate({ cascade: true, force: true })
     await Offer.truncate({ cascade: true, force: true })
     await Group.truncate({ cascade: true, force: true })
     await Shipment.truncate({ cascade: true, force: true })
+    await Pallet.truncate({ cascade: true, force: true })
 
     captain = await UserAccount.create({
       auth0Id: 'captain-id',

@@ -35,6 +35,8 @@ module.exports = {
         type: Sequelize.DATE,
       },
     })
+
+    await queryInterface.addIndex('Pallets', ['offerId'], { unique: false })
   },
 
   down: async (queryInterface, Sequelize) => {
