@@ -1,4 +1,5 @@
 import { GroupType } from '../types/api-types'
+import { enumKeys } from '../utils/types'
 
 export const MONTHS = [
   'January',
@@ -275,3 +276,10 @@ export const COUNTRY_CODES_TO_NAME = {
   ZM: 'Zambia',
   ZW: 'Zimbabwe',
 }
+
+export const COUNTRY_CODE_OPTIONS = enumKeys(COUNTRY_CODES_TO_NAME).map(
+  (key) => ({
+    label: COUNTRY_CODES_TO_NAME[key],
+    value: key,
+  }),
+)
