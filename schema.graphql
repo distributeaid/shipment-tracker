@@ -203,6 +203,7 @@ type Pallet {
   offerId: Int!
   palletType: PalletType!
   paymentStatus: PaymentStatus!
+  paymentStatusChangeTime: Date!
   createdAt: Date!
   updatedAt: Date!
 }

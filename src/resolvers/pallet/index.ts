@@ -1,7 +1,8 @@
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
+import { updateArgument } from 'graphql-tools'
 import { AuthenticatedContext } from '../../apolloServer'
 import Offer from '../../models/offer'
-import Pallet from '../../models/pallet'
+import Pallet, { PalletAttributes } from '../../models/pallet'
 import {
   MutationResolvers,
   OfferStatus,
@@ -36,7 +37,9 @@ const authorizePalletMutation = (
     }
 
     if (offer.shipment.status !== ShipmentStatus.Open) {
-      throw new ForbiddenError('The shipment for this pallet is not open')
+      throw new ForbiddenError(
+        'Cannot modify pallets when the shipment is not open',
+      )
     }
   }
 }
@@ -56,7 +59,11 @@ const addPallet: MutationResolvers['addPallet'] = async (
 
   authorizePalletMutation(offer, context)
 
-  return Pallet.create({ ...input, paymentStatus: PaymentStatus.Uninitiated })
+  return Pallet.create({
+    ...input,
+    paymentStatus: PaymentStatus.Uninitiated,
+    paymentStatusChangeTime: new Date(),
+  })
 }
 
 const getPalletWithAssociations = (id: number): Promise<Pallet | null> =>
@@ -87,7 +94,18 @@ const updatePallet: MutationResolvers['updatePallet'] = async (
 
   authorizePalletMutation(offer, context)
 
-  return pallet.update(input)
+  const updateAttributes: Partial<PalletAttributes> = {}
+
+  if (input.paymentStatus && input.paymentStatus !== pallet.paymentStatus) {
+    updateAttributes.paymentStatus = input.paymentStatus
+    updateAttributes.paymentStatusChangeTime = new Date()
+  }
+
+  if (input.palletType) {
+    updateAttributes.palletType = input.palletType
+  }
+
+  return pallet.update(updateAttributes)
 }
 
 const destroyPallet: MutationResolvers['destroyPallet'] = async (

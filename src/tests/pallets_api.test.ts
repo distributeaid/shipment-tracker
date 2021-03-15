@@ -22,6 +22,7 @@ import Pallet from '../models/pallet'
 describe('Pallets API', () => {
   let adminTestServer: ApolloServerTestClient,
     captainTestServer: ApolloServerTestClient,
+    otherUserTestServer: ApolloServerTestClient,
     shipment: Shipment,
     group: Group,
     offer: Offer,
@@ -41,6 +42,7 @@ describe('Pallets API', () => {
       context: () => ({ auth: { ...fakeUserAuth, userAccount: captain } }),
     })
     adminTestServer = await makeAdminTestServer()
+    otherUserTestServer = await makeTestServer()
 
     group = await Group.create({
       name: 'group 1',
@@ -99,6 +101,87 @@ describe('Pallets API', () => {
         PaymentStatus.Uninitiated,
       )
     })
+
+    it('forbids anyone not a captain of the associated group or admin', async () => {
+      const res = await otherUserTestServer.mutate<
+        { addPallet: Pallet },
+        { input: PalletCreateInput }
+      >({
+        mutation: ADD_PALLET,
+        variables: {
+          input: {
+            offerId: offer.id,
+            palletType: PalletType.Standard,
+          },
+        },
+      })
+
+      expect(res.errors?.[0].message).toEqual(
+        'Forbidden to modify pallets for this offer',
+      )
+    })
+
+    it('is forbidden for the captain when the offer is not in draft', async () => {
+      await offer.update({ status: OfferStatus.BeingReviewed })
+
+      const res = await captainTestServer.mutate<
+        { addPallet: Pallet },
+        { input: PalletCreateInput }
+      >({
+        mutation: ADD_PALLET,
+        variables: {
+          input: {
+            offerId: offer.id,
+            palletType: PalletType.Standard,
+          },
+        },
+      })
+
+      expect(res.errors?.[0].message).toEqual(
+        'Cannot modify pallets for offer not in draft state',
+      )
+    })
+
+    it('is forbidden for the captain when the shipment is not open', async () => {
+      await shipment.update({ status: ShipmentStatus.Staging })
+
+      const res = await captainTestServer.mutate<
+        { addPallet: Pallet },
+        { input: PalletCreateInput }
+      >({
+        mutation: ADD_PALLET,
+        variables: {
+          input: {
+            offerId: offer.id,
+            palletType: PalletType.Standard,
+          },
+        },
+      })
+
+      expect(res.errors?.[0].message).toEqual(
+        'Cannot modify pallets when the shipment is not open',
+      )
+    })
+
+    it('an admin can create the pallets when the shipment is not open', async () => {
+      await shipment.update({ status: ShipmentStatus.Staging })
+
+      const res = await adminTestServer.mutate<
+        { addPallet: Pallet },
+        { input: PalletCreateInput }
+      >({
+        mutation: ADD_PALLET,
+        variables: {
+          input: {
+            offerId: offer.id,
+            palletType: PalletType.Standard,
+          },
+        },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res?.data?.addPallet).not.toBeNil()
+    })
   })
 
   describe('updatePallet', () => {
@@ -118,6 +201,7 @@ describe('Pallets API', () => {
         offerId: offer.id,
         palletType: PalletType.Standard,
         paymentStatus: PaymentStatus.Uninitiated,
+        paymentStatusChangeTime: new Date(),
       })
     })
 
@@ -159,12 +243,14 @@ describe('Pallets API', () => {
         offerId: offer.id,
         palletType: PalletType.Standard,
         paymentStatus: PaymentStatus.Uninitiated,
+        paymentStatusChangeTime: new Date(),
       })
 
       palletB = await Pallet.create({
         offerId: offer.id,
         palletType: PalletType.Standard,
         paymentStatus: PaymentStatus.Uninitiated,
+        paymentStatusChangeTime: new Date(),
       })
     })
 

@@ -17,6 +17,7 @@ export interface PalletAttributes {
   offerId: number
   palletType: PalletType
   paymentStatus: PaymentStatus
+  paymentStatusChangeTime: Date
 }
 
 export interface PalletCreationAttributes
