@@ -9,7 +9,7 @@ import {
   ShipmentStatus,
 } from '../../server-internal-types'
 
-const validatePalletMutation = (
+const authorizePalletMutation = (
   offer: Offer,
   context: AuthenticatedContext,
 ): void => {
@@ -28,14 +28,16 @@ const validatePalletMutation = (
     throw new ForbiddenError('Forbidden to modify pallets for this offer')
   }
 
-  if (offer.status !== OfferStatus.Draft) {
-    throw new ForbiddenError(
-      'Cannot modify pallets for offer not in draft state',
-    )
-  }
+  if (!context.auth.isAdmin) {
+    if (offer.status !== OfferStatus.Draft) {
+      throw new ForbiddenError(
+        'Cannot modify pallets for offer not in draft state',
+      )
+    }
 
-  if (!context.auth.isAdmin && offer.shipment.status !== ShipmentStatus.Open) {
-    throw new ForbiddenError('The shipment for this pallet is not open')
+    if (offer.shipment.status !== ShipmentStatus.Open) {
+      throw new ForbiddenError('The shipment for this pallet is not open')
+    }
   }
 }
 
@@ -52,7 +54,7 @@ const addPallet: MutationResolvers['addPallet'] = async (
     throw new UserInputError(`Offer ${input.offerId} does not exist`)
   }
 
-  validatePalletMutation(offer, context)
+  authorizePalletMutation(offer, context)
 
   return Pallet.create({ ...input, paymentStatus: PaymentStatus.Uninitiated })
 }
@@ -61,20 +63,20 @@ const getPalletWithAssociations = (id: number): Promise<Pallet | null> =>
   Pallet.findByPk(id, {
     include: {
       model: Offer,
-      as: 'Offers',
+      as: 'offer',
       include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
     },
   })
 
 const updatePallet: MutationResolvers['updatePallet'] = async (
   _,
-  { input },
+  { id, input },
   context,
 ) => {
-  const pallet = await getPalletWithAssociations(input.id)
+  const pallet = await getPalletWithAssociations(id)
 
   if (!pallet) {
-    throw new UserInputError(`Pallet ${input.id} does not exist`)
+    throw new UserInputError(`Pallet ${id} does not exist`)
   }
 
   const offer = pallet.offer
@@ -83,7 +85,7 @@ const updatePallet: MutationResolvers['updatePallet'] = async (
     throw new ApolloError(`Pallet ${pallet.offerId} has no offer!`)
   }
 
-  validatePalletMutation(offer, context)
+  authorizePalletMutation(offer, context)
 
   return pallet.update(input)
 }
@@ -105,11 +107,10 @@ const destroyPallet: MutationResolvers['destroyPallet'] = async (
     throw new ApolloError(`Pallet ${pallet.offerId} has no offer!`)
   }
 
-  validatePalletMutation(offer, context)
+  authorizePalletMutation(offer, context)
 
   await pallet.destroy()
-
-  return offer.reload({ include: 'pallets' })
+  return offer
 }
 
 export { addPallet, updatePallet, destroyPallet }

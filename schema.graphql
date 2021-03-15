@@ -89,7 +89,7 @@ type Mutation {
   updateOffer(input: OfferUpdateInput!): Offer!
 
   addPallet(input: PalletCreateInput!): Pallet!
-  updatePallet(input: PalletUpdateInput!): Pallet!
+  updatePallet(id: Int!, input: PalletUpdateInput!): Pallet!
   destroyPallet(id: Int!): Offer! # return the destroyed pallet's offer
 }
 
@@ -213,7 +213,6 @@ input PalletCreateInput {
 }
 
 input PalletUpdateInput {
-  id: Int!
   paymentStatus: PaymentStatus
   palletType: PalletType
 }

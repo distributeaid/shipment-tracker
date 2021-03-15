@@ -171,6 +171,7 @@ export type MutationAddPalletArgs = {
 }
 
 export type MutationUpdatePalletArgs = {
+  id: Scalars['Int']
   input: PalletUpdateInput
 }
 
@@ -294,7 +295,6 @@ export type PalletCreateInput = {
 }
 
 export type PalletUpdateInput = {
-  id: Scalars['Int']
   paymentStatus?: Maybe<PaymentStatus>
   palletType?: Maybe<PalletType>
 }
@@ -621,7 +621,7 @@ export type MutationResolvers<
     ResolversTypes['Pallet'],
     ParentType,
     ContextType,
-    RequireFields<MutationUpdatePalletArgs, 'input'>
+    RequireFields<MutationUpdatePalletArgs, 'id' | 'input'>
   >
   destroyPallet?: Resolver<
     ResolversTypes['Offer'],

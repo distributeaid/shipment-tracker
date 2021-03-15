@@ -161,6 +161,7 @@ export type MutationAddPalletArgs = {
 }
 
 export type MutationUpdatePalletArgs = {
+  id: Scalars['Int']
   input: PalletUpdateInput
 }
 
@@ -284,7 +285,6 @@ export type PalletCreateInput = {
 }
 
 export type PalletUpdateInput = {
-  id: Scalars['Int']
   paymentStatus?: Maybe<PaymentStatus>
   palletType?: Maybe<PalletType>
 }
