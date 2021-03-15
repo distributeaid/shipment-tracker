@@ -118,9 +118,7 @@ describe('Pallets API', () => {
         },
       })
 
-      expect(res.errors?.[0].message).toEqual(
-        'Forbidden to modify pallets for this offer',
-      )
+      expect(res.errors?.[0].message).toEqual('Forbidden to access this offer')
     })
 
     it('is forbidden for the captain when the offer is not in draft', async () => {
