@@ -72,6 +72,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.JSONB,
       },
+      sendingHubDeliveryDate: {
+        type: Sequelize.DATE,
+      },
       statusChangeTime: {
         allowNull: false,
         type: Sequelize.DATE,

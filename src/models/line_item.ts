@@ -36,6 +36,7 @@ export interface LineItemAttributes {
   tosAccepted: boolean
   dangerousGoods: DangerousGoods[]
   photoUris: string[]
+  sendingHubDeliveryDate: Date
   statusChangeTime: Date
 }
 
@@ -49,6 +50,7 @@ type CreateAttrKeys =
   | 'tosAccepted'
   | 'dangerousGoods'
   | 'photoUris'
+  | 'sendingHubDeliveryDate'
   | 'statusChangeTime'
 
 export interface LineItemCreationAttributes
@@ -125,6 +127,9 @@ export default class LineItem extends Model<
 
   @Column(DataType.JSONB)
   public photoUris!: string[]
+
+  @Column
+  public sendingHubDeliveryDate!: Date
 
   @Column
   public statusChangeTime!: Date

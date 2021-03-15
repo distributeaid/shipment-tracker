@@ -342,6 +342,7 @@ export type LineItem = {
   tosAccepted: Scalars['Boolean']
   dangerousGoods: Array<DangerousGoods>
   photoUris: Array<Scalars['String']>
+  sendingHubDeliveryDate: Scalars['Date']
   statusChangeTime: Scalars['Date']
   createdAt: Scalars['Date']
   updatedAt: Scalars['Date']

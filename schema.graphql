@@ -269,6 +269,7 @@ type LineItem {
   dangerousGoods: [DangerousGoods!]!
   photoUris: [String!]!
 
+  sendingHubDeliveryDate: Date!
   statusChangeTime: Date!
   createdAt: Date!
   updatedAt: Date!

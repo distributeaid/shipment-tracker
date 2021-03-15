@@ -349,6 +349,7 @@ export type LineItem = {
   tosAccepted: Scalars['Boolean']
   dangerousGoods: Array<DangerousGoods>
   photoUris: Array<Scalars['String']>
+  sendingHubDeliveryDate: Scalars['Date']
   statusChangeTime: Scalars['Date']
   createdAt: Scalars['Date']
   updatedAt: Scalars['Date']
@@ -830,6 +831,11 @@ export type LineItemResolvers<
     ContextType
   >
   photoUris?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>
+  sendingHubDeliveryDate?: Resolver<
+    ResolversTypes['Date'],
+    ParentType,
+    ContextType
+  >
   statusChangeTime?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
   updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
