@@ -382,7 +382,21 @@ export type AllShipmentFieldsFragment = { __typename?: 'Shipment' } & Pick<
 export type AllShipmentsQueryVariables = Exact<{ [key: string]: never }>
 
 export type AllShipmentsQuery = { __typename?: 'Query' } & {
-  listShipments: Array<{ __typename?: 'Shipment' } & AllShipmentFieldsFragment>
+  listShipments: Array<
+    { __typename?: 'Shipment' } & Pick<
+      Shipment,
+      | 'id'
+      | 'shippingRoute'
+      | 'labelYear'
+      | 'labelMonth'
+      | 'offerSubmissionDeadline'
+      | 'status'
+      | 'statusChangeTime'
+    > & {
+        sendingHub: { __typename?: 'Group' } & Pick<Group, 'id' | 'name'>
+        receivingHub: { __typename?: 'Group' } & Pick<Group, 'id' | 'name'>
+      }
+  >
 }
 
 export type ShipmentQueryVariables = Exact<{
@@ -721,10 +735,23 @@ export type CreateShipmentMutationOptions = Apollo.BaseMutationOptions<
 export const AllShipmentsDocument = gql`
   query AllShipments {
     listShipments {
-      ...AllShipmentFields
+      id
+      shippingRoute
+      labelYear
+      labelMonth
+      offerSubmissionDeadline
+      status
+      sendingHub {
+        id
+        name
+      }
+      receivingHub {
+        id
+        name
+      }
+      statusChangeTime
     }
   }
-  ${AllShipmentFieldsFragmentDoc}
 `
 
 /**
