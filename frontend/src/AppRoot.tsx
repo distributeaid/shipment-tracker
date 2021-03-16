@@ -14,8 +14,10 @@ import KitchenSink from './pages/KitchenSink'
 import LoadingPage from './pages/LoadingPage'
 import NotFoundPage from './pages/NotFoundPage'
 import PublicHomePage from './pages/PublicHome'
+import ShipmentCreatePage from './pages/shipments/ShipmentCreatePage'
 import ShipmentEditPage from './pages/shipments/ShipmentEditPage'
 import ShipmentList from './pages/shipments/ShipmentList'
+import ShipmentViewPage from './pages/shipments/ShipmentViewPage'
 import ROUTES from './utils/routes'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -61,53 +63,37 @@ const AppRoot = () => {
           <Route path={ROUTES.HOME} exact>
             {isAuthenticated ? <HomePage /> : <PublicHomePage />}
           </Route>
-          <PrivateRoute
-            path={ROUTES.ADMIN_ROOT}
-            isAuthenticated={isAuthenticated}
-            exact
-          >
+          <PrivateRoute path={ROUTES.ADMIN_ROOT} exact>
             <AdminPage />
           </PrivateRoute>
           <Route path={ROUTES.APOLLO_DEMO}>
             <ApolloDemoPage />
           </Route>
-          <PrivateRoute
-            path={ROUTES.GROUP_LIST}
-            isAuthenticated={isAuthenticated}
-          >
+          <PrivateRoute path={ROUTES.GROUP_LIST}>
             <GroupList />
           </PrivateRoute>
-          <PrivateRoute
-            path={ROUTES.GROUP_CREATE}
-            isAuthenticated={isAuthenticated}
-          >
+          <PrivateRoute path={ROUTES.GROUP_CREATE}>
             <GroupCreatePage />
           </PrivateRoute>
-          <PrivateRoute
-            path={ROUTES.GROUP_EDIT}
-            isAuthenticated={isAuthenticated}
-          >
+          <PrivateRoute path={ROUTES.GROUP_EDIT}>
             <GroupEditPage />
           </PrivateRoute>
-          <PrivateRoute
-            path={ROUTES.GROUP_VIEW}
-            isAuthenticated={isAuthenticated}
-          >
+          <PrivateRoute path={ROUTES.GROUP_VIEW}>
             <GroupViewPage />
           </PrivateRoute>
-          <PrivateRoute
-            path={ROUTES.SHIPMENT_LIST}
-            isAuthenticated={isAuthenticated}
-          >
+          <PrivateRoute path={ROUTES.SHIPMENT_LIST}>
             <ShipmentList />
           </PrivateRoute>
-          <PrivateRoute
-            path={ROUTES.SHIPMENT_EDIT}
-            isAuthenticated={isAuthenticated}
-          >
+          <PrivateRoute path={ROUTES.SHIPMENT_CREATE}>
+            <ShipmentCreatePage />
+          </PrivateRoute>
+          <PrivateRoute path={ROUTES.SHIPMENT_EDIT}>
             <ShipmentEditPage />
           </PrivateRoute>
-          <PrivateRoute isAuthenticated={isAuthenticated} path="*">
+          <PrivateRoute path={ROUTES.SHIPMENT_VIEW}>
+            <ShipmentViewPage />
+          </PrivateRoute>
+          <PrivateRoute path="*">
             <NotFoundPage />
           </PrivateRoute>
         </Switch>

@@ -72,7 +72,12 @@ export function getShipmentStatusBadgeColor(
  * @example "UK-2021-03"
  */
 export function formatShipmentName(
-  shipment: Shipment | ShipmentQuery['shipment'],
+  shipment:
+    | Shipment
+    | Pick<
+        ShipmentQuery['shipment'],
+        'labelMonth' | 'labelYear' | 'shippingRoute'
+      >,
 ) {
   const month = shipment.labelMonth.toString().padStart(2, '0')
   return `${shipment.shippingRoute}-${shipment.labelYear}-${month}`

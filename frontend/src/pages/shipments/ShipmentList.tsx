@@ -3,6 +3,7 @@ import { FunctionComponent, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Column, useSortBy, useTable } from 'react-table'
 import Badge from '../../components/Badge'
+import ButtonLink from '../../components/ButtonLink'
 import TableHeader from '../../components/table/TableHeader'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { AllShipmentsQuery, useAllShipmentsQuery } from '../../types/api-types'
@@ -11,7 +12,7 @@ import {
   formatShipmentName,
   getShipmentStatusBadgeColor,
 } from '../../utils/format'
-import { shipmentEditRoute } from '../../utils/routes'
+import ROUTES, { shipmentViewRoute } from '../../utils/routes'
 
 const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
   {
@@ -32,6 +33,7 @@ const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
   },
   {
     Header: 'Date',
+    // TODO this accessor won't sort properly
     accessor: (row) => `${formatLabelMonth(row.labelMonth)} ${row.labelYear}`,
   },
   {
@@ -62,6 +64,7 @@ const ShipmentList: FunctionComponent = () => {
       <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
         <header className="p-6 border-b border-gray-200 flex items-center justify-between">
           <h1 className="text-navy-800 text-3xl">Shipments</h1>
+          <ButtonLink to={ROUTES.SHIPMENT_CREATE}>Create a shipment</ButtonLink>
         </header>
         <main>
           <table className="w-full" {...getTableProps()}>
@@ -100,7 +103,7 @@ const ShipmentList: FunctionComponent = () => {
                         })}
                       >
                         {cell.column.Header === 'Name' ? (
-                          <Link to={shipmentEditRoute(row.original.id)}>
+                          <Link to={shipmentViewRoute(row.original.id)}>
                             {cell.render('Cell')}
                           </Link>
                         ) : (

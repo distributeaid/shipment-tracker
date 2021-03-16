@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom'
+import InternalLink from '../../components/InternalLink'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
   ShipmentUpdateInput,
@@ -7,6 +8,7 @@ import {
   useUpdateShipmentMutation,
 } from '../../types/api-types'
 import { formatShipmentName } from '../../utils/format'
+import { shipmentViewRoute } from '../../utils/routes'
 import ShipmentForm from './ShipmentForm'
 
 const ShipmentEditPage: FunctionComponent = () => {
@@ -37,6 +39,12 @@ const ShipmentEditPage: FunctionComponent = () => {
     <LayoutWithNav>
       <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
         <header className="p-4 md:p-6 border-b border-gray-200">
+          <InternalLink
+            className="inline-block mb-2"
+            to={shipmentViewRoute(shipmentId)}
+          >
+            ← back to shipment
+          </InternalLink>
           <h1 className="text-navy-800 text-3xl mb-2">
             {originalShipmentData
               ? formatShipmentName(originalShipmentData.shipment)

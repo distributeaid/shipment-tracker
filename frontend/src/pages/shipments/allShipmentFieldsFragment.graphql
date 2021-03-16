@@ -5,4 +5,20 @@ fragment AllShipmentFields on Shipment {
   labelMonth
   offerSubmissionDeadline
   status
+  receivingHub {
+    id
+    name
+    primaryLocation {
+      townCity
+      countryCode
+    }
+  }
+  sendingHub {
+    id
+    name
+    primaryLocation {
+      townCity
+      countryCode
+    }
+  }
 }
