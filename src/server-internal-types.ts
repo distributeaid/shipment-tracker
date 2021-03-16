@@ -300,6 +300,61 @@ export type PalletUpdateInput = {
   palletType?: Maybe<PalletType>
 }
 
+export enum LineItemStatus {
+  Proposed = 'PROPOSED',
+  AwaitingApproval = 'AWAITING_APPROVAL',
+  Accepted = 'ACCEPTED',
+  NotAccepted = 'NOT_ACCEPTED',
+}
+
+export enum LineItemCategory {
+  Unset = 'UNSET',
+}
+
+export enum DangerousGoods {
+  Flammable = 'FLAMMABLE',
+  Explosive = 'EXPLOSIVE',
+  Medicine = 'MEDICINE',
+  Batteries = 'BATTERIES',
+  Liquids = 'LIQUIDS',
+  Other = 'OTHER',
+}
+
+export enum LineItemContainerType {
+  Unset = 'UNSET',
+  BulkBag = 'BULK_BAG',
+  Box = 'BOX',
+  FullPallet = 'FULL_PALLET',
+}
+
+export type LineItem = {
+  __typename?: 'LineItem'
+  id: Scalars['Int']
+  offerPalletId: Scalars['Int']
+  status: LineItemStatus
+  proposedReceivingGroupId?: Maybe<Scalars['Int']>
+  proposedReceivingGroup?: Maybe<Group>
+  acceptedReceivingGroupId?: Maybe<Scalars['Int']>
+  acceptedReceivingGroup?: Maybe<Group>
+  containerType: LineItemContainerType
+  category: LineItemCategory
+  description: Scalars['String']
+  itemCount: Scalars['Int']
+  boxCount?: Maybe<Scalars['Int']>
+  boxWeightKg?: Maybe<Scalars['Float']>
+  lengthCm?: Maybe<Scalars['Float']>
+  widthCm?: Maybe<Scalars['Float']>
+  heightCm?: Maybe<Scalars['Float']>
+  affirmLiability: Scalars['Boolean']
+  tosAccepted: Scalars['Boolean']
+  dangerousGoods: Array<DangerousGoods>
+  photoUris: Array<Scalars['String']>
+  sendingHubDeliveryDate: Scalars['Date']
+  statusChangeTime: Scalars['Date']
+  createdAt: Scalars['Date']
+  updatedAt: Scalars['Date']
+}
+
 export type WithIndex<TObject> = TObject & Record<string, any>
 export type ResolversObject<TObject> = WithIndex<TObject>
 
@@ -448,6 +503,12 @@ export type ResolversTypes = ResolversObject<{
   Pallet: ResolverTypeWrapper<Pallet>
   PalletCreateInput: PalletCreateInput
   PalletUpdateInput: PalletUpdateInput
+  LineItemStatus: LineItemStatus
+  LineItemCategory: LineItemCategory
+  DangerousGoods: DangerousGoods
+  LineItemContainerType: LineItemContainerType
+  LineItem: ResolverTypeWrapper<LineItem>
+  Float: ResolverTypeWrapper<Scalars['Float']>
 }>
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -475,6 +536,8 @@ export type ResolversParentTypes = ResolversObject<{
   Pallet: Pallet
   PalletCreateInput: PalletCreateInput
   PalletUpdateInput: PalletUpdateInput
+  LineItem: LineItem
+  Float: Scalars['Float']
 }>
 
 export interface DateScalarConfig
@@ -712,6 +775,73 @@ export type PalletResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
+export type LineItemResolvers<
+  ContextType = AuthenticatedContext,
+  ParentType extends ResolversParentTypes['LineItem'] = ResolversParentTypes['LineItem']
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  offerPalletId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  status?: Resolver<ResolversTypes['LineItemStatus'], ParentType, ContextType>
+  proposedReceivingGroupId?: Resolver<
+    Maybe<ResolversTypes['Int']>,
+    ParentType,
+    ContextType
+  >
+  proposedReceivingGroup?: Resolver<
+    Maybe<ResolversTypes['Group']>,
+    ParentType,
+    ContextType
+  >
+  acceptedReceivingGroupId?: Resolver<
+    Maybe<ResolversTypes['Int']>,
+    ParentType,
+    ContextType
+  >
+  acceptedReceivingGroup?: Resolver<
+    Maybe<ResolversTypes['Group']>,
+    ParentType,
+    ContextType
+  >
+  containerType?: Resolver<
+    ResolversTypes['LineItemContainerType'],
+    ParentType,
+    ContextType
+  >
+  category?: Resolver<
+    ResolversTypes['LineItemCategory'],
+    ParentType,
+    ContextType
+  >
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  itemCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  boxCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
+  boxWeightKg?: Resolver<
+    Maybe<ResolversTypes['Float']>,
+    ParentType,
+    ContextType
+  >
+  lengthCm?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>
+  widthCm?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>
+  heightCm?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>
+  affirmLiability?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  tosAccepted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  dangerousGoods?: Resolver<
+    Array<ResolversTypes['DangerousGoods']>,
+    ParentType,
+    ContextType
+  >
+  photoUris?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>
+  sendingHubDeliveryDate?: Resolver<
+    ResolversTypes['Date'],
+    ParentType,
+    ContextType
+  >
+  statusChangeTime?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
 export type Resolvers<ContextType = AuthenticatedContext> = ResolversObject<{
   Date?: GraphQLScalarType
   Location?: LocationResolvers<ContextType>
@@ -723,6 +853,7 @@ export type Resolvers<ContextType = AuthenticatedContext> = ResolversObject<{
   UserProfile?: UserProfileResolvers<ContextType>
   Offer?: OfferResolvers<ContextType>
   Pallet?: PalletResolvers<ContextType>
+  LineItem?: LineItemResolvers<ContextType>
 }>
 
 /**
