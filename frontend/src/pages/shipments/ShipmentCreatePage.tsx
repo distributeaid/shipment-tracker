@@ -41,6 +41,12 @@ const ShipmentCreatePage: FunctionComponent = () => {
           </p>
         </header>
         <main className="p-4 md:p-6 max-w-lg pb-20">
+          {mutationError && (
+            <div className="p-4 rounded bg-red-50 mb-6 text-red-800">
+              <p className="font-semibold">Error:</p>
+              <p>{mutationError.message}</p>
+            </div>
+          )}
           <ShipmentForm
             isLoading={mutationIsLoading}
             submitButtonLabel="Create shipment"
