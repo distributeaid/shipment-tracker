@@ -21,9 +21,7 @@ const GroupCreatePage: FunctionComponent = () => {
           history.push(`/group/${newGroupId}`)
         }
       })
-      .catch((error) => {
-        console.error(error)
-      })
+      .catch(console.error)
   }
 
   return (

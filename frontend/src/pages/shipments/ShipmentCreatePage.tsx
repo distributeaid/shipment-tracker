@@ -25,9 +25,7 @@ const ShipmentCreatePage: FunctionComponent = () => {
           history.push(shipmentViewRoute(newShipmentId))
         }
       })
-      .catch((error) => {
-        console.error(error)
-      })
+      .catch(console.error)
   }
 
   return (

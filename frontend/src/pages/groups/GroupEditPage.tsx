@@ -27,9 +27,7 @@ const GroupEditPage: FunctionComponent = () => {
 
   const onSubmit = (input: GroupUpdateInput) => {
     updateGroup({ variables: { id: parseInt(groupId, 10), input } }).catch(
-      (error) => {
-        console.error(error)
-      },
+      console.error,
     )
   }
 
