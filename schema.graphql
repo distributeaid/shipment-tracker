@@ -91,6 +91,9 @@ type Mutation {
   addPallet(input: PalletCreateInput!): Pallet!
   updatePallet(id: Int!, input: PalletUpdateInput!): Pallet!
   destroyPallet(id: Int!): Offer! # return the destroyed pallet's offer
+  addLineItem(palletId: Int!): Pallet! # return the pallet the line item was added to
+  updateLineItem(id: Int!, input: LineItemUpdateInput!): LineItem!
+  moveLineItem(id: Int!, targetPalletId: Int!): Offer!
 }
 
 input ShipmentCreateInput {
@@ -202,6 +205,7 @@ type Pallet {
   id: Int!
   offerId: Int!
   palletType: PalletType!
+  lineItems: [LineItem!]!
   paymentStatus: PaymentStatus!
   paymentStatusChangeTime: Date!
   createdAt: Date!
@@ -249,28 +253,45 @@ type LineItem {
   id: Int!
   offerPalletId: Int!
   status: LineItemStatus!
-
   proposedReceivingGroupId: Int
   proposedReceivingGroup: Group
   acceptedReceivingGroupId: Int
   acceptedReceivingGroup: Group
-
   containerType: LineItemContainerType!
   category: LineItemCategory!
   description: String!
   itemCount: Int!
   boxCount: Int
-  boxWeightKg: Float
-  lengthCm: Float
-  widthCm: Float
-  heightCm: Float
+  boxWeightGrams: Int
+  lengthCm: Int
+  widthCm: Int
+  heightCm: Int
   affirmLiability: Boolean!
   tosAccepted: Boolean!
   dangerousGoods: [DangerousGoods!]!
   photoUris: [String!]!
-
-  sendingHubDeliveryDate: Date!
+  sendingHubDeliveryDate: Date
   statusChangeTime: Date!
   createdAt: Date!
   updatedAt: Date!
+}
+
+input LineItemUpdateInput {
+  status: LineItemStatus
+  proposedReceivingGroupId: Int
+  acceptedReceivingGroupId: Int
+  containerType: LineItemContainerType
+  category: LineItemCategory
+  description: String
+  itemCount: Int
+  boxCount: Int
+  boxWeightGrams: Int
+  lengthCm: Int
+  widthCm: Int
+  heightCm: Int
+  affirmLiability: Boolean
+  tosAccepted: Boolean
+  dangerousGoods: [DangerousGoods!]
+  photoUris: [String!]
+  sendingHubDeliveryDate: Date
 }

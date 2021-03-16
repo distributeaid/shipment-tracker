@@ -50,7 +50,6 @@ type CreateAttrKeys =
   | 'tosAccepted'
   | 'dangerousGoods'
   | 'photoUris'
-  | 'sendingHubDeliveryDate'
   | 'statusChangeTime'
 
 export interface LineItemCreationAttributes
@@ -96,7 +95,7 @@ export default class LineItem extends Model<
   public category!: LineItemCategory
 
   @Column
-  public description!: string
+  public description?: string
 
   @Column
   public itemCount!: number
@@ -129,7 +128,7 @@ export default class LineItem extends Model<
   public photoUris!: string[]
 
   @Column
-  public sendingHubDeliveryDate!: Date
+  public sendingHubDeliveryDate?: Date
 
   @Column
   public statusChangeTime!: Date
