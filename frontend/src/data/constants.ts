@@ -275,3 +275,10 @@ export const COUNTRY_CODES_TO_NAME = {
   ZM: 'Zambia',
   ZW: 'Zimbabwe',
 }
+
+export const COUNTRY_CODE_OPTIONS = Object.entries(COUNTRY_CODES_TO_NAME).map(
+  ([countryCode, countryName]) => ({
+    label: countryName,
+    value: countryCode,
+  }),
+)

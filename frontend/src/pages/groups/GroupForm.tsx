@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
-import { GROUP_TYPE_OPTIONS } from '../../data/constants'
+import { COUNTRY_CODE_OPTIONS, GROUP_TYPE_OPTIONS } from '../../data/constants'
 import { GroupCreateInput, GroupQuery } from '../../types/api-types'
 
 interface Props {
@@ -66,9 +66,18 @@ const GroupForm: FunctionComponent<Props> = (props) => {
           register={register}
           required
         />
-        <TextField
+        <SelectField
           label="Country"
           name="primaryLocation.countryCode"
+          defaultValue=""
+          options={[
+            {
+              label: 'Pick a country',
+              value: '',
+              disabled: true,
+            },
+            ...COUNTRY_CODE_OPTIONS,
+          ]}
           register={register}
         />
       </fieldset>

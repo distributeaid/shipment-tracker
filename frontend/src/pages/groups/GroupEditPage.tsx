@@ -2,7 +2,11 @@ import { FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom'
 import InternalLink from '../../components/InternalLink'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { GroupUpdateInput, useGroupQuery } from '../../types/api-types'
+import {
+  GroupUpdateInput,
+  useGroupQuery,
+  useUpdateGroupMutation,
+} from '../../types/api-types'
 import { groupViewRoute } from '../../utils/routes'
 import GroupForm from './GroupForm'
 
@@ -16,15 +20,15 @@ const GroupEditPage: FunctionComponent = () => {
   })
 
   // Set up the mutation to update the group
-  // const [updateGroup, { loading: mutationIsLoading }] = useMutation(
-  //   UPDATE_GROUP,
-  // )
+  const [
+    updateGroup,
+    { loading: mutationIsLoading, error: mutationError },
+  ] = useUpdateGroupMutation()
 
   const onSubmit = (input: GroupUpdateInput) => {
-    // TODO support an updateGroup resolver on the backend
-    // updateGroup({ variables: { input } }).catch((error) => {
-    //   console.log(error)
-    // })
+    updateGroup({ variables: { id: parseInt(groupId, 10), input } }).catch(
+      console.error,
+    )
   }
 
   return (
@@ -46,8 +50,14 @@ const GroupEditPage: FunctionComponent = () => {
           </p>
         </header>
         <main className="p-4 md:p-6 max-w-lg pb-20">
+          {mutationError && (
+            <div className="p-4 rounded bg-red-50 mb-6 text-red-800">
+              <p className="font-semibold">Error:</p>
+              <p>{mutationError.message}</p>
+            </div>
+          )}
           <GroupForm
-            isLoading={queryIsLoading}
+            isLoading={queryIsLoading || mutationIsLoading}
             submitButtonLabel="Save changes"
             onSubmit={onSubmit}
             defaultValues={originalGroupData}
