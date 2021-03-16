@@ -403,6 +403,14 @@ export type GroupQuery = { __typename?: 'Query' } & {
   group: { __typename?: 'Group' } & AllGroupFieldsFragment
 }
 
+export type CreateShipmentMutationVariables = Exact<{
+  input: ShipmentCreateInput
+}>
+
+export type CreateShipmentMutation = { __typename?: 'Mutation' } & {
+  addShipment: { __typename?: 'Shipment' } & AllShipmentFieldsFragment
+}
+
 export type AllShipmentFieldsFragment = { __typename?: 'Shipment' } & Pick<
   Shipment,
   | 'id'
@@ -411,7 +419,20 @@ export type AllShipmentFieldsFragment = { __typename?: 'Shipment' } & Pick<
   | 'labelMonth'
   | 'offerSubmissionDeadline'
   | 'status'
->
+> & {
+    receivingHub: { __typename?: 'Group' } & Pick<Group, 'id' | 'name'> & {
+        primaryLocation: { __typename?: 'Location' } & Pick<
+          Location,
+          'townCity' | 'countryCode'
+        >
+      }
+    sendingHub: { __typename?: 'Group' } & Pick<Group, 'id' | 'name'> & {
+        primaryLocation: { __typename?: 'Location' } & Pick<
+          Location,
+          'townCity' | 'countryCode'
+        >
+      }
+  }
 
 export type AllShipmentsQueryVariables = Exact<{ [key: string]: never }>
 
@@ -477,6 +498,22 @@ export const AllShipmentFieldsFragmentDoc = gql`
     labelMonth
     offerSubmissionDeadline
     status
+    receivingHub {
+      id
+      name
+      primaryLocation {
+        townCity
+        countryCode
+      }
+    }
+    sendingHub {
+      id
+      name
+      primaryLocation {
+        townCity
+        countryCode
+      }
+    }
   }
 `
 export const CreateGroupDocument = gql`
@@ -699,6 +736,56 @@ export type GroupLazyQueryHookResult = ReturnType<typeof useGroupLazyQuery>
 export type GroupQueryResult = Apollo.QueryResult<
   GroupQuery,
   GroupQueryVariables
+>
+export const CreateShipmentDocument = gql`
+  mutation CreateShipment($input: ShipmentCreateInput!) {
+    addShipment(input: $input) {
+      ...AllShipmentFields
+    }
+  }
+  ${AllShipmentFieldsFragmentDoc}
+`
+export type CreateShipmentMutationFn = Apollo.MutationFunction<
+  CreateShipmentMutation,
+  CreateShipmentMutationVariables
+>
+
+/**
+ * __useCreateShipmentMutation__
+ *
+ * To run a mutation, you first call `useCreateShipmentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateShipmentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createShipmentMutation, { data, loading, error }] = useCreateShipmentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateShipmentMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateShipmentMutation,
+    CreateShipmentMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    CreateShipmentMutation,
+    CreateShipmentMutationVariables
+  >(CreateShipmentDocument, options)
+}
+export type CreateShipmentMutationHookResult = ReturnType<
+  typeof useCreateShipmentMutation
+>
+export type CreateShipmentMutationResult = Apollo.MutationResult<CreateShipmentMutation>
+export type CreateShipmentMutationOptions = Apollo.BaseMutationOptions<
+  CreateShipmentMutation,
+  CreateShipmentMutationVariables
 >
 export const AllShipmentsDocument = gql`
   query AllShipments {

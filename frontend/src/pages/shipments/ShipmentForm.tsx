@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactNode, useEffect, useState } from 'react'
+import { FunctionComponent, ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField, { SelectOption } from '../../components/forms/SelectField'
@@ -7,9 +7,9 @@ import { MONTH_OPTIONS } from '../../data/constants'
 import {
   AllGroupsMinimalQuery,
   GroupType,
+  ShipmentCreateInput,
   ShipmentQuery,
   ShipmentStatus,
-  ShipmentUpdateInput,
   ShippingRoute,
   useAllGroupsMinimalQuery,
 } from '../../types/api-types'
@@ -32,16 +32,16 @@ interface Props {
   /**
    * The callback triggered when the user submits the form
    */
-  onSubmit: (input: ShipmentUpdateInput) => void
+  onSubmit: (input: ShipmentCreateInput) => void
 }
 
 const STATUS_OPTIONS = [
-  { label: 'Abandoned', value: ShipmentStatus.Abandoned },
   { label: 'Announced', value: ShipmentStatus.Announced },
-  { label: 'Complete', value: ShipmentStatus.Complete },
   { label: 'In progress', value: ShipmentStatus.InProgress },
   { label: 'Open', value: ShipmentStatus.Open },
   { label: 'In staging', value: ShipmentStatus.Staging },
+  { label: 'Complete', value: ShipmentStatus.Complete },
+  { label: 'Abandoned', value: ShipmentStatus.Abandoned },
 ]
 
 const SHIPPING_ROUTE_OPTIONS = enumValues(ShippingRoute).map((routeKey) => ({
@@ -97,6 +97,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
   return (
     <form onSubmit={handleSubmit(props.onSubmit)} className="space-y-4">
       <SelectField
+        defaultValue={ShipmentStatus.Announced}
         options={STATUS_OPTIONS}
         label="Status"
         name="status"

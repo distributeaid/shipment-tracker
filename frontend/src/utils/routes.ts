@@ -7,6 +7,8 @@ const ROUTES = {
   GROUP_CREATE: '/group/new',
   GROUP_EDIT: '/group/:groupId/edit',
   SHIPMENT_LIST: '/shipments',
+  SHIPMENT_CREATE: '/shipment/new',
+  SHIPMENT_VIEW: '/shipment/:shipmentId',
   SHIPMENT_EDIT: '/shipment/:shipmentId/edit',
   KITCHEN_SINK: '/kitchen-sink',
 }
@@ -17,6 +19,10 @@ export function groupViewRoute(groupId: number | string) {
 
 export function groupEditRoute(groupId: number | string) {
   return ROUTES.GROUP_EDIT.replace(':groupId', groupId.toString())
+}
+
+export function shipmentViewRoute(shipmentId: number | string) {
+  return ROUTES.SHIPMENT_VIEW.replace(':shipmentId', shipmentId.toString())
 }
 
 export function shipmentEditRoute(shipmentId: number | string) {
