@@ -93,6 +93,7 @@ type Mutation {
   destroyPallet(id: Int!): Offer! # return the destroyed pallet's offer
   addLineItem(palletId: Int!): Pallet! # return the pallet the line item was added to
   updateLineItem(id: Int!, input: LineItemUpdateInput!): LineItem!
+  destroyLineItem(id: Int!): Pallet!
   moveLineItem(id: Int!, targetPalletId: Int!): Offer!
 }
 
@@ -259,13 +260,13 @@ type LineItem {
   acceptedReceivingGroup: Group
   containerType: LineItemContainerType!
   category: LineItemCategory!
-  description: String!
+  description: String
   itemCount: Int!
-  boxCount: Int
-  boxWeightGrams: Int
-  lengthCm: Int
-  widthCm: Int
-  heightCm: Int
+  containerCount: Int
+  containerWeightGrams: Int
+  containerLengthCm: Int
+  containerWidthCm: Int
+  containerHeightCm: Int
   affirmLiability: Boolean!
   tosAccepted: Boolean!
   dangerousGoods: [DangerousGoods!]!
@@ -284,11 +285,11 @@ input LineItemUpdateInput {
   category: LineItemCategory
   description: String
   itemCount: Int
-  boxCount: Int
-  boxWeightGrams: Int
-  lengthCm: Int
-  widthCm: Int
-  heightCm: Int
+  containerCount: Int
+  containerWeightGrams: Int
+  containerLengthCm: Int
+  containerWidthCm: Int
+  containerHeightCm: Int
   affirmLiability: Boolean
   tosAccepted: Boolean
   dangerousGoods: [DangerousGoods!]

@@ -88,10 +88,8 @@ const destroyPallet: MutationResolvers['destroyPallet'] = async (
   return offer
 }
 
-const palletLineItemsResolver: PalletResolvers['lineItems'] = async (
-  parent,
-) => {
+const palletLineItems: PalletResolvers['lineItems'] = async (parent) => {
   return LineItem.findAll({ where: { offerPalletId: parent.id } })
 }
 
-export { addPallet, updatePallet, destroyPallet, palletLineItemsResolver }
+export { addPallet, updatePallet, destroyPallet, palletLineItems }

@@ -27,8 +27,8 @@ export interface LineItemAttributes {
   category: LineItemCategory
   description: string
   itemCount: number
-  boxCount?: number
-  boxWeightGrams?: number
+  containerCount?: number
+  containerWeightGrams?: number
   containerLengthCm?: number
   containerWidthCm?: number
   containerHeightCm?: number
@@ -71,6 +71,9 @@ export default class LineItem extends Model<
   @BelongsTo(() => Pallet, 'offerPalletId')
   public offerPallet!: Pallet
 
+  @Column(DataType.STRING)
+  public status!: LineItemStatus
+
   @ForeignKey(() => Group)
   @Column
   public proposedReceivingGroupId?: number
@@ -86,9 +89,6 @@ export default class LineItem extends Model<
   public acceptedReceivingGroup?: Group
 
   @Column(DataType.STRING)
-  public status!: LineItemStatus
-
-  @Column(DataType.STRING)
   public containerType!: LineItemContainerType
 
   @Column(DataType.STRING)
@@ -101,10 +101,10 @@ export default class LineItem extends Model<
   public itemCount!: number
 
   @Column
-  public boxCount?: number
+  public containerCount?: number
 
   @Column
-  public boxWeightGrams?: number
+  public containerWeightGrams?: number
 
   @Column
   public containerLengthCm?: number

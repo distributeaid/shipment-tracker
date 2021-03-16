@@ -11,7 +11,7 @@ import {
   QueryResolvers,
   ShipmentStatus,
 } from '../../server-internal-types'
-import stringIsUrl from '../group/stringIsUrl'
+import validateUris from '../validateUris'
 import {
   authorizeOfferMutation,
   authorizeOfferQuery,
@@ -26,15 +26,7 @@ const addOffer: MutationResolvers['addOffer'] = async (
     throw new UserInputError('Offer arguments invalid')
   }
 
-  if (input.photoUris) {
-    const invalidUris = input.photoUris.filter((uri) => !stringIsUrl(uri))
-
-    if (invalidUris.length > 0) {
-      throw new UserInputError(
-        `Invalid photo URI(s): ${invalidUris.join(', ')}`,
-      )
-    }
-  }
+  validateUris(input.photoUris || [])
 
   const sendingGroupPromise = Group.findByPk(input.sendingGroupId)
   const shipmentPromise = Shipment.findByPk(input.shipmentId)
@@ -107,17 +99,9 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
   }
 
   if (has(input, 'photoUris')) {
-    const invalidUris = (input.photoUris || []).filter(
-      (uri) => !stringIsUrl(uri),
-    )
-
-    if (invalidUris.length > 0) {
-      throw new UserInputError(
-        `Invalid photo URI(s): ${invalidUris.join(', ')}`,
-      )
-    }
-
-    updateAttributes.photoUris = input.photoUris || []
+    const uris = input.photoUris || []
+    validateUris(uris)
+    updateAttributes.photoUris = uris
   }
 
   return offer.update(updateAttributes)

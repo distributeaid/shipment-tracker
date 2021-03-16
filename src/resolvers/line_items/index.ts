@@ -1,5 +1,5 @@
 import { ApolloError, UserInputError } from 'apollo-server'
-import { has } from 'lodash'
+import { has, isEqual } from 'lodash'
 import Group from '../../models/group'
 import LineItem, { LineItemAttributes } from '../../models/line_item'
 import Offer from '../../models/offer'
@@ -13,6 +13,7 @@ import {
 } from '../../server-internal-types'
 import getPalletWithParentAssociations from '../getPalletWithParentAssociations'
 import { authorizeOfferMutation } from '../offer/offer_authorization'
+import validateUris from '../validateUris'
 
 const addLineItem: MutationResolvers['addLineItem'] = async (
   _,
@@ -87,77 +88,97 @@ async function getUpdateAttributes(
 ): Promise<Partial<LineItemAttributes>> {
   const updateAttributes: Partial<LineItemAttributes> = {}
 
+  // TODO ensure the input status is a member of the enum
   if (input.status && input.status !== lineItem.status) {
     updateAttributes.status = input.status
     updateAttributes.statusChangeTime = new Date()
   }
 
-  if (
-    has(input, 'proposedReceivingGroupId') &&
-    input.proposedReceivingGroupId !== lineItem.proposedReceivingGroupId
-  ) {
-    if (input.proposedReceivingGroupId) {
-      const group = await Group.findByPk(input.proposedReceivingGroupId)
-
-      if (!group) {
-        throw new UserInputError(
-          `Group ${input.proposedReceivingGroupId} does not exist`,
-        )
-      }
-
-      if (group.groupType !== GroupType.ReceivingGroup) {
-        throw new UserInputError(
-          `Group ${input.proposedReceivingGroupId} is not a receiving group`,
-        )
-      }
-
-      updateAttributes.proposedReceivingGroupId = input.proposedReceivingGroupId
-    } else {
-      updateAttributes.proposedReceivingGroupId = undefined
-    }
+  // TODO ensure the input containerType is a member of the enum
+  if (input.containerType && input.containerType !== lineItem.containerType) {
+    updateAttributes.containerType = input.containerType
   }
 
+  // TODO ensure the input dangerous goods are members of the enum
   if (
-    has(input, 'acceptedReceivingGroupId') &&
-    input.acceptedReceivingGroupId !== lineItem.acceptedReceivingGroupId
+    input.dangerousGoods &&
+    !isEqual(input.dangerousGoods, lineItem.dangerousGoods)
   ) {
-    if (input.acceptedReceivingGroupId) {
-      const group = await Group.findByPk(input.acceptedReceivingGroupId)
-
-      if (!group) {
-        throw new UserInputError(
-          `Group ${input.acceptedReceivingGroupId} does not exist`,
-        )
-      }
-
-      if (group.groupType !== GroupType.ReceivingGroup) {
-        throw new UserInputError(
-          `Group ${input.acceptedReceivingGroupId} is not a receiving group`,
-        )
-      }
-
-      updateAttributes.acceptedReceivingGroupId = input.acceptedReceivingGroupId
-    } else {
-      updateAttributes.acceptedReceivingGroupId = undefined
-    }
+    updateAttributes.dangerousGoods = input.dangerousGoods
   }
 
-  // containerType: LineItemContainerType
-  // category: LineItemCategory
-  // description: String
-  // itemCount: Int
-  // boxCount: Int
-  // boxWeightGrams: Int
-  // lengthCm: Int
-  // widthCm: Int
-  // heightCm: Int
-  // affirmLiability: Boolean
-  // tosAccepted: Boolean
-  // dangerousGoods: [DangerousGoods!]
-  // photoUris: [String!]
-  // sendingHubDeliveryDate: Date
+  await updateGroupIdAttr(
+    lineItem,
+    input,
+    updateAttributes,
+    'proposedReceivingGroupId',
+  )
+  await updateGroupIdAttr(
+    lineItem,
+    input,
+    updateAttributes,
+    'acceptedReceivingGroupId',
+  )
+
+  const commonScalarAttributes: Array<
+    keyof LineItemAttributes & keyof LineItemUpdateInput
+  > = [
+    'description',
+    'itemCount',
+    'containerCount',
+    'containerWeightGrams',
+    'containerLengthCm',
+    'containerWidthCm',
+    'containerHeightCm',
+    'affirmLiability',
+    'tosAccepted',
+    'sendingHubDeliveryDate',
+  ]
+
+  commonScalarAttributes.forEach((attr) => {
+    if (has(input, attr)) {
+      updateAttributes[attr] = input[attr] || undefined
+    }
+  })
+
+  if (has(input, 'photoUris')) {
+    const uris = input.photoUris || []
+    validateUris(uris)
+    updateAttributes.photoUris = uris
+  }
 
   return updateAttributes
+}
+
+async function updateGroupIdAttr(
+  lineItem: LineItem,
+  input: LineItemUpdateInput,
+  updateAttributes: Partial<LineItemAttributes>,
+  attr: 'acceptedReceivingGroupId' | 'proposedReceivingGroupId',
+) {
+  if (
+    !has(input, 'acceptedReceivingGroupId') ||
+    input[attr] === lineItem[attr]
+  ) {
+    return
+  }
+
+  if (!input[attr]) {
+    updateAttributes[attr] = undefined
+    return
+  }
+
+  const group = await Group.findByPk(input[attr]!)
+
+  if (!group) {
+    throw new UserInputError(`Group ${input[attr]} does not exist`)
+  }
+
+  if (group.groupType !== GroupType.ReceivingGroup) {
+    throw new UserInputError(`Group ${input[attr]} is not a receiving group`)
+  }
+
+  updateAttributes[attr] = input[attr]!
 }
 
 export { addLineItem, updateLineItem }

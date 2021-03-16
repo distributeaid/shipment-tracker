@@ -133,6 +133,7 @@ export type Mutation = {
   destroyPallet: Offer
   addLineItem: Pallet
   updateLineItem: LineItem
+  destroyLineItem: Pallet
   moveLineItem: Offer
 }
 
@@ -182,6 +183,10 @@ export type MutationAddLineItemArgs = {
 export type MutationUpdateLineItemArgs = {
   id: Scalars['Int']
   input: LineItemUpdateInput
+}
+
+export type MutationDestroyLineItemArgs = {
+  id: Scalars['Int']
 }
 
 export type MutationMoveLineItemArgs = {
@@ -349,13 +354,13 @@ export type LineItem = {
   acceptedReceivingGroup?: Maybe<Group>
   containerType: LineItemContainerType
   category: LineItemCategory
-  description: Scalars['String']
+  description?: Maybe<Scalars['String']>
   itemCount: Scalars['Int']
-  boxCount?: Maybe<Scalars['Int']>
-  boxWeightGrams?: Maybe<Scalars['Int']>
-  lengthCm?: Maybe<Scalars['Int']>
-  widthCm?: Maybe<Scalars['Int']>
-  heightCm?: Maybe<Scalars['Int']>
+  containerCount?: Maybe<Scalars['Int']>
+  containerWeightGrams?: Maybe<Scalars['Int']>
+  containerLengthCm?: Maybe<Scalars['Int']>
+  containerWidthCm?: Maybe<Scalars['Int']>
+  containerHeightCm?: Maybe<Scalars['Int']>
   affirmLiability: Scalars['Boolean']
   tosAccepted: Scalars['Boolean']
   dangerousGoods: Array<DangerousGoods>
@@ -374,11 +379,11 @@ export type LineItemUpdateInput = {
   category?: Maybe<LineItemCategory>
   description?: Maybe<Scalars['String']>
   itemCount?: Maybe<Scalars['Int']>
-  boxCount?: Maybe<Scalars['Int']>
-  boxWeightGrams?: Maybe<Scalars['Int']>
-  lengthCm?: Maybe<Scalars['Int']>
-  widthCm?: Maybe<Scalars['Int']>
-  heightCm?: Maybe<Scalars['Int']>
+  containerCount?: Maybe<Scalars['Int']>
+  containerWeightGrams?: Maybe<Scalars['Int']>
+  containerLengthCm?: Maybe<Scalars['Int']>
+  containerWidthCm?: Maybe<Scalars['Int']>
+  containerHeightCm?: Maybe<Scalars['Int']>
   affirmLiability?: Maybe<Scalars['Boolean']>
   tosAccepted?: Maybe<Scalars['Boolean']>
   dangerousGoods?: Maybe<Array<DangerousGoods>>

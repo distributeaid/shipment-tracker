@@ -7,7 +7,7 @@ import {
   MutationResolvers,
   QueryResolvers,
 } from '../../server-internal-types'
-import stringIsUrl from './stringIsUrl'
+import stringIsUrl from '../stringIsUrl'
 
 // Group query resolvers
 const listGroups: QueryResolvers['listGroups'] = async () => {
