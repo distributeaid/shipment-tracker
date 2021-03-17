@@ -79,7 +79,7 @@ const updateLineItem: MutationResolvers['updateLineItem'] = async (
 
   authorizeOfferMutation(lineItem.offerPallet.offer, context)
 
-  return lineItem.update(getUpdateAttributes(lineItem, input))
+  return lineItem.update(await getUpdateAttributes(lineItem, input))
 }
 
 async function getUpdateAttributes(
