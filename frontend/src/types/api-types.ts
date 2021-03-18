@@ -460,7 +460,7 @@ export type CreateShipmentMutationVariables = Exact<{
 }>
 
 export type CreateShipmentMutation = { __typename?: 'Mutation' } & {
-  addShipment: { __typename?: 'Shipment' } & AllShipmentFieldsFragment
+  addShipment: { __typename?: 'Shipment' } & Pick<Shipment, 'id'>
 }
 
 export type AllShipmentFieldsFragment = { __typename?: 'Shipment' } & Pick<
@@ -843,10 +843,9 @@ export type UpdateGroupMutationOptions = Apollo.BaseMutationOptions<
 export const CreateShipmentDocument = gql`
   mutation CreateShipment($input: ShipmentCreateInput!) {
     addShipment(input: $input) {
-      ...AllShipmentFields
+      id
     }
   }
-  ${AllShipmentFieldsFragmentDoc}
 `
 export type CreateShipmentMutationFn = Apollo.MutationFunction<
   CreateShipmentMutation,
