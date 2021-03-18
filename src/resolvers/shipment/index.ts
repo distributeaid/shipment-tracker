@@ -6,7 +6,10 @@ import {
   QueryResolvers,
   ShipmentCreateInput,
   ShipmentResolvers,
+  ShipmentStatus,
+  ShippingRoute,
 } from '../../server-internal-types'
+import validateEnumMembership from '../validateEnumMembership'
 
 // Shipment query resolvers
 const listShipments: QueryResolvers['listShipments'] = async () => {
@@ -15,6 +18,7 @@ const listShipments: QueryResolvers['listShipments'] = async () => {
 
 const shipment: QueryResolvers['shipment'] = async (_, { id }) => {
   const shipment = await Shipment.findByPk(id)
+
   if (!shipment) {
     throw new ApolloError('No shipment exists with that ID')
   }
@@ -60,6 +64,8 @@ const addShipment: MutationResolvers['addShipment'] = async (
     throw new ApolloError('Receiving hub not found')
   }
 
+  validateEnumMembership(ShipmentStatus, input.status)
+
   return Shipment.create({
     shippingRoute: input.shippingRoute,
     labelYear: input.labelYear,
@@ -81,6 +87,7 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
   }
 
   const shipment = await Shipment.findByPk(id)
+
   if (!shipment) {
     throw new ApolloError('No shipment exists with that ID')
   }
@@ -96,9 +103,11 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
   const updateAttributes: Partial<ShipmentAttributes> = {}
 
   if (status) {
+    validateEnumMembership(ShipmentStatus, status)
     updateAttributes.status = status
     updateAttributes.statusChangeTime = new Date()
   }
+
   if (receivingHubId) {
     const receivingHub = await Group.findByPk(receivingHubId)
     if (!receivingHub) {
@@ -107,6 +116,7 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
 
     updateAttributes.receivingHubId = receivingHubId
   }
+
   if (sendingHubId) {
     const sendingHub = await Group.findByPk(sendingHubId)
     if (!sendingHub) {
@@ -115,13 +125,17 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
 
     updateAttributes.sendingHubId = sendingHubId
   }
+
   if (labelMonth) {
     updateAttributes.labelMonth = labelMonth
   }
+
   if (labelYear) {
     updateAttributes.labelYear = labelYear
   }
+
   if (shippingRoute) {
+    validateEnumMembership(ShippingRoute, shippingRoute)
     updateAttributes.shippingRoute = shippingRoute
   }
 
@@ -131,6 +145,7 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
 // Shipment custom resolvers
 const sendingHub: ShipmentResolvers['sendingHub'] = async (parent) => {
   const sendingHub = await Group.findByPk(parent.sendingHubId)
+
   if (!sendingHub) {
     throw new ApolloError('No sending group exists with that Id')
   }
@@ -140,6 +155,7 @@ const sendingHub: ShipmentResolvers['sendingHub'] = async (parent) => {
 
 const receivingHub: ShipmentResolvers['receivingHub'] = async (parent) => {
   const receivingHub = await Group.findByPk(parent.receivingHubId)
+
   if (!receivingHub) {
     throw new ApolloError('No receiving group exists with that ID')
   }

@@ -1,15 +1,17 @@
 import { Optional } from 'sequelize'
 import {
-  Model,
+  BelongsTo,
   Column,
-  Table,
   CreatedAt,
-  UpdatedAt,
   DataType,
   ForeignKey,
-  BelongsTo,
+  HasMany,
+  Model,
+  Table,
+  UpdatedAt,
 } from 'sequelize-typescript'
 import { PalletType, PaymentStatus } from '../server-internal-types'
+import LineItem from './line_item'
 import Offer from './offer'
 
 export interface PalletAttributes {
@@ -47,6 +49,9 @@ export default class Pallet extends Model<
 
   @Column
   public paymentStatusChangeTime!: Date
+
+  @HasMany(() => LineItem)
+  public lineItems!: LineItem[]
 
   @CreatedAt
   @Column

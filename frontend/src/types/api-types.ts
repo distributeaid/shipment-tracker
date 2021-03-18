@@ -131,6 +131,10 @@ export type Mutation = {
   addPallet: Pallet
   updatePallet: Pallet
   destroyPallet: Offer
+  addLineItem: Pallet
+  updateLineItem: LineItem
+  destroyLineItem: Pallet
+  moveLineItem: Offer
 }
 
 export type MutationAddGroupArgs = {
@@ -170,6 +174,24 @@ export type MutationUpdatePalletArgs = {
 
 export type MutationDestroyPalletArgs = {
   id: Scalars['Int']
+}
+
+export type MutationAddLineItemArgs = {
+  palletId: Scalars['Int']
+}
+
+export type MutationUpdateLineItemArgs = {
+  id: Scalars['Int']
+  input: LineItemUpdateInput
+}
+
+export type MutationDestroyLineItemArgs = {
+  id: Scalars['Int']
+}
+
+export type MutationMoveLineItemArgs = {
+  id: Scalars['Int']
+  targetPalletId: Scalars['Int']
 }
 
 export type ShipmentCreateInput = {
@@ -277,6 +299,7 @@ export type Pallet = {
   id: Scalars['Int']
   offerId: Scalars['Int']
   palletType: PalletType
+  lineItems: Array<LineItem>
   paymentStatus: PaymentStatus
   paymentStatusChangeTime: Scalars['Date']
   createdAt: Scalars['Date']
@@ -331,21 +354,41 @@ export type LineItem = {
   acceptedReceivingGroup?: Maybe<Group>
   containerType: LineItemContainerType
   category: LineItemCategory
-  description: Scalars['String']
+  description?: Maybe<Scalars['String']>
   itemCount: Scalars['Int']
-  boxCount?: Maybe<Scalars['Int']>
-  boxWeightKg?: Maybe<Scalars['Float']>
-  lengthCm?: Maybe<Scalars['Float']>
-  widthCm?: Maybe<Scalars['Float']>
-  heightCm?: Maybe<Scalars['Float']>
+  containerCount?: Maybe<Scalars['Int']>
+  containerWeightGrams?: Maybe<Scalars['Int']>
+  containerLengthCm?: Maybe<Scalars['Int']>
+  containerWidthCm?: Maybe<Scalars['Int']>
+  containerHeightCm?: Maybe<Scalars['Int']>
   affirmLiability: Scalars['Boolean']
   tosAccepted: Scalars['Boolean']
   dangerousGoods: Array<DangerousGoods>
   photoUris: Array<Scalars['String']>
-  sendingHubDeliveryDate: Scalars['Date']
+  sendingHubDeliveryDate?: Maybe<Scalars['Date']>
   statusChangeTime: Scalars['Date']
   createdAt: Scalars['Date']
   updatedAt: Scalars['Date']
+}
+
+export type LineItemUpdateInput = {
+  status?: Maybe<LineItemStatus>
+  proposedReceivingGroupId?: Maybe<Scalars['Int']>
+  acceptedReceivingGroupId?: Maybe<Scalars['Int']>
+  containerType?: Maybe<LineItemContainerType>
+  category?: Maybe<LineItemCategory>
+  description?: Maybe<Scalars['String']>
+  itemCount?: Maybe<Scalars['Int']>
+  containerCount?: Maybe<Scalars['Int']>
+  containerWeightGrams?: Maybe<Scalars['Int']>
+  containerLengthCm?: Maybe<Scalars['Int']>
+  containerWidthCm?: Maybe<Scalars['Int']>
+  containerHeightCm?: Maybe<Scalars['Int']>
+  affirmLiability?: Maybe<Scalars['Boolean']>
+  tosAccepted?: Maybe<Scalars['Boolean']>
+  dangerousGoods?: Maybe<Array<DangerousGoods>>
+  photoUris?: Maybe<Array<Scalars['String']>>
+  sendingHubDeliveryDate?: Maybe<Scalars['Date']>
 }
 
 export type CreateGroupMutationVariables = Exact<{

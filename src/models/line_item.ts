@@ -27,8 +27,8 @@ export interface LineItemAttributes {
   category: LineItemCategory
   description: string
   itemCount: number
-  boxCount?: number
-  boxWeightGrams?: number
+  containerCount?: number
+  containerWeightGrams?: number
   containerLengthCm?: number
   containerWidthCm?: number
   containerHeightCm?: number
@@ -50,7 +50,6 @@ type CreateAttrKeys =
   | 'tosAccepted'
   | 'dangerousGoods'
   | 'photoUris'
-  | 'sendingHubDeliveryDate'
   | 'statusChangeTime'
 
 export interface LineItemCreationAttributes
@@ -72,6 +71,9 @@ export default class LineItem extends Model<
   @BelongsTo(() => Pallet, 'offerPalletId')
   public offerPallet!: Pallet
 
+  @Column(DataType.STRING)
+  public status!: LineItemStatus
+
   @ForeignKey(() => Group)
   @Column
   public proposedReceivingGroupId?: number
@@ -87,25 +89,22 @@ export default class LineItem extends Model<
   public acceptedReceivingGroup?: Group
 
   @Column(DataType.STRING)
-  public status!: LineItemStatus
-
-  @Column(DataType.STRING)
   public containerType!: LineItemContainerType
 
   @Column(DataType.STRING)
   public category!: LineItemCategory
 
   @Column
-  public description!: string
+  public description?: string
 
   @Column
   public itemCount!: number
 
   @Column
-  public boxCount?: number
+  public containerCount?: number
 
   @Column
-  public boxWeightGrams?: number
+  public containerWeightGrams?: number
 
   @Column
   public containerLengthCm?: number
@@ -129,7 +128,7 @@ export default class LineItem extends Model<
   public photoUris!: string[]
 
   @Column
-  public sendingHubDeliveryDate!: Date
+  public sendingHubDeliveryDate?: Date
 
   @Column
   public statusChangeTime!: Date

@@ -134,7 +134,7 @@ describe('Offers API', () => {
       })
 
       expect(res.errors?.[0].message).toContain(
-        'Invalid photo URI(s): one, www.example.com',
+        'Invalid URI(s): one, www.example.com',
       )
     })
 

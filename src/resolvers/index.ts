@@ -1,8 +1,19 @@
 import { DateResolver } from 'graphql-scalars'
 import { Resolvers } from '../server-internal-types'
-import { addGroup, updateGroup, group, listGroups } from './group'
-import { addOffer, updateOffer, offer, listOffers, offerPallets } from './offer'
-import { addPallet, updatePallet, destroyPallet } from './pallet'
+import { addGroup, group, listGroups, updateGroup } from './group'
+import {
+  addLineItem,
+  destroyLineItem,
+  moveLineItem,
+  updateLineItem,
+} from './line_items'
+import { addOffer, listOffers, offer, offerPallets, updateOffer } from './offer'
+import {
+  addPallet,
+  destroyPallet,
+  palletLineItems,
+  updatePallet,
+} from './pallet'
 import {
   addShipment,
   listShipments,
@@ -37,6 +48,10 @@ const resolvers: Resolvers = {
     addPallet,
     updatePallet,
     destroyPallet,
+    addLineItem,
+    updateLineItem,
+    destroyLineItem,
+    moveLineItem,
   },
 
   // Custom Resolvers
@@ -47,6 +62,10 @@ const resolvers: Resolvers = {
 
   Offer: {
     pallets: offerPallets,
+  },
+
+  Pallet: {
+    lineItems: palletLineItems,
   },
 }
 
