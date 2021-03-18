@@ -1,22 +1,22 @@
 import { ForbiddenError, UserInputError } from 'apollo-server'
 import { has } from 'lodash'
-import Group from '../../models/group'
-import Offer, { OfferAttributes } from '../../models/offer'
-import Pallet from '../../models/pallet'
-import Shipment from '../../models/shipment'
+import Group from '../models/group'
+import Offer, { OfferAttributes } from '../models/offer'
+import Pallet from '../models/pallet'
+import Shipment from '../models/shipment'
 import {
   MutationResolvers,
   OfferResolvers,
   OfferStatus,
   QueryResolvers,
   ShipmentStatus,
-} from '../../server-internal-types'
-import validateEnumMembership from '../validateEnumMembership'
-import validateUris from '../validateUris'
+} from '../server-internal-types'
 import {
   authorizeOfferMutation,
   authorizeOfferQuery,
 } from './offer_authorization'
+import validateEnumMembership from './validateEnumMembership'
+import validateUris from './validateUris'
 
 const addOffer: MutationResolvers['addOffer'] = async (
   _parent,

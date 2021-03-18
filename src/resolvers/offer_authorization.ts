@@ -1,7 +1,7 @@
 import { ApolloError, ForbiddenError } from 'apollo-server-express'
-import { AuthenticatedContext } from '../../apolloServer'
-import Offer from '../../models/offer'
-import { OfferStatus, ShipmentStatus } from '../../server-internal-types'
+import { AuthenticatedContext } from '../apolloServer'
+import Offer from '../models/offer'
+import { OfferStatus, ShipmentStatus } from '../server-internal-types'
 
 /**
  * Asserts that an offer has a shipment and sending group.

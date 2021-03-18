@@ -1,10 +1,10 @@
 import { ApolloError, UserInputError } from 'apollo-server'
 import { has, isEqual } from 'lodash'
-import { AuthenticatedContext } from '../../apolloServer'
-import Group from '../../models/group'
-import LineItem, { LineItemAttributes } from '../../models/line_item'
-import Offer from '../../models/offer'
-import Pallet from '../../models/pallet'
+import { AuthenticatedContext } from '../apolloServer'
+import Group from '../models/group'
+import LineItem, { LineItemAttributes } from '../models/line_item'
+import Offer from '../models/offer'
+import Pallet from '../models/pallet'
 import {
   DangerousGoods,
   GroupType,
@@ -13,11 +13,11 @@ import {
   LineItemStatus,
   LineItemUpdateInput,
   MutationResolvers,
-} from '../../server-internal-types'
-import getPalletWithParentAssociations from '../getPalletWithParentAssociations'
-import { authorizeOfferMutation } from '../offer/offer_authorization'
-import validateEnumMembership from '../validateEnumMembership'
-import validateUris from '../validateUris'
+} from '../server-internal-types'
+import getPalletWithParentAssociations from './getPalletWithParentAssociations'
+import { authorizeOfferMutation } from './offer_authorization'
+import validateEnumMembership from './validateEnumMembership'
+import validateUris from './validateUris'
 
 const addLineItem: MutationResolvers['addLineItem'] = async (
   _,
