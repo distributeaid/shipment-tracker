@@ -20,7 +20,7 @@ const GroupCreatePage: FunctionComponent = () => {
     // Create the group and then redirect to its view/edit page
     addGroup({
       variables: { input },
-      // Fetch the updated list of documents
+      // Fetch the updated list of groups
       refetchQueries: [{ query: AllGroupsDocument }],
     })
       .then(({ data }) => {
