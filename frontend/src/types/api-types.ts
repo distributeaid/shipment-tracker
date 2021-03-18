@@ -4,195 +4,185 @@
  * https://graphql-code-generator.com/docs/getting-started/index
  */
 
-import { gql } from '@apollo/client';
-import * as Apollo from '@apollo/client';
-export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-const defaultOptions =  {}
+import * as Apollo from '@apollo/client'
+import { gql } from '@apollo/client'
+export type Maybe<T> = T | null
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K]
+}
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> }
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> }
+const defaultOptions = {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  Date: any;
-};
-
+  ID: string
+  String: string
+  Boolean: boolean
+  Int: number
+  Float: number
+  Date: any
+}
 
 export type Location = {
-  __typename?: 'Location';
-  countryCode?: Maybe<Scalars['String']>;
-  townCity: Scalars['String'];
-  openLocationCode?: Maybe<Scalars['String']>;
-};
+  __typename?: 'Location'
+  countryCode?: Maybe<Scalars['String']>
+  townCity: Scalars['String']
+  openLocationCode?: Maybe<Scalars['String']>
+}
 
 export type ContactInfo = {
-  __typename?: 'ContactInfo';
-  name: Scalars['String'];
-  email?: Maybe<Scalars['String']>;
-  phone?: Maybe<Scalars['String']>;
-  signal?: Maybe<Scalars['String']>;
-  whatsApp?: Maybe<Scalars['String']>;
-};
+  __typename?: 'ContactInfo'
+  name: Scalars['String']
+  email?: Maybe<Scalars['String']>
+  phone?: Maybe<Scalars['String']>
+  signal?: Maybe<Scalars['String']>
+  whatsApp?: Maybe<Scalars['String']>
+}
 
 export type LocationInput = {
-  countryCode?: Maybe<Scalars['String']>;
-  townCity: Scalars['String'];
-  openLocationCode?: Maybe<Scalars['String']>;
-};
+  countryCode?: Maybe<Scalars['String']>
+  townCity: Scalars['String']
+  openLocationCode?: Maybe<Scalars['String']>
+}
 
 export type ContactInfoInput = {
-  name: Scalars['String'];
-  email?: Maybe<Scalars['String']>;
-  phone?: Maybe<Scalars['String']>;
-  signal?: Maybe<Scalars['String']>;
-  whatsApp?: Maybe<Scalars['String']>;
-};
+  name: Scalars['String']
+  email?: Maybe<Scalars['String']>
+  phone?: Maybe<Scalars['String']>
+  signal?: Maybe<Scalars['String']>
+  whatsApp?: Maybe<Scalars['String']>
+}
 
 export type Group = {
-  __typename?: 'Group';
-  id: Scalars['Int'];
-  name: Scalars['String'];
-  groupType: GroupType;
-  primaryLocation: Location;
-  primaryContact: ContactInfo;
-  website?: Maybe<Scalars['String']>;
-  captainId: Scalars['Int'];
-  createdAt: Scalars['Date'];
-  updatedAt: Scalars['Date'];
-};
+  __typename?: 'Group'
+  id: Scalars['Int']
+  name: Scalars['String']
+  groupType: GroupType
+  primaryLocation: Location
+  primaryContact: ContactInfo
+  website?: Maybe<Scalars['String']>
+  captainId: Scalars['Int']
+  createdAt: Scalars['Date']
+  updatedAt: Scalars['Date']
+}
 
 export type GroupCreateInput = {
-  name: Scalars['String'];
-  groupType: GroupType;
-  primaryLocation: LocationInput;
-  primaryContact: ContactInfoInput;
-  website?: Maybe<Scalars['String']>;
-};
+  name: Scalars['String']
+  groupType: GroupType
+  primaryLocation: LocationInput
+  primaryContact: ContactInfoInput
+  website?: Maybe<Scalars['String']>
+}
 
 export type GroupUpdateInput = {
-  name?: Maybe<Scalars['String']>;
-  groupType?: Maybe<GroupType>;
-  primaryLocation?: Maybe<LocationInput>;
-  primaryContact?: Maybe<ContactInfoInput>;
-  website?: Maybe<Scalars['String']>;
-  captainId?: Maybe<Scalars['Int']>;
-};
+  name?: Maybe<Scalars['String']>
+  groupType?: Maybe<GroupType>
+  primaryLocation?: Maybe<LocationInput>
+  primaryContact?: Maybe<ContactInfoInput>
+  website?: Maybe<Scalars['String']>
+  captainId?: Maybe<Scalars['Int']>
+}
 
 export type ShipmentUpdateInput = {
-  shippingRoute?: Maybe<ShippingRoute>;
-  labelYear?: Maybe<Scalars['Int']>;
-  labelMonth?: Maybe<Scalars['Int']>;
-  sendingHubId?: Maybe<Scalars['Int']>;
-  receivingHubId?: Maybe<Scalars['Int']>;
-  status?: Maybe<ShipmentStatus>;
-};
+  shippingRoute?: Maybe<ShippingRoute>
+  labelYear?: Maybe<Scalars['Int']>
+  labelMonth?: Maybe<Scalars['Int']>
+  sendingHubId?: Maybe<Scalars['Int']>
+  receivingHubId?: Maybe<Scalars['Int']>
+  status?: Maybe<ShipmentStatus>
+}
 
 export type Query = {
-  __typename?: 'Query';
-  group: Group;
-  listGroups: Array<Group>;
-  shipment: Shipment;
-  listShipments: Array<Shipment>;
-  offer: Offer;
-  listOffers: Array<Offer>;
-};
-
+  __typename?: 'Query'
+  group: Group
+  listGroups: Array<Group>
+  shipment: Shipment
+  listShipments: Array<Shipment>
+  offer: Offer
+  listOffers: Array<Offer>
+}
 
 export type QueryGroupArgs = {
-  id: Scalars['Int'];
-};
-
+  id: Scalars['Int']
+}
 
 export type QueryShipmentArgs = {
-  id: Scalars['Int'];
-};
-
+  id: Scalars['Int']
+}
 
 export type QueryOfferArgs = {
-  id: Scalars['Int'];
-};
-
+  id: Scalars['Int']
+}
 
 export type QueryListOffersArgs = {
-  shipmentId: Scalars['Int'];
-};
+  shipmentId: Scalars['Int']
+}
 
 export type Mutation = {
-  __typename?: 'Mutation';
-  addGroup: Group;
-  updateGroup: Group;
-  addShipment: Shipment;
-  updateShipment: Shipment;
-  addOffer: Offer;
-  updateOffer: Offer;
-  addPallet: Pallet;
-  updatePallet: Pallet;
-  destroyPallet: Offer;
-};
-
+  __typename?: 'Mutation'
+  addGroup: Group
+  updateGroup: Group
+  addShipment: Shipment
+  updateShipment: Shipment
+  addOffer: Offer
+  updateOffer: Offer
+  addPallet: Pallet
+  updatePallet: Pallet
+  destroyPallet: Offer
+}
 
 export type MutationAddGroupArgs = {
-  input: GroupCreateInput;
-};
-
+  input: GroupCreateInput
+}
 
 export type MutationUpdateGroupArgs = {
-  id: Scalars['Int'];
-  input: GroupUpdateInput;
-};
-
+  id: Scalars['Int']
+  input: GroupUpdateInput
+}
 
 export type MutationAddShipmentArgs = {
-  input: ShipmentCreateInput;
-};
-
+  input: ShipmentCreateInput
+}
 
 export type MutationUpdateShipmentArgs = {
-  id: Scalars['Int'];
-  input: ShipmentUpdateInput;
-};
-
+  id: Scalars['Int']
+  input: ShipmentUpdateInput
+}
 
 export type MutationAddOfferArgs = {
-  input: OfferCreateInput;
-};
-
+  input: OfferCreateInput
+}
 
 export type MutationUpdateOfferArgs = {
-  input: OfferUpdateInput;
-};
-
+  input: OfferUpdateInput
+}
 
 export type MutationAddPalletArgs = {
-  input: PalletCreateInput;
-};
-
+  input: PalletCreateInput
+}
 
 export type MutationUpdatePalletArgs = {
-  id: Scalars['Int'];
-  input: PalletUpdateInput;
-};
-
+  id: Scalars['Int']
+  input: PalletUpdateInput
+}
 
 export type MutationDestroyPalletArgs = {
-  id: Scalars['Int'];
-};
+  id: Scalars['Int']
+}
 
 export type ShipmentCreateInput = {
-  shippingRoute: ShippingRoute;
-  labelYear: Scalars['Int'];
-  labelMonth: Scalars['Int'];
-  sendingHubId: Scalars['Int'];
-  receivingHubId: Scalars['Int'];
-  status: ShipmentStatus;
-};
+  shippingRoute: ShippingRoute
+  labelYear: Scalars['Int']
+  labelMonth: Scalars['Int']
+  sendingHubId: Scalars['Int']
+  receivingHubId: Scalars['Int']
+  status: ShipmentStatus
+}
 
 export enum ShippingRoute {
-  Uk = 'UK'
+  Uk = 'UK',
 }
 
 export enum ShipmentStatus {
@@ -201,117 +191,117 @@ export enum ShipmentStatus {
   Staging = 'STAGING',
   InProgress = 'IN_PROGRESS',
   Complete = 'COMPLETE',
-  Abandoned = 'ABANDONED'
+  Abandoned = 'ABANDONED',
 }
 
 export type Shipment = {
-  __typename?: 'Shipment';
-  id: Scalars['Int'];
-  shippingRoute: ShippingRoute;
-  labelYear: Scalars['Int'];
-  labelMonth: Scalars['Int'];
-  offerSubmissionDeadline?: Maybe<Scalars['Date']>;
-  status: ShipmentStatus;
-  sendingHubId: Scalars['Int'];
-  sendingHub: Group;
-  receivingHubId: Scalars['Int'];
-  receivingHub: Group;
-  statusChangeTime: Scalars['Date'];
-  createdAt: Scalars['Date'];
-  updatedAt: Scalars['Date'];
-};
+  __typename?: 'Shipment'
+  id: Scalars['Int']
+  shippingRoute: ShippingRoute
+  labelYear: Scalars['Int']
+  labelMonth: Scalars['Int']
+  offerSubmissionDeadline?: Maybe<Scalars['Date']>
+  status: ShipmentStatus
+  sendingHubId: Scalars['Int']
+  sendingHub: Group
+  receivingHubId: Scalars['Int']
+  receivingHub: Group
+  statusChangeTime: Scalars['Date']
+  createdAt: Scalars['Date']
+  updatedAt: Scalars['Date']
+}
 
 export enum GroupType {
   DaHub = 'DA_HUB',
   ReceivingGroup = 'RECEIVING_GROUP',
-  SendingGroup = 'SENDING_GROUP'
+  SendingGroup = 'SENDING_GROUP',
 }
 
 export type UserProfile = {
-  __typename?: 'UserProfile';
-  id: Scalars['Int'];
-  isAdmin: Scalars['Boolean'];
-};
+  __typename?: 'UserProfile'
+  id: Scalars['Int']
+  isAdmin: Scalars['Boolean']
+}
 
 export enum OfferStatus {
   Draft = 'DRAFT',
   Proposed = 'PROPOSED',
   BeingReviewed = 'BEING_REVIEWED',
   Rejected = 'REJECTED',
-  Accepted = 'ACCEPTED'
+  Accepted = 'ACCEPTED',
 }
 
 export type Offer = {
-  __typename?: 'Offer';
-  id: Scalars['Int'];
-  status: OfferStatus;
-  shipmentId: Scalars['Int'];
-  sendingGroupId: Scalars['Int'];
-  contact?: Maybe<ContactInfo>;
-  photoUris: Array<Scalars['String']>;
-  pallets: Array<Pallet>;
-  statusChangeTime: Scalars['Date'];
-  updatedAt: Scalars['Date'];
-  createdAt: Scalars['Date'];
-};
+  __typename?: 'Offer'
+  id: Scalars['Int']
+  status: OfferStatus
+  shipmentId: Scalars['Int']
+  sendingGroupId: Scalars['Int']
+  contact?: Maybe<ContactInfo>
+  photoUris: Array<Scalars['String']>
+  pallets: Array<Pallet>
+  statusChangeTime: Scalars['Date']
+  updatedAt: Scalars['Date']
+  createdAt: Scalars['Date']
+}
 
 export type OfferCreateInput = {
-  sendingGroupId: Scalars['Int'];
-  shipmentId: Scalars['Int'];
-  contact?: Maybe<ContactInfoInput>;
-  photoUris?: Maybe<Array<Scalars['String']>>;
-};
+  sendingGroupId: Scalars['Int']
+  shipmentId: Scalars['Int']
+  contact?: Maybe<ContactInfoInput>
+  photoUris?: Maybe<Array<Scalars['String']>>
+}
 
 export type OfferUpdateInput = {
-  id: Scalars['Int'];
-  status?: Maybe<OfferStatus>;
-  contact?: Maybe<ContactInfoInput>;
-  photoUris?: Maybe<Array<Scalars['String']>>;
-};
+  id: Scalars['Int']
+  status?: Maybe<OfferStatus>
+  contact?: Maybe<ContactInfoInput>
+  photoUris?: Maybe<Array<Scalars['String']>>
+}
 
 export enum PalletType {
   Standard = 'STANDARD',
   Euro = 'EURO',
-  Custom = 'CUSTOM'
+  Custom = 'CUSTOM',
 }
 
 export enum PaymentStatus {
   WontPay = 'WONT_PAY',
   Uninitiated = 'UNINITIATED',
   Invoiced = 'INVOICED',
-  Paid = 'PAID'
+  Paid = 'PAID',
 }
 
 export type Pallet = {
-  __typename?: 'Pallet';
-  id: Scalars['Int'];
-  offerId: Scalars['Int'];
-  palletType: PalletType;
-  paymentStatus: PaymentStatus;
-  paymentStatusChangeTime: Scalars['Date'];
-  createdAt: Scalars['Date'];
-  updatedAt: Scalars['Date'];
-};
+  __typename?: 'Pallet'
+  id: Scalars['Int']
+  offerId: Scalars['Int']
+  palletType: PalletType
+  paymentStatus: PaymentStatus
+  paymentStatusChangeTime: Scalars['Date']
+  createdAt: Scalars['Date']
+  updatedAt: Scalars['Date']
+}
 
 export type PalletCreateInput = {
-  offerId: Scalars['Int'];
-  palletType: PalletType;
-};
+  offerId: Scalars['Int']
+  palletType: PalletType
+}
 
 export type PalletUpdateInput = {
-  paymentStatus?: Maybe<PaymentStatus>;
-  palletType?: Maybe<PalletType>;
-};
+  paymentStatus?: Maybe<PaymentStatus>
+  palletType?: Maybe<PalletType>
+}
 
 export enum LineItemStatus {
   Proposed = 'PROPOSED',
   AwaitingApproval = 'AWAITING_APPROVAL',
   Accepted = 'ACCEPTED',
-  NotAccepted = 'NOT_ACCEPTED'
+  NotAccepted = 'NOT_ACCEPTED',
 }
 
 export enum LineItemCategory {
-  Unset = 'UNSET'
+  Unset = 'UNSET',
 }
 
 export enum DangerousGoods {
@@ -320,256 +310,232 @@ export enum DangerousGoods {
   Medicine = 'MEDICINE',
   Batteries = 'BATTERIES',
   Liquids = 'LIQUIDS',
-  Other = 'OTHER'
+  Other = 'OTHER',
 }
 
 export enum LineItemContainerType {
   Unset = 'UNSET',
   BulkBag = 'BULK_BAG',
   Box = 'BOX',
-  FullPallet = 'FULL_PALLET'
+  FullPallet = 'FULL_PALLET',
 }
 
 export type LineItem = {
-  __typename?: 'LineItem';
-  id: Scalars['Int'];
-  offerPalletId: Scalars['Int'];
-  status: LineItemStatus;
-  proposedReceivingGroupId?: Maybe<Scalars['Int']>;
-  proposedReceivingGroup?: Maybe<Group>;
-  acceptedReceivingGroupId?: Maybe<Scalars['Int']>;
-  acceptedReceivingGroup?: Maybe<Group>;
-  containerType: LineItemContainerType;
-  category: LineItemCategory;
-  description: Scalars['String'];
-  itemCount: Scalars['Int'];
-  boxCount?: Maybe<Scalars['Int']>;
-  boxWeightKg?: Maybe<Scalars['Float']>;
-  lengthCm?: Maybe<Scalars['Float']>;
-  widthCm?: Maybe<Scalars['Float']>;
-  heightCm?: Maybe<Scalars['Float']>;
-  affirmLiability: Scalars['Boolean'];
-  tosAccepted: Scalars['Boolean'];
-  dangerousGoods: Array<DangerousGoods>;
-  photoUris: Array<Scalars['String']>;
-  sendingHubDeliveryDate: Scalars['Date'];
-  statusChangeTime: Scalars['Date'];
-  createdAt: Scalars['Date'];
-  updatedAt: Scalars['Date'];
-};
+  __typename?: 'LineItem'
+  id: Scalars['Int']
+  offerPalletId: Scalars['Int']
+  status: LineItemStatus
+  proposedReceivingGroupId?: Maybe<Scalars['Int']>
+  proposedReceivingGroup?: Maybe<Group>
+  acceptedReceivingGroupId?: Maybe<Scalars['Int']>
+  acceptedReceivingGroup?: Maybe<Group>
+  containerType: LineItemContainerType
+  category: LineItemCategory
+  description: Scalars['String']
+  itemCount: Scalars['Int']
+  boxCount?: Maybe<Scalars['Int']>
+  boxWeightKg?: Maybe<Scalars['Float']>
+  lengthCm?: Maybe<Scalars['Float']>
+  widthCm?: Maybe<Scalars['Float']>
+  heightCm?: Maybe<Scalars['Float']>
+  affirmLiability: Scalars['Boolean']
+  tosAccepted: Scalars['Boolean']
+  dangerousGoods: Array<DangerousGoods>
+  photoUris: Array<Scalars['String']>
+  sendingHubDeliveryDate: Scalars['Date']
+  statusChangeTime: Scalars['Date']
+  createdAt: Scalars['Date']
+  updatedAt: Scalars['Date']
+}
 
 export type CreateGroupMutationVariables = Exact<{
-  input: GroupCreateInput;
-}>;
+  input: GroupCreateInput
+}>
 
+export type CreateGroupMutation = { __typename?: 'Mutation' } & {
+  addGroup: { __typename?: 'Group' } & Pick<Group, 'id'>
+}
 
-export type CreateGroupMutation = (
-  { __typename?: 'Mutation' }
-  & { addGroup: (
-    { __typename?: 'Group' }
-    & Pick<Group, 'id'>
-  ) }
-);
+export type AllGroupFieldsFragment = { __typename?: 'Group' } & Pick<
+  Group,
+  'id' | 'name' | 'groupType'
+> & {
+    primaryLocation: { __typename?: 'Location' } & Pick<
+      Location,
+      'townCity' | 'countryCode' | 'openLocationCode'
+    >
+    primaryContact: { __typename?: 'ContactInfo' } & Pick<
+      ContactInfo,
+      'name' | 'email' | 'whatsApp' | 'phone' | 'signal'
+    >
+  }
 
-export type AllGroupFieldsFragment = (
-  { __typename?: 'Group' }
-  & Pick<Group, 'id' | 'name' | 'groupType'>
-  & { primaryLocation: (
-    { __typename?: 'Location' }
-    & Pick<Location, 'townCity' | 'countryCode' | 'openLocationCode'>
-  ), primaryContact: (
-    { __typename?: 'ContactInfo' }
-    & Pick<ContactInfo, 'name' | 'email' | 'whatsApp' | 'phone' | 'signal'>
-  ) }
-);
+export type AllGroupsQueryVariables = Exact<{ [key: string]: never }>
 
-export type AllGroupsQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllGroupsQuery = { __typename?: 'Query' } & {
+  listGroups: Array<
+    { __typename?: 'Group' } & Pick<Group, 'id' | 'name' | 'groupType'> & {
+        primaryContact: { __typename?: 'ContactInfo' } & Pick<
+          ContactInfo,
+          'name'
+        >
+        primaryLocation: { __typename?: 'Location' } & Pick<
+          Location,
+          'countryCode' | 'townCity'
+        >
+      }
+  >
+}
 
+export type AllGroupsMinimalQueryVariables = Exact<{ [key: string]: never }>
 
-export type AllGroupsQuery = (
-  { __typename?: 'Query' }
-  & { listGroups: Array<(
-    { __typename?: 'Group' }
-    & Pick<Group, 'id' | 'name' | 'groupType'>
-    & { primaryContact: (
-      { __typename?: 'ContactInfo' }
-      & Pick<ContactInfo, 'name'>
-    ), primaryLocation: (
-      { __typename?: 'Location' }
-      & Pick<Location, 'countryCode' | 'townCity'>
-    ) }
-  )> }
-);
-
-export type AllGroupsMinimalQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AllGroupsMinimalQuery = (
-  { __typename?: 'Query' }
-  & { listGroups: Array<(
-    { __typename?: 'Group' }
-    & Pick<Group, 'id' | 'name' | 'groupType'>
-  )> }
-);
+export type AllGroupsMinimalQuery = { __typename?: 'Query' } & {
+  listGroups: Array<
+    { __typename?: 'Group' } & Pick<Group, 'id' | 'name' | 'groupType'>
+  >
+}
 
 export type GroupQueryVariables = Exact<{
-  id: Scalars['Int'];
-}>;
+  id: Scalars['Int']
+}>
 
-
-export type GroupQuery = (
-  { __typename?: 'Query' }
-  & { group: (
-    { __typename?: 'Group' }
-    & AllGroupFieldsFragment
-  ) }
-);
+export type GroupQuery = { __typename?: 'Query' } & {
+  group: { __typename?: 'Group' } & AllGroupFieldsFragment
+}
 
 export type UpdateGroupMutationVariables = Exact<{
-  id: Scalars['Int'];
-  input: GroupUpdateInput;
-}>;
+  id: Scalars['Int']
+  input: GroupUpdateInput
+}>
 
-
-export type UpdateGroupMutation = (
-  { __typename?: 'Mutation' }
-  & { updateGroup: (
-    { __typename?: 'Group' }
-    & AllGroupFieldsFragment
-  ) }
-);
+export type UpdateGroupMutation = { __typename?: 'Mutation' } & {
+  updateGroup: { __typename?: 'Group' } & AllGroupFieldsFragment
+}
 
 export type CreateShipmentMutationVariables = Exact<{
-  input: ShipmentCreateInput;
-}>;
+  input: ShipmentCreateInput
+}>
 
+export type CreateShipmentMutation = { __typename?: 'Mutation' } & {
+  addShipment: { __typename?: 'Shipment' } & Pick<Shipment, 'id'>
+}
 
-export type CreateShipmentMutation = (
-  { __typename?: 'Mutation' }
-  & { addShipment: (
-    { __typename?: 'Shipment' }
-    & AllShipmentFieldsFragment
-  ) }
-);
+export type AllShipmentFieldsFragment = { __typename?: 'Shipment' } & Pick<
+  Shipment,
+  | 'id'
+  | 'shippingRoute'
+  | 'labelYear'
+  | 'labelMonth'
+  | 'offerSubmissionDeadline'
+  | 'status'
+> & {
+    receivingHub: { __typename?: 'Group' } & Pick<Group, 'id' | 'name'> & {
+        primaryLocation: { __typename?: 'Location' } & Pick<
+          Location,
+          'townCity' | 'countryCode'
+        >
+      }
+    sendingHub: { __typename?: 'Group' } & Pick<Group, 'id' | 'name'> & {
+        primaryLocation: { __typename?: 'Location' } & Pick<
+          Location,
+          'townCity' | 'countryCode'
+        >
+      }
+  }
 
-export type AllShipmentFieldsFragment = (
-  { __typename?: 'Shipment' }
-  & Pick<Shipment, 'id' | 'shippingRoute' | 'labelYear' | 'labelMonth' | 'offerSubmissionDeadline' | 'status'>
-  & { receivingHub: (
-    { __typename?: 'Group' }
-    & Pick<Group, 'id' | 'name'>
-    & { primaryLocation: (
-      { __typename?: 'Location' }
-      & Pick<Location, 'townCity' | 'countryCode'>
-    ) }
-  ), sendingHub: (
-    { __typename?: 'Group' }
-    & Pick<Group, 'id' | 'name'>
-    & { primaryLocation: (
-      { __typename?: 'Location' }
-      & Pick<Location, 'townCity' | 'countryCode'>
-    ) }
-  ) }
-);
+export type AllShipmentsQueryVariables = Exact<{ [key: string]: never }>
 
-export type AllShipmentsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AllShipmentsQuery = (
-  { __typename?: 'Query' }
-  & { listShipments: Array<(
-    { __typename?: 'Shipment' }
-    & Pick<Shipment, 'id' | 'shippingRoute' | 'labelYear' | 'labelMonth' | 'offerSubmissionDeadline' | 'status' | 'statusChangeTime'>
-    & { sendingHub: (
-      { __typename?: 'Group' }
-      & Pick<Group, 'id' | 'name'>
-    ), receivingHub: (
-      { __typename?: 'Group' }
-      & Pick<Group, 'id' | 'name'>
-    ) }
-  )> }
-);
+export type AllShipmentsQuery = { __typename?: 'Query' } & {
+  listShipments: Array<
+    { __typename?: 'Shipment' } & Pick<
+      Shipment,
+      | 'id'
+      | 'shippingRoute'
+      | 'labelYear'
+      | 'labelMonth'
+      | 'offerSubmissionDeadline'
+      | 'status'
+      | 'statusChangeTime'
+    > & {
+        sendingHub: { __typename?: 'Group' } & Pick<Group, 'id' | 'name'>
+        receivingHub: { __typename?: 'Group' } & Pick<Group, 'id' | 'name'>
+      }
+  >
+}
 
 export type ShipmentQueryVariables = Exact<{
-  id: Scalars['Int'];
-}>;
+  id: Scalars['Int']
+}>
 
-
-export type ShipmentQuery = (
-  { __typename?: 'Query' }
-  & { shipment: (
-    { __typename?: 'Shipment' }
-    & AllShipmentFieldsFragment
-  ) }
-);
+export type ShipmentQuery = { __typename?: 'Query' } & {
+  shipment: { __typename?: 'Shipment' } & AllShipmentFieldsFragment
+}
 
 export type UpdateShipmentMutationVariables = Exact<{
-  id: Scalars['Int'];
-  input: ShipmentUpdateInput;
-}>;
+  id: Scalars['Int']
+  input: ShipmentUpdateInput
+}>
 
-
-export type UpdateShipmentMutation = (
-  { __typename?: 'Mutation' }
-  & { updateShipment: (
-    { __typename?: 'Shipment' }
-    & AllShipmentFieldsFragment
-  ) }
-);
+export type UpdateShipmentMutation = { __typename?: 'Mutation' } & {
+  updateShipment: { __typename?: 'Shipment' } & AllShipmentFieldsFragment
+}
 
 export const AllGroupFieldsFragmentDoc = gql`
-    fragment AllGroupFields on Group {
-  id
-  name
-  groupType
-  primaryLocation {
-    townCity
-    countryCode
-    openLocationCode
-  }
-  primaryContact {
+  fragment AllGroupFields on Group {
+    id
     name
-    email
-    whatsApp
-    phone
-    signal
+    groupType
+    primaryLocation {
+      townCity
+      countryCode
+      openLocationCode
+    }
+    primaryContact {
+      name
+      email
+      whatsApp
+      phone
+      signal
+    }
   }
-}
-    `;
+`
 export const AllShipmentFieldsFragmentDoc = gql`
-    fragment AllShipmentFields on Shipment {
-  id
-  shippingRoute
-  labelYear
-  labelMonth
-  offerSubmissionDeadline
-  status
-  receivingHub {
+  fragment AllShipmentFields on Shipment {
     id
-    name
-    primaryLocation {
-      townCity
-      countryCode
+    shippingRoute
+    labelYear
+    labelMonth
+    offerSubmissionDeadline
+    status
+    receivingHub {
+      id
+      name
+      primaryLocation {
+        townCity
+        countryCode
+      }
+    }
+    sendingHub {
+      id
+      name
+      primaryLocation {
+        townCity
+        countryCode
+      }
     }
   }
-  sendingHub {
-    id
-    name
-    primaryLocation {
-      townCity
-      countryCode
-    }
-  }
-}
-    `;
+`
 export const CreateGroupDocument = gql`
-    mutation CreateGroup($input: GroupCreateInput!) {
-  addGroup(input: $input) {
-    id
+  mutation CreateGroup($input: GroupCreateInput!) {
+    addGroup(input: $input) {
+      id
+    }
   }
-}
-    `;
-export type CreateGroupMutationFn = Apollo.MutationFunction<CreateGroupMutation, CreateGroupMutationVariables>;
+`
+export type CreateGroupMutationFn = Apollo.MutationFunction<
+  CreateGroupMutation,
+  CreateGroupMutationVariables
+>
 
 /**
  * __useCreateGroupMutation__
@@ -588,29 +554,42 @@ export type CreateGroupMutationFn = Apollo.MutationFunction<CreateGroupMutation,
  *   },
  * });
  */
-export function useCreateGroupMutation(baseOptions?: Apollo.MutationHookOptions<CreateGroupMutation, CreateGroupMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateGroupMutation, CreateGroupMutationVariables>(CreateGroupDocument, options);
-      }
-export type CreateGroupMutationHookResult = ReturnType<typeof useCreateGroupMutation>;
-export type CreateGroupMutationResult = Apollo.MutationResult<CreateGroupMutation>;
-export type CreateGroupMutationOptions = Apollo.BaseMutationOptions<CreateGroupMutation, CreateGroupMutationVariables>;
+export function useCreateGroupMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateGroupMutation,
+    CreateGroupMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreateGroupMutation, CreateGroupMutationVariables>(
+    CreateGroupDocument,
+    options,
+  )
+}
+export type CreateGroupMutationHookResult = ReturnType<
+  typeof useCreateGroupMutation
+>
+export type CreateGroupMutationResult = Apollo.MutationResult<CreateGroupMutation>
+export type CreateGroupMutationOptions = Apollo.BaseMutationOptions<
+  CreateGroupMutation,
+  CreateGroupMutationVariables
+>
 export const AllGroupsDocument = gql`
-    query AllGroups {
-  listGroups {
-    id
-    name
-    groupType
-    primaryContact {
+  query AllGroups {
+    listGroups {
+      id
       name
-    }
-    primaryLocation {
-      countryCode
-      townCity
+      groupType
+      primaryContact {
+        name
+      }
+      primaryLocation {
+        countryCode
+        townCity
+      }
     }
   }
-}
-    `;
+`
 
 /**
  * __useAllGroupsQuery__
@@ -627,26 +606,47 @@ export const AllGroupsDocument = gql`
  *   },
  * });
  */
-export function useAllGroupsQuery(baseOptions?: Apollo.QueryHookOptions<AllGroupsQuery, AllGroupsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<AllGroupsQuery, AllGroupsQueryVariables>(AllGroupsDocument, options);
-      }
-export function useAllGroupsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AllGroupsQuery, AllGroupsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<AllGroupsQuery, AllGroupsQueryVariables>(AllGroupsDocument, options);
-        }
-export type AllGroupsQueryHookResult = ReturnType<typeof useAllGroupsQuery>;
-export type AllGroupsLazyQueryHookResult = ReturnType<typeof useAllGroupsLazyQuery>;
-export type AllGroupsQueryResult = Apollo.QueryResult<AllGroupsQuery, AllGroupsQueryVariables>;
-export const AllGroupsMinimalDocument = gql`
-    query AllGroupsMinimal {
-  listGroups {
-    id
-    name
-    groupType
-  }
+export function useAllGroupsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    AllGroupsQuery,
+    AllGroupsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<AllGroupsQuery, AllGroupsQueryVariables>(
+    AllGroupsDocument,
+    options,
+  )
 }
-    `;
+export function useAllGroupsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    AllGroupsQuery,
+    AllGroupsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<AllGroupsQuery, AllGroupsQueryVariables>(
+    AllGroupsDocument,
+    options,
+  )
+}
+export type AllGroupsQueryHookResult = ReturnType<typeof useAllGroupsQuery>
+export type AllGroupsLazyQueryHookResult = ReturnType<
+  typeof useAllGroupsLazyQuery
+>
+export type AllGroupsQueryResult = Apollo.QueryResult<
+  AllGroupsQuery,
+  AllGroupsQueryVariables
+>
+export const AllGroupsMinimalDocument = gql`
+  query AllGroupsMinimal {
+    listGroups {
+      id
+      name
+      groupType
+    }
+  }
+`
 
 /**
  * __useAllGroupsMinimalQuery__
@@ -663,24 +663,48 @@ export const AllGroupsMinimalDocument = gql`
  *   },
  * });
  */
-export function useAllGroupsMinimalQuery(baseOptions?: Apollo.QueryHookOptions<AllGroupsMinimalQuery, AllGroupsMinimalQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<AllGroupsMinimalQuery, AllGroupsMinimalQueryVariables>(AllGroupsMinimalDocument, options);
-      }
-export function useAllGroupsMinimalLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AllGroupsMinimalQuery, AllGroupsMinimalQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<AllGroupsMinimalQuery, AllGroupsMinimalQueryVariables>(AllGroupsMinimalDocument, options);
-        }
-export type AllGroupsMinimalQueryHookResult = ReturnType<typeof useAllGroupsMinimalQuery>;
-export type AllGroupsMinimalLazyQueryHookResult = ReturnType<typeof useAllGroupsMinimalLazyQuery>;
-export type AllGroupsMinimalQueryResult = Apollo.QueryResult<AllGroupsMinimalQuery, AllGroupsMinimalQueryVariables>;
-export const GroupDocument = gql`
-    query Group($id: Int!) {
-  group(id: $id) {
-    ...AllGroupFields
-  }
+export function useAllGroupsMinimalQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    AllGroupsMinimalQuery,
+    AllGroupsMinimalQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<AllGroupsMinimalQuery, AllGroupsMinimalQueryVariables>(
+    AllGroupsMinimalDocument,
+    options,
+  )
 }
-    ${AllGroupFieldsFragmentDoc}`;
+export function useAllGroupsMinimalLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    AllGroupsMinimalQuery,
+    AllGroupsMinimalQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    AllGroupsMinimalQuery,
+    AllGroupsMinimalQueryVariables
+  >(AllGroupsMinimalDocument, options)
+}
+export type AllGroupsMinimalQueryHookResult = ReturnType<
+  typeof useAllGroupsMinimalQuery
+>
+export type AllGroupsMinimalLazyQueryHookResult = ReturnType<
+  typeof useAllGroupsMinimalLazyQuery
+>
+export type AllGroupsMinimalQueryResult = Apollo.QueryResult<
+  AllGroupsMinimalQuery,
+  AllGroupsMinimalQueryVariables
+>
+export const GroupDocument = gql`
+  query Group($id: Int!) {
+    group(id: $id) {
+      ...AllGroupFields
+    }
+  }
+  ${AllGroupFieldsFragmentDoc}
+`
 
 /**
  * __useGroupQuery__
@@ -698,25 +722,42 @@ export const GroupDocument = gql`
  *   },
  * });
  */
-export function useGroupQuery(baseOptions: Apollo.QueryHookOptions<GroupQuery, GroupQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GroupQuery, GroupQueryVariables>(GroupDocument, options);
-      }
-export function useGroupLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GroupQuery, GroupQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GroupQuery, GroupQueryVariables>(GroupDocument, options);
-        }
-export type GroupQueryHookResult = ReturnType<typeof useGroupQuery>;
-export type GroupLazyQueryHookResult = ReturnType<typeof useGroupLazyQuery>;
-export type GroupQueryResult = Apollo.QueryResult<GroupQuery, GroupQueryVariables>;
-export const UpdateGroupDocument = gql`
-    mutation UpdateGroup($id: Int!, $input: GroupUpdateInput!) {
-  updateGroup(id: $id, input: $input) {
-    ...AllGroupFields
-  }
+export function useGroupQuery(
+  baseOptions: Apollo.QueryHookOptions<GroupQuery, GroupQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GroupQuery, GroupQueryVariables>(
+    GroupDocument,
+    options,
+  )
 }
-    ${AllGroupFieldsFragmentDoc}`;
-export type UpdateGroupMutationFn = Apollo.MutationFunction<UpdateGroupMutation, UpdateGroupMutationVariables>;
+export function useGroupLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GroupQuery, GroupQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GroupQuery, GroupQueryVariables>(
+    GroupDocument,
+    options,
+  )
+}
+export type GroupQueryHookResult = ReturnType<typeof useGroupQuery>
+export type GroupLazyQueryHookResult = ReturnType<typeof useGroupLazyQuery>
+export type GroupQueryResult = Apollo.QueryResult<
+  GroupQuery,
+  GroupQueryVariables
+>
+export const UpdateGroupDocument = gql`
+  mutation UpdateGroup($id: Int!, $input: GroupUpdateInput!) {
+    updateGroup(id: $id, input: $input) {
+      ...AllGroupFields
+    }
+  }
+  ${AllGroupFieldsFragmentDoc}
+`
+export type UpdateGroupMutationFn = Apollo.MutationFunction<
+  UpdateGroupMutation,
+  UpdateGroupMutationVariables
+>
 
 /**
  * __useUpdateGroupMutation__
@@ -736,21 +777,37 @@ export type UpdateGroupMutationFn = Apollo.MutationFunction<UpdateGroupMutation,
  *   },
  * });
  */
-export function useUpdateGroupMutation(baseOptions?: Apollo.MutationHookOptions<UpdateGroupMutation, UpdateGroupMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateGroupMutation, UpdateGroupMutationVariables>(UpdateGroupDocument, options);
-      }
-export type UpdateGroupMutationHookResult = ReturnType<typeof useUpdateGroupMutation>;
-export type UpdateGroupMutationResult = Apollo.MutationResult<UpdateGroupMutation>;
-export type UpdateGroupMutationOptions = Apollo.BaseMutationOptions<UpdateGroupMutation, UpdateGroupMutationVariables>;
-export const CreateShipmentDocument = gql`
-    mutation CreateShipment($input: ShipmentCreateInput!) {
-  addShipment(input: $input) {
-    ...AllShipmentFields
-  }
+export function useUpdateGroupMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateGroupMutation,
+    UpdateGroupMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<UpdateGroupMutation, UpdateGroupMutationVariables>(
+    UpdateGroupDocument,
+    options,
+  )
 }
-    ${AllShipmentFieldsFragmentDoc}`;
-export type CreateShipmentMutationFn = Apollo.MutationFunction<CreateShipmentMutation, CreateShipmentMutationVariables>;
+export type UpdateGroupMutationHookResult = ReturnType<
+  typeof useUpdateGroupMutation
+>
+export type UpdateGroupMutationResult = Apollo.MutationResult<UpdateGroupMutation>
+export type UpdateGroupMutationOptions = Apollo.BaseMutationOptions<
+  UpdateGroupMutation,
+  UpdateGroupMutationVariables
+>
+export const CreateShipmentDocument = gql`
+  mutation CreateShipment($input: ShipmentCreateInput!) {
+    addShipment(input: $input) {
+      id
+    }
+  }
+`
+export type CreateShipmentMutationFn = Apollo.MutationFunction<
+  CreateShipmentMutation,
+  CreateShipmentMutationVariables
+>
 
 /**
  * __useCreateShipmentMutation__
@@ -769,34 +826,47 @@ export type CreateShipmentMutationFn = Apollo.MutationFunction<CreateShipmentMut
  *   },
  * });
  */
-export function useCreateShipmentMutation(baseOptions?: Apollo.MutationHookOptions<CreateShipmentMutation, CreateShipmentMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateShipmentMutation, CreateShipmentMutationVariables>(CreateShipmentDocument, options);
-      }
-export type CreateShipmentMutationHookResult = ReturnType<typeof useCreateShipmentMutation>;
-export type CreateShipmentMutationResult = Apollo.MutationResult<CreateShipmentMutation>;
-export type CreateShipmentMutationOptions = Apollo.BaseMutationOptions<CreateShipmentMutation, CreateShipmentMutationVariables>;
-export const AllShipmentsDocument = gql`
-    query AllShipments {
-  listShipments {
-    id
-    shippingRoute
-    labelYear
-    labelMonth
-    offerSubmissionDeadline
-    status
-    sendingHub {
-      id
-      name
-    }
-    receivingHub {
-      id
-      name
-    }
-    statusChangeTime
-  }
+export function useCreateShipmentMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateShipmentMutation,
+    CreateShipmentMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    CreateShipmentMutation,
+    CreateShipmentMutationVariables
+  >(CreateShipmentDocument, options)
 }
-    `;
+export type CreateShipmentMutationHookResult = ReturnType<
+  typeof useCreateShipmentMutation
+>
+export type CreateShipmentMutationResult = Apollo.MutationResult<CreateShipmentMutation>
+export type CreateShipmentMutationOptions = Apollo.BaseMutationOptions<
+  CreateShipmentMutation,
+  CreateShipmentMutationVariables
+>
+export const AllShipmentsDocument = gql`
+  query AllShipments {
+    listShipments {
+      id
+      shippingRoute
+      labelYear
+      labelMonth
+      offerSubmissionDeadline
+      status
+      sendingHub {
+        id
+        name
+      }
+      receivingHub {
+        id
+        name
+      }
+      statusChangeTime
+    }
+  }
+`
 
 /**
  * __useAllShipmentsQuery__
@@ -813,24 +883,48 @@ export const AllShipmentsDocument = gql`
  *   },
  * });
  */
-export function useAllShipmentsQuery(baseOptions?: Apollo.QueryHookOptions<AllShipmentsQuery, AllShipmentsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<AllShipmentsQuery, AllShipmentsQueryVariables>(AllShipmentsDocument, options);
-      }
-export function useAllShipmentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AllShipmentsQuery, AllShipmentsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<AllShipmentsQuery, AllShipmentsQueryVariables>(AllShipmentsDocument, options);
-        }
-export type AllShipmentsQueryHookResult = ReturnType<typeof useAllShipmentsQuery>;
-export type AllShipmentsLazyQueryHookResult = ReturnType<typeof useAllShipmentsLazyQuery>;
-export type AllShipmentsQueryResult = Apollo.QueryResult<AllShipmentsQuery, AllShipmentsQueryVariables>;
-export const ShipmentDocument = gql`
-    query Shipment($id: Int!) {
-  shipment(id: $id) {
-    ...AllShipmentFields
-  }
+export function useAllShipmentsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    AllShipmentsQuery,
+    AllShipmentsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<AllShipmentsQuery, AllShipmentsQueryVariables>(
+    AllShipmentsDocument,
+    options,
+  )
 }
-    ${AllShipmentFieldsFragmentDoc}`;
+export function useAllShipmentsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    AllShipmentsQuery,
+    AllShipmentsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<AllShipmentsQuery, AllShipmentsQueryVariables>(
+    AllShipmentsDocument,
+    options,
+  )
+}
+export type AllShipmentsQueryHookResult = ReturnType<
+  typeof useAllShipmentsQuery
+>
+export type AllShipmentsLazyQueryHookResult = ReturnType<
+  typeof useAllShipmentsLazyQuery
+>
+export type AllShipmentsQueryResult = Apollo.QueryResult<
+  AllShipmentsQuery,
+  AllShipmentsQueryVariables
+>
+export const ShipmentDocument = gql`
+  query Shipment($id: Int!) {
+    shipment(id: $id) {
+      ...AllShipmentFields
+    }
+  }
+  ${AllShipmentFieldsFragmentDoc}
+`
 
 /**
  * __useShipmentQuery__
@@ -848,25 +942,47 @@ export const ShipmentDocument = gql`
  *   },
  * });
  */
-export function useShipmentQuery(baseOptions: Apollo.QueryHookOptions<ShipmentQuery, ShipmentQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ShipmentQuery, ShipmentQueryVariables>(ShipmentDocument, options);
-      }
-export function useShipmentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ShipmentQuery, ShipmentQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ShipmentQuery, ShipmentQueryVariables>(ShipmentDocument, options);
-        }
-export type ShipmentQueryHookResult = ReturnType<typeof useShipmentQuery>;
-export type ShipmentLazyQueryHookResult = ReturnType<typeof useShipmentLazyQuery>;
-export type ShipmentQueryResult = Apollo.QueryResult<ShipmentQuery, ShipmentQueryVariables>;
-export const UpdateShipmentDocument = gql`
-    mutation UpdateShipment($id: Int!, $input: ShipmentUpdateInput!) {
-  updateShipment(id: $id, input: $input) {
-    ...AllShipmentFields
-  }
+export function useShipmentQuery(
+  baseOptions: Apollo.QueryHookOptions<ShipmentQuery, ShipmentQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ShipmentQuery, ShipmentQueryVariables>(
+    ShipmentDocument,
+    options,
+  )
 }
-    ${AllShipmentFieldsFragmentDoc}`;
-export type UpdateShipmentMutationFn = Apollo.MutationFunction<UpdateShipmentMutation, UpdateShipmentMutationVariables>;
+export function useShipmentLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    ShipmentQuery,
+    ShipmentQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ShipmentQuery, ShipmentQueryVariables>(
+    ShipmentDocument,
+    options,
+  )
+}
+export type ShipmentQueryHookResult = ReturnType<typeof useShipmentQuery>
+export type ShipmentLazyQueryHookResult = ReturnType<
+  typeof useShipmentLazyQuery
+>
+export type ShipmentQueryResult = Apollo.QueryResult<
+  ShipmentQuery,
+  ShipmentQueryVariables
+>
+export const UpdateShipmentDocument = gql`
+  mutation UpdateShipment($id: Int!, $input: ShipmentUpdateInput!) {
+    updateShipment(id: $id, input: $input) {
+      ...AllShipmentFields
+    }
+  }
+  ${AllShipmentFieldsFragmentDoc}
+`
+export type UpdateShipmentMutationFn = Apollo.MutationFunction<
+  UpdateShipmentMutation,
+  UpdateShipmentMutationVariables
+>
 
 /**
  * __useUpdateShipmentMutation__
@@ -886,10 +1002,23 @@ export type UpdateShipmentMutationFn = Apollo.MutationFunction<UpdateShipmentMut
  *   },
  * });
  */
-export function useUpdateShipmentMutation(baseOptions?: Apollo.MutationHookOptions<UpdateShipmentMutation, UpdateShipmentMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateShipmentMutation, UpdateShipmentMutationVariables>(UpdateShipmentDocument, options);
-      }
-export type UpdateShipmentMutationHookResult = ReturnType<typeof useUpdateShipmentMutation>;
-export type UpdateShipmentMutationResult = Apollo.MutationResult<UpdateShipmentMutation>;
-export type UpdateShipmentMutationOptions = Apollo.BaseMutationOptions<UpdateShipmentMutation, UpdateShipmentMutationVariables>;
+export function useUpdateShipmentMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateShipmentMutation,
+    UpdateShipmentMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    UpdateShipmentMutation,
+    UpdateShipmentMutationVariables
+  >(UpdateShipmentDocument, options)
+}
+export type UpdateShipmentMutationHookResult = ReturnType<
+  typeof useUpdateShipmentMutation
+>
+export type UpdateShipmentMutationResult = Apollo.MutationResult<UpdateShipmentMutation>
+export type UpdateShipmentMutationOptions = Apollo.BaseMutationOptions<
+  UpdateShipmentMutation,
+  UpdateShipmentMutationVariables
+>

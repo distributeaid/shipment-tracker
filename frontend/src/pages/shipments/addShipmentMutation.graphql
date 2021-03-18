@@ -1,5 +1,5 @@
 mutation CreateShipment($input: ShipmentCreateInput!) {
   addShipment(input: $input) {
-    ...AllShipmentFields
+    id
   }
 }

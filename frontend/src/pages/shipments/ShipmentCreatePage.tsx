@@ -2,6 +2,7 @@ import { FunctionComponent } from 'react'
 import { useHistory } from 'react-router-dom'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
+  AllShipmentsDocument,
   ShipmentCreateInput,
   useCreateShipmentMutation,
 } from '../../types/api-types'
@@ -18,7 +19,11 @@ const ShipmentCreatePage: FunctionComponent = () => {
 
   const onSubmit = (input: ShipmentCreateInput) => {
     // Create the shipment and then redirect to its "view" page
-    addShipment({ variables: { input } })
+    addShipment({
+      variables: { input },
+      // Fetch the updated list of shipments
+      refetchQueries: [{ query: AllShipmentsDocument }],
+    })
       .then(({ data }) => {
         if (data) {
           const newShipmentId = data.addShipment.id
