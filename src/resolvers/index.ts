@@ -1,7 +1,12 @@
 import { DateResolver } from 'graphql-scalars'
 import { Resolvers } from '../server-internal-types'
 import { addGroup, group, listGroups, updateGroup } from './group'
-import { addLineItem, updateLineItem } from './line_items'
+import {
+  addLineItem,
+  destroyLineItem,
+  moveLineItem,
+  updateLineItem,
+} from './line_items'
 import { addOffer, listOffers, offer, offerPallets, updateOffer } from './offer'
 import {
   addPallet,
@@ -45,6 +50,8 @@ const resolvers: Resolvers = {
     destroyPallet,
     addLineItem,
     updateLineItem,
+    destroyLineItem,
+    moveLineItem,
   },
 
   // Custom Resolvers

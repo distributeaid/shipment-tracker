@@ -11,6 +11,7 @@ import {
   QueryResolvers,
   ShipmentStatus,
 } from '../../server-internal-types'
+import validateEnumMembership from '../validateEnumMembership'
 import validateUris from '../validateUris'
 import {
   authorizeOfferMutation,
@@ -90,6 +91,7 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
   const updateAttributes: Partial<OfferAttributes> = {}
 
   if (input.status) {
+    validateEnumMembership(OfferStatus, input.status)
     updateAttributes.status = input.status
     updateAttributes.statusChangeTime = new Date()
   }

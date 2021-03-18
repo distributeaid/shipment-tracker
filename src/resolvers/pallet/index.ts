@@ -5,10 +5,12 @@ import Pallet, { PalletAttributes } from '../../models/pallet'
 import {
   MutationResolvers,
   PalletResolvers,
+  PalletType,
   PaymentStatus,
 } from '../../server-internal-types'
 import getPalletWithParentAssociations from '../getPalletWithParentAssociations'
 import { authorizeOfferMutation } from '../offer/offer_authorization'
+import validateEnumMembership from '../validateEnumMembership'
 
 const addPallet: MutationResolvers['addPallet'] = async (
   _,
@@ -24,6 +26,10 @@ const addPallet: MutationResolvers['addPallet'] = async (
   }
 
   authorizeOfferMutation(offer, context)
+
+  if (input.palletType) {
+    validateEnumMembership(PalletType, input.palletType)
+  }
 
   return Pallet.create({
     ...input,
@@ -54,11 +60,13 @@ const updatePallet: MutationResolvers['updatePallet'] = async (
   const updateAttributes: Partial<PalletAttributes> = {}
 
   if (input.paymentStatus && input.paymentStatus !== pallet.paymentStatus) {
+    validateEnumMembership(PaymentStatus, input.paymentStatus)
     updateAttributes.paymentStatus = input.paymentStatus
     updateAttributes.paymentStatusChangeTime = new Date()
   }
 
   if (input.palletType) {
+    validateEnumMembership(PalletType, input.palletType)
     updateAttributes.palletType = input.palletType
   }
 

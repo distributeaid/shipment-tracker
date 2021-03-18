@@ -118,24 +118,7 @@ describe('LineItems API', () => {
     })
   })
 
-  describe('updateLineItem', () => {
-    const UPDATE_LINE_ITEM = gql`
-      mutation($id: Int!, $input: LineItemUpdateInput!) {
-        updateLineItem(id: $id, input: $input) {
-          offerPalletId
-          status
-          containerType
-          category
-          itemCount
-          affirmLiability
-          tosAccepted
-          dangerousGoods
-          photoUris
-          statusChangeTime
-        }
-      }
-    `
-
+  describe('actions on an existing line item', () => {
     let lineItem: LineItem
 
     beforeEach(async () => {
@@ -153,22 +136,129 @@ describe('LineItems API', () => {
       })
     })
 
-    it('creates a new line item', async () => {
-      const res = await captainTestServer.mutate<
-        { updateLineItem: LineItem },
-        { id: number; input: LineItemUpdateInput }
-      >({
-        mutation: UPDATE_LINE_ITEM,
-        variables: {
-          id: lineItem.id,
-          input: {
-            status: LineItemStatus.Accepted,
+    describe('updateLineItem', () => {
+      const UPDATE_LINE_ITEM = gql`
+        mutation($id: Int!, $input: LineItemUpdateInput!) {
+          updateLineItem(id: $id, input: $input) {
+            offerPalletId
+            status
+            containerType
+            category
+            itemCount
+            affirmLiability
+            tosAccepted
+            dangerousGoods
+            photoUris
+            statusChangeTime
+          }
+        }
+      `
+
+      it('udpates an existing line item', async () => {
+        const res = await captainTestServer.mutate<
+          { updateLineItem: LineItem },
+          { id: number; input: LineItemUpdateInput }
+        >({
+          mutation: UPDATE_LINE_ITEM,
+          variables: {
+            id: lineItem.id,
+            input: {
+              status: LineItemStatus.Accepted,
+            },
           },
-        },
+        })
+
+        expect(res.errors).toBeUndefined()
+        expect(res.data?.updateLineItem?.status).toEqual(
+          LineItemStatus.Accepted,
+        )
+      })
+    })
+
+    describe('destroyLineItem', () => {
+      const DESTROY_LINE_ITEM = gql`
+        mutation($id: Int!) {
+          destroyLineItem(id: $id) {
+            id
+            lineItems {
+              id
+            }
+          }
+        }
+      `
+
+      it('destroys an existing line item', async () => {
+        const res = await captainTestServer.mutate<
+          { destroyLineItem: Pallet },
+          { id: number }
+        >({
+          mutation: DESTROY_LINE_ITEM,
+          variables: {
+            id: lineItem.id,
+          },
+        })
+
+        expect(res.errors).toBeUndefined()
+        expect(res.data?.destroyLineItem?.lineItems.length).toEqual(0)
+      })
+    })
+
+    describe('moveLineItem', () => {
+      let palletTwo: Pallet
+
+      const MOVE_LINE_ITEM = gql`
+        mutation($id: Int!, $targetPalletId: Int!) {
+          moveLineItem(id: $id, targetPalletId: $targetPalletId) {
+            pallets {
+              id
+              lineItems {
+                id
+              }
+            }
+          }
+        }
+      `
+
+      beforeEach(async () => {
+        palletTwo = await Pallet.create({
+          offerId: offer.id,
+          palletType: PalletType.Standard,
+          paymentStatus: PaymentStatus.Uninitiated,
+          paymentStatusChangeTime: new Date(),
+        })
       })
 
-      expect(res.errors).toBeUndefined()
-      expect(res.data?.updateLineItem?.status).toEqual(LineItemStatus.Accepted)
+      it('moves the line item to another pallet in the same offer', async () => {
+        const res = await captainTestServer.mutate<
+          { moveLineItem: Offer },
+          { id: number; targetPalletId: number }
+        >({
+          mutation: MOVE_LINE_ITEM,
+          variables: {
+            id: lineItem.id,
+            targetPalletId: palletTwo.id,
+          },
+        })
+
+        expect(res.errors).toBeUndefined()
+
+        await palletTwo.reload({ include: 'lineItems' })
+
+        expect(palletTwo.lineItems[0].id).toEqual(lineItem.id)
+        expect(res.data?.moveLineItem?.pallets.length).toEqual(2)
+
+        expect(res.data?.moveLineItem?.pallets.length).toEqual(2)
+
+        const originalPallet = res.data?.moveLineItem?.pallets.find(
+          (p) => p.id === pallet.id,
+        )
+        const targetPallet = res.data?.moveLineItem?.pallets.find(
+          (p) => p.id === palletTwo.id,
+        )
+
+        expect(originalPallet!.lineItems.length).toEqual(0)
+        expect(targetPallet!.lineItems[0].id).toEqual(lineItem.id)
+      })
     })
   })
 })

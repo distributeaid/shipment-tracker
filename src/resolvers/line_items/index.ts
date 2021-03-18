@@ -1,9 +1,12 @@
 import { ApolloError, UserInputError } from 'apollo-server'
 import { has, isEqual } from 'lodash'
+import { AuthenticatedContext } from '../../apolloServer'
 import Group from '../../models/group'
 import LineItem, { LineItemAttributes } from '../../models/line_item'
 import Offer from '../../models/offer'
+import Pallet from '../../models/pallet'
 import {
+  DangerousGoods,
   GroupType,
   LineItemCategory,
   LineItemContainerType,
@@ -13,6 +16,7 @@ import {
 } from '../../server-internal-types'
 import getPalletWithParentAssociations from '../getPalletWithParentAssociations'
 import { authorizeOfferMutation } from '../offer/offer_authorization'
+import validateEnumMembership from '../validateEnumMembership'
 import validateUris from '../validateUris'
 
 const addLineItem: MutationResolvers['addLineItem'] = async (
@@ -53,18 +57,17 @@ const updateLineItem: MutationResolvers['updateLineItem'] = async (
   { id, input },
   context,
 ) => {
-  const lineItem = await LineItem.findByPk(id, {
-    include: {
-      association: 'offerPallet',
-      include: {
-        // @ts-ignore
-        model: Offer,
-        as: 'offer',
-        include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
-      },
-    },
-  })
+  const maybeLineItem = await getLineItemWithParentAssociations(id)
+  const lineItem = await authorizeLineItemMutation(id, maybeLineItem, context)
 
+  return lineItem.update(await getUpdateAttributes(lineItem, input))
+}
+
+async function authorizeLineItemMutation(
+  id: number,
+  lineItem: LineItem | null,
+  context: AuthenticatedContext,
+): Promise<LineItem> {
   if (!lineItem) {
     throw new UserInputError(`LineItem ${id} does not exist`)
   }
@@ -79,7 +82,7 @@ const updateLineItem: MutationResolvers['updateLineItem'] = async (
 
   authorizeOfferMutation(lineItem.offerPallet.offer, context)
 
-  return lineItem.update(await getUpdateAttributes(lineItem, input))
+  return lineItem
 }
 
 async function getUpdateAttributes(
@@ -88,22 +91,22 @@ async function getUpdateAttributes(
 ): Promise<Partial<LineItemAttributes>> {
   const updateAttributes: Partial<LineItemAttributes> = {}
 
-  // TODO ensure the input status is a member of the enum
   if (input.status && input.status !== lineItem.status) {
+    validateEnumMembership(LineItemStatus, input.status)
     updateAttributes.status = input.status
     updateAttributes.statusChangeTime = new Date()
   }
 
-  // TODO ensure the input containerType is a member of the enum
   if (input.containerType && input.containerType !== lineItem.containerType) {
+    validateEnumMembership(LineItemContainerType, input.containerType)
     updateAttributes.containerType = input.containerType
   }
 
-  // TODO ensure the input dangerous goods are members of the enum
   if (
     input.dangerousGoods &&
     !isEqual(input.dangerousGoods, lineItem.dangerousGoods)
   ) {
+    validateEnumMembership(DangerousGoods, input.dangerousGoods)
     updateAttributes.dangerousGoods = input.dangerousGoods
   }
 
@@ -181,4 +184,74 @@ async function updateGroupIdAttr(
   updateAttributes[attr] = input[attr]!
 }
 
-export { addLineItem, updateLineItem }
+async function getLineItemWithParentAssociations(id: number) {
+  return LineItem.findByPk(id, {
+    include: {
+      association: 'offerPallet',
+      include: {
+        // The need for ts-ignore here seems to be a bug in sequelize-typescript. There
+        // are several open issues related to bad type errors on the project so hopefully
+        // it will be fixed in an upcoming version. --bion, 3/17/21
+        // @ts-ignore
+        model: Offer,
+        as: 'offer',
+        include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
+      },
+    },
+  })
+}
+
+const destroyLineItem: MutationResolvers['destroyLineItem'] = async (
+  _,
+  { id },
+  context,
+) => {
+  const maybeLineItem: LineItem | null = await getLineItemWithParentAssociations(
+    id,
+  )
+
+  const lineItem: LineItem = await authorizeLineItemMutation(
+    id,
+    maybeLineItem,
+    context,
+  )
+
+  const pallet = lineItem.offerPallet
+  await lineItem.destroy()
+
+  return pallet
+}
+
+const moveLineItem: MutationResolvers['moveLineItem'] = async (
+  _,
+  { id, targetPalletId },
+  context,
+) => {
+  const maybeLineItem = getLineItemWithParentAssociations(id)
+  const targetPalletPromise = Pallet.findByPk(targetPalletId)
+
+  const lineItemPromise = authorizeLineItemMutation(
+    id,
+    await maybeLineItem,
+    context,
+  )
+
+  const targetPallet = await targetPalletPromise
+
+  if (!targetPallet) {
+    throw new UserInputError(`Pallet ${targetPalletId} does not exist`)
+  }
+
+  const lineItem = await lineItemPromise
+  if (targetPallet.offerId !== lineItem.offerPallet.offerId) {
+    throw new UserInputError(
+      `Target pallet ${targetPalletId} is not in the same offer`,
+    )
+  }
+
+  await lineItem.update({ offerPalletId: targetPalletId })
+
+  return lineItem.offerPallet.offer
+}
+
+export { addLineItem, updateLineItem, destroyLineItem, moveLineItem }
