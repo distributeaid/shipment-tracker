@@ -1,7 +1,11 @@
 import { FunctionComponent } from 'react'
 import { useHistory } from 'react-router-dom'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { GroupCreateInput, useCreateGroupMutation } from '../../types/api-types'
+import {
+  AllGroupsDocument,
+  GroupCreateInput,
+  useCreateGroupMutation,
+} from '../../types/api-types'
 import GroupForm from './GroupForm'
 
 const GroupCreatePage: FunctionComponent = () => {
@@ -14,7 +18,11 @@ const GroupCreatePage: FunctionComponent = () => {
 
   const onSubmit = (input: GroupCreateInput) => {
     // Create the group and then redirect to its view/edit page
-    addGroup({ variables: { input } })
+    addGroup({
+      variables: { input },
+      // Fetch the updated list of groups
+      refetchQueries: [{ query: AllGroupsDocument }],
+    })
       .then(({ data }) => {
         if (data) {
           const newGroupId = data.addGroup.id
