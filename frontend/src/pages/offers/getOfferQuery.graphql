@@ -1,0 +1,19 @@
+query Offer($id: Int!) {
+  offer(id: $id) {
+    id
+    status
+    shipmentId
+    sendingGroupId
+    contact {
+      name
+      whatsApp
+      email
+      phone
+      signal
+    }
+    photoUris
+    pallets {
+      id
+    }
+  }
+}

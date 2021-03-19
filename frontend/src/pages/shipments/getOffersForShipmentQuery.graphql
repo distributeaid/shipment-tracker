@@ -1,0 +1,11 @@
+query OffersForShipment($shipmentId: Int!) {
+  listOffers(shipmentId: $shipmentId) {
+    id
+    status
+    sendingGroupId
+    photoUris
+    pallets {
+      id
+    }
+  }
+}
