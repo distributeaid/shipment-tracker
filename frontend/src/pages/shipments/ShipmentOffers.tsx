@@ -1,6 +1,7 @@
 import cx from 'classnames'
 import { FunctionComponent, useMemo } from 'react'
 import { Column, useSortBy, useTable } from 'react-table'
+import Badge from '../../components/Badge'
 import ButtonLink from '../../components/ButtonLink'
 import TableHeader from '../../components/table/TableHeader'
 import {
@@ -25,7 +26,6 @@ const ShipmentOffers: FunctionComponent<Props> = ({ shipmentId }) => {
 
   const offers = useMemo(() => data?.listOffers || [], [data])
 
-  // const COLUMNS: Column<OffersForShipmentQuery['listOffers'][0]>[] = [
   const COLUMNS = useMemo(() => {
     if (groups?.listGroups && data?.listOffers) {
       const columns: Column<OffersForShipmentQuery['listOffers'][0]>[] = [
@@ -38,6 +38,11 @@ const ShipmentOffers: FunctionComponent<Props> = ({ shipmentId }) => {
           accessor: (row) =>
             groups.listGroups.find((group) => group.id === row.sendingGroupId)
               ?.name,
+        },
+        {
+          Header: 'Status',
+          accessor: 'status',
+          Cell: ({ value }) => <Badge>{value}</Badge>,
         },
         {
           Header: 'Pallets',
@@ -114,6 +119,11 @@ const ShipmentOffers: FunctionComponent<Props> = ({ shipmentId }) => {
           })}
         </tbody>
       </table>
+      {rows.length === 0 && (
+        <div className="flex items-center justify-center py-8 text-gray-500">
+          No offers yet
+        </div>
+      )}
     </div>
   )
 }

@@ -1,9 +1,9 @@
-import { FunctionComponent, useMemo } from 'react'
+import { FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import InternalLink from '../../components/InternalLink'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { useAllShipmentsQuery, useOfferQuery } from '../../types/api-types'
+import { useOfferQuery, useShipmentQuery } from '../../types/api-types'
 import { formatShipmentName } from '../../utils/format'
 import { shipmentViewOffersRoute } from '../../utils/routes'
 
@@ -13,15 +13,9 @@ const ViewOfferPage: FunctionComponent = () => {
   const shipmentId = parseInt(params.shipmentId, 10)
 
   // Figure out the shipment ID from the path
-  const { data: shipments } = useAllShipmentsQuery()
-  const targetShipment = useMemo(() => {
-    if (shipments?.listShipments) {
-      return shipments.listShipments.find(
-        (shipment) => shipment.id === shipmentId,
-      )
-    }
-    return null
-  }, [shipments, shipmentId])
+  const { data: targetShipment } = useShipmentQuery({
+    variables: { id: shipmentId },
+  })
 
   const { data } = useOfferQuery({ variables: { id: offerId } })
 
@@ -41,12 +35,14 @@ const ViewOfferPage: FunctionComponent = () => {
           {data?.offer && (
             <>
               <ReadOnlyField label="Shipment">
-                {targetShipment && (
+                {targetShipment?.shipment && (
                   <>
-                    <p className="">{formatShipmentName(targetShipment)}</p>
+                    <p className="">
+                      {formatShipmentName(targetShipment.shipment)}
+                    </p>
                     <p className="text-gray-500 text-sm">
-                      {targetShipment.sendingHub.name} →{' '}
-                      {targetShipment.receivingHub.name}
+                      {targetShipment.shipment.sendingHub.name} →{' '}
+                      {targetShipment.shipment.receivingHub.name}
                     </p>
                   </>
                 )}

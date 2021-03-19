@@ -1,23 +1,32 @@
 import { FunctionComponent } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { OfferCreateInput, useCreateOfferMutation } from '../../types/api-types'
+import {
+  OfferCreateInput,
+  OffersForShipmentDocument,
+  useCreateOfferMutation,
+} from '../../types/api-types'
 import { offerViewRoute } from '../../utils/routes'
 import CreateOfferForm from './CreateOfferForm'
 
 const CreateOfferPage: FunctionComponent = () => {
+  const params = useParams<{ shipmentId: string }>()
+  const shipmentId = parseInt(params.shipmentId, 10)
+
   const history = useHistory()
 
   const [
     addOffer,
     { loading: mutationIsLoading, error: mutationError },
-  ] = useCreateOfferMutation()
+  ] = useCreateOfferMutation({
+    refetchQueries: [
+      { query: OffersForShipmentDocument, variables: { shipmentId } },
+    ],
+  })
 
   const onSubmit = (input: OfferCreateInput) => {
     // Create the new offer, then navigate to its page
-    addOffer({
-      variables: { input },
-    })
+    addOffer({ variables: { input } })
       .then(({ data }) => {
         if (data) {
           const { shipmentId, id } = data.addOffer
@@ -41,6 +50,7 @@ const CreateOfferPage: FunctionComponent = () => {
             </div>
           )}
           <CreateOfferForm
+            shipmentId={shipmentId}
             isLoading={mutationIsLoading}
             submitButtonLabel="Create offer"
             onSubmit={onSubmit}

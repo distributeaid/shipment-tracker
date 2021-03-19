@@ -7,8 +7,6 @@ export interface UserProfile {
 }
 
 const fetchProfile = (token: string) => {
-  console.log("fetching the user's profile")
-
   return fetch('/profile', {
     headers: { Authorization: `Bearer ${token}` },
   })

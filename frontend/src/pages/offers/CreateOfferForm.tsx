@@ -1,6 +1,5 @@
 import { FunctionComponent, ReactNode, useContext, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import TextField from '../../components/forms/TextField'
@@ -9,11 +8,15 @@ import {
   GroupType,
   OfferCreateInput,
   useAllGroupsMinimalQuery,
-  useAllShipmentsQuery,
+  useShipmentQuery,
 } from '../../types/api-types'
 import { formatShipmentName } from '../../utils/format'
 
 interface Props {
+  /**
+   * This shipment ID to determine where this offer will be created.
+   */
+  shipmentId: number
   /**
    * If true, the Submit button will be disabled
    */
@@ -49,24 +52,15 @@ const OfferForm: FunctionComponent<Props> = (props) => {
     }
   }, [groups, profile])
 
-  // Figure out the shipment ID from the path
-  const params = useParams<{ shipmentId: string }>()
-  const shipmentId = parseInt(params.shipmentId, 10)
-  const { data: shipments } = useAllShipmentsQuery()
-  const targetShipment = useMemo(() => {
-    if (shipments?.listShipments) {
-      return shipments.listShipments.find(
-        (shipment) => shipment.id === shipmentId,
-      )
-    }
-    return null
-  }, [shipments, shipmentId])
+  const { data: targetShipment } = useShipmentQuery({
+    variables: { id: props.shipmentId },
+  })
 
   // Set up the form
   const { register, handleSubmit } = useForm<OfferCreateInput>()
 
   const onSubmitForm = (input: OfferCreateInput) => {
-    if (!shipmentId) {
+    if (!props.shipmentId) {
       throw new Error('The shipment ID is missing in the offer form')
     }
 
@@ -76,7 +70,7 @@ const OfferForm: FunctionComponent<Props> = (props) => {
 
     // The sending group ID and shipment ID aren't in the form, so we add them
     // manually
-    input.shipmentId = shipmentId
+    input.shipmentId = props.shipmentId
     input.sendingGroupId = groupForUser.id
 
     props.onSubmit(input)
@@ -88,12 +82,12 @@ const OfferForm: FunctionComponent<Props> = (props) => {
         {groupForUser?.name || 'No group'}
       </ReadOnlyField>
       <ReadOnlyField label="Shipment">
-        {targetShipment && (
+        {targetShipment?.shipment && (
           <>
-            <p className="">{formatShipmentName(targetShipment)}</p>
+            <p className="">{formatShipmentName(targetShipment.shipment)}</p>
             <p className="text-gray-500 text-sm">
-              {targetShipment.sendingHub.name} →{' '}
-              {targetShipment.receivingHub.name}
+              {targetShipment.shipment.sendingHub.name} →{' '}
+              {targetShipment.shipment.receivingHub.name}
             </p>
           </>
         )}

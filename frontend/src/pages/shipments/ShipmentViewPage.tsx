@@ -15,7 +15,7 @@ import ROUTES, {
 import ShipmentDetails from './ShipmentDetails'
 import ShipmentOffers from './ShipmentOffers'
 
-const ShipmentViewPage: FunctionComponent = (props) => {
+const ShipmentViewPage: FunctionComponent = () => {
   // Extract the shipment's ID from the URL
   const params = useParams<{ shipmentId: string }>()
   const shipmentId = parseInt(params.shipmentId, 10)
