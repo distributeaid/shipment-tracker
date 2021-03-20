@@ -1,10 +1,10 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import { FunctionComponent, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import ROUTES from '../utils/routes'
 import DistributeAidLogo from './branding/DistributeAidLogo'
 import DropdownMenu from './DropdownMenu'
 import CogIcon from './icons/CogIcon'
-import PackageIcon from './icons/PackageIcon'
 import TruckIcon from './icons/TruckIcon'
 import UserIcon from './icons/UserIcon'
 import DesktopNavigation from './navigation/DesktopNavigation'
@@ -18,17 +18,12 @@ export interface NavLinkItem {
 
 const NAV_LINKS: NavLinkItem[] = [
   {
-    path: '/offers',
-    label: 'Offers',
-    icon: <PackageIcon className="w-5 h-5 mr-2" />,
-  },
-  {
-    path: '/shipments',
+    path: ROUTES.SHIPMENT_LIST,
     label: 'Shipments',
     icon: <TruckIcon className="w-5 h-5 mr-2" />,
   },
   {
-    path: '/admin',
+    path: ROUTES.ADMIN_ROOT,
     label: 'Admin',
     icon: <CogIcon className="w-5 h-5 mr-2" />,
   },

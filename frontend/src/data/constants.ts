@@ -1,4 +1,5 @@
-import { GroupType } from '../types/api-types'
+import { GroupType, OfferStatus } from '../types/api-types'
+import { enumValues } from '../utils/types'
 
 export const MONTHS = [
   'January',
@@ -29,6 +30,11 @@ export const GROUP_TYPE_OPTIONS = [
   { label: 'Sending group', value: GroupType.SendingGroup },
   { label: 'DA hub', value: GroupType.DaHub },
 ]
+
+export const OFFER_STATUS_OPTIONS = enumValues(OfferStatus).map((routeKey) => ({
+  label: routeKey,
+  value: routeKey,
+}))
 
 export const COUNTRY_CODES_TO_NAME = {
   AF: 'Afghanistan',

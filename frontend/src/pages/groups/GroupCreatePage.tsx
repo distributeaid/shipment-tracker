@@ -6,6 +6,7 @@ import {
   GroupCreateInput,
   useCreateGroupMutation,
 } from '../../types/api-types'
+import { groupViewRoute } from '../../utils/routes'
 import GroupForm from './GroupForm'
 
 const GroupCreatePage: FunctionComponent = () => {
@@ -26,7 +27,7 @@ const GroupCreatePage: FunctionComponent = () => {
       .then(({ data }) => {
         if (data) {
           const newGroupId = data.addGroup.id
-          history.push(`/group/${newGroupId}`)
+          history.push(groupViewRoute(newGroupId))
         }
       })
       .catch(console.error)

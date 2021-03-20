@@ -434,7 +434,10 @@ export type AllGroupsMinimalQueryVariables = Exact<{ [key: string]: never }>
 
 export type AllGroupsMinimalQuery = { __typename?: 'Query' } & {
   listGroups: Array<
-    { __typename?: 'Group' } & Pick<Group, 'id' | 'name' | 'groupType'>
+    { __typename?: 'Group' } & Pick<
+      Group,
+      'id' | 'name' | 'groupType' | 'captainId'
+    >
   >
 }
 
@@ -453,6 +456,33 @@ export type UpdateGroupMutationVariables = Exact<{
 
 export type UpdateGroupMutation = { __typename?: 'Mutation' } & {
   updateGroup: { __typename?: 'Group' } & AllGroupFieldsFragment
+}
+
+export type CreateOfferMutationVariables = Exact<{
+  input: OfferCreateInput
+}>
+
+export type CreateOfferMutation = { __typename?: 'Mutation' } & {
+  addOffer: { __typename?: 'Offer' } & Pick<Offer, 'id' | 'shipmentId'>
+}
+
+export type OfferQueryVariables = Exact<{
+  id: Scalars['Int']
+}>
+
+export type OfferQuery = { __typename?: 'Query' } & {
+  offer: { __typename?: 'Offer' } & Pick<
+    Offer,
+    'id' | 'status' | 'shipmentId' | 'sendingGroupId' | 'photoUris'
+  > & {
+      contact?: Maybe<
+        { __typename?: 'ContactInfo' } & Pick<
+          ContactInfo,
+          'name' | 'whatsApp' | 'email' | 'phone' | 'signal'
+        >
+      >
+      pallets: Array<{ __typename?: 'Pallet' } & Pick<Pallet, 'id'>>
+    }
 }
 
 export type CreateShipmentMutationVariables = Exact<{
@@ -503,6 +533,19 @@ export type AllShipmentsQuery = { __typename?: 'Query' } & {
         sendingHub: { __typename?: 'Group' } & Pick<Group, 'id' | 'name'>
         receivingHub: { __typename?: 'Group' } & Pick<Group, 'id' | 'name'>
       }
+  >
+}
+
+export type OffersForShipmentQueryVariables = Exact<{
+  shipmentId: Scalars['Int']
+}>
+
+export type OffersForShipmentQuery = { __typename?: 'Query' } & {
+  listOffers: Array<
+    { __typename?: 'Offer' } & Pick<
+      Offer,
+      'id' | 'status' | 'sendingGroupId' | 'photoUris'
+    > & { pallets: Array<{ __typename?: 'Pallet' } & Pick<Pallet, 'id'>> }
   >
 }
 
@@ -687,6 +730,7 @@ export const AllGroupsMinimalDocument = gql`
       id
       name
       groupType
+      captainId
     }
   }
 `
@@ -840,6 +884,118 @@ export type UpdateGroupMutationOptions = Apollo.BaseMutationOptions<
   UpdateGroupMutation,
   UpdateGroupMutationVariables
 >
+export const CreateOfferDocument = gql`
+  mutation CreateOffer($input: OfferCreateInput!) {
+    addOffer(input: $input) {
+      id
+      shipmentId
+    }
+  }
+`
+export type CreateOfferMutationFn = Apollo.MutationFunction<
+  CreateOfferMutation,
+  CreateOfferMutationVariables
+>
+
+/**
+ * __useCreateOfferMutation__
+ *
+ * To run a mutation, you first call `useCreateOfferMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateOfferMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createOfferMutation, { data, loading, error }] = useCreateOfferMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateOfferMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateOfferMutation,
+    CreateOfferMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreateOfferMutation, CreateOfferMutationVariables>(
+    CreateOfferDocument,
+    options,
+  )
+}
+export type CreateOfferMutationHookResult = ReturnType<
+  typeof useCreateOfferMutation
+>
+export type CreateOfferMutationResult = Apollo.MutationResult<CreateOfferMutation>
+export type CreateOfferMutationOptions = Apollo.BaseMutationOptions<
+  CreateOfferMutation,
+  CreateOfferMutationVariables
+>
+export const OfferDocument = gql`
+  query Offer($id: Int!) {
+    offer(id: $id) {
+      id
+      status
+      shipmentId
+      sendingGroupId
+      contact {
+        name
+        whatsApp
+        email
+        phone
+        signal
+      }
+      photoUris
+      pallets {
+        id
+      }
+    }
+  }
+`
+
+/**
+ * __useOfferQuery__
+ *
+ * To run a query within a React component, call `useOfferQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOfferQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOfferQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useOfferQuery(
+  baseOptions: Apollo.QueryHookOptions<OfferQuery, OfferQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<OfferQuery, OfferQueryVariables>(
+    OfferDocument,
+    options,
+  )
+}
+export function useOfferLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<OfferQuery, OfferQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<OfferQuery, OfferQueryVariables>(
+    OfferDocument,
+    options,
+  )
+}
+export type OfferQueryHookResult = ReturnType<typeof useOfferQuery>
+export type OfferLazyQueryHookResult = ReturnType<typeof useOfferLazyQuery>
+export type OfferQueryResult = Apollo.QueryResult<
+  OfferQuery,
+  OfferQueryVariables
+>
 export const CreateShipmentDocument = gql`
   mutation CreateShipment($input: ShipmentCreateInput!) {
     addShipment(input: $input) {
@@ -959,6 +1115,70 @@ export type AllShipmentsLazyQueryHookResult = ReturnType<
 export type AllShipmentsQueryResult = Apollo.QueryResult<
   AllShipmentsQuery,
   AllShipmentsQueryVariables
+>
+export const OffersForShipmentDocument = gql`
+  query OffersForShipment($shipmentId: Int!) {
+    listOffers(shipmentId: $shipmentId) {
+      id
+      status
+      sendingGroupId
+      photoUris
+      pallets {
+        id
+      }
+    }
+  }
+`
+
+/**
+ * __useOffersForShipmentQuery__
+ *
+ * To run a query within a React component, call `useOffersForShipmentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOffersForShipmentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOffersForShipmentQuery({
+ *   variables: {
+ *      shipmentId: // value for 'shipmentId'
+ *   },
+ * });
+ */
+export function useOffersForShipmentQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    OffersForShipmentQuery,
+    OffersForShipmentQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<
+    OffersForShipmentQuery,
+    OffersForShipmentQueryVariables
+  >(OffersForShipmentDocument, options)
+}
+export function useOffersForShipmentLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    OffersForShipmentQuery,
+    OffersForShipmentQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    OffersForShipmentQuery,
+    OffersForShipmentQueryVariables
+  >(OffersForShipmentDocument, options)
+}
+export type OffersForShipmentQueryHookResult = ReturnType<
+  typeof useOffersForShipmentQuery
+>
+export type OffersForShipmentLazyQueryHookResult = ReturnType<
+  typeof useOffersForShipmentLazyQuery
+>
+export type OffersForShipmentQueryResult = Apollo.QueryResult<
+  OffersForShipmentQuery,
+  OffersForShipmentQueryVariables
 >
 export const ShipmentDocument = gql`
   query Shipment($id: Int!) {
