@@ -1,13 +1,13 @@
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { has } from 'lodash'
-import Group, { GroupAttributes } from '../../models/group'
-import UserAccount from '../../models/user_account'
+import Group, { GroupAttributes } from '../models/group'
+import UserAccount from '../models/user_account'
 import {
   GroupCreateInput,
   MutationResolvers,
   QueryResolvers,
-} from '../../server-internal-types'
-import stringIsUrl from '../stringIsUrl'
+} from '../server-internal-types'
+import stringIsUrl from './stringIsUrl'
 
 // Group query resolvers
 const listGroups: QueryResolvers['listGroups'] = async () => {

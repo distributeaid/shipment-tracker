@@ -1,6 +1,6 @@
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
-import Group from '../../models/group'
-import Shipment, { ShipmentAttributes } from '../../models/shipment'
+import Group from '../models/group'
+import Shipment, { ShipmentAttributes } from '../models/shipment'
 import {
   MutationResolvers,
   QueryResolvers,
@@ -8,8 +8,8 @@ import {
   ShipmentResolvers,
   ShipmentStatus,
   ShippingRoute,
-} from '../../server-internal-types'
-import validateEnumMembership from '../validateEnumMembership'
+} from '../server-internal-types'
+import validateEnumMembership from './validateEnumMembership'
 
 // Shipment query resolvers
 const listShipments: QueryResolvers['listShipments'] = async () => {

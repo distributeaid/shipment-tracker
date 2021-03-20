@@ -1,16 +1,16 @@
 import { ApolloError, UserInputError } from 'apollo-server'
-import LineItem from '../../models/line_item'
-import Offer from '../../models/offer'
-import Pallet, { PalletAttributes } from '../../models/pallet'
+import LineItem from '../models/line_item'
+import Offer from '../models/offer'
+import Pallet, { PalletAttributes } from '../models/pallet'
 import {
   MutationResolvers,
   PalletResolvers,
   PalletType,
   PaymentStatus,
-} from '../../server-internal-types'
-import getPalletWithParentAssociations from '../getPalletWithParentAssociations'
-import { authorizeOfferMutation } from '../offer/offer_authorization'
-import validateEnumMembership from '../validateEnumMembership'
+} from '../server-internal-types'
+import getPalletWithParentAssociations from './getPalletWithParentAssociations'
+import { authorizeOfferMutation } from './offer_authorization'
+import validateEnumMembership from './validateEnumMembership'
 
 const addPallet: MutationResolvers['addPallet'] = async (
   _,
