@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, useContext, useMemo } from 'react'
+import { FunctionComponent, useContext, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
@@ -22,10 +22,6 @@ interface Props {
    */
   isLoading: boolean
   /**
-   * The text to display in the Submit button of the form
-   */
-  submitButtonLabel: ReactNode
-  /**
    * The callback triggered when the user submits the form
    */
   onSubmit: (input: OfferCreateInput) => void
@@ -40,7 +36,7 @@ const OfferForm: FunctionComponent<Props> = (props) => {
   // We need to figure out which group that is
   // TODO: handle the fact that admins can be assigned to any number of groups
   const profile = useContext(UserProfileContext)
-  const { data: groups } = useAllGroupsMinimalQuery()
+  const { data: groups, loading: isLoadingGroups } = useAllGroupsMinimalQuery()
 
   const groupForUser = useMemo(() => {
     if (groups?.listGroups && profile) {
@@ -52,11 +48,12 @@ const OfferForm: FunctionComponent<Props> = (props) => {
     }
   }, [groups, profile])
 
-  const { data: targetShipment } = useShipmentQuery({
-    variables: { id: props.shipmentId },
-  })
+  const { data: targetShipment, loading: isLoadingShipment } = useShipmentQuery(
+    {
+      variables: { id: props.shipmentId },
+    },
+  )
 
-  // Set up the form
   const { register, handleSubmit } = useForm<OfferCreateInput>()
 
   const onSubmitForm = (input: OfferCreateInput) => {
@@ -107,9 +104,9 @@ const OfferForm: FunctionComponent<Props> = (props) => {
         variant="primary"
         type="submit"
         className="mt-6"
-        disabled={props.isLoading}
+        disabled={props.isLoading || isLoadingShipment || isLoadingGroups}
       >
-        {props.submitButtonLabel}
+        Create offer
       </Button>
     </form>
   )

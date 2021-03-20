@@ -14,7 +14,6 @@ interface Props {
 }
 
 const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
-  // Load the shipment's information
   const { data: shipment } = useShipmentQuery({
     variables: { id: shipmentId },
   })

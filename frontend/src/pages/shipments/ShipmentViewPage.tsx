@@ -16,11 +16,9 @@ import ShipmentDetails from './ShipmentDetails'
 import ShipmentOffers from './ShipmentOffers'
 
 const ShipmentViewPage: FunctionComponent = () => {
-  // Extract the shipment's ID from the URL
   const params = useParams<{ shipmentId: string }>()
   const shipmentId = parseInt(params.shipmentId, 10)
 
-  // Load the shipment's information
   const { data: shipment } = useShipmentQuery({
     variables: { id: shipmentId },
   })

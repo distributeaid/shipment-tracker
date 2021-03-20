@@ -52,7 +52,6 @@ const CreateOfferPage: FunctionComponent = () => {
           <CreateOfferForm
             shipmentId={shipmentId}
             isLoading={mutationIsLoading}
-            submitButtonLabel="Create offer"
             onSubmit={onSubmit}
           />
         </main>

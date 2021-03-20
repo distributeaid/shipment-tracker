@@ -12,10 +12,8 @@ import { shipmentViewRoute } from '../../utils/routes'
 import ShipmentForm from './ShipmentForm'
 
 const ShipmentEditPage: FunctionComponent = () => {
-  // Extract the shipment's ID from the URL
   const { shipmentId } = useParams<{ shipmentId: string }>()
 
-  // Load the shipment's information
   const {
     data: originalShipmentData,
     loading: queryIsLoading,

@@ -27,37 +27,37 @@ const ShipmentOffers: FunctionComponent<Props> = ({ shipmentId }) => {
   const offers = useMemo(() => data?.listOffers || [], [data])
 
   const COLUMNS = useMemo(() => {
-    if (groups?.listGroups && data?.listOffers) {
-      const columns: Column<OffersForShipmentQuery['listOffers'][0]>[] = [
-        {
-          Header: 'ID',
-          accessor: 'id',
-        },
-        {
-          Header: 'Sending Group',
-          accessor: (row) =>
-            groups.listGroups.find((group) => group.id === row.sendingGroupId)
-              ?.name,
-        },
-        {
-          Header: 'Status',
-          accessor: 'status',
-          Cell: ({ value }) => <Badge>{value}</Badge>,
-        },
-        {
-          Header: 'Pallets',
-          accessor: (row) => row.pallets.length,
-        },
-        {
-          Header: 'Photos',
-          accessor: (row) => row.photoUris.length,
-        },
-      ]
-
-      return columns
+    if (!groups?.listGroups || !data?.listOffers) {
+      return []
     }
 
-    return []
+    const columns: Column<OffersForShipmentQuery['listOffers'][0]>[] = [
+      {
+        Header: 'ID',
+        accessor: 'id',
+      },
+      {
+        Header: 'Sending Group',
+        accessor: (row) =>
+          groups.listGroups.find((group) => group.id === row.sendingGroupId)
+            ?.name,
+      },
+      {
+        Header: 'Status',
+        accessor: 'status',
+        Cell: ({ value }) => <Badge>{value}</Badge>,
+      },
+      {
+        Header: 'Pallets',
+        accessor: (row) => row.pallets.length,
+      },
+      {
+        Header: 'Photos',
+        accessor: (row) => row.photoUris.length,
+      },
+    ]
+
+    return columns
   }, [groups, data])
 
   const {
