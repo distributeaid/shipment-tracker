@@ -135,6 +135,8 @@ export type Mutation = {
   updateLineItem: LineItem
   destroyLineItem: Pallet
   moveLineItem: Offer
+  exportShipment: ShipmentExport
+  listShipmentExports: Array<ShipmentExport>
 }
 
 export type MutationAddGroupArgs = {
@@ -192,6 +194,14 @@ export type MutationDestroyLineItemArgs = {
 export type MutationMoveLineItemArgs = {
   id: Scalars['Int']
   targetPalletId: Scalars['Int']
+}
+
+export type MutationExportShipmentArgs = {
+  shipmentId: Scalars['Int']
+}
+
+export type MutationListShipmentExportsArgs = {
+  shipmentId: Scalars['Int']
 }
 
 export type ShipmentCreateInput = {
@@ -389,6 +399,15 @@ export type LineItemUpdateInput = {
   dangerousGoods?: Maybe<Array<DangerousGoods>>
   photoUris?: Maybe<Array<Scalars['String']>>
   sendingHubDeliveryDate?: Maybe<Scalars['Date']>
+}
+
+export type ShipmentExport = {
+  __typename?: 'ShipmentExport'
+  id: Scalars['Int']
+  googleSheetUrl: Scalars['String']
+  shipmentId: Scalars['Int']
+  createdBy: UserProfile
+  createdAt: Scalars['Date']
 }
 
 export type CreateGroupMutationVariables = Exact<{

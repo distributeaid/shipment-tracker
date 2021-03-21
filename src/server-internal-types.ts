@@ -142,6 +142,8 @@ export type Mutation = {
   updateLineItem: LineItem
   destroyLineItem: Pallet
   moveLineItem: Offer
+  exportShipment: ShipmentExport
+  listShipmentExports: Array<ShipmentExport>
 }
 
 export type MutationAddGroupArgs = {
@@ -199,6 +201,14 @@ export type MutationDestroyLineItemArgs = {
 export type MutationMoveLineItemArgs = {
   id: Scalars['Int']
   targetPalletId: Scalars['Int']
+}
+
+export type MutationExportShipmentArgs = {
+  shipmentId: Scalars['Int']
+}
+
+export type MutationListShipmentExportsArgs = {
+  shipmentId: Scalars['Int']
 }
 
 export type ShipmentCreateInput = {
@@ -398,6 +408,15 @@ export type LineItemUpdateInput = {
   sendingHubDeliveryDate?: Maybe<Scalars['Date']>
 }
 
+export type ShipmentExport = {
+  __typename?: 'ShipmentExport'
+  id: Scalars['Int']
+  googleSheetUrl: Scalars['String']
+  shipmentId: Scalars['Int']
+  createdBy: UserProfile
+  createdAt: Scalars['Date']
+}
+
 export type WithIndex<TObject> = TObject & Record<string, any>
 export type ResolversObject<TObject> = WithIndex<TObject>
 
@@ -552,6 +571,7 @@ export type ResolversTypes = ResolversObject<{
   LineItemContainerType: LineItemContainerType
   LineItem: ResolverTypeWrapper<LineItem>
   LineItemUpdateInput: LineItemUpdateInput
+  ShipmentExport: ResolverTypeWrapper<ShipmentExport>
 }>
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -581,6 +601,7 @@ export type ResolversParentTypes = ResolversObject<{
   PalletUpdateInput: PalletUpdateInput
   LineItem: LineItem
   LineItemUpdateInput: LineItemUpdateInput
+  ShipmentExport: ShipmentExport
 }>
 
 export interface DateScalarConfig
@@ -760,6 +781,18 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationMoveLineItemArgs, 'id' | 'targetPalletId'>
   >
+  exportShipment?: Resolver<
+    ResolversTypes['ShipmentExport'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationExportShipmentArgs, 'shipmentId'>
+  >
+  listShipmentExports?: Resolver<
+    Array<ResolversTypes['ShipmentExport']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationListShipmentExportsArgs, 'shipmentId'>
+  >
 }>
 
 export type ShipmentResolvers<
@@ -934,6 +967,18 @@ export type LineItemResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
+export type ShipmentExportResolvers<
+  ContextType = AuthenticatedContext,
+  ParentType extends ResolversParentTypes['ShipmentExport'] = ResolversParentTypes['ShipmentExport']
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  googleSheetUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  shipmentId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  createdBy?: Resolver<ResolversTypes['UserProfile'], ParentType, ContextType>
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
 export type Resolvers<ContextType = AuthenticatedContext> = ResolversObject<{
   Date?: GraphQLScalarType
   Location?: LocationResolvers<ContextType>
@@ -946,6 +991,7 @@ export type Resolvers<ContextType = AuthenticatedContext> = ResolversObject<{
   Offer?: OfferResolvers<ContextType>
   Pallet?: PalletResolvers<ContextType>
   LineItem?: LineItemResolvers<ContextType>
+  ShipmentExport?: ShipmentExportResolvers<ContextType>
 }>
 
 /**

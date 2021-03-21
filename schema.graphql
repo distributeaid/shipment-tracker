@@ -69,6 +69,7 @@ input ShipmentUpdateInput {
 
 type Query {
   group(id: Int!): Group!
+
   listGroups: [Group!]!
 
   shipment(id: Int!): Shipment!
@@ -95,6 +96,9 @@ type Mutation {
   updateLineItem(id: Int!, input: LineItemUpdateInput!): LineItem!
   destroyLineItem(id: Int!): Pallet!
   moveLineItem(id: Int!, targetPalletId: Int!): Offer!
+
+  exportShipment(shipmentId: Int!): ShipmentExport!
+  listShipmentExports(shipmentId: Int!): [ShipmentExport!]!
 }
 
 input ShipmentCreateInput {
@@ -295,4 +299,12 @@ input LineItemUpdateInput {
   dangerousGoods: [DangerousGoods!]
   photoUris: [String!]
   sendingHubDeliveryDate: Date
+}
+
+type ShipmentExport {
+  id: Int!
+  googleSheetUrl: String!
+  shipmentId: Int!
+  createdBy: UserProfile!
+  createdAt: Date!
 }

@@ -60,4 +60,10 @@ export default class Pallet extends Model<
   @UpdatedAt
   @Column
   public readonly updatedAt!: Date
+
+  public weightGrams() {
+    return this.lineItems
+      .map((lineItem) => lineItem.containerWeightGrams || 0)
+      .reduce((result, current) => result + current)
+  }
 }

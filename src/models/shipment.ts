@@ -4,6 +4,7 @@ import {
   CreatedAt,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   Table,
   UpdatedAt,
@@ -11,6 +12,7 @@ import {
 import { Optional } from 'sequelize/types'
 import { ShipmentStatus, ShippingRoute } from '../server-internal-types'
 import Group from './group'
+import Offer from './offer'
 
 export interface ShipmentAttributes {
   id: number
@@ -47,6 +49,9 @@ export default class Shipment extends Model<
 
   @Column
   public offerSubmissionDeadline?: Date
+
+  @HasMany(() => Offer)
+  public offers!: Offer[]
 
   @Column(DataType.STRING)
   public status!: ShipmentStatus

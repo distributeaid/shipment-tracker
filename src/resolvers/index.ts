@@ -22,6 +22,7 @@ import {
   shipment,
   updateShipment,
 } from './shipment'
+import { exportShipment } from './shipment_exports'
 
 const resolvers: Resolvers = {
   // Third Party Resolvers
@@ -52,6 +53,7 @@ const resolvers: Resolvers = {
     updateLineItem,
     destroyLineItem,
     moveLineItem,
+    exportShipment,
   },
 
   // Custom Resolvers

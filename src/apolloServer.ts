@@ -4,18 +4,9 @@ import {
   AuthenticationError,
 } from 'apollo-server-express'
 import depthLimit from 'graphql-depth-limit'
-
+import { AuthenticatedAuth, authenticateRequest } from './authenticateRequest'
 import resolvers from './resolvers'
 import typeDefs from './typeDefs'
-import {
-  Auth,
-  AuthenticatedAuth,
-  authenticateRequest,
-} from './authenticateRequest'
-
-export type Context = {
-  auth: Auth
-}
 
 export type AuthenticatedContext = {
   auth: AuthenticatedAuth
