@@ -80,4 +80,13 @@ export default class Shipment extends Model<
   @UpdatedAt
   @Column
   public readonly updatedAt!: Date
+
+  public displayName(): string {
+    return [
+      'Shipment',
+      this.shippingRoute,
+      this.labelYear,
+      this.labelMonth,
+    ].join('-')
+  }
 }

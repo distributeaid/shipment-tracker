@@ -1,4 +1,5 @@
 import { ForbiddenError, UserInputError } from 'apollo-server'
+import { GoogleSheetRow } from '../createGoogleSheet'
 import LineItem from '../models/line_item'
 import Offer from '../models/offer'
 import Pallet from '../models/pallet'
@@ -9,7 +10,7 @@ import { MutationResolvers } from '../server-internal-types'
 const exportShipment: MutationResolvers['exportShipment'] = async (
   _,
   { shipmentId },
-  { auth },
+  { auth, services },
 ) => {
   if (!auth.isAdmin) {
     throw new ForbiddenError('Must be admin')
@@ -51,8 +52,13 @@ const exportShipment: MutationResolvers['exportShipment'] = async (
     ),
   )
 
+  const googleSheetUrl = await services.createGoogleSheet(
+    shipment.displayName(),
+    rows,
+  )
+
   const exportRecord = await ShipmentExport.create({
-    googleSheetUrl: 'test',
+    googleSheetUrl,
     shipmentId,
     userAccountId: auth.userAccount.id,
   })
@@ -64,7 +70,7 @@ function makeExportRow(
   offer: Offer,
   pallet: Pallet,
   lineItem: LineItem,
-): Array<string | undefined | null | number> {
+): GoogleSheetRow {
   const contact = offer.contact || offer.sendingGroup.primaryContact
   const receivingGroupName = lineItem?.acceptedReceivingGroup
     ? `${lineItem.acceptedReceivingGroup.name} (accepted)`

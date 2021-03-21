@@ -5,11 +5,20 @@ import {
 } from 'apollo-server-express'
 import depthLimit from 'graphql-depth-limit'
 import { AuthenticatedAuth, authenticateRequest } from './authenticateRequest'
+import createGoogleSheet, { GoogleSheetRow } from './createGoogleSheet'
 import resolvers from './resolvers'
 import typeDefs from './typeDefs'
 
+export type Services = {
+  createGoogleSheet: (
+    title: string,
+    rows: Array<GoogleSheetRow>,
+  ) => Promise<string>
+}
+
 export type AuthenticatedContext = {
   auth: AuthenticatedAuth
+  services: Services
 }
 
 export const serverConfig: ApolloServerExpressConfig = {
@@ -25,10 +34,8 @@ export const serverConfig: ApolloServerExpressConfig = {
       )
     }
 
-    return { auth: auth as AuthenticatedAuth }
+    return { auth: auth as AuthenticatedAuth, services: { createGoogleSheet } }
   },
 }
 
-const apolloServer = new ApolloServer(serverConfig)
-
-export default apolloServer
+export default new ApolloServer(serverConfig)

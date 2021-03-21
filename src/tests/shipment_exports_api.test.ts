@@ -19,7 +19,7 @@ import {
   ShipmentStatus,
   ShippingRoute,
 } from '../server-internal-types'
-import { makeAdminTestServer } from '../testServer'
+import { makeAdminTestServerWithServices, TestServices } from '../testServer'
 
 describe('ShipmentExports API', () => {
   let adminTestServer: ApolloServerTestClient,
@@ -28,7 +28,8 @@ describe('ShipmentExports API', () => {
     group: Group,
     offer: Offer,
     pallet: Pallet,
-    lineItem: LineItem
+    lineItem: LineItem,
+    services: TestServices
 
   beforeEach(async () => {
     await sequelize.sync({ force: true })
@@ -37,7 +38,9 @@ describe('ShipmentExports API', () => {
       auth0Id: 'captain-id',
     })
 
-    adminTestServer = await makeAdminTestServer()
+    const serverWithContext = await makeAdminTestServerWithServices()
+    adminTestServer = serverWithContext.testServer
+    services = serverWithContext.services
 
     group = await Group.create({
       name: 'group 1',
@@ -123,6 +126,27 @@ describe('ShipmentExports API', () => {
       })
 
       expect(res.errors).toBeUndefined()
+
+      expect(services.createGoogleSheetCalls[0]).toEqual({
+        title: 'Shipment-UK-2020-1',
+        rows: [
+          [
+            'group 1',
+            'offer contact name',
+            'test@email.com',
+            'whatsapp',
+            'group 1 (accepted)',
+            'UK Hub -- what is this?',
+            'UNSET',
+            'description',
+            1,
+            5,
+            0,
+            'None',
+            '2021-03-21',
+          ],
+        ],
+      })
     })
   })
 })
