@@ -481,7 +481,19 @@ export type OfferQuery = { __typename?: 'Query' } & {
           'name' | 'whatsApp' | 'email' | 'phone' | 'signal'
         >
       >
-      pallets: Array<{ __typename?: 'Pallet' } & Pick<Pallet, 'id'>>
+      pallets: Array<
+        { __typename?: 'Pallet' } & Pick<
+          Pallet,
+          'id' | 'palletType' | 'paymentStatus'
+        > & {
+            lineItems: Array<
+              { __typename?: 'LineItem' } & Pick<
+                LineItem,
+                'id' | 'status' | 'category'
+              >
+            >
+          }
+      >
     }
 }
 
@@ -951,6 +963,13 @@ export const OfferDocument = gql`
       photoUris
       pallets {
         id
+        palletType
+        lineItems {
+          id
+          status
+          category
+        }
+        paymentStatus
       }
     }
   }
