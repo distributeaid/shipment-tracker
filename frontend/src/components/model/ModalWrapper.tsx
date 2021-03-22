@@ -18,7 +18,7 @@ interface Props {
   onRequestClose: (reason: CloseReason) => void
 }
 
-const BlankModal: FunctionComponent<Props> = ({
+const ModalWrapper: FunctionComponent<Props> = ({
   modalWidth = '28rem',
   onRequestClose,
   children,
@@ -58,4 +58,4 @@ const BlankModal: FunctionComponent<Props> = ({
   )
 }
 
-export default BlankModal
+export default ModalWrapper

@@ -28,6 +28,31 @@ import { CSSTransition as ReactCSSTransition } from 'react-transition-group'
  * https://reactcommunity.org/react-transition-group/css-transition
  */
 
+const addClasses = (node: HTMLElement, classes: string[]) => {
+  if (classes.length > 0) {
+    node.classList.add(...classes)
+  }
+}
+
+const removeClasses = (node: HTMLElement, classes: string[]) => {
+  if (classes.length > 0) {
+    node.classList.remove(...classes)
+  }
+}
+
+/**
+ * Split a className attribute into an array of strings so they can be added to
+ * a node.classList.
+ * @example splitClassesIntoArray("opacity-0 duration-100")
+ * // ["opacity-0", "duration-100"]
+ */
+const splitClassesIntoArray = (classes: string) => {
+  return classes
+    .trim()
+    .split(' ')
+    .filter((s) => s.length)
+}
+
 interface Props {
   timeout: number
   in?: boolean
@@ -49,24 +74,12 @@ const TailwindTransition: FunctionComponent<Props> = ({
   leaveTo = '',
   ...otherProps
 }) => {
-  const enterClasses = enter.split(' ').filter((s) => s.length > 0)
-  const enterFromClasses = enterFrom.split(' ').filter((s) => s.length > 0)
-  const enterToClasses = enterTo.split(' ').filter((s) => s.length > 0)
-  const leaveClasses = leave.split(' ').filter((s) => s.length > 0)
-  const leaveFromClasses = leaveFrom.split(' ').filter((s) => s.length > 0)
-  const leaveToClasses = leaveTo.split(' ').filter((s) => s.length > 0)
-
-  const addClasses = (node: HTMLElement, classes: string[]) => {
-    if (classes.length > 0) {
-      node.classList.add(...classes)
-    }
-  }
-
-  const removeClasses = (node: HTMLElement, classes: string[]) => {
-    if (classes.length > 0) {
-      node.classList.remove(...classes)
-    }
-  }
+  const enterClasses = splitClassesIntoArray(enter)
+  const enterFromClasses = splitClassesIntoArray(enterFrom)
+  const enterToClasses = splitClassesIntoArray(enterTo)
+  const leaveClasses = splitClassesIntoArray(leave)
+  const leaveFromClasses = splitClassesIntoArray(leaveFrom)
+  const leaveToClasses = splitClassesIntoArray(leaveTo)
 
   return (
     <ReactCSSTransition
