@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react'
-import Modal, { CloseReason } from './Modal'
+import { FunctionComponent } from 'react'
+import ModalBase, { CloseReason } from './ModalBase'
 
 interface Props {
   /**
@@ -18,14 +18,14 @@ interface Props {
   onRequestClose: (reason: CloseReason) => void
 }
 
-const ModalWrapper: FunctionComponent<Props> = ({
+const PlainModal: FunctionComponent<Props> = ({
   modalWidth = '28rem',
   onRequestClose,
   children,
   ...otherProps
 }) => {
   return (
-    <Modal
+    <ModalBase
       {...otherProps}
       onRequestClose={onRequestClose}
       style={{ width: modalWidth }}
@@ -54,8 +54,8 @@ const ModalWrapper: FunctionComponent<Props> = ({
         </button>
       </div>
       <div className="bg-white m-2 rounded-lg shadow-xl">{children}</div>
-    </Modal>
+    </ModalBase>
   )
 }
 
-export default ModalWrapper
+export default PlainModal
