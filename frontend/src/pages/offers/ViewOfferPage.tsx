@@ -75,6 +75,12 @@ const ViewOfferPage: FunctionComponent = () => {
           <h1 className="text-navy-800 text-3xl">Offer details</h1>
         </header>
         <main className="p-4 md:p-6 max-w-lg pb-20 space-y-6">
+          {mutationError && (
+            <div className="p-4 rounded bg-red-50 mb-6 text-red-800">
+              <p className="font-semibold">Error:</p>
+              <p>{mutationError.message}</p>
+            </div>
+          )}
           {offer?.offer && (
             <>
               <ReadOnlyField label="Shipment">
@@ -94,7 +100,10 @@ const ViewOfferPage: FunctionComponent = () => {
               <div className="flex justify-between items-center">
                 <h2 className="text-gray-700 font-semibold">Pallets</h2>
                 {offer.offer.pallets.length > 0 && (
-                  <Button onClick={displayCreatePalletModal}>
+                  <Button
+                    disabled={mutationIsLoading}
+                    onClick={displayCreatePalletModal}
+                  >
                     Add a pallet
                   </Button>
                 )}
@@ -102,7 +111,10 @@ const ViewOfferPage: FunctionComponent = () => {
               {offer.offer.pallets.length === 0 && (
                 <div className="p-4 flex flex-col space-y-4 items-center justify-center text-gray-500 bg-gray-50 rounded">
                   <span>There are no pallets in this offer</span>
-                  <Button onClick={displayCreatePalletModal}>
+                  <Button
+                    disabled={mutationIsLoading}
+                    onClick={displayCreatePalletModal}
+                  >
                     Add a pallet
                   </Button>
                 </div>
@@ -134,6 +146,7 @@ const ViewOfferPage: FunctionComponent = () => {
             </>
           )}
           <CreatePalletModal
+            disabled={mutationIsLoading}
             onCreatePallet={onCreatePallet}
             isOpen={showCreatePalletModal}
             onRequestClose={hideModal}

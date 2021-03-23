@@ -67,7 +67,7 @@ const ShipmentOffers: FunctionComponent<Props> = ({ shipmentId }) => {
     ]
 
     return columns
-  }, [groups, data])
+  }, [groups, data, shipmentId])
 
   const {
     getTableProps,
