@@ -55,13 +55,9 @@ const FOCUSABLE_ELEMENTS = [
   '[tabindex]:not([tabindex^="-"])',
 ].join(',')
 
-interface Props {
+export interface ModalBaseProps {
   isOpen?: boolean
   style?: CSSProperties
-  /**
-   * A callback that's triggered when the backdrop is clicked
-   */
-  handleBackdropClick?: () => void
   /**
    * This callback is required for accessibility purposes. It's bad practice not
    * to allow users to close the modal using the Escape key or clicking on the
@@ -72,13 +68,13 @@ interface Props {
   onRequestClose: (reason: CloseReason) => void
 }
 
-export default class ModalBase extends Component<Props> {
+export default class ModalBase extends Component<ModalBaseProps> {
   private uniqueKey: string
   private portalElement?: HTMLDivElement
   private modalContainerRef = createRef<HTMLElement>()
   private focusTrapRef = createRef<HTMLDivElement>()
 
-  constructor(props: Props) {
+  constructor(props: ModalBaseProps) {
     super(props)
 
     this.uniqueKey = nanoid()
@@ -101,7 +97,7 @@ export default class ModalBase extends Component<Props> {
     })
   }
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: ModalBaseProps) {
     if (!prevProps.isOpen && this.props.isOpen) {
       this.addModalSideEffects()
     } else if (prevProps.isOpen && !this.props.isOpen) {

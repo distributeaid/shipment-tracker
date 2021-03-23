@@ -1,4 +1,9 @@
-import { GroupType, OfferStatus } from '../types/api-types'
+import {
+  GroupType,
+  OfferStatus,
+  PalletType,
+  PaymentStatus,
+} from '../types/api-types'
 import { enumValues } from '../utils/types'
 
 export const MONTHS = [
@@ -35,6 +40,61 @@ export const OFFER_STATUS_OPTIONS = enumValues(OfferStatus).map((routeKey) => ({
   label: routeKey,
   value: routeKey,
 }))
+
+export const PALLET_PAYMENT_STATUS_OPTIONS = [
+  {
+    label: 'Not yet initiated',
+    value: PaymentStatus.Uninitiated,
+  },
+  {
+    label: 'Invoiced',
+    value: PaymentStatus.Invoiced,
+  },
+  {
+    label: 'Paid',
+    value: PaymentStatus.Paid,
+  },
+  {
+    label: "Won't pay",
+    value: PaymentStatus.WontPay,
+  },
+]
+
+export interface PalletConfig {
+  name: string
+  type: PalletType
+  weightKg: number
+  lengthCm: number
+  widthCm: number
+  heightCm: number
+}
+
+export const PALLET_CONFIGS: PalletConfig[] = [
+  {
+    name: 'Standard pallet',
+    type: PalletType.Standard,
+    weightKg: 700,
+    lengthCm: 120,
+    widthCm: 120,
+    heightCm: 175,
+  },
+  {
+    name: 'Euro pallet',
+    type: PalletType.Euro,
+    weightKg: 550,
+    lengthCm: 120,
+    widthCm: 80,
+    heightCm: 175,
+  },
+  {
+    name: 'Ton bag',
+    type: PalletType.Custom,
+    weightKg: 300,
+    lengthCm: 100,
+    widthCm: 100,
+    heightCm: 90,
+  },
+]
 
 export const COUNTRY_CODES_TO_NAME = {
   AF: 'Afghanistan',
