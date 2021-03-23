@@ -125,6 +125,12 @@ describe('Shipments API', () => {
           id
           status
           statusChangeTime
+          pricing {
+            singlePallet {
+              currency
+              quantityInMinorUnits
+            }
+          }
         }
       }
     `
@@ -239,6 +245,9 @@ describe('Shipments API', () => {
             id: shipment.id,
             input: {
               status: ShipmentStatus.InProgress,
+              pricing: {
+                singlePallet: { currency: 'EUR', quantityInMinorUnits: 100 },
+              },
             },
           },
         })
@@ -249,6 +258,12 @@ describe('Shipments API', () => {
         expect(res.data?.updateShipment?.statusChangeTime).not.toBe(
           shipment.statusChangeTime,
         )
+        expect(
+          res.data?.updateShipment?.pricing?.singlePallet?.currency,
+        ).toEqual('EUR')
+        expect(
+          res.data?.updateShipment?.pricing?.singlePallet?.quantityInMinorUnits,
+        ).toEqual(100)
       })
     })
   })
