@@ -1,11 +1,9 @@
 import { Maybe } from 'graphql/jsutils/Maybe'
 import Group from '../../models/group'
-import Offer from '../../models/offer'
 import Shipment from '../../models/shipment'
 import UserAccount from '../../models/user_account'
 import {
   GroupCreateInput,
-  OfferCreateInput,
   ShipmentCreateInput,
 } from '../../server-internal-types'
 
@@ -26,7 +24,10 @@ async function createGroup(
 }
 
 async function createShipment(input: ShipmentCreateInput): Promise<Shipment> {
-  return await Shipment.create(input)
+  return await Shipment.create({
+    ...input,
+    pricing: input.pricing || undefined,
+  })
 }
 
 export { createGroup, createShipment }
