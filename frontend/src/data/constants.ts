@@ -1,4 +1,4 @@
-import { GroupType, OfferStatus } from '../types/api-types'
+import { GroupType, OfferStatus, PaymentStatus } from '../types/api-types'
 import { enumValues } from '../utils/types'
 
 export const MONTHS = [
@@ -35,6 +35,25 @@ export const OFFER_STATUS_OPTIONS = enumValues(OfferStatus).map((routeKey) => ({
   label: routeKey,
   value: routeKey,
 }))
+
+export const PALLET_PAYMENT_STATUS_OPTIONS = [
+  {
+    label: 'Not yet initiated',
+    value: PaymentStatus.Uninitiated,
+  },
+  {
+    label: 'Invoiced',
+    value: PaymentStatus.Invoiced,
+  },
+  {
+    label: 'Paid',
+    value: PaymentStatus.Paid,
+  },
+  {
+    label: "Won't pay",
+    value: PaymentStatus.WontPay,
+  },
+]
 
 export const COUNTRY_CODES_TO_NAME = {
   AF: 'Afghanistan',

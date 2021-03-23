@@ -3,13 +3,14 @@ import { FunctionComponent, useMemo } from 'react'
 import { Column, useSortBy, useTable } from 'react-table'
 import Badge from '../../components/Badge'
 import ButtonLink from '../../components/ButtonLink'
+import InternalLink from '../../components/InternalLink'
 import TableHeader from '../../components/table/TableHeader'
 import {
   OffersForShipmentQuery,
   useAllGroupsMinimalQuery,
   useOffersForShipmentQuery,
 } from '../../types/api-types'
-import { offerCreateRoute } from '../../utils/routes'
+import { offerCreateRoute, offerViewRoute } from '../../utils/routes'
 
 interface Props {
   shipmentId: number
@@ -35,6 +36,14 @@ const ShipmentOffers: FunctionComponent<Props> = ({ shipmentId }) => {
       {
         Header: 'ID',
         accessor: 'id',
+        Cell: ({ value }: any) => (
+          <InternalLink
+            className="font-semibold"
+            to={offerViewRoute(shipmentId, value)}
+          >
+            Offer {value}
+          </InternalLink>
+        ),
       },
       {
         Header: 'Sending Group',

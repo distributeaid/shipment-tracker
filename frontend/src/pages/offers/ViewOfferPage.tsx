@@ -1,16 +1,22 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import InternalLink from '../../components/InternalLink'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
+  OfferDocument,
+  PalletCreateInput,
+  PalletType,
+  useCreatePalletMutation,
   useGroupQuery,
   useOfferQuery,
   useShipmentQuery,
 } from '../../types/api-types'
 import { formatShipmentName } from '../../utils/format'
 import { shipmentViewOffersRoute } from '../../utils/routes'
+import CreatePalletModal from './CreatePalletModal'
 
 const ViewOfferPage: FunctionComponent = () => {
   const params = useParams<{ shipmentId: string; offerId: string }>()
@@ -28,6 +34,33 @@ const ViewOfferPage: FunctionComponent = () => {
     skip: !sendingGroupId, // Don't execute this query until the group ID is known
     variables: { id: sendingGroupId! },
   })
+
+  const [showCreatePalletModal, setShowCreatePalletModal] = useState(false)
+
+  const displayCreatePalletModal = () => {
+    setShowCreatePalletModal(true)
+  }
+
+  const hideModal = () => {
+    setShowCreatePalletModal(false)
+  }
+
+  const [
+    addPallet,
+    { loading: mutationIsLoading, error: mutationError },
+  ] = useCreatePalletMutation({
+    refetchQueries: [{ query: OfferDocument, variables: { id: offerId } }],
+    awaitRefetchQueries: true,
+  })
+
+  const onCreatePallet = (palletType: PalletType) => {
+    const newPallet: PalletCreateInput = {
+      palletType,
+      offerId,
+    }
+
+    addPallet({ variables: { input: newPallet } }).then(() => [hideModal()])
+  }
 
   return (
     <LayoutWithNav>
@@ -58,25 +91,53 @@ const ViewOfferPage: FunctionComponent = () => {
               <ReadOnlyField label="Group">
                 {sendingGroup?.group.name}
               </ReadOnlyField>
-              <h2 className="text-gray-700 font-semibold">Pallets</h2>
+              <div className="flex justify-between items-center">
+                <h2 className="text-gray-700 font-semibold">Pallets</h2>
+                {offer.offer.pallets.length > 0 && (
+                  <Button onClick={displayCreatePalletModal}>
+                    Add a pallet
+                  </Button>
+                )}
+              </div>
               {offer.offer.pallets.length === 0 && (
                 <div className="p-4 flex flex-col space-y-4 items-center justify-center text-gray-500 bg-gray-50 rounded">
                   <span>There are no pallets in this offer</span>
-                  <Button>Add a pallet</Button>
+                  <Button onClick={displayCreatePalletModal}>
+                    Add a pallet
+                  </Button>
                 </div>
               )}
-              {offer.offer.pallets.map((pallet) => (
-                <div
-                  key={pallet.id}
-                  className="p-4 mb-4 border border-gray-100"
-                >
-                  <div>Payment status: {pallet.paymentStatus}</div>
-                  <div>Type: {pallet.palletType}</div>
-                  <div>Num line items: {pallet.lineItems.length}</div>
-                </div>
-              ))}
+              {offer.offer.pallets.length > 0 && (
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gray-50 border border-gray-100 text-gray-500 font-semibold text-sm uppercase text-left">
+                      <th className="p-2 pl-4">Pallet</th>
+                      <th className="p-2">Type</th>
+                      <th className="p-2 pr-4">Payment status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {offer.offer.pallets.map((pallet, index) => (
+                      <tr key={pallet.id} className="border border-gray-100">
+                        <td className="p-2 pl-4">Pallet {index + 1}</td>
+                        <td className="p-2">
+                          <Badge>{pallet.palletType}</Badge>
+                        </td>
+                        <td className="p-2 pr-4">
+                          <Badge>{pallet.paymentStatus}</Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </>
           )}
+          <CreatePalletModal
+            onCreatePallet={onCreatePallet}
+            isOpen={showCreatePalletModal}
+            onRequestClose={hideModal}
+          />
         </main>
       </div>
     </LayoutWithNav>

@@ -466,6 +466,17 @@ export type CreateOfferMutation = { __typename?: 'Mutation' } & {
   addOffer: { __typename?: 'Offer' } & Pick<Offer, 'id' | 'shipmentId'>
 }
 
+export type CreatePalletMutationVariables = Exact<{
+  input: PalletCreateInput
+}>
+
+export type CreatePalletMutation = { __typename?: 'Mutation' } & {
+  addPallet: { __typename?: 'Pallet' } & Pick<
+    Pallet,
+    'id' | 'offerId' | 'palletType' | 'paymentStatus'
+  > & { lineItems: Array<{ __typename?: 'LineItem' } & Pick<LineItem, 'id'>> }
+}
+
 export type OfferQueryVariables = Exact<{
   id: Scalars['Int']
 }>
@@ -945,6 +956,61 @@ export type CreateOfferMutationResult = Apollo.MutationResult<CreateOfferMutatio
 export type CreateOfferMutationOptions = Apollo.BaseMutationOptions<
   CreateOfferMutation,
   CreateOfferMutationVariables
+>
+export const CreatePalletDocument = gql`
+  mutation CreatePallet($input: PalletCreateInput!) {
+    addPallet(input: $input) {
+      id
+      offerId
+      palletType
+      lineItems {
+        id
+      }
+      paymentStatus
+    }
+  }
+`
+export type CreatePalletMutationFn = Apollo.MutationFunction<
+  CreatePalletMutation,
+  CreatePalletMutationVariables
+>
+
+/**
+ * __useCreatePalletMutation__
+ *
+ * To run a mutation, you first call `useCreatePalletMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePalletMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPalletMutation, { data, loading, error }] = useCreatePalletMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreatePalletMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreatePalletMutation,
+    CreatePalletMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    CreatePalletMutation,
+    CreatePalletMutationVariables
+  >(CreatePalletDocument, options)
+}
+export type CreatePalletMutationHookResult = ReturnType<
+  typeof useCreatePalletMutation
+>
+export type CreatePalletMutationResult = Apollo.MutationResult<CreatePalletMutation>
+export type CreatePalletMutationOptions = Apollo.BaseMutationOptions<
+  CreatePalletMutation,
+  CreatePalletMutationVariables
 >
 export const OfferDocument = gql`
   query Offer($id: Int!) {
