@@ -1,4 +1,5 @@
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
+import { has, isEqual } from 'lodash'
 import Group from '../models/group'
 import Shipment, { ShipmentAttributes } from '../models/shipment'
 import {
@@ -74,6 +75,7 @@ const addShipment: MutationResolvers['addShipment'] = async (
     receivingHubId: input.receivingHubId,
     status: input.status,
     statusChangeTime: new Date(),
+    pricing: input.pricing || undefined,
   })
 }
 
@@ -137,6 +139,10 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
   if (shippingRoute) {
     validateEnumMembership(ShippingRoute, shippingRoute)
     updateAttributes.shippingRoute = shippingRoute
+  }
+
+  if (has(input, 'pricing') && !isEqual(input.pricing, shipment.pricing)) {
+    updateAttributes.pricing = input.pricing || undefined
   }
 
   return shipment.update(updateAttributes)

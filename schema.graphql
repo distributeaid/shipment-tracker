@@ -1,4 +1,5 @@
 scalar Date
+scalar Currency
 
 type Location {
   countryCode: String
@@ -65,6 +66,7 @@ input ShipmentUpdateInput {
   sendingHubId: Int
   receivingHubId: Int
   status: ShipmentStatus
+  pricing: ShipmentPricingInput
 }
 
 type Query {
@@ -104,6 +106,7 @@ input ShipmentCreateInput {
   sendingHubId: Int!
   receivingHubId: Int!
   status: ShipmentStatus!
+  pricing: ShipmentPricingInput
 }
 
 enum ShippingRoute {
@@ -132,11 +135,34 @@ type Shipment {
   sendingHub: Group!
   receivingHubId: Int!
   receivingHub: Group!
+  pricing: ShipmentPricing
 
   # default to created
   statusChangeTime: Date!
   createdAt: Date!
   updatedAt: Date!
+}
+
+type ShipmentPricing {
+  singlePallet: MoneyAmount
+  halfPallet: MoneyAmount
+}
+
+input ShipmentPricingInput {
+  singlePallet: MoneyAmountInput
+  halfPallet: MoneyAmountInput
+}
+
+type MoneyAmount {
+  # Currency is a string holding an ISO-4217 currency code
+  currency: Currency!
+  quantityInMinorUnits: Int!
+}
+
+input MoneyAmountInput {
+  # Currency is a string holding an ISO-4217 currency code
+  currency: Currency!
+  quantityInMinorUnits: Int!
 }
 
 enum GroupType {

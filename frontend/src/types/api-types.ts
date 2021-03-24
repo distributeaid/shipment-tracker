@@ -23,6 +23,7 @@ export type Scalars = {
   Int: number
   Float: number
   Date: any
+  Currency: any
 }
 
 export type Location = {
@@ -92,6 +93,7 @@ export type ShipmentUpdateInput = {
   sendingHubId?: Maybe<Scalars['Int']>
   receivingHubId?: Maybe<Scalars['Int']>
   status?: Maybe<ShipmentStatus>
+  pricing?: Maybe<ShipmentPricingInput>
 }
 
 export type Query = {
@@ -201,6 +203,7 @@ export type ShipmentCreateInput = {
   sendingHubId: Scalars['Int']
   receivingHubId: Scalars['Int']
   status: ShipmentStatus
+  pricing?: Maybe<ShipmentPricingInput>
 }
 
 export enum ShippingRoute {
@@ -228,9 +231,32 @@ export type Shipment = {
   sendingHub: Group
   receivingHubId: Scalars['Int']
   receivingHub: Group
+  pricing?: Maybe<ShipmentPricing>
   statusChangeTime: Scalars['Date']
   createdAt: Scalars['Date']
   updatedAt: Scalars['Date']
+}
+
+export type ShipmentPricing = {
+  __typename?: 'ShipmentPricing'
+  singlePallet?: Maybe<MoneyAmount>
+  halfPallet?: Maybe<MoneyAmount>
+}
+
+export type ShipmentPricingInput = {
+  singlePallet?: Maybe<MoneyAmountInput>
+  halfPallet?: Maybe<MoneyAmountInput>
+}
+
+export type MoneyAmount = {
+  __typename?: 'MoneyAmount'
+  currency: Scalars['Currency']
+  quantityInMinorUnits: Scalars['Int']
+}
+
+export type MoneyAmountInput = {
+  currency: Scalars['Currency']
+  quantityInMinorUnits: Scalars['Int']
 }
 
 export enum GroupType {
