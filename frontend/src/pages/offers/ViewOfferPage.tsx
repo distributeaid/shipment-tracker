@@ -95,7 +95,9 @@ const ViewOfferPage: FunctionComponent = () => {
   }
 
   // The mutation below will automatically update the cache because the API
-  // returns the offer
+  // returns the offer. However, it'll create a warning in the console, and I
+  // can't find a way to get rid of it without some redundant configuration
+  // "Cache data may be lost when replacing the pallets field of a Offer object"
   const [destroyPallet] = useDestroyPalletMutation()
 
   const confirmDeletePallet = () => {
