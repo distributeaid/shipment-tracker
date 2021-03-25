@@ -13,14 +13,7 @@ query Offer($id: Int!) {
     }
     photoUris
     pallets {
-      id
-      palletType
-      lineItems {
-        id
-        status
-        category
-      }
-      paymentStatus
+      ...PalletDataFragment
     }
   }
 }

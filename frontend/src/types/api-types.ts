@@ -497,10 +497,7 @@ export type CreatePalletMutationVariables = Exact<{
 }>
 
 export type CreatePalletMutation = { __typename?: 'Mutation' } & {
-  addPallet: { __typename?: 'Pallet' } & Pick<
-    Pallet,
-    'id' | 'offerId' | 'palletType' | 'paymentStatus'
-  > & { lineItems: Array<{ __typename?: 'LineItem' } & Pick<LineItem, 'id'>> }
+  addPallet: { __typename?: 'Pallet' } & PalletDataFragmentFragment
 }
 
 export type DestroyPalletMutationVariables = Exact<{
@@ -508,7 +505,9 @@ export type DestroyPalletMutationVariables = Exact<{
 }>
 
 export type DestroyPalletMutation = { __typename?: 'Mutation' } & {
-  destroyPallet: { __typename?: 'Offer' } & Pick<Offer, 'id'>
+  destroyPallet: { __typename?: 'Offer' } & Pick<Offer, 'id'> & {
+      pallets: Array<{ __typename?: 'Pallet' } & PalletDataFragmentFragment>
+    }
 }
 
 export type OfferQueryVariables = Exact<{
@@ -526,21 +525,18 @@ export type OfferQuery = { __typename?: 'Query' } & {
           'name' | 'whatsApp' | 'email' | 'phone' | 'signal'
         >
       >
-      pallets: Array<
-        { __typename?: 'Pallet' } & Pick<
-          Pallet,
-          'id' | 'palletType' | 'paymentStatus'
-        > & {
-            lineItems: Array<
-              { __typename?: 'LineItem' } & Pick<
-                LineItem,
-                'id' | 'status' | 'category'
-              >
-            >
-          }
-      >
+      pallets: Array<{ __typename?: 'Pallet' } & PalletDataFragmentFragment>
     }
 }
+
+export type PalletDataFragmentFragment = { __typename?: 'Pallet' } & Pick<
+  Pallet,
+  'id' | 'offerId' | 'palletType' | 'paymentStatus'
+> & {
+    lineItems: Array<
+      { __typename?: 'LineItem' } & Pick<LineItem, 'id' | 'status' | 'category'>
+    >
+  }
 
 export type CreateShipmentMutationVariables = Exact<{
   input: ShipmentCreateInput
@@ -640,6 +636,19 @@ export const AllGroupFieldsFragmentDoc = gql`
       phone
       signal
     }
+  }
+`
+export const PalletDataFragmentFragmentDoc = gql`
+  fragment PalletDataFragment on Pallet {
+    id
+    offerId
+    palletType
+    lineItems {
+      id
+      status
+      category
+    }
+    paymentStatus
   }
 `
 export const AllShipmentFieldsFragmentDoc = gql`
@@ -994,15 +1003,10 @@ export type CreateOfferMutationOptions = Apollo.BaseMutationOptions<
 export const CreatePalletDocument = gql`
   mutation CreatePallet($input: PalletCreateInput!) {
     addPallet(input: $input) {
-      id
-      offerId
-      palletType
-      lineItems {
-        id
-      }
-      paymentStatus
+      ...PalletDataFragment
     }
   }
+  ${PalletDataFragmentFragmentDoc}
 `
 export type CreatePalletMutationFn = Apollo.MutationFunction<
   CreatePalletMutation,
@@ -1050,8 +1054,12 @@ export const DestroyPalletDocument = gql`
   mutation DestroyPallet($id: Int!) {
     destroyPallet(id: $id) {
       id
+      pallets {
+        ...PalletDataFragment
+      }
     }
   }
+  ${PalletDataFragmentFragmentDoc}
 `
 export type DestroyPalletMutationFn = Apollo.MutationFunction<
   DestroyPalletMutation,
@@ -1111,17 +1119,11 @@ export const OfferDocument = gql`
       }
       photoUris
       pallets {
-        id
-        palletType
-        lineItems {
-          id
-          status
-          category
-        }
-        paymentStatus
+        ...PalletDataFragment
       }
     }
   }
+  ${PalletDataFragmentFragmentDoc}
 `
 
 /**

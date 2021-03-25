@@ -8,6 +8,7 @@ import useModalState from '../../hooks/useModalState'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
   OfferDocument,
+  OfferQuery,
   PalletCreateInput,
   PalletType,
   useCreatePalletMutation,
@@ -48,8 +49,27 @@ const ViewOfferPage: FunctionComponent = () => {
     addPallet,
     { loading: mutationIsLoading, error: mutationError },
   ] = useCreatePalletMutation({
-    refetchQueries: [{ query: OfferDocument, variables: { id: offerId } }],
-    awaitRefetchQueries: true,
+    update: (cache, { data }) => {
+      // Manually update the cache with the new pallet
+      try {
+        const offerData = cache.readQuery<OfferQuery>({
+          query: OfferDocument,
+          variables: { id: offerId },
+        })
+
+        cache.writeQuery<OfferQuery>({
+          query: OfferDocument,
+          variables: { id: offerId },
+          data: {
+            offer: Object.assign({}, offerData!.offer, {
+              pallets: [...offerData!.offer.pallets, data!.addPallet],
+            }),
+          },
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    },
   })
 
   const onCreatePallet = (palletType: PalletType) => {
@@ -70,15 +90,13 @@ const ViewOfferPage: FunctionComponent = () => {
   const [selectedPallet, setSelectedPallet] = useState<number>()
 
   const selectPalletToDestroy = (palletId: number) => {
-    console.log(palletId)
     setSelectedPallet(palletId)
     showDeleteModal()
   }
 
-  const [destroyPallet] = useDestroyPalletMutation({
-    refetchQueries: [{ query: OfferDocument, variables: { id: offerId } }],
-    awaitRefetchQueries: true,
-  })
+  // The mutation below will automatically update the cache because the API
+  // returns the offer
+  const [destroyPallet] = useDestroyPalletMutation()
 
   const confirmDeletePallet = () => {
     if (selectedPallet == null) {
