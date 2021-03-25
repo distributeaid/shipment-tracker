@@ -503,6 +503,14 @@ export type CreatePalletMutation = { __typename?: 'Mutation' } & {
   > & { lineItems: Array<{ __typename?: 'LineItem' } & Pick<LineItem, 'id'>> }
 }
 
+export type DestroyPalletMutationVariables = Exact<{
+  id: Scalars['Int']
+}>
+
+export type DestroyPalletMutation = { __typename?: 'Mutation' } & {
+  destroyPallet: { __typename?: 'Offer' } & Pick<Offer, 'id'>
+}
+
 export type OfferQueryVariables = Exact<{
   id: Scalars['Int']
 }>
@@ -1037,6 +1045,55 @@ export type CreatePalletMutationResult = Apollo.MutationResult<CreatePalletMutat
 export type CreatePalletMutationOptions = Apollo.BaseMutationOptions<
   CreatePalletMutation,
   CreatePalletMutationVariables
+>
+export const DestroyPalletDocument = gql`
+  mutation DestroyPallet($id: Int!) {
+    destroyPallet(id: $id) {
+      id
+    }
+  }
+`
+export type DestroyPalletMutationFn = Apollo.MutationFunction<
+  DestroyPalletMutation,
+  DestroyPalletMutationVariables
+>
+
+/**
+ * __useDestroyPalletMutation__
+ *
+ * To run a mutation, you first call `useDestroyPalletMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDestroyPalletMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [destroyPalletMutation, { data, loading, error }] = useDestroyPalletMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDestroyPalletMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DestroyPalletMutation,
+    DestroyPalletMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    DestroyPalletMutation,
+    DestroyPalletMutationVariables
+  >(DestroyPalletDocument, options)
+}
+export type DestroyPalletMutationHookResult = ReturnType<
+  typeof useDestroyPalletMutation
+>
+export type DestroyPalletMutationResult = Apollo.MutationResult<DestroyPalletMutation>
+export type DestroyPalletMutationOptions = Apollo.BaseMutationOptions<
+  DestroyPalletMutation,
+  DestroyPalletMutationVariables
 >
 export const OfferDocument = gql`
   query Offer($id: Int!) {

@@ -1,0 +1,5 @@
+mutation DestroyPallet($id: Int!) {
+  destroyPallet(id: $id) {
+    id
+  }
+}

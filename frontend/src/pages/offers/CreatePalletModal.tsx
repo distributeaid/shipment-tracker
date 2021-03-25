@@ -1,8 +1,8 @@
 import { FormEvent, FunctionComponent, useEffect, useState } from 'react'
 import Button from '../../components/Button'
 import Label from '../../components/forms/Label'
-import { CloseReason, ModalBaseProps } from '../../components/model/ModalBase'
-import PlainModal from '../../components/model/PlainModal'
+import { CloseReason, ModalBaseProps } from '../../components/modal/ModalBase'
+import PlainModal from '../../components/modal/PlainModal'
 import { PALLET_CONFIGS } from '../../data/constants'
 import { PalletType } from '../../types/api-types'
 import PalletCard from './PalletCard'
@@ -79,7 +79,7 @@ const CreatePalletModal: FunctionComponent<Props> = (props) => {
             {PALLET_CONFIGS.map((pallet) => (
               <PalletCard
                 {...pallet}
-                onClick={selectPalletType}
+                onSelect={() => selectPalletType(pallet.type)}
                 isSelected={palletType === pallet.type}
                 key={pallet.type}
               />

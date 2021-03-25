@@ -1,15 +1,17 @@
 import { FunctionComponent, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import InternalLink from '../../components/InternalLink'
+import ConfirmationModal from '../../components/modal/ConfirmationModal'
+import useModalState from '../../hooks/useModalState'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
   OfferDocument,
   PalletCreateInput,
   PalletType,
   useCreatePalletMutation,
+  useDestroyPalletMutation,
   useGroupQuery,
   useOfferQuery,
   useShipmentQuery,
@@ -17,6 +19,7 @@ import {
 import { formatShipmentName } from '../../utils/format'
 import { shipmentViewOffersRoute } from '../../utils/routes'
 import CreatePalletModal from './CreatePalletModal'
+import PalletsTable from './PalletsTable'
 
 const ViewOfferPage: FunctionComponent = () => {
   const params = useParams<{ shipmentId: string; offerId: string }>()
@@ -35,15 +38,11 @@ const ViewOfferPage: FunctionComponent = () => {
     variables: { id: sendingGroupId! },
   })
 
-  const [showCreatePalletModal, setShowCreatePalletModal] = useState(false)
-
-  const displayCreatePalletModal = () => {
-    setShowCreatePalletModal(true)
-  }
-
-  const hideModal = () => {
-    setShowCreatePalletModal(false)
-  }
+  const [
+    createModalIsVisible,
+    showCreateModal,
+    hideCreateModal,
+  ] = useModalState()
 
   const [
     addPallet,
@@ -59,7 +58,37 @@ const ViewOfferPage: FunctionComponent = () => {
       offerId,
     }
 
-    addPallet({ variables: { input: newPallet } }).then(() => [hideModal()])
+    addPallet({ variables: { input: newPallet } }).then(hideCreateModal)
+  }
+
+  const [
+    deleteModalIsVisible,
+    showDeleteModal,
+    hideDeleteModal,
+  ] = useModalState()
+
+  const [selectedPallet, setSelectedPallet] = useState<number>()
+
+  const selectPalletToDestroy = (palletId: number) => {
+    console.log(palletId)
+    setSelectedPallet(palletId)
+    showDeleteModal()
+  }
+
+  const [destroyPallet] = useDestroyPalletMutation({
+    refetchQueries: [{ query: OfferDocument, variables: { id: offerId } }],
+    awaitRefetchQueries: true,
+  })
+
+  const confirmDeletePallet = () => {
+    if (selectedPallet == null) {
+      return
+    }
+
+    destroyPallet({ variables: { id: selectedPallet } }).then(() => {
+      setSelectedPallet(undefined)
+      hideDeleteModal()
+    })
   }
 
   return (
@@ -74,7 +103,7 @@ const ViewOfferPage: FunctionComponent = () => {
           </InternalLink>
           <h1 className="text-navy-800 text-3xl">Offer details</h1>
         </header>
-        <main className="p-4 md:p-6 max-w-lg pb-20 space-y-6">
+        <main className="p-4 md:p-6 pb-20 space-y-6">
           {mutationError && (
             <div className="p-4 rounded bg-red-50 mb-6 text-red-800">
               <p className="font-semibold">Error:</p>
@@ -102,7 +131,7 @@ const ViewOfferPage: FunctionComponent = () => {
                 {offer.offer.pallets.length > 0 && (
                   <Button
                     disabled={mutationIsLoading}
-                    onClick={displayCreatePalletModal}
+                    onClick={showCreateModal}
                   >
                     Add a pallet
                   </Button>
@@ -113,43 +142,35 @@ const ViewOfferPage: FunctionComponent = () => {
                   <span>There are no pallets in this offer</span>
                   <Button
                     disabled={mutationIsLoading}
-                    onClick={displayCreatePalletModal}
+                    onClick={showCreateModal}
                   >
                     Add a pallet
                   </Button>
                 </div>
               )}
               {offer.offer.pallets.length > 0 && (
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-gray-50 border border-gray-100 text-gray-500 font-semibold text-sm uppercase text-left">
-                      <th className="p-2 pl-4">Pallet</th>
-                      <th className="p-2">Type</th>
-                      <th className="p-2 pr-4">Payment status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {offer.offer.pallets.map((pallet, index) => (
-                      <tr key={pallet.id} className="border border-gray-100">
-                        <td className="p-2 pl-4">Pallet {index + 1}</td>
-                        <td className="p-2">
-                          <Badge>{pallet.palletType}</Badge>
-                        </td>
-                        <td className="p-2 pr-4">
-                          <Badge>{pallet.paymentStatus}</Badge>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <PalletsTable
+                  pallets={offer.offer.pallets}
+                  initiateDeletePallet={selectPalletToDestroy}
+                />
               )}
             </>
           )}
+          <ConfirmationModal
+            isOpen={deleteModalIsVisible}
+            onCancel={hideDeleteModal}
+            onConfirm={confirmDeletePallet}
+            confirmLabel="Yes, delete pallet"
+            title="Confirm pallet deletion"
+          >
+            Are you sure you want to delete this pallet? This action is
+            irreversible.
+          </ConfirmationModal>
           <CreatePalletModal
             disabled={mutationIsLoading}
             onCreatePallet={onCreatePallet}
-            isOpen={showCreatePalletModal}
-            onRequestClose={hideModal}
+            isOpen={createModalIsVisible}
+            onRequestClose={hideCreateModal}
           />
         </main>
       </div>
