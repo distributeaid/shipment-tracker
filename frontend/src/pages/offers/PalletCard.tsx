@@ -1,11 +1,13 @@
 import cx from 'classnames'
 import { FunctionComponent } from 'react'
 import { PalletConfig } from '../../data/constants'
-import { PalletType } from '../../types/api-types'
 
 interface Props extends PalletConfig {
   isSelected?: boolean
-  onClick: (type: PalletType) => void
+  /**
+   * Callback triggered when this card asks to be selected
+   */
+  onSelect: () => void
 }
 
 /**
@@ -19,7 +21,7 @@ const PalletCard: FunctionComponent<Props> = (props) => {
   })
 
   return (
-    <tr onClick={() => props.onClick(props.type)} className="cursor-pointer">
+    <tr onClick={props.onSelect} className="cursor-pointer">
       <td className={cx(cellClasses, 'pl-2 rounded-l border-l-2')}>
         <label className="cursor-pointer flex items-center font-semibold">
           <input
@@ -28,7 +30,7 @@ const PalletCard: FunctionComponent<Props> = (props) => {
             name="pallet-type"
             value={props.type}
             checked={props.isSelected}
-            onChange={() => props.onClick(props.type)}
+            onChange={props.onSelect}
           />
           {props.name}
         </label>

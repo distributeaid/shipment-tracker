@@ -1,11 +1,5 @@
 mutation CreatePallet($input: PalletCreateInput!) {
   addPallet(input: $input) {
-    id
-    offerId
-    palletType
-    lineItems {
-      id
-    }
-    paymentStatus
+    ...PalletDataFragment
   }
 }

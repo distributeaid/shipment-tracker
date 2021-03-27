@@ -7,7 +7,6 @@ import {
   InMemoryCache,
 } from '@apollo/client'
 import { useAuth0 } from '@auth0/auth0-react'
-
 import { FunctionComponent } from 'react'
 
 const clientUrl = process.env.REACT_APP_CLIENT_URL
@@ -44,7 +43,23 @@ const ApolloAuthProvider: FunctionComponent = ({ children }) => {
 
   const apolloClient = new ApolloClient({
     link: authLink.concat(httpLink),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Offer: {
+          fields: {
+            // This custom merge function is APPARENTLY necessary to avoid the
+            // following warning:
+            // "Cache data may be lost when replacing the pallets field of a
+            // Offer object"
+            pallets: {
+              merge: (existing = [], incoming = []) => {
+                return [...incoming]
+              },
+            },
+          },
+        },
+      },
+    }),
   })
 
   return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
