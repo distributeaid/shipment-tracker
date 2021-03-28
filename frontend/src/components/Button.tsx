@@ -24,7 +24,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
    * @param default This is the default button. Use another style if the button requires a different visual weight.
    * @param primary Used to highlight the most important actions. Use sparingly! Avoid showing multiple primary buttons in the same section.
    */
-  variant?: 'default' | 'primary'
+  variant?: 'default' | 'primary' | 'danger'
   /**
    * An optional way to pass a ref down to the <button> element
    */
@@ -48,12 +48,15 @@ const Button: FunctionComponent<ButtonProps> & { Icon: typeof ButtonIcon } = ({
       'bg-white border-gray-300 text-gray-600 shadow-sm ring-gray-200 hover:text-gray-700 hover:shadow active:bg-gray-100 active:text-gray-900':
         variant === 'default' && !disabled,
       'bg-gray-50 border-gray-300 text-gray-400':
-        variant === 'default' && disabled,
+        (variant === 'default' || variant === 'danger') && disabled,
       // Primary variant
       'bg-navy-700 border-transparent text-white ring-navy-300 hover:bg-navy-800 active:bg-navy-900':
         variant === 'primary' && !disabled,
       'bg-navy-500 border-transparent text-navy-100':
         variant === 'primary' && disabled,
+      // Danger variant
+      'bg-white border-red-300 text-red-600 shadow-sm ring-red-200 hover:text-red-700 hover:shadow active:bg-red-100 active:text-red-900':
+        variant === 'danger' && !disabled,
       // Sizing
       'px-4 py-2': !slim,
       'px-3 py-1': slim,

@@ -30,6 +30,7 @@ export type Scalars = {
   Int: number
   Float: number
   Date: any
+  Currency: any
 }
 
 export type Location = {
@@ -99,6 +100,7 @@ export type ShipmentUpdateInput = {
   sendingHubId?: Maybe<Scalars['Int']>
   receivingHubId?: Maybe<Scalars['Int']>
   status?: Maybe<ShipmentStatus>
+  pricing?: Maybe<ShipmentPricingInput>
 }
 
 export type Query = {
@@ -109,6 +111,7 @@ export type Query = {
   listShipments: Array<Shipment>
   offer: Offer
   listOffers: Array<Offer>
+  pallet: Pallet
 }
 
 export type QueryGroupArgs = {
@@ -125,6 +128,10 @@ export type QueryOfferArgs = {
 
 export type QueryListOffersArgs = {
   shipmentId: Scalars['Int']
+}
+
+export type QueryPalletArgs = {
+  id: Scalars['Int']
 }
 
 export type Mutation = {
@@ -218,6 +225,7 @@ export type ShipmentCreateInput = {
   sendingHubId: Scalars['Int']
   receivingHubId: Scalars['Int']
   status: ShipmentStatus
+  pricing?: Maybe<ShipmentPricingInput>
 }
 
 export enum ShippingRoute {
@@ -245,9 +253,32 @@ export type Shipment = {
   sendingHub: Group
   receivingHubId: Scalars['Int']
   receivingHub: Group
+  pricing?: Maybe<ShipmentPricing>
   statusChangeTime: Scalars['Date']
   createdAt: Scalars['Date']
   updatedAt: Scalars['Date']
+}
+
+export type ShipmentPricing = {
+  __typename?: 'ShipmentPricing'
+  singlePallet?: Maybe<MoneyAmount>
+  halfPallet?: Maybe<MoneyAmount>
+}
+
+export type ShipmentPricingInput = {
+  singlePallet?: Maybe<MoneyAmountInput>
+  halfPallet?: Maybe<MoneyAmountInput>
+}
+
+export type MoneyAmount = {
+  __typename?: 'MoneyAmount'
+  currency: Scalars['Currency']
+  quantityInMinorUnits: Scalars['Int']
+}
+
+export type MoneyAmountInput = {
+  currency: Scalars['Currency']
+  quantityInMinorUnits: Scalars['Int']
 }
 
 export enum GroupType {
@@ -537,6 +568,7 @@ export type DirectiveResolverFn<
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Date: ResolverTypeWrapper<Scalars['Date']>
+  Currency: ResolverTypeWrapper<Scalars['Currency']>
   Location: ResolverTypeWrapper<Location>
   String: ResolverTypeWrapper<Scalars['String']>
   ContactInfo: ResolverTypeWrapper<ContactInfo>
@@ -553,6 +585,10 @@ export type ResolversTypes = ResolversObject<{
   ShippingRoute: ShippingRoute
   ShipmentStatus: ShipmentStatus
   Shipment: ResolverTypeWrapper<Shipment>
+  ShipmentPricing: ResolverTypeWrapper<ShipmentPricing>
+  ShipmentPricingInput: ShipmentPricingInput
+  MoneyAmount: ResolverTypeWrapper<MoneyAmount>
+  MoneyAmountInput: MoneyAmountInput
   GroupType: GroupType
   UserProfile: ResolverTypeWrapper<UserProfile>
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>
@@ -577,6 +613,7 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Date: Scalars['Date']
+  Currency: Scalars['Currency']
   Location: Location
   String: Scalars['String']
   ContactInfo: ContactInfo
@@ -591,6 +628,10 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {}
   ShipmentCreateInput: ShipmentCreateInput
   Shipment: Shipment
+  ShipmentPricing: ShipmentPricing
+  ShipmentPricingInput: ShipmentPricingInput
+  MoneyAmount: MoneyAmount
+  MoneyAmountInput: MoneyAmountInput
   UserProfile: UserProfile
   Boolean: Scalars['Boolean']
   Offer: Offer
@@ -607,6 +648,11 @@ export type ResolversParentTypes = ResolversObject<{
 export interface DateScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date'
+}
+
+export interface CurrencyScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['Currency'], any> {
+  name: 'Currency'
 }
 
 export type LocationResolvers<
@@ -696,6 +742,12 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QueryListOffersArgs, 'shipmentId'>
+  >
+  pallet?: Resolver<
+    ResolversTypes['Pallet'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryPalletArgs, 'id'>
   >
 }>
 
@@ -817,9 +869,44 @@ export type ShipmentResolvers<
   sendingHub?: Resolver<ResolversTypes['Group'], ParentType, ContextType>
   receivingHubId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   receivingHub?: Resolver<ResolversTypes['Group'], ParentType, ContextType>
+  pricing?: Resolver<
+    Maybe<ResolversTypes['ShipmentPricing']>,
+    ParentType,
+    ContextType
+  >
   statusChangeTime?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
   updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
+export type ShipmentPricingResolvers<
+  ContextType = AuthenticatedContext,
+  ParentType extends ResolversParentTypes['ShipmentPricing'] = ResolversParentTypes['ShipmentPricing']
+> = ResolversObject<{
+  singlePallet?: Resolver<
+    Maybe<ResolversTypes['MoneyAmount']>,
+    ParentType,
+    ContextType
+  >
+  halfPallet?: Resolver<
+    Maybe<ResolversTypes['MoneyAmount']>,
+    ParentType,
+    ContextType
+  >
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
+export type MoneyAmountResolvers<
+  ContextType = AuthenticatedContext,
+  ParentType extends ResolversParentTypes['MoneyAmount'] = ResolversParentTypes['MoneyAmount']
+> = ResolversObject<{
+  currency?: Resolver<ResolversTypes['Currency'], ParentType, ContextType>
+  quantityInMinorUnits?: Resolver<
+    ResolversTypes['Int'],
+    ParentType,
+    ContextType
+  >
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
@@ -981,12 +1068,15 @@ export type ShipmentExportResolvers<
 
 export type Resolvers<ContextType = AuthenticatedContext> = ResolversObject<{
   Date?: GraphQLScalarType
+  Currency?: GraphQLScalarType
   Location?: LocationResolvers<ContextType>
   ContactInfo?: ContactInfoResolvers<ContextType>
   Group?: GroupResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
   Mutation?: MutationResolvers<ContextType>
   Shipment?: ShipmentResolvers<ContextType>
+  ShipmentPricing?: ShipmentPricingResolvers<ContextType>
+  MoneyAmount?: MoneyAmountResolvers<ContextType>
   UserProfile?: UserProfileResolvers<ContextType>
   Offer?: OfferResolvers<ContextType>
   Pallet?: PalletResolvers<ContextType>

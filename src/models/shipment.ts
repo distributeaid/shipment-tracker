@@ -10,7 +10,11 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
-import { ShipmentStatus, ShippingRoute } from '../server-internal-types'
+import {
+  ShipmentPricing,
+  ShipmentStatus,
+  ShippingRoute,
+} from '../server-internal-types'
 import Group from './group'
 import Offer from './offer'
 
@@ -24,10 +28,11 @@ export interface ShipmentAttributes {
   sendingHubId: number
   receivingHubId: number
   statusChangeTime: Date
+  pricing: ShipmentPricing
 }
 
 export interface ShipmentCreationAttributes
-  extends Optional<ShipmentAttributes, 'id' | 'statusChangeTime'> {}
+  extends Optional<ShipmentAttributes, 'id' | 'statusChangeTime' | 'pricing'> {}
 
 @Table({
   timestamps: true,
@@ -72,6 +77,9 @@ export default class Shipment extends Model<
 
   @Column
   public statusChangeTime!: Date
+
+  @Column(DataType.JSONB)
+  public pricing!: ShipmentPricing
 
   @CreatedAt
   @Column

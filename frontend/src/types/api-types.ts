@@ -23,6 +23,7 @@ export type Scalars = {
   Int: number
   Float: number
   Date: any
+  Currency: any
 }
 
 export type Location = {
@@ -92,6 +93,7 @@ export type ShipmentUpdateInput = {
   sendingHubId?: Maybe<Scalars['Int']>
   receivingHubId?: Maybe<Scalars['Int']>
   status?: Maybe<ShipmentStatus>
+  pricing?: Maybe<ShipmentPricingInput>
 }
 
 export type Query = {
@@ -102,6 +104,7 @@ export type Query = {
   listShipments: Array<Shipment>
   offer: Offer
   listOffers: Array<Offer>
+  pallet: Pallet
 }
 
 export type QueryGroupArgs = {
@@ -118,6 +121,10 @@ export type QueryOfferArgs = {
 
 export type QueryListOffersArgs = {
   shipmentId: Scalars['Int']
+}
+
+export type QueryPalletArgs = {
+  id: Scalars['Int']
 }
 
 export type Mutation = {
@@ -211,6 +218,7 @@ export type ShipmentCreateInput = {
   sendingHubId: Scalars['Int']
   receivingHubId: Scalars['Int']
   status: ShipmentStatus
+  pricing?: Maybe<ShipmentPricingInput>
 }
 
 export enum ShippingRoute {
@@ -238,9 +246,32 @@ export type Shipment = {
   sendingHub: Group
   receivingHubId: Scalars['Int']
   receivingHub: Group
+  pricing?: Maybe<ShipmentPricing>
   statusChangeTime: Scalars['Date']
   createdAt: Scalars['Date']
   updatedAt: Scalars['Date']
+}
+
+export type ShipmentPricing = {
+  __typename?: 'ShipmentPricing'
+  singlePallet?: Maybe<MoneyAmount>
+  halfPallet?: Maybe<MoneyAmount>
+}
+
+export type ShipmentPricingInput = {
+  singlePallet?: Maybe<MoneyAmountInput>
+  halfPallet?: Maybe<MoneyAmountInput>
+}
+
+export type MoneyAmount = {
+  __typename?: 'MoneyAmount'
+  currency: Scalars['Currency']
+  quantityInMinorUnits: Scalars['Int']
+}
+
+export type MoneyAmountInput = {
+  currency: Scalars['Currency']
+  quantityInMinorUnits: Scalars['Int']
 }
 
 export enum GroupType {
@@ -485,6 +516,24 @@ export type CreateOfferMutation = { __typename?: 'Mutation' } & {
   addOffer: { __typename?: 'Offer' } & Pick<Offer, 'id' | 'shipmentId'>
 }
 
+export type CreatePalletMutationVariables = Exact<{
+  input: PalletCreateInput
+}>
+
+export type CreatePalletMutation = { __typename?: 'Mutation' } & {
+  addPallet: { __typename?: 'Pallet' } & PalletDataFragmentFragment
+}
+
+export type DestroyPalletMutationVariables = Exact<{
+  id: Scalars['Int']
+}>
+
+export type DestroyPalletMutation = { __typename?: 'Mutation' } & {
+  destroyPallet: { __typename?: 'Offer' } & Pick<Offer, 'id'> & {
+      pallets: Array<{ __typename?: 'Pallet' } & PalletDataFragmentFragment>
+    }
+}
+
 export type OfferQueryVariables = Exact<{
   id: Scalars['Int']
 }>
@@ -500,9 +549,18 @@ export type OfferQuery = { __typename?: 'Query' } & {
           'name' | 'whatsApp' | 'email' | 'phone' | 'signal'
         >
       >
-      pallets: Array<{ __typename?: 'Pallet' } & Pick<Pallet, 'id'>>
+      pallets: Array<{ __typename?: 'Pallet' } & PalletDataFragmentFragment>
     }
 }
+
+export type PalletDataFragmentFragment = { __typename?: 'Pallet' } & Pick<
+  Pallet,
+  'id' | 'offerId' | 'palletType' | 'paymentStatus'
+> & {
+    lineItems: Array<
+      { __typename?: 'LineItem' } & Pick<LineItem, 'id' | 'status' | 'category'>
+    >
+  }
 
 export type CreateShipmentMutationVariables = Exact<{
   input: ShipmentCreateInput
@@ -602,6 +660,19 @@ export const AllGroupFieldsFragmentDoc = gql`
       phone
       signal
     }
+  }
+`
+export const PalletDataFragmentFragmentDoc = gql`
+  fragment PalletDataFragment on Pallet {
+    id
+    offerId
+    palletType
+    lineItems {
+      id
+      status
+      category
+    }
+    paymentStatus
   }
 `
 export const AllShipmentFieldsFragmentDoc = gql`
@@ -953,6 +1024,109 @@ export type CreateOfferMutationOptions = Apollo.BaseMutationOptions<
   CreateOfferMutation,
   CreateOfferMutationVariables
 >
+export const CreatePalletDocument = gql`
+  mutation CreatePallet($input: PalletCreateInput!) {
+    addPallet(input: $input) {
+      ...PalletDataFragment
+    }
+  }
+  ${PalletDataFragmentFragmentDoc}
+`
+export type CreatePalletMutationFn = Apollo.MutationFunction<
+  CreatePalletMutation,
+  CreatePalletMutationVariables
+>
+
+/**
+ * __useCreatePalletMutation__
+ *
+ * To run a mutation, you first call `useCreatePalletMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePalletMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPalletMutation, { data, loading, error }] = useCreatePalletMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreatePalletMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreatePalletMutation,
+    CreatePalletMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    CreatePalletMutation,
+    CreatePalletMutationVariables
+  >(CreatePalletDocument, options)
+}
+export type CreatePalletMutationHookResult = ReturnType<
+  typeof useCreatePalletMutation
+>
+export type CreatePalletMutationResult = Apollo.MutationResult<CreatePalletMutation>
+export type CreatePalletMutationOptions = Apollo.BaseMutationOptions<
+  CreatePalletMutation,
+  CreatePalletMutationVariables
+>
+export const DestroyPalletDocument = gql`
+  mutation DestroyPallet($id: Int!) {
+    destroyPallet(id: $id) {
+      id
+      pallets {
+        ...PalletDataFragment
+      }
+    }
+  }
+  ${PalletDataFragmentFragmentDoc}
+`
+export type DestroyPalletMutationFn = Apollo.MutationFunction<
+  DestroyPalletMutation,
+  DestroyPalletMutationVariables
+>
+
+/**
+ * __useDestroyPalletMutation__
+ *
+ * To run a mutation, you first call `useDestroyPalletMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDestroyPalletMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [destroyPalletMutation, { data, loading, error }] = useDestroyPalletMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDestroyPalletMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DestroyPalletMutation,
+    DestroyPalletMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    DestroyPalletMutation,
+    DestroyPalletMutationVariables
+  >(DestroyPalletDocument, options)
+}
+export type DestroyPalletMutationHookResult = ReturnType<
+  typeof useDestroyPalletMutation
+>
+export type DestroyPalletMutationResult = Apollo.MutationResult<DestroyPalletMutation>
+export type DestroyPalletMutationOptions = Apollo.BaseMutationOptions<
+  DestroyPalletMutation,
+  DestroyPalletMutationVariables
+>
 export const OfferDocument = gql`
   query Offer($id: Int!) {
     offer(id: $id) {
@@ -969,10 +1143,11 @@ export const OfferDocument = gql`
       }
       photoUris
       pallets {
-        id
+        ...PalletDataFragment
       }
     }
   }
+  ${PalletDataFragmentFragmentDoc}
 `
 
 /**

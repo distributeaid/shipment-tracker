@@ -1,0 +1,11 @@
+fragment PalletDataFragment on Pallet {
+  id
+  offerId
+  palletType
+  lineItems {
+    id
+    status
+    category
+  }
+  paymentStatus
+}
