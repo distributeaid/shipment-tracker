@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, LegacyRef, ReactNode, useRef } from 'react'
 import { CSSTransition as ReactCSSTransition } from 'react-transition-group'
 
 /**
@@ -26,16 +26,20 @@ import { CSSTransition as ReactCSSTransition } from 'react-transition-group'
  *
  * Docs for react-transition-group:
  * https://reactcommunity.org/react-transition-group/css-transition
+ *
+ * ⚠️ findDomNode is deprecated, but react-transition-group hasn't kept up,
+ * which means that we need a render prop to pass a ref to the child of this
+ * component.
  */
 
-const addClasses = (node: HTMLElement, classes: string[]) => {
-  if (classes.length > 0) {
+const addClasses = (node: HTMLElement | null, classes: string[]) => {
+  if (classes.length > 0 && node) {
     node.classList.add(...classes)
   }
 }
 
-const removeClasses = (node: HTMLElement, classes: string[]) => {
-  if (classes.length > 0) {
+const removeClasses = (node: HTMLElement | null, classes: string[]) => {
+  if (classes.length > 0 && node) {
     node.classList.remove(...classes)
   }
 }
@@ -62,6 +66,10 @@ interface Props {
   leave?: string
   leaveFrom?: string
   leaveTo?: string
+  /**
+   * A render prop is required because we must pass a ref to the child component
+   */
+  children: (params: { nodeRef: LegacyRef<HTMLDivElement> }) => ReactNode
 }
 
 const TailwindTransition: FunctionComponent<Props> = ({
@@ -74,6 +82,7 @@ const TailwindTransition: FunctionComponent<Props> = ({
   leaveTo = '',
   ...otherProps
 }) => {
+  const nodeRef = useRef<HTMLDivElement>(null)
   const enterClasses = splitClassesIntoArray(enter)
   const enterFromClasses = splitClassesIntoArray(enterFrom)
   const enterToClasses = splitClassesIntoArray(enterTo)
@@ -84,30 +93,31 @@ const TailwindTransition: FunctionComponent<Props> = ({
   return (
     <ReactCSSTransition
       {...otherProps}
+      nodeRef={nodeRef}
       appear
       unmountOnExit
-      onEnter={(node: HTMLElement) => {
-        addClasses(node, [...enterClasses, ...enterFromClasses])
+      onEnter={() => {
+        addClasses(nodeRef.current, [...enterClasses, ...enterFromClasses])
       }}
-      onEntering={(node: HTMLElement) => {
-        removeClasses(node, enterFromClasses)
-        addClasses(node, enterToClasses)
+      onEntering={() => {
+        removeClasses(nodeRef.current, enterFromClasses)
+        addClasses(nodeRef.current, enterToClasses)
       }}
-      onEntered={(node: HTMLElement) => {
-        removeClasses(node, [...enterToClasses, ...enterClasses])
+      onEntered={() => {
+        removeClasses(nodeRef.current, [...enterToClasses, ...enterClasses])
       }}
-      onExit={(node) => {
-        addClasses(node, [...leaveClasses, ...leaveFromClasses])
+      onExit={() => {
+        addClasses(nodeRef.current, [...leaveClasses, ...leaveFromClasses])
       }}
-      onExiting={(node) => {
-        removeClasses(node, leaveFromClasses)
-        addClasses(node, leaveToClasses)
+      onExiting={() => {
+        removeClasses(nodeRef.current, leaveFromClasses)
+        addClasses(nodeRef.current, leaveToClasses)
       }}
-      onExited={(node) => {
-        removeClasses(node, [...leaveToClasses, ...leaveClasses])
+      onExited={() => {
+        removeClasses(nodeRef.current, [...leaveToClasses, ...leaveClasses])
       }}
     >
-      {children}
+      {children({ nodeRef })}
     </ReactCSSTransition>
   )
 }

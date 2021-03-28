@@ -72,7 +72,6 @@ export default class ModalBase extends Component<ModalBaseProps> {
   private uniqueKey: string
   private portalElement?: HTMLDivElement
   private modalContainerRef = createRef<HTMLElement>()
-  private focusTrapRef = createRef<HTMLDivElement>()
 
   constructor(props: ModalBaseProps) {
     super(props)
@@ -153,8 +152,8 @@ export default class ModalBase extends Component<ModalBaseProps> {
    * Returns the elements that can be focused on within the modal
    */
   private getFocusableNodes = () => {
-    if (this.focusTrapRef.current) {
-      const nodes = this.focusTrapRef.current.querySelectorAll(
+    if (this.modalContainerRef.current) {
+      const nodes = this.modalContainerRef.current.querySelectorAll(
         FOCUSABLE_ELEMENTS,
       )
       return Array.from(nodes)
@@ -223,9 +222,14 @@ export default class ModalBase extends Component<ModalBaseProps> {
           leaveTo="opacity-0"
           timeout={400}
         >
-          <div className="fixed inset-0 transition-opacity z-40">
-            <div className="absolute inset-0 bg-gray-800 opacity-75"></div>
-          </div>
+          {({ nodeRef }) => (
+            <div
+              ref={nodeRef}
+              className="fixed inset-0 transition-opacity z-40"
+            >
+              <div className="absolute inset-0 bg-gray-800 opacity-75"></div>
+            </div>
+          )}
         </TailwindTransition>
         <TailwindTransition
           enter="transition duration-400 transform"
@@ -237,22 +241,24 @@ export default class ModalBase extends Component<ModalBaseProps> {
           leaveTo="opacity-0 scale-90"
           timeout={400}
         >
-          <div
-            className="flex inset-0 overflow-y-auto fixed w-screen z-50"
-            onClick={this.onClickOutside}
-            ref={this.focusTrapRef}
-          >
-            <aside
-              aria-modal="true"
-              className="relative w-full max-w-full m-auto"
-              ref={this.modalContainerRef}
-              role="dialog"
-              style={style}
-              tabIndex={-1}
+          {({ nodeRef }) => (
+            <div
+              className="flex inset-0 overflow-y-auto fixed w-screen z-50"
+              onClick={this.onClickOutside}
+              ref={nodeRef}
             >
-              {children}
-            </aside>
-          </div>
+              <aside
+                aria-modal="true"
+                className="relative w-full max-w-full m-auto"
+                ref={this.modalContainerRef}
+                role="dialog"
+                style={style}
+                tabIndex={-1}
+              >
+                {children}
+              </aside>
+            </div>
+          )}
         </TailwindTransition>
       </>,
       this.portalElement,
