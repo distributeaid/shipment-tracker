@@ -2,6 +2,7 @@ import { ApolloServerTestClient } from 'apollo-server-testing'
 import gql from 'graphql-tag'
 import { fakeUserAuth } from '../authenticateRequest'
 import Group from '../models/group'
+import LineItem from '../models/line_item'
 import Offer from '../models/offer'
 import Pallet from '../models/pallet'
 import Shipment from '../models/shipment'
@@ -9,6 +10,9 @@ import UserAccount from '../models/user_account'
 import { sequelize } from '../sequelize'
 import {
   GroupType,
+  LineItemCategory,
+  LineItemContainerType,
+  LineItemStatus,
   OfferStatus,
   PalletCreateInput,
   PalletType,
@@ -221,6 +225,59 @@ describe('Pallets API', () => {
       })
 
       expect(res.errors).toBeUndefined()
+    })
+  })
+
+  describe('pallet', () => {
+    let pallet: Pallet, lineItem: LineItem
+
+    const GET_PALLET = gql`
+      query($id: Int!) {
+        pallet(id: $id) {
+          id
+          lineItems {
+            id
+          }
+        }
+      }
+    `
+
+    beforeEach(async () => {
+      pallet = await Pallet.create({
+        offerId: offer.id,
+        palletType: PalletType.Standard,
+        paymentStatus: PaymentStatus.Uninitiated,
+        paymentStatusChangeTime: new Date(),
+      })
+
+      lineItem = await LineItem.create({
+        offerPalletId: pallet.id,
+        status: LineItemStatus.Proposed,
+        containerType: LineItemContainerType.Unset,
+        category: LineItemCategory.Unset,
+        itemCount: 0,
+        affirmLiability: false,
+        tosAccepted: false,
+        dangerousGoods: [],
+        photoUris: [],
+        statusChangeTime: new Date(),
+      })
+    })
+
+    it('updates the existing pallet', async () => {
+      const res = await captainTestServer.mutate<
+        { pallet: Pallet },
+        { id: number }
+      >({
+        mutation: GET_PALLET,
+        variables: {
+          id: pallet.id,
+        },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res.data?.pallet?.id).toEqual(pallet.id)
+      expect(res.data?.pallet?.lineItems?.[0]?.id).toEqual(lineItem.id)
     })
   })
 

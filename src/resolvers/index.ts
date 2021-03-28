@@ -11,6 +11,7 @@ import { addOffer, listOffers, offer, offerPallets, updateOffer } from './offer'
 import {
   addPallet,
   destroyPallet,
+  pallet,
   palletLineItems,
   updatePallet,
 } from './pallet'
@@ -35,6 +36,7 @@ const resolvers: Resolvers = {
     listShipments,
     offer,
     listOffers,
+    pallet,
   },
 
   // Mutation Resolvers

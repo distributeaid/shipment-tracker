@@ -78,6 +78,8 @@ type Query {
 
   offer(id: Int!): Offer!
   listOffers(shipmentId: Int!): [Offer!]!
+
+  pallet(id: Int!): Pallet!
 }
 
 type Mutation {
