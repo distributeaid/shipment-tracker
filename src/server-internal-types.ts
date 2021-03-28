@@ -111,6 +111,7 @@ export type Query = {
   listShipments: Array<Shipment>
   offer: Offer
   listOffers: Array<Offer>
+  pallet: Pallet
 }
 
 export type QueryGroupArgs = {
@@ -127,6 +128,10 @@ export type QueryOfferArgs = {
 
 export type QueryListOffersArgs = {
   shipmentId: Scalars['Int']
+}
+
+export type QueryPalletArgs = {
+  id: Scalars['Int']
 }
 
 export type Mutation = {
@@ -716,6 +721,12 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QueryListOffersArgs, 'shipmentId'>
+  >
+  pallet?: Resolver<
+    ResolversTypes['Pallet'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryPalletArgs, 'id'>
   >
 }>
 
