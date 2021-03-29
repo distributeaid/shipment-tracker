@@ -128,7 +128,7 @@ describe('ShipmentExports API', () => {
       expect(res.errors).toBeUndefined()
 
       expect(services.createGoogleSheetCalls[0]).toEqual({
-        title: 'Shipment-UK-2020-1',
+        title: 'Shipment-UK-2020-01',
         rows: [
           [
             'group 1',
