@@ -1,5 +1,5 @@
 import { google } from 'googleapis'
-import { createAuthClient } from './googleOauth'
+import { createAuthClient } from './googleOAuth'
 import UserAccount from './models/user_account'
 
 export type GoogleSheetRow = Array<string | number | null | undefined>
