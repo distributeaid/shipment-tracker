@@ -1,0 +1,178 @@
+#!/usr/bin/env bash
+
+set -eu
+
+REQUIRED_NODE_VERSION=v14
+
+_current_os=$(uname)
+
+function colorized() {
+  local result=$(_colorized "$@")
+  echo "$result"
+}
+
+function action() {
+  colorized "@blue[[+ $1]]"
+}
+
+function ok() {
+  colorized "@green[[+ $1]]"
+}
+
+function _colorized() {
+  echo "$@" | sed -E \
+    -e 's/((@(red|green|yellow|blue|magenta|cyan|white|reset|b|u))+)[[]{2}(.*)[]]{2}/\1\4@reset/g' \
+    -e "s/@red/$(tput setaf 1)/g" \
+    -e "s/@green/$(tput setaf 2)/g" \
+    -e "s/@yellow/$(tput setaf 3)/g" \
+    -e "s/@blue/$(tput setaf 4)/g" \
+    -e "s/@magenta/$(tput setaf 5)/g" \
+    -e "s/@cyan/$(tput setaf 6)/g" \
+    -e "s/@white/$(tput setaf 7)/g" \
+    -e "s/@reset/$(tput sgr0)/g" \
+    -e "s/@b/$(tput bold)/g" \
+    -e "s/@u/$(tput sgr 0 1)/g"
+}
+
+function is_macos() {
+  [[ "$_current_os" == "Darwin" ]]
+}
+
+function is_linux() {
+  [[ "$_current_os" == "Linux" ]]
+}
+function command_exists() {
+  local name=$1
+
+  command -v "$name" >/dev/null 2>&1
+}
+
+function apt_is_installed() {
+  ! is_linux && return 1
+
+  local package=$1
+
+  dpkg -s "$package" >/dev/null 2>&1
+}
+
+function apt_install() {
+  ! is_linux && return 1
+
+  local package=$1
+
+  if apt_is_installed "$package"; then
+    ok "+ $package already installed... skipping."
+  else
+    action "Installing $package..."
+    sudo apt-get install -y "$package"
+  fi
+}
+
+function brew_install() {
+  local package=$1
+
+  ! is_macos && return 1
+
+  if brew list "$package" > /dev/null 2>&1; then
+    ok "$package already installed... skipping."
+  else
+    action "Installing $package..."
+    brew install "$@"
+  fi
+}
+
+function install_package() {
+  local brew_name=$1
+  local apt_name=${2:-$1}
+
+  if is_macos; then
+    brew_install "$brew_name"
+  elif is_linux; then
+    apt_install "$apt_name"
+  fi
+}
+
+function check_node_version() {
+  if ! (node -v | grep -q "$REQUIRED_NODE_VERSION"); then
+    colorized "@b@red[[Ensure you are running Node $REQUIRED_NODE_VERSION before running this script. You can install it with nodenv or nvm.]]"
+    echo "  nodenv: https://github.com/nodenv/nodenv"
+    echo "     nvm: https://github.com/nvm-sh/nvm"
+
+    exit 1
+  else
+    ok "Detected node $REQUIRED_NODE_VERSION, using that..."
+  fi
+}
+
+function install_yarn_if_needed() {
+  if ! command_exists yarn; then
+    action "Installing yarn..."
+    npm install -g yarn
+  else
+    ok "yarn already installed... skipping."
+  fi
+}
+
+function install_postgresql() {
+  if ! command_exists psql; then
+    action "Installing postgresql..."
+
+  else
+    ok "postgresql already installed"
+  fi
+}
+
+function start_postgresql() {
+  action "Starting postgresql server..."
+
+  if is_macos; then
+    brew services start postgresql
+  elif is_linux; then
+    sudo service postgresql-13.2 start
+  fi
+}
+
+function initialize_db() {
+  action "Initializing DB if needed..."
+  script/init_db
+  echo
+}
+
+function copy_env_file() {
+  if [ ! -f ".env" ]; then
+    action "Copying .env.example to .env"
+    cp -r .env.example .env
+    echo "  Please edit .env to taste."
+  else
+    ok ".env file already exists"
+  fi
+}
+
+###########################
+# The actual setup
+###########################
+
+
+colorized "@b@yellow[[Setting up dev environment]]"
+echo
+
+check_node_version
+install_yarn_if_needed
+
+yarn install
+
+# Install postgres
+if [[ -z "${CI:-}" ]]; then
+  install_package postgresql
+  apt_install postgresql-client || ok "Skipping postgresql-client, we're on Mac"
+
+  start_postgresql
+  initialize_db
+else
+  ok "Running on CI, skipping Postgres setup"
+fi
+
+copy_env_file
+
+echo
+colorized "@blue@b[[✓ All done!]]"

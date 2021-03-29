@@ -44,33 +44,22 @@ If the pull request does not require additional changes, the reviewer should mer
 
 ## Dev setup
 
-Install system dependencies:
+Install node.js v14:
 
-- node.js v14
-- yarn v1.22.5: `brew install yarn`
-- postgresql v13.2: `brew install postgresql`
+- Install with [nodenv](https://github.com/nodenv/nodenv)
+- or [nvm](https://github.com/nvm-sh/nvm)
 
-Install project dependencies:
+Run the setup script:
 
-- `yarn install`
-
-Start postgres daemon:
-
-- macOS: `brew services start postgresql`
-- linux: `sudo service postgresql-13.2 start`
-
-Next set up the development and test databases. (Make
-sure `npx` is working first by running `npx --version`.)
-
-- `./script/init_db`
-
-Create your local environment file:
-
-- `cp .env.example .env`
+```
+$ script/dev_setup
+```
 
 Run the dev server:
 
-`yarn dev`
+```
+$ yarn dev
+```
 
 And then view graphql sandbox at http://localhost:3000/graphql
 
