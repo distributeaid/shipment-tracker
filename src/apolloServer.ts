@@ -6,6 +6,7 @@ import {
 import depthLimit from 'graphql-depth-limit'
 import { AuthenticatedAuth, authenticateRequest } from './authenticateRequest'
 import createGoogleSheet, { GoogleSheetRow } from './createGoogleSheet'
+import UserAccount from './models/user_account'
 import resolvers from './resolvers'
 import typeDefs from './typeDefs'
 
@@ -13,6 +14,7 @@ export type Services = {
   createGoogleSheet: (
     title: string,
     rows: Array<GoogleSheetRow>,
+    userAccount: UserAccount,
   ) => Promise<string>
 }
 

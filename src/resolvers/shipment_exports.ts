@@ -55,6 +55,7 @@ const exportShipment: MutationResolvers['exportShipment'] = async (
   const googleSheetUrl = await services.createGoogleSheet(
     shipment.displayName(),
     rows,
+    auth.userAccount,
   )
 
   const exportRecord = await ShipmentExport.create({

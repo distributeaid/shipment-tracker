@@ -112,6 +112,7 @@ export type Query = {
   offer: Offer
   listOffers: Array<Offer>
   pallet: Pallet
+  googleOAuthUrl: Scalars['String']
 }
 
 export type QueryGroupArgs = {
@@ -134,6 +135,27 @@ export type QueryPalletArgs = {
   id: Scalars['Int']
 }
 
+export type QueryGoogleOAuthUrlArgs = {
+  redirectPath?: Maybe<Scalars['String']>
+}
+
+export type GoogleAuthStateInput = {
+  refreshToken: Scalars['String']
+  expiryDate?: Maybe<Scalars['Date']>
+  accessToken: Scalars['String']
+  tokenType: Scalars['String']
+  idToken: Scalars['String']
+}
+
+export type GoogleAuthState = {
+  __typename?: 'GoogleAuthState'
+  refreshToken: Scalars['String']
+  expiryDate?: Maybe<Scalars['Date']>
+  accessToken: Scalars['String']
+  tokenType: Scalars['String']
+  idToken: Scalars['String']
+}
+
 export type Mutation = {
   __typename?: 'Mutation'
   addGroup: Group
@@ -149,6 +171,7 @@ export type Mutation = {
   updateLineItem: LineItem
   destroyLineItem: Pallet
   moveLineItem: Offer
+  updateProfileWithGoogleAuthState: UserProfile
   exportShipment: ShipmentExport
   listShipmentExports: Array<ShipmentExport>
 }
@@ -208,6 +231,10 @@ export type MutationDestroyLineItemArgs = {
 export type MutationMoveLineItemArgs = {
   id: Scalars['Int']
   targetPalletId: Scalars['Int']
+}
+
+export type MutationUpdateProfileWithGoogleAuthStateArgs = {
+  input: GoogleAuthStateInput
 }
 
 export type MutationExportShipmentArgs = {
@@ -291,6 +318,7 @@ export type UserProfile = {
   __typename?: 'UserProfile'
   id: Scalars['Int']
   isAdmin: Scalars['Boolean']
+  googleAuthState?: Maybe<GoogleAuthState>
 }
 
 export enum OfferStatus {
@@ -580,6 +608,8 @@ export type ResolversTypes = ResolversObject<{
   GroupUpdateInput: GroupUpdateInput
   ShipmentUpdateInput: ShipmentUpdateInput
   Query: ResolverTypeWrapper<{}>
+  GoogleAuthStateInput: GoogleAuthStateInput
+  GoogleAuthState: ResolverTypeWrapper<GoogleAuthState>
   Mutation: ResolverTypeWrapper<{}>
   ShipmentCreateInput: ShipmentCreateInput
   ShippingRoute: ShippingRoute
@@ -625,6 +655,8 @@ export type ResolversParentTypes = ResolversObject<{
   GroupUpdateInput: GroupUpdateInput
   ShipmentUpdateInput: ShipmentUpdateInput
   Query: {}
+  GoogleAuthStateInput: GoogleAuthStateInput
+  GoogleAuthState: GoogleAuthState
   Mutation: {}
   ShipmentCreateInput: ShipmentCreateInput
   Shipment: Shipment
@@ -749,6 +781,24 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryPalletArgs, 'id'>
   >
+  googleOAuthUrl?: Resolver<
+    ResolversTypes['String'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryGoogleOAuthUrlArgs, never>
+  >
+}>
+
+export type GoogleAuthStateResolvers<
+  ContextType = AuthenticatedContext,
+  ParentType extends ResolversParentTypes['GoogleAuthState'] = ResolversParentTypes['GoogleAuthState']
+> = ResolversObject<{
+  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  expiryDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  tokenType?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  idToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
 export type MutationResolvers<
@@ -833,6 +883,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationMoveLineItemArgs, 'id' | 'targetPalletId'>
   >
+  updateProfileWithGoogleAuthState?: Resolver<
+    ResolversTypes['UserProfile'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateProfileWithGoogleAuthStateArgs, 'input'>
+  >
   exportShipment?: Resolver<
     ResolversTypes['ShipmentExport'],
     ParentType,
@@ -916,6 +972,11 @@ export type UserProfileResolvers<
 > = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  googleAuthState?: Resolver<
+    Maybe<ResolversTypes['GoogleAuthState']>,
+    ParentType,
+    ContextType
+  >
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
@@ -1073,6 +1134,7 @@ export type Resolvers<ContextType = AuthenticatedContext> = ResolversObject<{
   ContactInfo?: ContactInfoResolvers<ContextType>
   Group?: GroupResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
+  GoogleAuthState?: GoogleAuthStateResolvers<ContextType>
   Mutation?: MutationResolvers<ContextType>
   Shipment?: ShipmentResolvers<ContextType>
   ShipmentPricing?: ShipmentPricingResolvers<ContextType>

@@ -105,6 +105,7 @@ export type Query = {
   offer: Offer
   listOffers: Array<Offer>
   pallet: Pallet
+  googleOAuthUrl: Scalars['String']
 }
 
 export type QueryGroupArgs = {
@@ -127,6 +128,27 @@ export type QueryPalletArgs = {
   id: Scalars['Int']
 }
 
+export type QueryGoogleOAuthUrlArgs = {
+  redirectPath?: Maybe<Scalars['String']>
+}
+
+export type GoogleAuthStateInput = {
+  refreshToken: Scalars['String']
+  expiryDate?: Maybe<Scalars['Date']>
+  accessToken: Scalars['String']
+  tokenType: Scalars['String']
+  idToken: Scalars['String']
+}
+
+export type GoogleAuthState = {
+  __typename?: 'GoogleAuthState'
+  refreshToken: Scalars['String']
+  expiryDate?: Maybe<Scalars['Date']>
+  accessToken: Scalars['String']
+  tokenType: Scalars['String']
+  idToken: Scalars['String']
+}
+
 export type Mutation = {
   __typename?: 'Mutation'
   addGroup: Group
@@ -142,6 +164,7 @@ export type Mutation = {
   updateLineItem: LineItem
   destroyLineItem: Pallet
   moveLineItem: Offer
+  updateProfileWithGoogleAuthState: UserProfile
   exportShipment: ShipmentExport
   listShipmentExports: Array<ShipmentExport>
 }
@@ -201,6 +224,10 @@ export type MutationDestroyLineItemArgs = {
 export type MutationMoveLineItemArgs = {
   id: Scalars['Int']
   targetPalletId: Scalars['Int']
+}
+
+export type MutationUpdateProfileWithGoogleAuthStateArgs = {
+  input: GoogleAuthStateInput
 }
 
 export type MutationExportShipmentArgs = {
@@ -284,6 +311,7 @@ export type UserProfile = {
   __typename?: 'UserProfile'
   id: Scalars['Int']
   isAdmin: Scalars['Boolean']
+  googleAuthState?: Maybe<GoogleAuthState>
 }
 
 export enum OfferStatus {

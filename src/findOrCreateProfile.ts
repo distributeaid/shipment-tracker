@@ -1,19 +1,12 @@
 import { Request, Response } from 'express'
-
-import { UserProfile } from './server-internal-types'
-import UserAccount from './models/user_account'
 import { authenticateRequest } from './authenticateRequest'
-import { sequelize } from './sequelize'
+import UserAccount from './models/user_account'
 
 const sendProfile = (
   response: Response,
   userAccount: UserAccount,
   isAdmin = false,
-) => {
-  const profile: UserProfile = { id: userAccount.id, isAdmin }
-
-  response.json(profile).end()
-}
+) => response.json(userAccount.asProfile(isAdmin)).end()
 
 const findOrCreateProfile = async (request: Request, response: Response) => {
   const auth = await authenticateRequest(request)

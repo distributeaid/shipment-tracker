@@ -143,7 +143,7 @@ describe('ShipmentExports API', () => {
             5,
             0,
             'None',
-            '2021-03-21',
+            expect.stringMatching(/^\d\d\d\d-\d\d-\d\d$/),
           ],
         ],
       })

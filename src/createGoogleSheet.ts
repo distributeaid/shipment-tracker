@@ -1,19 +1,22 @@
 import { google } from 'googleapis'
-
-const { GOOGLE_APPLICATION_CREDENTIALS } = process.env
-
-if (!GOOGLE_APPLICATION_CREDENTIALS) {
-  throw new Error('Missing GOOGLE_API_KEY')
-}
-
-const sheets = google.sheets('v4')
+import { createAuthClient } from './googleOauth'
+import UserAccount from './models/user_account'
 
 export type GoogleSheetRow = Array<string | number | null | undefined>
 
 export default async function createGoogleSheet(
   title: string,
   rows: Array<GoogleSheetRow>,
+  userAccount: UserAccount,
 ): Promise<string> {
+  const auth = createAuthClient()
+
+  auth.setCredentials({
+    access_token: userAccount.googleAuthState?.accessToken,
+  })
+
+  const sheets = google.sheets({ version: 'v4', auth })
+
   const createResponse = await sheets.spreadsheets.create({
     requestBody: {
       properties: { title },

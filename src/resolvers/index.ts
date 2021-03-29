@@ -1,5 +1,6 @@
 import { DateResolver } from 'graphql-scalars'
 import { Resolvers } from '../server-internal-types'
+import { googleOAuthUrl } from './google_oauth'
 import { addGroup, group, listGroups, updateGroup } from './group'
 import {
   addLineItem,
@@ -15,6 +16,7 @@ import {
   palletLineItems,
   updatePallet,
 } from './pallet'
+import { updateProfileWithGoogleAuthState } from './profile'
 import {
   addShipment,
   listShipments,
@@ -38,6 +40,7 @@ const resolvers: Resolvers = {
     offer,
     listOffers,
     pallet,
+    googleOAuthUrl,
   },
 
   // Mutation Resolvers
@@ -56,6 +59,7 @@ const resolvers: Resolvers = {
     destroyLineItem,
     moveLineItem,
     exportShipment,
+    updateProfileWithGoogleAuthState,
   },
 
   // Custom Resolvers
