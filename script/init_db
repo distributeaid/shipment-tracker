@@ -44,8 +44,15 @@ fi
 
 echo
 echo Running sequelize migrations...
-npx sequelize-cli db:migrate
-
+migration_output=$(npx sequelize-cli db:migrate)
+echo "$migration_output"
 echo
-echo Running sequelize seeders...
-npx sequelize-cli db:seed:all
+
+# HACK: `db:seed:all` does not like to be ran twice, so we skip it if we already
+# seem to have ran it before.
+if ! (echo "$migration_output" | grep -q "No migrations were executed"); then
+  echo "Running sequelize seeders..."
+  npx sequelize-cli db:seed:all
+else
+  echo "Skipping seeders, we appear to already have ran them."
+fi

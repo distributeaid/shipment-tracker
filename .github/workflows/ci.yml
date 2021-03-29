@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # scripts/dev_setup complains if TERM is unset
+      TERM: xterm
 
     services:
       postgres:
@@ -45,6 +48,9 @@ jobs:
 
       - name: Install packages
         run: yarn install
+
+      - name: Run dev_setup
+        run: script/dev_setup
 
       - name: Build TypeScript
         run: yarn run build
