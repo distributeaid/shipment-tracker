@@ -31,7 +31,7 @@ export default async function createGoogleSheet(
 
   if (!createResponse.data.spreadsheetUrl) {
     throw new Error(
-      `Google sheet create response does not include spreadheetUrl`,
+      `Google sheet create response does not include spreadsheetUrl`,
     )
   }
 
