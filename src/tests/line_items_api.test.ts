@@ -81,25 +81,23 @@ describe('LineItems API', () => {
     const ADD_LINE_ITEM = gql`
       mutation($palletId: Int!) {
         addLineItem(palletId: $palletId) {
-          lineItems {
-            offerPalletId
-            status
-            containerType
-            category
-            itemCount
-            affirmLiability
-            tosAccepted
-            dangerousGoods
-            photoUris
-            statusChangeTime
-          }
+          offerPalletId
+          status
+          containerType
+          category
+          itemCount
+          affirmLiability
+          tosAccepted
+          dangerousGoods
+          photoUris
+          statusChangeTime
         }
       }
     `
 
     it('creates a new line item', async () => {
       const res = await captainTestServer.mutate<
-        { addLineItem: Pallet },
+        { addLineItem: LineItem },
         { palletId: number }
       >({
         mutation: ADD_LINE_ITEM,
@@ -110,7 +108,7 @@ describe('LineItems API', () => {
 
       expect(res.errors).toBeUndefined()
 
-      const newLineItem = res?.data?.addLineItem?.lineItems?.[0]!
+      const newLineItem = res?.data?.addLineItem!
       expect(newLineItem.offerPalletId).toEqual(pallet.id)
       expect(newLineItem.status).toEqual(LineItemStatus.Proposed)
       expect(newLineItem.containerType).toEqual(LineItemContainerType.Unset)
