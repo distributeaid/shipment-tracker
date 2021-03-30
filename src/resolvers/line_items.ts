@@ -36,7 +36,7 @@ const addLineItem: MutationResolvers['addLineItem'] = async (
 
   authorizeOfferMutation(pallet.offer, context)
 
-  await LineItem.create({
+  return LineItem.create({
     offerPalletId: palletId,
     status: LineItemStatus.Proposed,
     containerType: LineItemContainerType.Unset,
@@ -48,8 +48,6 @@ const addLineItem: MutationResolvers['addLineItem'] = async (
     photoUris: [],
     statusChangeTime: new Date(),
   })
-
-  return pallet
 }
 
 const updateLineItem: MutationResolvers['updateLineItem'] = async (
