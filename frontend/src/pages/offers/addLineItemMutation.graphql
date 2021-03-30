@@ -1,0 +1,5 @@
+mutation CreateLineItem($palletId: Int!) {
+  addLineItem(palletId: $palletId) {
+    id # This is the ID of the PALLET
+  }
+}

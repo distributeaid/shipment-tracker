@@ -20,7 +20,7 @@ const Badge: FunctionComponent<Props> = ({ color = 'gray', children }) => {
     'bg-navy-100 text-navy-600': color === 'navy',
     'bg-blue-100 text-blue-700': color === 'blue',
     'bg-green-100 text-green-700': color === 'green',
-    'bg-gray-100 text-gray-700': color === 'gray',
+    'bg-gray-100 text-gray-600': color === 'gray',
     'bg-yellow-100 text-yellow-700': color === 'yellow',
     'bg-purple-100 text-purple-700': color === 'purple',
   })
