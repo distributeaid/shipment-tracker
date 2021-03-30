@@ -21,7 +21,6 @@ import { formatShipmentName } from '../../utils/format'
 import { shipmentViewOffersRoute } from '../../utils/routes'
 import CreatePalletModal from './CreatePalletModal'
 import PalletsEditor from './PalletsEditor'
-import PalletsTable from './PalletsTable'
 
 const ViewOfferPage: FunctionComponent = () => {
   const params = useParams<{ shipmentId: string; offerId: string }>()
@@ -168,12 +167,6 @@ const ViewOfferPage: FunctionComponent = () => {
                     Add a pallet
                   </Button>
                 </div>
-              )}
-              {offer.offer.pallets.length > 0 && (
-                <PalletsTable
-                  pallets={offer.offer.pallets}
-                  initiateDeletePallet={selectPalletToDestroy}
-                />
               )}
               {offer.offer.pallets.length > 0 && (
                 <PalletsEditor
