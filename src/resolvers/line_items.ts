@@ -13,11 +13,22 @@ import {
   LineItemStatus,
   LineItemUpdateInput,
   MutationResolvers,
+  QueryResolvers,
 } from '../server-internal-types'
 import getPalletWithParentAssociations from './getPalletWithParentAssociations'
 import { authorizeOfferMutation } from './offer_authorization'
 import validateEnumMembership from './validateEnumMembership'
 import validateUris from './validateUris'
+
+const lineItem: QueryResolvers['lineItem'] = async (_, { id }, context) => {
+  const lineItem = await getLineItemWithParentAssociations(id)
+
+  if (!lineItem) {
+    throw new UserInputError(`LineItem ${id} does not exist`)
+  }
+
+  return lineItem
+}
 
 const addLineItem: MutationResolvers['addLineItem'] = async (
   _,
@@ -252,4 +263,4 @@ const moveLineItem: MutationResolvers['moveLineItem'] = async (
   return lineItem.offerPallet.offer
 }
 
-export { addLineItem, updateLineItem, destroyLineItem, moveLineItem }
+export { lineItem, addLineItem, updateLineItem, destroyLineItem, moveLineItem }

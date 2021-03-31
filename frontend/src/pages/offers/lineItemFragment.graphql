@@ -1,0 +1,28 @@
+fragment AllLineItemFields on LineItem {
+  id
+  offerPalletId
+  status
+  proposedReceivingGroup {
+    id
+    name
+  }
+  acceptedReceivingGroup {
+    id
+    name
+  }
+  containerType
+  category
+  description
+  itemCount
+  containerCount
+  containerWeightGrams
+  containerLengthCm
+  containerWidthCm
+  containerHeightCm
+  affirmLiability
+  tosAccepted
+  dangerousGoods
+  photoUris
+  sendingHubDeliveryDate
+  statusChangeTime
+}

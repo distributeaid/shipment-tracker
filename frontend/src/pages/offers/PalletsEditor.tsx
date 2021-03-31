@@ -6,6 +6,7 @@ import {
   useCreateLineItemMutation,
   usePalletLazyQuery,
 } from '../../types/api-types'
+import LineItemForm from './LineItemForm'
 interface Props {
   pallets: OfferQuery['offer']['pallets']
   initiateDeletePallet: (palletId: number) => void
@@ -52,8 +53,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ pallets }) => {
         },
       ],
     }).then((data) => {
-      // TODO set the seletedLineItemId to the new one
-      // TODO make the API return the new line item instead of its pallet
+      setSelectedLineItemId(data.data?.addLineItem.id)
     })
   }
 
@@ -120,7 +120,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ pallets }) => {
         )}
         {selectedPalletId != null && selectedLineItemId != null && (
           <div className="h-full w-full p-4">
-            Line item #{selectedLineItemId} form goes here
+            <LineItemForm lineItemId={selectedLineItemId} />
           </div>
         )}
       </div>

@@ -132,20 +132,27 @@ const ViewOfferPage: FunctionComponent = () => {
           )}
           {offer?.offer && (
             <>
-              <ReadOnlyField label="Shipment">
-                {shipment?.shipment && (
-                  <>
-                    <p className="">{formatShipmentName(shipment.shipment)}</p>
-                    <p className="text-gray-500 text-sm">
-                      {shipment.shipment.sendingHub.name} →{' '}
-                      {shipment.shipment.receivingHub.name}
-                    </p>
-                  </>
-                )}
-              </ReadOnlyField>
-              <ReadOnlyField label="Group">
-                {sendingGroup?.group.name}
-              </ReadOnlyField>
+              <div className="flex space-x-8">
+                <ReadOnlyField label="Shipment">
+                  {shipment?.shipment && (
+                    <>
+                      <p className="text-gray-800">
+                        {formatShipmentName(shipment.shipment)}
+                      </p>
+                      <p className="text-gray-600 text-sm">
+                        {shipment.shipment.sendingHub.name} →{' '}
+                        {shipment.shipment.receivingHub.name}
+                      </p>
+                    </>
+                  )}
+                </ReadOnlyField>
+                <ReadOnlyField label="Group">
+                  <p className="text-gray-800">{sendingGroup?.group.name}</p>
+                  <p className="text-gray-600 text-sm">
+                    {sendingGroup?.group.primaryLocation.townCity}
+                  </p>
+                </ReadOnlyField>
+              </div>
               <div className="flex justify-between items-center">
                 <h2 className="text-gray-700 font-semibold">Pallets</h2>
                 {offer.offer.pallets.length > 0 && (
