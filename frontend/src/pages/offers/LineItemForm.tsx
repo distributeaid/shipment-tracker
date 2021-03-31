@@ -49,7 +49,7 @@ const LineItemForm: FunctionComponent<Props> = ({ lineItemId }) => {
       return
     }
 
-    // Pick the fields from the LineItemUpdateInput
+    // Pick the LineItemUpdateInput fields from the line item data
     let updatedLineItem = _pick(data.lineItem, [
       'status',
       'proposedReceivingGroupId',
