@@ -1,0 +1,19 @@
+query Pallet($id: Int!) {
+  pallet(id: $id) {
+    id
+    offerId
+    palletType
+    createdAt
+    updatedAt
+    paymentStatusChangeTime
+    lineItems {
+      id
+      offerPalletId
+      status
+      containerType
+      category
+      description
+      dangerousGoods
+    }
+  }
+}

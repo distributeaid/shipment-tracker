@@ -1,0 +1,5 @@
+query LineItem($id: Int!) {
+  lineItem(id: $id) {
+    ...AllLineItemFields
+  }
+}

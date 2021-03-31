@@ -4,6 +4,7 @@ import { addGroup, group, listGroups, updateGroup } from './group'
 import {
   addLineItem,
   destroyLineItem,
+  lineItem,
   moveLineItem,
   updateLineItem,
 } from './line_items'
@@ -37,6 +38,7 @@ const resolvers: Resolvers = {
     offer,
     listOffers,
     pallet,
+    lineItem,
   },
 
   // Mutation Resolvers
