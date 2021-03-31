@@ -69,7 +69,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ pallets }) => {
             >
               <div
                 className={cx('p-4 bg-white border-l-4 border-transparent', {
-                  ' border-blue-500': selectedPalletId === pallet.id,
+                  'border-blue-500': selectedPalletId === pallet.id,
                 })}
               >
                 <div className="mb-2 font-semibold">Pallet {pallet.id}</div>
