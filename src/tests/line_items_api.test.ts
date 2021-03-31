@@ -30,7 +30,8 @@ describe('LineItems API', () => {
     group: Group,
     offer: Offer,
     captain: UserAccount,
-    pallet: Pallet
+    pallet: Pallet,
+    lineItem: LineItem
 
   beforeEach(async () => {
     await sequelize.sync({ force: true })
@@ -74,6 +75,96 @@ describe('LineItems API', () => {
       palletType: PalletType.Standard,
       paymentStatus: PaymentStatus.Uninitiated,
       paymentStatusChangeTime: new Date(),
+    })
+  })
+
+  describe('lineItem', () => {
+    const GET_LINE_ITEM = gql`
+      query($id: Int!) {
+        lineItem(id: $id) {
+          id
+          offerPalletId
+          status
+          proposedReceivingGroup {
+            id
+            name
+          }
+          acceptedReceivingGroup {
+            id
+            name
+          }
+          containerType
+          category
+          description
+          itemCount
+          containerCount
+          containerWeightGrams
+          containerLengthCm
+          containerWidthCm
+          containerHeightCm
+          affirmLiability
+          tosAccepted
+          dangerousGoods
+          photoUris
+          sendingHubDeliveryDate
+          statusChangeTime
+        }
+      }
+    `
+
+    beforeEach(async () => {
+      pallet = await Pallet.create({
+        offerId: offer.id,
+        palletType: PalletType.Standard,
+        paymentStatus: PaymentStatus.Uninitiated,
+        paymentStatusChangeTime: new Date(),
+      })
+
+      lineItem = await LineItem.create({
+        offerPalletId: pallet.id,
+        status: LineItemStatus.Proposed,
+        containerType: LineItemContainerType.Unset,
+        category: LineItemCategory.Unset,
+        itemCount: 0,
+        affirmLiability: false,
+        tosAccepted: false,
+        dangerousGoods: [],
+        photoUris: [],
+        statusChangeTime: new Date(),
+      })
+    })
+
+    it('returns the line item for captains', async () => {
+      const res = await captainTestServer.query({
+        query: GET_LINE_ITEM,
+        variables: { id: lineItem.id },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res?.data?.lineItem?.id).toBeNumber()
+      expect(res?.data?.lineItem?.status).toEqual(LineItemStatus.Proposed)
+      expect(res?.data?.lineItem?.affirmLiability).toBeFalse()
+    })
+
+    it('returns the line item for admins', async () => {
+      const res = await adminTestServer.query({
+        query: GET_LINE_ITEM,
+        variables: { id: lineItem.id },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res?.data?.lineItem?.id).toBeNumber()
+      expect(res?.data?.lineItem?.status).toEqual(LineItemStatus.Proposed)
+      expect(res?.data?.lineItem?.affirmLiability).toBeFalse()
+    })
+
+    it('forbids access to other users', async () => {
+      const res = await otherUserTestServer.query({
+        query: GET_LINE_ITEM,
+        variables: { id: lineItem.id },
+      })
+
+      expect(res.errors?.[0].message).toEqual('Forbidden to access this offer')
     })
   })
 

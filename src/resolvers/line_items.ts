@@ -16,7 +16,10 @@ import {
   QueryResolvers,
 } from '../server-internal-types'
 import getPalletWithParentAssociations from './getPalletWithParentAssociations'
-import { authorizeOfferMutation } from './offer_authorization'
+import {
+  authorizeOfferMutation,
+  authorizeOfferQuery,
+} from './offer_authorization'
 import validateEnumMembership from './validateEnumMembership'
 import validateUris from './validateUris'
 
@@ -26,6 +29,13 @@ const lineItem: QueryResolvers['lineItem'] = async (_, { id }, context) => {
   if (!lineItem) {
     throw new UserInputError(`LineItem ${id} does not exist`)
   }
+
+  const pallet = lineItem.offerPallet
+  if (!pallet) {
+    throw new UserInputError(`LineItem ${id} has no pallet!`)
+  }
+
+  authorizeOfferQuery(pallet.offer, context)
 
   return lineItem
 }
