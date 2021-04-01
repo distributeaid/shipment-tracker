@@ -50,7 +50,7 @@ const MobileNavigation: FunctionComponent<Props> = ({ navLinks }) => {
           <li key={link.path}>
             <Link
               to={link.path}
-              className="py-2 px-4 flex items-center text-white"
+              className="py-2 px-4 flex items-center text-xl text-white"
             >
               {link.icon}
               {link.label}
