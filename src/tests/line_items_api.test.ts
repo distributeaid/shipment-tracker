@@ -30,7 +30,8 @@ describe('LineItems API', () => {
     group: Group,
     offer: Offer,
     captain: UserAccount,
-    pallet: Pallet
+    pallet: Pallet,
+    lineItem: LineItem
 
   beforeEach(async () => {
     await sequelize.sync({ force: true })
@@ -77,29 +78,117 @@ describe('LineItems API', () => {
     })
   })
 
+  describe('lineItem', () => {
+    const GET_LINE_ITEM = gql`
+      query($id: Int!) {
+        lineItem(id: $id) {
+          id
+          offerPalletId
+          status
+          proposedReceivingGroup {
+            id
+            name
+          }
+          acceptedReceivingGroup {
+            id
+            name
+          }
+          containerType
+          category
+          description
+          itemCount
+          containerCount
+          containerWeightGrams
+          containerLengthCm
+          containerWidthCm
+          containerHeightCm
+          affirmLiability
+          tosAccepted
+          dangerousGoods
+          photoUris
+          sendingHubDeliveryDate
+          statusChangeTime
+        }
+      }
+    `
+
+    beforeEach(async () => {
+      pallet = await Pallet.create({
+        offerId: offer.id,
+        palletType: PalletType.Standard,
+        paymentStatus: PaymentStatus.Uninitiated,
+        paymentStatusChangeTime: new Date(),
+      })
+
+      lineItem = await LineItem.create({
+        offerPalletId: pallet.id,
+        status: LineItemStatus.Proposed,
+        containerType: LineItemContainerType.Unset,
+        category: LineItemCategory.Unset,
+        itemCount: 0,
+        affirmLiability: false,
+        tosAccepted: false,
+        dangerousGoods: [],
+        photoUris: [],
+        statusChangeTime: new Date(),
+      })
+    })
+
+    it('returns the line item for captains', async () => {
+      const res = await captainTestServer.query({
+        query: GET_LINE_ITEM,
+        variables: { id: lineItem.id },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res?.data?.lineItem?.id).toBeNumber()
+      expect(res?.data?.lineItem?.status).toEqual(LineItemStatus.Proposed)
+      expect(res?.data?.lineItem?.affirmLiability).toBeFalse()
+    })
+
+    it('returns the line item for admins', async () => {
+      const res = await adminTestServer.query({
+        query: GET_LINE_ITEM,
+        variables: { id: lineItem.id },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res?.data?.lineItem?.id).toBeNumber()
+      expect(res?.data?.lineItem?.status).toEqual(LineItemStatus.Proposed)
+      expect(res?.data?.lineItem?.affirmLiability).toBeFalse()
+    })
+
+    it('forbids access to other users', async () => {
+      const res = await otherUserTestServer.query({
+        query: GET_LINE_ITEM,
+        variables: { id: lineItem.id },
+      })
+
+      expect(res.errors?.[0].message).toEqual('Forbidden to access this offer')
+    })
+  })
+
   describe('addLineItem', () => {
     const ADD_LINE_ITEM = gql`
       mutation($palletId: Int!) {
         addLineItem(palletId: $palletId) {
-          lineItems {
-            offerPalletId
-            status
-            containerType
-            category
-            itemCount
-            affirmLiability
-            tosAccepted
-            dangerousGoods
-            photoUris
-            statusChangeTime
-          }
+          offerPalletId
+          status
+          containerType
+          category
+          itemCount
+          affirmLiability
+          tosAccepted
+          dangerousGoods
+          photoUris
+          statusChangeTime
         }
       }
     `
 
     it('creates a new line item', async () => {
       const res = await captainTestServer.mutate<
-        { addLineItem: Pallet },
+        { addLineItem: LineItem },
         { palletId: number }
       >({
         mutation: ADD_LINE_ITEM,
@@ -110,7 +199,7 @@ describe('LineItems API', () => {
 
       expect(res.errors).toBeUndefined()
 
-      const newLineItem = res?.data?.addLineItem?.lineItems?.[0]!
+      const newLineItem = res?.data?.addLineItem!
       expect(newLineItem.offerPalletId).toEqual(pallet.id)
       expect(newLineItem.status).toEqual(LineItemStatus.Proposed)
       expect(newLineItem.containerType).toEqual(LineItemContainerType.Unset)

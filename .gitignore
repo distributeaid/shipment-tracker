@@ -27,3 +27,6 @@ yarn-error.log*
 .vscode
 
 /.log
+
+# Auto-generated types
+src/server-internal-types.ts

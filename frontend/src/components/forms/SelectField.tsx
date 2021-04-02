@@ -51,7 +51,7 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
   /**
    * A required list of options to display in the dropdown
    */
-  options: SelectOption[]
+  options: readonly SelectOption[]
   /**
    * Callback triggered when the text changes. Works the same way as a regular
    * input element.

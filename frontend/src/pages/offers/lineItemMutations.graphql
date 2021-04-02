@@ -1,0 +1,5 @@
+mutation UpdateLineItem($id: Int!, $input: LineItemUpdateInput!) {
+  updateLineItem(id: $id, input: $input) {
+    ...AllLineItemFields
+  }
+}

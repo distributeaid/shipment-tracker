@@ -79,55 +79,55 @@ const ShipmentOffers: FunctionComponent<Props> = ({ shipmentId }) => {
 
   return (
     <div>
-      <div className="p-4 md:p-6 md:flex items-center justify-between">
-        <h2 className="text-lg text-gray-600">Offers for this shipment</h2>
-        <ButtonLink to={offerCreateRoute(shipmentId)}>
-          Create an offer
-        </ButtonLink>
+      <div className="p-4 md:p-6 flex items-center justify-between">
+        <h2 className="text-lg text-gray-700">Offers</h2>
+        <ButtonLink to={offerCreateRoute(shipmentId)}>Create offer</ButtonLink>
       </div>
-      <table className="w-full" {...getTableProps()}>
-        <thead className="border-b border-gray-200">
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <TableHeader
-                  canSort={column.canSort}
-                  isSorted={column.isSorted}
-                  isSortedDesc={column.isSortedDesc}
-                  title={column.canSort ? 'Sort rows' : ''}
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                >
-                  {column.render('Header')}
-                </TableHeader>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row)
-            return (
-              <tr
-                {...row.getRowProps()}
-                className="border-b border-gray-200 px-4"
-              >
-                {row.cells.map((cell) => (
-                  <td
-                    {...cell.getCellProps()}
-                    className={cx('p-2 first:pl-6 last:pr-6', {
-                      'font-semibold text-navy-700 hover:underline':
-                        cell.column.Header === 'Name',
-                      'bg-gray-50': cell.column.isSorted,
-                    })}
+      <div className="overflow-x-auto pb-8">
+        <table className="w-full whitespace-nowrap" {...getTableProps()}>
+          <thead className="border-b border-gray-200">
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <TableHeader
+                    canSort={column.canSort}
+                    isSorted={column.isSorted}
+                    isSortedDesc={column.isSortedDesc}
+                    title={column.canSort ? 'Sort rows' : ''}
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
                   >
-                    {cell.render('Cell')}
-                  </td>
+                    {column.render('Header')}
+                  </TableHeader>
                 ))}
               </tr>
-            )
-          })}
-        </tbody>
-      </table>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row)
+              return (
+                <tr
+                  {...row.getRowProps()}
+                  className="border-b border-gray-200 px-4"
+                >
+                  {row.cells.map((cell) => (
+                    <td
+                      {...cell.getCellProps()}
+                      className={cx('p-2 first:pl-6 last:pr-6', {
+                        'font-semibold text-navy-700 hover:underline':
+                          cell.column.Header === 'Name',
+                        'bg-gray-50': cell.column.isSorted,
+                      })}
+                    >
+                      {cell.render('Cell')}
+                    </td>
+                  ))}
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
       {rows.length === 0 && (
         <div className="flex items-center justify-center py-8 text-gray-500">
           No offers yet

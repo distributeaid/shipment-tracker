@@ -82,6 +82,8 @@ type Query {
 
   pallet(id: Int!): Pallet!
 
+  lineItem(id: Int!): LineItem!
+
   googleOAuthUrl(redirectPath: String): String!
 }
 
@@ -114,7 +116,7 @@ type Mutation {
   addPallet(input: PalletCreateInput!): Pallet!
   updatePallet(id: Int!, input: PalletUpdateInput!): Pallet!
   destroyPallet(id: Int!): Offer! # return the destroyed pallet's offer
-  addLineItem(palletId: Int!): Pallet! # return the pallet the line item was added to
+  addLineItem(palletId: Int!): LineItem!
   updateLineItem(id: Int!, input: LineItemUpdateInput!): LineItem!
   destroyLineItem(id: Int!): Pallet!
   moveLineItem(id: Int!, targetPalletId: Int!): Offer!

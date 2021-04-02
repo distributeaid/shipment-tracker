@@ -26,3 +26,6 @@ yarn-error.log*
 
 # CSS files output
 *.output.css
+
+# Auto-generated types
+src/types/api-types.ts

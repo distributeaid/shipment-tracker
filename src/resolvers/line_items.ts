@@ -13,11 +13,32 @@ import {
   LineItemStatus,
   LineItemUpdateInput,
   MutationResolvers,
+  QueryResolvers,
 } from '../server-internal-types'
 import getPalletWithParentAssociations from './getPalletWithParentAssociations'
-import { authorizeOfferMutation } from './offer_authorization'
+import {
+  authorizeOfferMutation,
+  authorizeOfferQuery,
+} from './offer_authorization'
 import validateEnumMembership from './validateEnumMembership'
 import validateUris from './validateUris'
+
+const lineItem: QueryResolvers['lineItem'] = async (_, { id }, context) => {
+  const lineItem = await getLineItemWithParentAssociations(id)
+
+  if (!lineItem) {
+    throw new UserInputError(`LineItem ${id} does not exist`)
+  }
+
+  const pallet = lineItem.offerPallet
+  if (!pallet) {
+    throw new UserInputError(`LineItem ${id} has no pallet!`)
+  }
+
+  authorizeOfferQuery(pallet.offer, context)
+
+  return lineItem
+}
 
 const addLineItem: MutationResolvers['addLineItem'] = async (
   _,
@@ -36,7 +57,7 @@ const addLineItem: MutationResolvers['addLineItem'] = async (
 
   authorizeOfferMutation(pallet.offer, context)
 
-  await LineItem.create({
+  return LineItem.create({
     offerPalletId: palletId,
     status: LineItemStatus.Proposed,
     containerType: LineItemContainerType.Unset,
@@ -48,8 +69,6 @@ const addLineItem: MutationResolvers['addLineItem'] = async (
     photoUris: [],
     statusChangeTime: new Date(),
   })
-
-  return pallet
 }
 
 const updateLineItem: MutationResolvers['updateLineItem'] = async (
@@ -254,4 +273,4 @@ const moveLineItem: MutationResolvers['moveLineItem'] = async (
   return lineItem.offerPallet.offer
 }
 
-export { addLineItem, updateLineItem, destroyLineItem, moveLineItem }
+export { lineItem, addLineItem, updateLineItem, destroyLineItem, moveLineItem }

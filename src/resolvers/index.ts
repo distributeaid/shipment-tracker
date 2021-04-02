@@ -5,6 +5,7 @@ import { addGroup, group, listGroups, updateGroup } from './group'
 import {
   addLineItem,
   destroyLineItem,
+  lineItem,
   moveLineItem,
   updateLineItem,
 } from './line_items'
@@ -41,6 +42,7 @@ const resolvers: Resolvers = {
     listOffers,
     pallet,
     googleOAuthUrl,
+    lineItem,
   },
 
   // Mutation Resolvers

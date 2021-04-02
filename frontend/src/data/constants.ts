@@ -1,5 +1,6 @@
 import {
   GroupType,
+  LineItemContainerType,
   OfferStatus,
   PalletType,
   PaymentStatus,
@@ -59,6 +60,13 @@ export const PALLET_PAYMENT_STATUS_OPTIONS = [
     value: PaymentStatus.WontPay,
   },
 ]
+
+export const LINE_ITEM_CONTAINER_OPTIONS = [
+  { label: 'Not set', value: LineItemContainerType.Unset },
+  { label: 'Box', value: LineItemContainerType.Box },
+  { label: 'Bulk bag', value: LineItemContainerType.BulkBag },
+  { label: 'Full pallet', value: LineItemContainerType.FullPallet },
+] as const
 
 export interface PalletConfig {
   name: string
