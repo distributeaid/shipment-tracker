@@ -1,5 +1,5 @@
 import { ForbiddenError, UserInputError } from 'apollo-server'
-import { GoogleSheetRow } from '../createGoogleSheet'
+import { CsvRow } from '../generateCsv'
 import LineItem from '../models/line_item'
 import Offer from '../models/offer'
 import Pallet from '../models/pallet'
@@ -52,14 +52,10 @@ const exportShipment: MutationResolvers['exportShipment'] = async (
     ),
   )
 
-  const googleSheetUrl = await services.createGoogleSheet(
-    shipment.displayName(),
-    rows,
-    auth.userAccount,
-  )
+  const csv = services.generateCsv(rows)
 
   const exportRecord = await ShipmentExport.create({
-    googleSheetUrl,
+    contentsCsv: csv,
     shipmentId,
     userAccountId: auth.userAccount.id,
   })
@@ -71,7 +67,7 @@ function makeExportRow(
   offer: Offer,
   pallet: Pallet,
   lineItem: LineItem,
-): GoogleSheetRow {
+): CsvRow {
   const contact = offer.contact || offer.sendingGroup.primaryContact
   const receivingGroupName = lineItem?.acceptedReceivingGroup
     ? `${lineItem.acceptedReceivingGroup.name} (accepted)`

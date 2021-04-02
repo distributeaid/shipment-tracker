@@ -105,7 +105,7 @@ describe('ShipmentExports API', () => {
         exportShipment(shipmentId: $shipmentId) {
           id
           shipmentId
-          googleSheetUrl
+          downloadPath
           createdBy {
             id
           }
@@ -114,7 +114,7 @@ describe('ShipmentExports API', () => {
       }
     `
 
-    it('exports to google sheets and creates a record of the export', async () => {
+    it('exports to CSV and creates a record of the export', async () => {
       const res = await adminTestServer.mutate<
         { exportShipment: ShipmentExport },
         { shipmentId: number }
@@ -127,8 +127,7 @@ describe('ShipmentExports API', () => {
 
       expect(res.errors).toBeUndefined()
 
-      expect(services.createGoogleSheetCalls[0]).toEqual({
-        title: 'Shipment-UK-2020-01',
+      expect(services.generateCsvCalls[0]).toEqual({
         rows: [
           [
             'group 1',

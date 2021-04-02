@@ -9,9 +9,8 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      googleSheetUrl: {
-        allowNull: false,
-        type: Sequelize.STRING,
+      contentsCsv: {
+        type: Sequelize.TEXT,
       },
       shipmentId: {
         allowNull: false,

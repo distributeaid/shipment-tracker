@@ -4,22 +4,22 @@ import dotenv from 'dotenv'
 import express from 'express'
 import { createServer } from 'http'
 import path from 'path'
+import apolloServer from './apolloServer'
+import findOrCreateProfile from './findOrCreateProfile'
+import getAllFilesSync from './getAllFilesSync'
+import sendShipmentExportCsv from './sendShipmentExportCsv'
+// Initialize the models
+import './sequelize'
 
 // Load the env vars before initializing code that depends on them
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config()
 }
 
-// Initialize the models
-import './sequelize'
-
-import findOrCreateProfile from './findOrCreateProfile'
-import apolloServer from './apolloServer'
-import getAllFilesSync from './getAllFilesSync'
-
 const app = express()
 
 app.get('/profile', findOrCreateProfile)
+app.get('/shipment-exports/:id', sendShipmentExportCsv)
 
 app.use(
   cors({

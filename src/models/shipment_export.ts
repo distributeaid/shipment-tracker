@@ -14,9 +14,9 @@ import UserAccount from './user_account'
 
 export interface ShipmentExportAttributes {
   id: number
-  googleSheetUrl: string
   shipmentId: number
   userAccountId: number
+  contentsCsv: string
 }
 
 export interface ShipmentExportCreationAttributes
@@ -28,8 +28,8 @@ export interface ShipmentExportCreationAttributes
 export default class ShipmentExport extends Model {
   public id!: number
 
-  @Column(DataType.STRING)
-  public googleSheetUrl!: string
+  @Column(DataType.TEXT)
+  public contentsCsv!: string
 
   @ForeignKey(() => Shipment)
   public shipmentId!: number
@@ -51,7 +51,7 @@ export default class ShipmentExport extends Model {
     return {
       id: this.id,
       shipmentId: this.shipmentId,
-      googleSheetUrl: this.googleSheetUrl,
+      downloadPath: `/shipment-exports/${this.id}`,
       createdBy: {
         id: this.userAccountId,
         isAdmin: true,

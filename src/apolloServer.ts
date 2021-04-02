@@ -5,17 +5,12 @@ import {
 } from 'apollo-server-express'
 import depthLimit from 'graphql-depth-limit'
 import { AuthenticatedAuth, authenticateRequest } from './authenticateRequest'
-import createGoogleSheet, { GoogleSheetRow } from './createGoogleSheet'
-import UserAccount from './models/user_account'
+import generateCsv, { CsvRow } from './generateCsv'
 import resolvers from './resolvers'
 import typeDefs from './typeDefs'
 
 export type Services = {
-  createGoogleSheet: (
-    title: string,
-    rows: Array<GoogleSheetRow>,
-    userAccount: UserAccount,
-  ) => Promise<string>
+  generateCsv: (rows: CsvRow[]) => string
 }
 
 export type AuthenticatedContext = {
@@ -36,7 +31,7 @@ export const serverConfig: ApolloServerExpressConfig = {
       )
     }
 
-    return { auth: auth as AuthenticatedAuth, services: { createGoogleSheet } }
+    return { auth: auth as AuthenticatedAuth, services: { generateCsv } }
   },
 }
 

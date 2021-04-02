@@ -3,34 +3,27 @@ import { ApolloServerTestClient, createTestClient } from 'apollo-server-testing'
 import { merge } from 'lodash'
 import { serverConfig, Services } from './apolloServer'
 import { fakeAdminAuth, fakeUserAuth } from './authenticateRequest'
-import { GoogleSheetRow } from './createGoogleSheet'
+import { CsvRow } from './generateCsv'
 import UserAccount from './models/user_account'
 
 export type TestServices = Services & {
-  createGoogleSheetCalls: Array<CreateGoogleSheetCall>
+  generateCsvCalls: Array<GenerateCsvCall>
 }
 
-type CreateGoogleSheetCall = {
-  title: string
-  rows: Array<GoogleSheetRow>
+type GenerateCsvCall = {
+  rows: Array<CsvRow>
 }
 
-const makeFakeCreateGoogleSheetFn = () => {
-  const createGoogleSheetCalls: Array<CreateGoogleSheetCall> = []
+const makeFakeGenerateCsvFn = () => {
+  const generateCsvCalls: Array<GenerateCsvCall> = []
 
-  const createGoogleSheet = async (
-    title: string,
-    rows: Array<GoogleSheetRow>,
-  ): Promise<string> => {
-    createGoogleSheetCalls.push({
-      title,
-      rows,
-    })
+  const generateCsv = (rows: Array<CsvRow>): string => {
+    generateCsvCalls.push({ rows })
 
-    return `stub-url-for-${title}`
+    return 'stubbed-csv'
   }
 
-  return { createGoogleSheet, createGoogleSheetCalls }
+  return { generateCsv, generateCsvCalls }
 }
 
 export const makeTestServer = async (
@@ -44,7 +37,7 @@ export const makeTestServer = async (
     overrides.context = () => ({
       auth: { ...fakeUserAuth, userAccount },
       services: {
-        createGoogleSheet: makeFakeCreateGoogleSheetFn().createGoogleSheet,
+        generateCsv: makeFakeGenerateCsvFn().generateCsv,
       },
     })
   }
@@ -63,10 +56,10 @@ export const makeAdminTestServerWithServices = async (
     auth0Id: 'admin-auth0-id',
   })
 
-  const fakeCreateGoogleSheet = makeFakeCreateGoogleSheetFn()
+  const fakeGenrateCsv = makeFakeGenerateCsvFn()
 
   const services = {
-    ...fakeCreateGoogleSheet,
+    ...fakeGenrateCsv,
   }
 
   const testServer = await makeTestServer({

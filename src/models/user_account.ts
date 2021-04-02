@@ -1,18 +1,16 @@
 import {
   Column,
   CreatedAt,
-  DataType,
   Model,
   Table,
   UpdatedAt,
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
-import { GoogleAuthState, UserProfile } from '../server-internal-types'
+import { UserProfile } from '../server-internal-types'
 
 export interface UserAccountAttributes {
   id: number
   auth0Id: string
-  googleAuthState?: GoogleAuthState
 }
 
 export interface UserAccountCreationAttributes
@@ -30,9 +28,6 @@ export default class UserAccount extends Model<
   @Column
   public auth0Id!: string
 
-  @Column(DataType.JSONB)
-  public googleAuthState: GoogleAuthState | undefined
-
   @CreatedAt
   @Column
   public readonly createdAt!: Date
@@ -45,7 +40,6 @@ export default class UserAccount extends Model<
     return {
       id: this.id,
       isAdmin,
-      googleAuthState: this.googleAuthState,
     }
   }
 }

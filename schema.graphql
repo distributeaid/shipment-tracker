@@ -83,24 +83,6 @@ type Query {
   pallet(id: Int!): Pallet!
 
   lineItem(id: Int!): LineItem!
-
-  googleOAuthUrl(redirectPath: String): String!
-}
-
-input GoogleAuthStateInput {
-  refreshToken: String!
-  expiryDate: Date
-  accessToken: String!
-  tokenType: String!
-  idToken: String!
-}
-
-type GoogleAuthState {
-  refreshToken: String!
-  expiryDate: Date
-  accessToken: String!
-  tokenType: String!
-  idToken: String!
 }
 
 type Mutation {
@@ -120,8 +102,6 @@ type Mutation {
   updateLineItem(id: Int!, input: LineItemUpdateInput!): LineItem!
   destroyLineItem(id: Int!): Pallet!
   moveLineItem(id: Int!, targetPalletId: Int!): Offer!
-
-  updateProfileWithGoogleAuthState(input: GoogleAuthStateInput!): UserProfile!
 
   exportShipment(shipmentId: Int!): ShipmentExport!
   listShipmentExports(shipmentId: Int!): [ShipmentExport!]!
@@ -202,7 +182,6 @@ enum GroupType {
 type UserProfile {
   id: Int!
   isAdmin: Boolean!
-  googleAuthState: GoogleAuthState
 }
 
 enum OfferStatus {
@@ -354,7 +333,7 @@ input LineItemUpdateInput {
 
 type ShipmentExport {
   id: Int!
-  googleSheetUrl: String!
+  downloadPath: String!
   shipmentId: Int!
   createdBy: UserProfile!
   createdAt: Date!
