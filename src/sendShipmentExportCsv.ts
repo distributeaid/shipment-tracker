@@ -19,7 +19,7 @@ const sendShipmentExportCsv = async (req: Request, res: Response) => {
     return
   }
 
-  const filename = shipmentExport.shipment.displayName()
+  const filename = shipmentExport.shipment.displayName() + '.csv'
 
   res.contentType('text/plain')
   res.set('Content-Disposition', `attachment; filename=${filename}`)
