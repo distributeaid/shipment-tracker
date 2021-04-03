@@ -1,20 +1,16 @@
 import compression from 'compression'
 import cors from 'cors'
-import dotenv from 'dotenv'
 import express from 'express'
 import { createServer } from 'http'
 import path from 'path'
+// The autoformatter alphabetizes imports and moves all imports before other code in the file
+import './00_loadEnv'
 import apolloServer from './apolloServer'
 import findOrCreateProfile from './findOrCreateProfile'
 import getAllFilesSync from './getAllFilesSync'
 import sendShipmentExportCsv from './sendShipmentExportCsv'
 // Initialize the models
 import './sequelize'
-
-// Load the env vars before initializing code that depends on them
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config()
-}
 
 const app = express()
 
