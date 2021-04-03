@@ -4,7 +4,8 @@ import express from 'express'
 import { createServer } from 'http'
 import path from 'path'
 // tslint:disable:ordered-imports
-import './00_loadEnv'
+// Note: the order of these imports matters!
+import './loadEnv'
 // Initialize the models
 import './sequelize'
 import apolloServer from './apolloServer'
