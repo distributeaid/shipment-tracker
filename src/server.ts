@@ -1,13 +1,16 @@
+// tslint:disable:ordered-imports
 import compression from 'compression'
 import cors from 'cors'
 import express from 'express'
 import { createServer } from 'http'
 import path from 'path'
-// tslint:disable:ordered-imports
+
 // Note: the order of these imports matters!
 import './loadEnv'
+
 // Initialize the models
 import './sequelize'
+
 import apolloServer from './apolloServer'
 import findOrCreateProfile from './findOrCreateProfile'
 import getAllFilesSync from './getAllFilesSync'
