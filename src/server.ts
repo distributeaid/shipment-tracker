@@ -1,16 +1,20 @@
+// tslint:disable:ordered-imports
 import compression from 'compression'
 import cors from 'cors'
 import express from 'express'
 import { createServer } from 'http'
 import path from 'path'
-// The autoformatter alphabetizes imports and moves all imports before other code in the file
-import './00_loadEnv'
+
+// Note: the order of these imports matters!
+import './loadEnv'
+
+// Initialize the models
+import './sequelize'
+
 import apolloServer from './apolloServer'
 import findOrCreateProfile from './findOrCreateProfile'
 import getAllFilesSync from './getAllFilesSync'
 import sendShipmentExportCsv from './sendShipmentExportCsv'
-// Initialize the models
-import './sequelize'
 
 const app = express()
 
