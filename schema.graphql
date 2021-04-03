@@ -144,7 +144,7 @@ type Shipment {
   receivingHub: Group!
   pricing: ShipmentPricing
 
-  # Exports are forbidden to non-users
+  # Exports are forbidden to non-admins
   exports: [ShipmentExport!]
 
   # default to created
