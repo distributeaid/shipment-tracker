@@ -22,6 +22,7 @@ import {
   receivingHub,
   sendingHub,
   shipment,
+  shipmentExports,
   updateShipment,
 } from './shipment'
 import { exportShipment } from './shipment_exports'
@@ -64,6 +65,7 @@ const resolvers: Resolvers = {
   Shipment: {
     sendingHub,
     receivingHub,
+    exports: shipmentExports,
   },
 
   Offer: {

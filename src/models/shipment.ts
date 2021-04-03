@@ -94,7 +94,7 @@ export default class Shipment extends Model<
       'Shipment',
       this.shippingRoute,
       this.labelYear,
-      this.labelMonth.toString().padStart(2, "0"),
+      this.labelMonth.toString().padStart(2, '0'),
     ].join('-')
   }
 }

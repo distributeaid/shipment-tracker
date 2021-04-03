@@ -104,7 +104,6 @@ type Mutation {
   moveLineItem(id: Int!, targetPalletId: Int!): Offer!
 
   exportShipment(shipmentId: Int!): ShipmentExport!
-  listShipmentExports(shipmentId: Int!): [ShipmentExport!]!
 }
 
 input ShipmentCreateInput {
@@ -144,6 +143,9 @@ type Shipment {
   receivingHubId: Int!
   receivingHub: Group!
   pricing: ShipmentPricing
+
+  # Exports are forbidden to non-users
+  exports: [ShipmentExport!]
 
   # default to created
   statusChangeTime: Date!
