@@ -1,11 +1,12 @@
 import {
-  Model,
   Column,
-  Table,
   CreatedAt,
+  Model,
+  Table,
   UpdatedAt,
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
+import { UserProfile } from '../server-internal-types'
 
 export interface UserAccountAttributes {
   id: number
@@ -34,4 +35,11 @@ export default class UserAccount extends Model<
   @UpdatedAt
   @Column
   public readonly updatedAt!: Date
+
+  public asProfile(isAdmin = false): UserProfile {
+    return {
+      id: this.id,
+      isAdmin,
+    }
+  }
 }

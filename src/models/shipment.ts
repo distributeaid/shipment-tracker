@@ -4,6 +4,7 @@ import {
   CreatedAt,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   Table,
   UpdatedAt,
@@ -15,6 +16,7 @@ import {
   ShippingRoute,
 } from '../server-internal-types'
 import Group from './group'
+import Offer from './offer'
 
 export interface ShipmentAttributes {
   id: number
@@ -53,6 +55,9 @@ export default class Shipment extends Model<
   @Column
   public offerSubmissionDeadline?: Date
 
+  @HasMany(() => Offer)
+  public offers!: Offer[]
+
   @Column(DataType.STRING)
   public status!: ShipmentStatus
 
@@ -83,4 +88,13 @@ export default class Shipment extends Model<
   @UpdatedAt
   @Column
   public readonly updatedAt!: Date
+
+  public displayName(): string {
+    return [
+      'Shipment',
+      this.shippingRoute,
+      this.labelYear,
+      this.labelMonth.toString().padStart(2, '0'),
+    ].join('-')
+  }
 }

@@ -2,6 +2,7 @@ import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { has, isEqual } from 'lodash'
 import Group from '../models/group'
 import Shipment, { ShipmentAttributes } from '../models/shipment'
+import ShipmentExport from '../models/shipment_export'
 import {
   MutationResolvers,
   QueryResolvers,
@@ -169,6 +170,22 @@ const receivingHub: ShipmentResolvers['receivingHub'] = async (parent) => {
   return receivingHub
 }
 
+const shipmentExports: ShipmentResolvers['exports'] = async (
+  parent,
+  _,
+  { auth: isAdmin },
+) => {
+  if (!isAdmin) {
+    throw new ForbiddenError('Must be admin to query shipment exports')
+  }
+
+  return ShipmentExport.findAll({
+    where: { shipmentId: parent.id },
+  }).then((shipmentExports) =>
+    shipmentExports.map((shipmentExport) => shipmentExport.toWireFormat()),
+  )
+}
+
 export {
   listShipments,
   shipment,
@@ -176,4 +193,5 @@ export {
   updateShipment,
   sendingHub,
   receivingHub,
+  shipmentExports,
 }

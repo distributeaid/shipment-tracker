@@ -2,9 +2,12 @@ import { ApolloServerTestClient } from 'apollo-server-testing'
 import gql from 'graphql-tag'
 import Group from '../models/group'
 import Shipment from '../models/shipment'
+import ShipmentExport from '../models/shipment_export'
+import UserAccount from '../models/user_account'
 import { sequelize } from '../sequelize'
 import {
   GroupType,
+  Shipment as GqlShipment,
   ShipmentCreateInput,
   ShipmentStatus,
   ShipmentUpdateInput,
@@ -340,7 +343,7 @@ describe('Shipments API', () => {
   })
 
   describe('shipment', () => {
-    let shipment: Shipment
+    let shipment: Shipment, shipmentExport: ShipmentExport
 
     beforeEach(async () => {
       shipment = await createShipment({
@@ -351,12 +354,32 @@ describe('Shipments API', () => {
         receivingHubId: group2.id,
         status: ShipmentStatus.Open,
       })
+
+      const user = await UserAccount.findOne()
+
+      shipmentExport = await ShipmentExport.create({
+        shipmentId: shipment.id,
+        userAccountId: user!.id,
+        contentsCsv: 'fake-contents',
+      })
     })
 
     const SHIPMENT = gql`
       query($id: Int!) {
         shipment(id: $id) {
           shippingRoute
+        }
+      }
+    `
+
+    const SHIPMENT_WITH_EXPORTS = gql`
+      query($id: Int!) {
+        shipment(id: $id) {
+          shippingRoute
+          exports {
+            id
+            downloadPath
+          }
         }
       }
     `
@@ -379,11 +402,26 @@ describe('Shipments API', () => {
         it('returns the correct group', async () => {
           const res = await testServer.query<{ shipment: Shipment }>({
             query: SHIPMENT,
-            variables: { id: 1 },
+            variables: { id: shipment.id },
           })
 
           expect(res.errors).toBeUndefined()
           expect(res.data?.shipment?.shippingRoute).toBe(shipment.shippingRoute)
+        })
+
+        it('returns exports when admins ask for them', async () => {
+          const res = await adminTestServer.query<{ shipment: GqlShipment }>({
+            query: SHIPMENT_WITH_EXPORTS,
+            variables: { id: shipment.id },
+          })
+
+          expect(res.errors).toBeUndefined()
+
+          const returnedExport = res.data?.shipment?.exports?.[0]!
+
+          expect(returnedExport).not.toBeNil()
+          expect(returnedExport.id).not.toBeNil()
+          expect(returnedExport.downloadPath).not.toBeNil()
         })
       })
 

@@ -4,21 +4,18 @@ import {
   AuthenticationError,
 } from 'apollo-server-express'
 import depthLimit from 'graphql-depth-limit'
-
+import { AuthenticatedAuth, authenticateRequest } from './authenticateRequest'
+import generateCsv, { CsvRow } from './generateCsv'
 import resolvers from './resolvers'
 import typeDefs from './typeDefs'
-import {
-  Auth,
-  AuthenticatedAuth,
-  authenticateRequest,
-} from './authenticateRequest'
 
-export type Context = {
-  auth: Auth
+export type Services = {
+  generateCsv: (rows: CsvRow[]) => string
 }
 
 export type AuthenticatedContext = {
   auth: AuthenticatedAuth
+  services: Services
 }
 
 export const serverConfig: ApolloServerExpressConfig = {
@@ -34,10 +31,8 @@ export const serverConfig: ApolloServerExpressConfig = {
       )
     }
 
-    return { auth: auth as AuthenticatedAuth }
+    return { auth: auth as AuthenticatedAuth, services: { generateCsv } }
   },
 }
 
-const apolloServer = new ApolloServer(serverConfig)
-
-export default apolloServer
+export default new ApolloServer(serverConfig)
