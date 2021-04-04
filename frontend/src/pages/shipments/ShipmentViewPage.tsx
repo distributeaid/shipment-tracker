@@ -1,11 +1,16 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, useContext } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
+import Button from '../../components/Button'
 import ButtonLink from '../../components/ButtonLink'
 import InternalLink from '../../components/InternalLink'
 import TabLink from '../../components/tabs/TabLink'
 import TabList from '../../components/tabs/TabList'
+import { UserProfileContext } from '../../components/UserProfileContext'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { useShipmentQuery } from '../../types/api-types'
+import {
+  useExportShipmentToCsvMutation,
+  useShipmentQuery,
+} from '../../types/api-types'
 import { formatShipmentName } from '../../utils/format'
 import ROUTES, {
   shipmentEditRoute,
@@ -16,6 +21,7 @@ import ShipmentDetails from './ShipmentDetails'
 import ShipmentOffers from './ShipmentOffers'
 
 const ShipmentViewPage: FunctionComponent = () => {
+  const user = useContext(UserProfileContext)
   const params = useParams<{ shipmentId: string }>()
   const shipmentId = parseInt(params.shipmentId, 10)
 
@@ -24,6 +30,23 @@ const ShipmentViewPage: FunctionComponent = () => {
   })
 
   const shipmentData = shipment?.shipment
+
+  const [
+    exportShipment,
+    { loading: exportIsProcessing },
+  ] = useExportShipmentToCsvMutation()
+
+  const exportToCSV = () => {
+    exportShipment({ variables: { shipmentId } }).then((data) => {
+      const downloadPath = data.data?.exportShipment.downloadPath
+
+      if (downloadPath) {
+        window.location.href = downloadPath
+      } else {
+        console.error('Unable to download the shipment')
+      }
+    })
+  }
 
   return (
     <LayoutWithNav>
@@ -40,7 +63,10 @@ const ShipmentViewPage: FunctionComponent = () => {
               {shipmentData ? formatShipmentName(shipmentData) : ''}
             </h1>
           </div>
-          <div className="flex-shrink mt-4 md:mt-0">
+          <div className="flex-shrink space-x-4 mt-4 md:mt-0">
+            {user?.isAdmin && (
+              <Button onClick={exportToCSV}>Export to CSV</Button>
+            )}
             <ButtonLink to={shipmentEditRoute(shipmentId)}>Edit</ButtonLink>
           </div>
         </header>

@@ -1,0 +1,6 @@
+mutation ExportShipmentToCSV($shipmentId: Int!) {
+  exportShipment(shipmentId: $shipmentId) {
+    id
+    downloadPath
+  }
+}
