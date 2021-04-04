@@ -15,7 +15,8 @@
     "heroku-postbuild": "yarn build && npx sequelize-cli db:migrate && cd frontend && yarn install && yarn build:styles && yarn build",
     "test": "jest --detectOpenHandles",
     "test-ci": "DB_ENV=ci jest --detectOpenHandles",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "migrate-db": "npx sequelize-cli db:migrate"
   },
   "engines": {
     "node": ">=14.0.0",

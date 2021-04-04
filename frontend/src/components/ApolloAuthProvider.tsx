@@ -2,6 +2,7 @@ import {
   ApolloClient,
   ApolloLink,
   ApolloProvider,
+  FieldMergeFunction,
   fromPromise,
   HttpLink,
   InMemoryCache,
@@ -16,6 +17,20 @@ const httpLink = new HttpLink({
   uri: process.env.REACT_APP_SERVER_URL,
   credentials: 'include',
 })
+
+/**
+ * Merge fields by replacing them with the incoming value.
+ *
+ * This custom merge function is APPARENTLY necessary to avoid the
+ * following warning:
+ * "Cache data may be lost when replacing the pallets field of a
+ * <object type> object"
+ */
+const mergeByReplacement: { merge: FieldMergeFunction } = {
+  merge: (existing = [], incoming = []) => {
+    return [...incoming]
+  },
+}
 
 const ApolloAuthProvider: FunctionComponent = ({ children }) => {
   const { getAccessTokenSilently } = useAuth0()
@@ -47,15 +62,12 @@ const ApolloAuthProvider: FunctionComponent = ({ children }) => {
       typePolicies: {
         Offer: {
           fields: {
-            // This custom merge function is APPARENTLY necessary to avoid the
-            // following warning:
-            // "Cache data may be lost when replacing the pallets field of a
-            // Offer object"
-            pallets: {
-              merge: (existing = [], incoming = []) => {
-                return [...incoming]
-              },
-            },
+            pallets: mergeByReplacement,
+          },
+        },
+        Pallet: {
+          fields: {
+            lineItems: mergeByReplacement,
           },
         },
       },

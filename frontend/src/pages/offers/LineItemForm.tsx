@@ -4,19 +4,28 @@ import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
+import ConfirmationModal from '../../components/modal/ConfirmationModal'
 import Spinner from '../../components/Spinner'
 import { LINE_ITEM_CONTAINER_OPTIONS } from '../../data/constants'
+import useModalState from '../../hooks/useModalState'
 import {
   LineItemUpdateInput,
+  PalletDocument,
+  PalletQuery,
+  useDestroyLineItemMutation,
   useLineItemQuery,
   useUpdateLineItemMutation,
 } from '../../types/api-types'
 
 interface Props {
   lineItemId: number
+  onLineItemDeleted: () => void
 }
 
-const LineItemForm: FunctionComponent<Props> = ({ lineItemId }) => {
+const LineItemForm: FunctionComponent<Props> = ({
+  lineItemId,
+  onLineItemDeleted,
+}) => {
   const { data, refetch, loading: lineItemIsLoading } = useLineItemQuery({
     variables: { id: lineItemId },
   })
@@ -76,15 +85,71 @@ const LineItemForm: FunctionComponent<Props> = ({ lineItemId }) => {
     updateLineItem({ variables: { id: lineItemId, input: updatedLineItem } })
   }
 
+  const [
+    deleteConfirmationIsVisible,
+    showDeleteConfirmation,
+    hideDeleteConfirmation,
+  ] = useModalState()
+
+  const [destroyLineItem] = useDestroyLineItemMutation()
+
+  const confirmDeleteLineItem = () => {
+    destroyLineItem({
+      variables: { id: lineItemId },
+      update: (cache, { data }) => {
+        const palletId = data?.destroyLineItem.id
+
+        try {
+          const palletData = cache.readQuery<PalletQuery>({
+            query: PalletDocument,
+            variables: { id: palletId },
+          })
+
+          cache.writeQuery<PalletQuery>({
+            query: PalletDocument,
+            variables: { id: palletId },
+            data: {
+              pallet: Object.assign({}, palletData!.pallet, {
+                lineItems: [
+                  ...palletData!.pallet.lineItems.filter(
+                    (item) => item.id !== lineItemId,
+                  ),
+                ],
+              }),
+            },
+          })
+        } catch (error) {
+          console.error(error)
+        }
+      },
+    }).then(() => {
+      onLineItemDeleted()
+      hideDeleteConfirmation()
+    })
+  }
+
   // TODO build a read-only version of this form and toggle between the two
 
   return (
     <form onSubmit={handleSubmit(submitForm)}>
-      {lineItemIsLoading && (
-        <p>
-          <Spinner /> loading...
-        </p>
-      )}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-gray-700 text-lg flex items-center">
+          Line Item {lineItemIsLoading && <Spinner className="ml-2" />}
+        </h2>
+        <Button variant="danger" onClick={showDeleteConfirmation}>
+          Delete
+        </Button>
+      </div>
+      <ConfirmationModal
+        isOpen={deleteConfirmationIsVisible}
+        confirmLabel="Delete this line item"
+        onCancel={hideDeleteConfirmation}
+        onConfirm={confirmDeleteLineItem}
+        title={`Confirm deleting line item  #${lineItemId}`}
+      >
+        Are you certain you want to delete this line item? This action is
+        irreversible.
+      </ConfirmationModal>
       <fieldset className="space-y-4">
         <legend className="font-semibold text-gray-700 ">Contents</legend>
         <TextField label="Description" name="description" register={register} />
