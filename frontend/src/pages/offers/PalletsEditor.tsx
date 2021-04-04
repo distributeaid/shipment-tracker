@@ -108,11 +108,15 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
     addPallet({ variables: { input: newPallet } }).then(hideCreateModal)
   }
 
+  const onLineItemDeleted = () => {
+    setSelectedLineItemId(undefined)
+  }
+
   return (
     <>
       <div className="w-1/3 h-full">
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <span className="font-semibold text-gray-800">Pallets</span>
+          <span className="text-lg text-gray-700">Pallets</span>
           <Button disabled={mutationIsLoading} onClick={showCreateModal}>
             Add a pallet
           </Button>
@@ -199,7 +203,10 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
         )}
         {selectedPalletId != null && selectedLineItemId != null && (
           <div className="h-full w-full p-4">
-            <LineItemForm lineItemId={selectedLineItemId} />
+            <LineItemForm
+              lineItemId={selectedLineItemId}
+              onLineItemDeleted={onLineItemDeleted}
+            />
           </div>
         )}
       </div>

@@ -3,3 +3,9 @@ mutation UpdateLineItem($id: Int!, $input: LineItemUpdateInput!) {
     ...AllLineItemFields
   }
 }
+
+mutation DestroyLineItem($id: Int!) {
+  destroyLineItem(id: $id) {
+    id
+  }
+}

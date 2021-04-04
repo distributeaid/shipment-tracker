@@ -58,6 +58,19 @@ const ApolloAuthProvider: FunctionComponent = ({ children }) => {
             },
           },
         },
+        Pallet: {
+          fields: {
+            // This custom merge function is APPARENTLY necessary to avoid the
+            // following warning:
+            // "Cache data may be lost when replacing the lineItems field of a
+            // Pallet object"
+            lineItems: {
+              merge: (existing = [], incoming = []) => {
+                return [...incoming]
+              },
+            },
+          },
+        },
       },
     }),
   })
