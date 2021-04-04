@@ -98,6 +98,7 @@ const LineItemForm: FunctionComponent<Props> = ({
       variables: { id: lineItemId },
       update: (cache, { data }) => {
         const palletId = data?.destroyLineItem.id
+
         try {
           const palletData = cache.readQuery<PalletQuery>({
             query: PalletDocument,

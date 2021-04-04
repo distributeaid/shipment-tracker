@@ -16,7 +16,7 @@
     "test": "jest --detectOpenHandles",
     "test-ci": "DB_ENV=ci jest --detectOpenHandles",
     "prepare": "husky install",
-    "migrations": "npx sequelize-cli db:migrate"
+    "migrate-db": "npx sequelize-cli db:migrate"
   },
   "engines": {
     "node": ">=14.0.0",

@@ -12,6 +12,9 @@ To run all migrations use the following command:
 
 ```sh
 npx sequelize-cli db:migrate
+
+# or if it's easier to remember:
+yarn run migrate-db
 ```
 
 You can rollback a single migration by running:
