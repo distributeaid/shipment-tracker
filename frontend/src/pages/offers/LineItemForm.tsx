@@ -91,7 +91,6 @@ const LineItemForm: FunctionComponent<Props> = ({
     updateLineItem({
       variables: { id: lineItemId, input: updatedLineItem },
     }).then(() => {
-      // Tell the parent container that we're done editing this line item
       onEditingComplete()
     })
   })
