@@ -16,11 +16,40 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
    */
   register?: UseFormRegister<any>
   /**
-   * A set of options in the format supported by `react-hook-form`. This prop is
-   * required if the `register` prop is passed as well.
+   * A set of options in the format supported by `react-hook-form`.
+   *
+   * ⚠️ If validations for `min`, `max`, `minLength`, `maxLength`, or `required`
+   * are provided in this object, they will override the props of the same name
+   * passed individually. This allows users to define custom error messages if
+   * they so wish:
+   *
+   * @example
+   * <TextInput
+   *   label="Age"
+   *   required
+   *   min={16} />
+   *
+   * @example
+   * <TextInput
+   *   label="Age"
+   *   registerOptions={{
+   *     required: "Age is a required field",
+   *     min: {
+   *       value: 16,
+   *       message: "You must be at least 16 to create offers"
+   *     }
+   *   }} />
    */
   registerOptions?: RegisterOptions
 }
+
+const PROPS_TO_PICK = [
+  'min',
+  'max',
+  'minLength',
+  'maxLength',
+  'required',
+] as const
 
 const TextInput: FunctionComponent<Props> = ({
   type = 'text',
@@ -46,15 +75,12 @@ const TextInput: FunctionComponent<Props> = ({
     },
   )
 
-  if (register != null) {
-    const PROPS_TO_PICK = [
-      'min',
-      'max',
-      'minLength',
-      'maxLength',
-      'required',
-    ] as const
-
+  if (register) {
+    /**
+     * Merge the `registerOptions` onto the props. This allows users to define
+     * custom validations if they so wish.
+     * @see registerOptions
+     */
     let customOptions: RegisterOptions = _merge(
       _pick(otherProps, PROPS_TO_PICK),
       registerOptions || {},

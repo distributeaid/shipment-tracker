@@ -44,7 +44,7 @@ const SelectInput: FunctionComponent<Props> = ({
     },
   )
 
-  if (register != null) {
+  if (register) {
     const customOptions: RegisterOptions = _merge(
       _pick(otherProps, ['required']),
       registerOptions,
