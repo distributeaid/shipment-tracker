@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react'
 
 const InlineError: FunctionComponent = ({ children }) => {
   return (
-    <small className="flex items-center text-sm text-red-700 my-2">
+    <small className="flex text-sm text-red-700 my-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"

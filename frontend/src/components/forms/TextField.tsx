@@ -1,16 +1,24 @@
-import {
-  FunctionComponent,
-  useState,
-  ReactNode,
-  ChangeEvent,
-  InputHTMLAttributes,
-} from 'react'
-
+import { ErrorMessage } from '@hookform/error-message'
+import _get from 'lodash/get'
 import { nanoid } from 'nanoid'
-import TextInput from './TextInput'
-import Label from './Label'
+import {
+  ChangeEvent,
+  FunctionComponent,
+  InputHTMLAttributes,
+  ReactNode,
+  useState,
+} from 'react'
+import {
+  DeepMap,
+  FieldError,
+  RegisterOptions,
+  UseFormRegister,
+} from 'react-hook-form'
 import InlineError from './InlineError'
-import { FormRegisterType } from '../../types/form-types'
+import Label from './Label'
+import TextInput from './TextInput'
+
+const isDev = process.env.NODE_ENV === 'development'
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   /**
@@ -25,7 +33,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
    * A name added to the input element can be used for form parsing and
    * validation
    */
-  name?: string
+  name: string
   /**
    * A placeholder value for the input
    */
@@ -55,13 +63,21 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   /**
    * The register function from `react-hook-form`'s `useForm()` hook used for validation and submission
    */
-  register?: FormRegisterType
+  register?: UseFormRegister<any>
+  /**
+   * The register function from `react-hook-form`'s `useForm()` hook used for validation and submission
+   */
+  registerOptions?: RegisterOptions
+  /**
+   * A set of FieldErrors provided by `react-hook-form`
+   */
+  errors?: DeepMap<any, FieldError>
 }
 
 const TextField: FunctionComponent<Props> = ({
   id,
   label,
-  error = null,
+  errors,
   ...otherProps
 }) => {
   // Create a unique ID in case the use doesn't provide one
@@ -69,13 +85,25 @@ const TextField: FunctionComponent<Props> = ({
 
   const fieldId = id || uniqueId
 
+  // The name can be nested, eg 'primaryContact.name', in which case doing
+  // errors['primaryContact.name'] wouldn't work. Thus, enter lodash.get
+  const hasError = _get(errors, otherProps.name, null) != null
+
+  if (isDev && otherProps.register != null && errors == null) {
+    console.warn(`The field "${otherProps.name}" is missing an "errors" prop`)
+  }
+
   return (
     <div className="w-full">
       <Label htmlFor={fieldId} required={otherProps.required}>
         {label}
       </Label>
-      {error && <InlineError>{error}</InlineError>}
-      <TextInput {...otherProps} hasError={!!error} id={fieldId} />
+      <ErrorMessage
+        name={otherProps.name}
+        errors={errors || {}}
+        as={InlineError}
+      />
+      <TextInput {...otherProps} hasError={hasError} id={fieldId} />
     </div>
   )
 }

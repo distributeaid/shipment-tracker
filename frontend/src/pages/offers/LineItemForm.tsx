@@ -4,33 +4,40 @@ import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
-import ConfirmationModal from '../../components/modal/ConfirmationModal'
 import Spinner from '../../components/Spinner'
 import { LINE_ITEM_CONTAINER_OPTIONS } from '../../data/constants'
-import useModalState from '../../hooks/useModalState'
 import {
   LineItemUpdateInput,
-  PalletDocument,
-  PalletQuery,
-  useDestroyLineItemMutation,
   useLineItemQuery,
   useUpdateLineItemMutation,
 } from '../../types/api-types'
 
 interface Props {
+  /**
+   * The ID of the line item to display
+   */
   lineItemId: number
-  onLineItemDeleted: () => void
+  /**
+   * Callback triggered when the user has finished editing the line item. The
+   * parent component should handle this side effect.
+   */
+  onEditingComplete: () => void
 }
 
 const LineItemForm: FunctionComponent<Props> = ({
   lineItemId,
-  onLineItemDeleted,
+  onEditingComplete,
 }) => {
   const { data, refetch, loading: lineItemIsLoading } = useLineItemQuery({
     variables: { id: lineItemId },
   })
 
-  const { register, handleSubmit, reset } = useForm<LineItemUpdateInput>()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<LineItemUpdateInput>()
 
   useEffect(
     function fetchLineItem() {
@@ -53,13 +60,15 @@ const LineItemForm: FunctionComponent<Props> = ({
     { loading: mutationIsLoading },
   ] = useUpdateLineItemMutation()
 
-  const submitForm = (input: LineItemUpdateInput) => {
+  const submitForm = handleSubmit((input) => {
     if (!data?.lineItem) {
       return
     }
 
-    // Pick the LineItemUpdateInput fields from the line item data
-    let updatedLineItem = _pick(data.lineItem, [
+    // We need to all the fields from LineItemUpdateInput, even the ones that
+    // didn't change. We then _pick the fields to make sure we don't send things
+    // like `id` or `__typename`
+    const updatedLineItem = _pick(Object.assign({}, data.lineItem, input), [
       'status',
       'proposedReceivingGroupId',
       'acceptedReceivingGroupId',
@@ -79,92 +88,53 @@ const LineItemForm: FunctionComponent<Props> = ({
       'sendingHubDeliveryDate',
     ])
 
-    // Merge the existing data with the updated fields
-    updatedLineItem = Object.assign({}, updatedLineItem, input)
-
-    updateLineItem({ variables: { id: lineItemId, input: updatedLineItem } })
-  }
-
-  const [
-    deleteConfirmationIsVisible,
-    showDeleteConfirmation,
-    hideDeleteConfirmation,
-  ] = useModalState()
-
-  const [destroyLineItem] = useDestroyLineItemMutation()
-
-  const confirmDeleteLineItem = () => {
-    destroyLineItem({
-      variables: { id: lineItemId },
-      update: (cache, { data }) => {
-        const palletId = data?.destroyLineItem.id
-
-        try {
-          const palletData = cache.readQuery<PalletQuery>({
-            query: PalletDocument,
-            variables: { id: palletId },
-          })
-
-          cache.writeQuery<PalletQuery>({
-            query: PalletDocument,
-            variables: { id: palletId },
-            data: {
-              pallet: Object.assign({}, palletData!.pallet, {
-                lineItems: [
-                  ...palletData!.pallet.lineItems.filter(
-                    (item) => item.id !== lineItemId,
-                  ),
-                ],
-              }),
-            },
-          })
-        } catch (error) {
-          console.error(error)
-        }
-      },
+    updateLineItem({
+      variables: { id: lineItemId, input: updatedLineItem },
     }).then(() => {
-      onLineItemDeleted()
-      hideDeleteConfirmation()
+      // Tell the parent container that we're done editing this line item
+      onEditingComplete()
     })
-  }
-
-  // TODO build a read-only version of this form and toggle between the two
+  })
 
   return (
-    <form onSubmit={handleSubmit(submitForm)}>
+    <form onSubmit={submitForm}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-gray-700 text-lg flex items-center">
           Line Item {lineItemIsLoading && <Spinner className="ml-2" />}
         </h2>
-        <Button variant="danger" onClick={showDeleteConfirmation}>
-          Delete
-        </Button>
+        <div className="space-x-4">
+          <Button onClick={onEditingComplete}>Cancel</Button>
+          <Button variant="primary" type="submit" disabled={mutationIsLoading}>
+            Save changes
+          </Button>
+        </div>
       </div>
-      <ConfirmationModal
-        isOpen={deleteConfirmationIsVisible}
-        confirmLabel="Delete this line item"
-        onCancel={hideDeleteConfirmation}
-        onConfirm={confirmDeleteLineItem}
-        title={`Confirm deleting line item  #${lineItemId}`}
-      >
-        Are you certain you want to delete this line item? This action is
-        irreversible.
-      </ConfirmationModal>
       <fieldset className="space-y-4">
         <legend className="font-semibold text-gray-700 ">Contents</legend>
-        <TextField label="Description" name="description" register={register} />
+        <TextField
+          label="Description"
+          name="description"
+          required
+          minLength={5}
+          register={register}
+          errors={errors}
+        />
         <div className="md:flex md:space-x-4">
           <SelectField
             label="Container"
             name="containerType"
             options={LINE_ITEM_CONTAINER_OPTIONS}
             register={register}
+            required
           />
           <TextField
             label="Amount of items"
             name="itemCount"
             type="number"
+            required
+            min={1}
             register={register}
+            errors={errors}
           />
         </div>
         {/* TODO add a category dropdown after we create some enums */}
@@ -180,21 +150,27 @@ const LineItemForm: FunctionComponent<Props> = ({
             name="containerWidthCm"
             type="number"
             min={1}
+            required
             register={register}
+            errors={errors}
           />
           <TextField
             label="Length (cm)"
             name="containerLengthCm"
             type="number"
             min={1}
+            required
             register={register}
+            errors={errors}
           />
           <TextField
             label="Height (cm)"
             name="containerHeightCm"
             type="number"
             min={1}
+            required
             register={register}
+            errors={errors}
           />
         </div>
         <div className="md:flex md:space-x-4">
@@ -203,14 +179,18 @@ const LineItemForm: FunctionComponent<Props> = ({
             name="containerWeightGrams"
             type="number"
             min={1}
+            required
             register={register}
+            errors={errors}
           />
           <TextField
             label="Amount of containers"
             name="containerCount"
             type="number"
             min={1}
+            required
             register={register}
+            errors={errors}
           />
         </div>
       </fieldset>
@@ -243,11 +223,6 @@ const LineItemForm: FunctionComponent<Props> = ({
           <span>Other</span>
         </label>
       </fieldset>
-      <div className="mt-8 text-right">
-        <Button variant="primary" type="submit" disabled={mutationIsLoading}>
-          Save changes
-        </Button>
-      </div>
     </form>
   )
 }

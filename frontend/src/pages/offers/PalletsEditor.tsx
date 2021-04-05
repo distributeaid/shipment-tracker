@@ -15,6 +15,7 @@ import {
 } from '../../types/api-types'
 import CreatePalletModal from './CreatePalletModal'
 import LineItemForm from './LineItemForm'
+import ViewLineItem from './ViewLineItem'
 interface Props {
   offerId: number
   pallets?: OfferQuery['offer']['pallets']
@@ -34,6 +35,8 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
   const [getPallet, selectedPalletData] = usePalletLazyQuery()
 
   const [selectedLineItemId, setSelectedLineItemId] = useState<number>()
+
+  const [allowEditingLineItem, setEditingMode] = useState(false)
 
   /**
    * Select a pallet and download its data, line items included
@@ -62,7 +65,9 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
         },
       ],
     }).then((data) => {
+      // Select the new line item and show a form to edit its fields
       setSelectedLineItemId(data.data?.addLineItem.id)
+      setEditingMode(true)
     })
   }
 
@@ -114,7 +119,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
 
   return (
     <>
-      <div className="w-1/3 h-full">
+      <div className="w-80 flex-shrink-0 h-full">
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <span className="text-lg text-gray-700">Pallets</span>
           <Button disabled={mutationIsLoading} onClick={showCreateModal}>
@@ -203,10 +208,18 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
         )}
         {selectedPalletId != null && selectedLineItemId != null && (
           <div className="h-full w-full p-4">
-            <LineItemForm
-              lineItemId={selectedLineItemId}
-              onLineItemDeleted={onLineItemDeleted}
-            />
+            {allowEditingLineItem ? (
+              <LineItemForm
+                lineItemId={selectedLineItemId}
+                onEditingComplete={() => setEditingMode(false)}
+              />
+            ) : (
+              <ViewLineItem
+                lineItemId={selectedLineItemId}
+                onLineItemDeleted={onLineItemDeleted}
+                editLineItem={() => setEditingMode(true)}
+              />
+            )}
           </div>
         )}
       </div>

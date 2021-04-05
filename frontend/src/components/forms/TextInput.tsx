@@ -1,7 +1,10 @@
 import cx from 'classnames'
+import _merge from 'lodash/merge'
+import _omit from 'lodash/omit'
+import _pick from 'lodash/pick'
 import { FunctionComponent, InputHTMLAttributes } from 'react'
-import { RegisterOptions } from 'react-hook-form'
-import { FormRegisterType } from '../../types/form-types'
+import { RegisterOptions, UseFormRegister } from 'react-hook-form'
+import { augmentRegisterOptionsForInput } from './formUtils'
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   /**
@@ -11,16 +14,25 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   /**
    * The register function from `react-hook-form`'s `useForm()` hook used for validation and submission
    */
-  register?: FormRegisterType
+  register?: UseFormRegister<any>
+  /**
+   * A set of options in the format supported by `react-hook-form`. This prop is
+   * required if the `register` prop is passed as well.
+   */
+  registerOptions?: RegisterOptions
 }
 
 const TextInput: FunctionComponent<Props> = ({
   type = 'text',
   hasError = false,
   register,
+  registerOptions,
   ...otherProps
 }) => {
-  const { disabled, readOnly, className } = otherProps
+  const { disabled, readOnly, className, name } = otherProps
+  if (!name) {
+    throw new Error('Every input field needs a name')
+  }
 
   const classes = cx(
     className,
@@ -34,15 +46,51 @@ const TextInput: FunctionComponent<Props> = ({
     },
   )
 
-  const registerOptions: RegisterOptions = {
-    required: otherProps.required,
-    valueAsNumber: type === 'number',
+  if (register != null) {
+    const PROPS_TO_PICK = [
+      'min',
+      'max',
+      'minLength',
+      'maxLength',
+      'required',
+    ] as const
+
+    let customOptions: RegisterOptions = _merge(
+      _pick(otherProps, PROPS_TO_PICK),
+      registerOptions || {},
+    )
+
+    // Add validations and error messages
+    customOptions = augmentRegisterOptionsForInput(customOptions, {
+      ...otherProps,
+      type,
+    })
+
+    // Custom validations don't mesh with browser validations, so if a register
+    // hook is provided, we delete the browser validations
+    otherProps = _omit(otherProps, [
+      'min',
+      'max',
+      'minLength',
+      'maxLength',
+      'required',
+    ])
+
+    return (
+      <input
+        {...otherProps}
+        type={type}
+        className={classes}
+        aria-invalid={hasError}
+        {...register(name, customOptions)}
+      />
+    )
   }
 
   return (
     <input
       {...otherProps}
-      ref={register ? register(registerOptions) : undefined}
+      aria-invalid={hasError}
       type={type}
       className={classes}
     />
