@@ -1,6 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import { useEffect } from 'react'
-import LayoutWithNav from '../layouts/LayoutWithNav'
+import LayoutWithNav from '../../layouts/LayoutWithNav'
 
 /**
  * 1. Write your GraphQL query. I recommend using the GraphQL UI to put queries

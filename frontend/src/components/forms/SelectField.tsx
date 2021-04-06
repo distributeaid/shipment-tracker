@@ -1,3 +1,5 @@
+import { ErrorMessage } from '@hookform/error-message'
+import _get from 'lodash/get'
 import { nanoid } from 'nanoid'
 import {
   ChangeEvent,
@@ -6,11 +8,15 @@ import {
   SelectHTMLAttributes,
   useState,
 } from 'react'
-import { FormRegisterType } from '../../types/form-types'
+import {
+  DeepMap,
+  FieldError,
+  RegisterOptions,
+  UseFormRegister,
+} from 'react-hook-form'
 import InlineError from './InlineError'
 import Label from './Label'
 import SelectInput from './SelectInput'
-
 export interface SelectOption {
   label: ReactNode
   value: string | number
@@ -27,19 +33,15 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
    */
   label: ReactNode
   /**
-   * A name added to the input element can be used for form parsing and
+   * A required name added to the input element can be used for form parsing and
    * validation
    */
-  name?: string
+  name: string
   /**
    * If true, the input will not be editable, but the text will remain
    * selectable
    */
   readOnly?: boolean
-  /**
-   * A string that represents a custom validation error
-   */
-  error?: string
   /**
    * The type of the input element. Defaults to "text"
    */
@@ -60,17 +62,25 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
   /**
    * The register function from `react-hook-form`'s `useForm()` hook used for validation and submission
    */
-  register?: FormRegisterType
+  register?: UseFormRegister<any>
+  /**
+   * The register function from `react-hook-form`'s `useForm()` hook used for validation and submission
+   */
+  registerOptions?: RegisterOptions
   /**
    * If true, the value of each option will be cast to a number using parseInt()
    */
   castAsNumber?: boolean
+  /**
+   * A set of FieldErrors provided by `react-hook-form`
+   */
+  errors?: DeepMap<any, FieldError>
 }
 
 const SelectField: FunctionComponent<Props> = ({
   id,
   label,
-  error = null,
+  errors,
   options = [],
   ...otherProps
 }) => {
@@ -79,15 +89,23 @@ const SelectField: FunctionComponent<Props> = ({
 
   const fieldId = id || uniqueId
 
+  // The name can be nested, eg 'primaryContact.name', in which case doing
+  // errors['primaryContact.name'] wouldn't work. Thus, enter lodash.get
+  const hasError = _get(errors, otherProps.name, null) != null
+
   return (
     <div className="w-full">
       <Label htmlFor={fieldId} required={otherProps.required}>
         {label}
       </Label>
 
-      {error && <InlineError>{error}</InlineError>}
+      <ErrorMessage
+        name={otherProps.name}
+        errors={errors || {}}
+        as={InlineError}
+      />
 
-      <SelectInput {...otherProps} hasError={!!error} id={fieldId}>
+      <SelectInput {...otherProps} hasError={hasError} id={fieldId}>
         {options.map((option) => (
           <option
             value={option.value}

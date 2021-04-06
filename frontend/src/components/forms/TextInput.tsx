@@ -1,7 +1,10 @@
 import cx from 'classnames'
+import _merge from 'lodash/merge'
+import _omit from 'lodash/omit'
+import _pick from 'lodash/pick'
 import { FunctionComponent, InputHTMLAttributes } from 'react'
-import { RegisterOptions } from 'react-hook-form'
-import { FormRegisterType } from '../../types/form-types'
+import { RegisterOptions, UseFormRegister } from 'react-hook-form'
+import { augmentRegisterOptionsForInput } from './formUtils'
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   /**
@@ -11,16 +14,54 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   /**
    * The register function from `react-hook-form`'s `useForm()` hook used for validation and submission
    */
-  register?: FormRegisterType
+  register?: UseFormRegister<any>
+  /**
+   * A set of options in the format supported by `react-hook-form`.
+   *
+   * ⚠️ If validations for `min`, `max`, `minLength`, `maxLength`, or `required`
+   * are provided in this object, they will override the props of the same name
+   * passed individually. This allows users to define custom error messages if
+   * they so wish:
+   *
+   * @example
+   * <TextInput
+   *   label="Age"
+   *   required
+   *   min={16} />
+   *
+   * @example
+   * <TextInput
+   *   label="Age"
+   *   registerOptions={{
+   *     required: "Age is a required field",
+   *     min: {
+   *       value: 16,
+   *       message: "You must be at least 16 to create offers"
+   *     }
+   *   }} />
+   */
+  registerOptions?: RegisterOptions
 }
+
+const PROPS_TO_PICK = [
+  'min',
+  'max',
+  'minLength',
+  'maxLength',
+  'required',
+] as const
 
 const TextInput: FunctionComponent<Props> = ({
   type = 'text',
   hasError = false,
   register,
+  registerOptions,
   ...otherProps
 }) => {
-  const { disabled, readOnly, className } = otherProps
+  const { disabled, readOnly, className, name } = otherProps
+  if (!name) {
+    throw new Error('Every input field needs a name')
+  }
 
   const classes = cx(
     className,
@@ -34,15 +75,48 @@ const TextInput: FunctionComponent<Props> = ({
     },
   )
 
-  const registerOptions: RegisterOptions = {
-    required: otherProps.required,
-    valueAsNumber: type === 'number',
+  if (register) {
+    /**
+     * Merge the `registerOptions` onto the props. This allows users to define
+     * custom validations if they so wish.
+     * @see registerOptions
+     */
+    let customOptions: RegisterOptions = _merge(
+      _pick(otherProps, PROPS_TO_PICK),
+      registerOptions || {},
+    )
+
+    // Add validations and error messages
+    customOptions = augmentRegisterOptionsForInput(customOptions, {
+      ...otherProps,
+      type,
+    })
+
+    // Custom validations don't mesh with browser validations, so if a register
+    // hook is provided, we delete the browser validations
+    otherProps = _omit(otherProps, [
+      'min',
+      'max',
+      'minLength',
+      'maxLength',
+      'required',
+    ])
+
+    return (
+      <input
+        {...otherProps}
+        type={type}
+        className={classes}
+        aria-invalid={hasError}
+        {...register(name, customOptions)}
+      />
+    )
   }
 
   return (
     <input
       {...otherProps}
-      ref={register ? register(registerOptions) : undefined}
+      aria-invalid={hasError}
       type={type}
       className={classes}
     />

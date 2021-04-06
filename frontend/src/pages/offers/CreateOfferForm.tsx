@@ -54,7 +54,11 @@ const OfferForm: FunctionComponent<Props> = (props) => {
     },
   )
 
-  const { register, handleSubmit } = useForm<OfferCreateInput>()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<OfferCreateInput>()
 
   const onSubmitForm = (input: OfferCreateInput) => {
     if (!props.shipmentId) {
@@ -95,6 +99,7 @@ const OfferForm: FunctionComponent<Props> = (props) => {
           label="Contact name"
           name="contact.name"
           register={register}
+          errors={errors}
         />
       </fieldset>
       <fieldset>

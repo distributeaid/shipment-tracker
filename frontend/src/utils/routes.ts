@@ -16,6 +16,7 @@ const ROUTES = {
   SHIPMENT_OFFER_VIEW: '/shipment/:shipmentId/offer/:offerId',
   SHIPMENT_EDIT: '/shipment/:shipmentId/edit',
   KITCHEN_SINK: '/kitchen-sink',
+  FORM_DEMO: '/form-demo',
 }
 
 export function groupViewRoute(groupId: number | string) {

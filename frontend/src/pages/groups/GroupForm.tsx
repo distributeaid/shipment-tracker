@@ -30,7 +30,12 @@ interface Props {
  * This component encapsulates a form for creating and editing groups.
  */
 const GroupForm: FunctionComponent<Props> = (props) => {
-  const { register, handleSubmit, reset } = useForm()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm()
 
   useEffect(
     function resetFormValues() {
@@ -50,6 +55,7 @@ const GroupForm: FunctionComponent<Props> = (props) => {
         register={register}
         className="mb-4"
         required
+        errors={errors}
       />
       <SelectField
         label="Type"
@@ -63,8 +69,9 @@ const GroupForm: FunctionComponent<Props> = (props) => {
         <TextField
           label="Town or city"
           name="primaryLocation.townCity"
-          register={register}
           required
+          register={register}
+          errors={errors}
         />
         <SelectField
           label="Country"
@@ -78,7 +85,9 @@ const GroupForm: FunctionComponent<Props> = (props) => {
             },
             ...COUNTRY_CODE_OPTIONS,
           ]}
+          required
           register={register}
+          errors={errors}
         />
       </fieldset>
       <fieldset className="space-y-4 mt-8">
@@ -86,32 +95,37 @@ const GroupForm: FunctionComponent<Props> = (props) => {
         <TextField
           label="Name"
           name="primaryContact.name"
-          register={register}
           required
+          register={register}
+          errors={errors}
         />
         <TextField
           label="Email"
           type="email"
           name="primaryContact.email"
           register={register}
+          errors={errors}
         />
         <TextField
           label="WhatsApp"
           type="text"
           name="primaryContact.whatsApp"
           register={register}
+          errors={errors}
         />
         <TextField
           label="Phone"
           type="text"
           name="primaryContact.phone"
           register={register}
+          errors={errors}
         />
         <TextField
           label="Signal"
           type="text"
           name="primaryContact.signal"
           register={register}
+          errors={errors}
         />
       </fieldset>
 
