@@ -20,7 +20,6 @@ import ViewPallet from './ViewPallet'
 interface Props {
   offerId: number
   pallets?: OfferQuery['offer']['pallets']
-  initiateDeletePallet: (palletId: number) => void
 }
 
 /**
@@ -210,7 +209,10 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
         )}
         {selectedPalletId != null && selectedLineItemId == null && (
           <div className="h-full w-full p-8">
-            <ViewPallet palletId={selectedPalletId} />
+            <ViewPallet
+              palletId={selectedPalletId}
+              onPalletDestroyed={() => setSelectedPalletId(undefined)}
+            />
           </div>
         )}
         {selectedPalletId != null && selectedLineItemId != null && (

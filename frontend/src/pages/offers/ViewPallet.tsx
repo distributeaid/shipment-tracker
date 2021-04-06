@@ -4,14 +4,18 @@ import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import ConfirmationModal from '../../components/modal/ConfirmationModal'
 import Spinner from '../../components/Spinner'
 import useModalState from '../../hooks/useModalState'
-import { usePalletQuery } from '../../types/api-types'
+import { useDestroyPalletMutation, usePalletQuery } from '../../types/api-types'
 import { formatPalletType } from '../../utils/format'
 
 interface Props {
   palletId: number
+  onPalletDestroyed: () => void
 }
 
-const ViewPallet: FunctionComponent<Props> = ({ palletId }) => {
+const ViewPallet: FunctionComponent<Props> = ({
+  palletId,
+  onPalletDestroyed,
+}) => {
   const { data, refetch, loading: palletIsLoading } = usePalletQuery({
     variables: { id: palletId },
   })
@@ -29,8 +33,13 @@ const ViewPallet: FunctionComponent<Props> = ({ palletId }) => {
     hideDeleteConfirmation,
   ] = useModalState()
 
+  const [destroyPallet] = useDestroyPalletMutation()
+
   const confirmDeletePallet = () => {
-    // TODO
+    destroyPallet({ variables: { id: palletId } }).then(() => {
+      onPalletDestroyed()
+      hideDeleteConfirmation()
+    })
   }
 
   const pallet = data?.pallet
