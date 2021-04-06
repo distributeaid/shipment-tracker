@@ -3,6 +3,7 @@ import { COUNTRY_CODES_TO_NAME, MONTHS } from '../data/constants'
 import {
   GroupType,
   Maybe,
+  PalletType,
   Shipment,
   ShipmentQuery,
   ShipmentStatus,
@@ -38,6 +39,19 @@ export function formatCountryCodeToName(countryCode?: Maybe<string>) {
   }
 
   return 'Unknown Country'
+}
+
+export function formatPalletType(palletType: PalletType) {
+  switch (palletType) {
+    case PalletType.Custom:
+      return 'Ton bag'
+    case PalletType.Euro:
+      return 'Euro pallet'
+    case PalletType.Standard:
+      return 'Standard pallet'
+    default:
+      throw new Error(`Unknown PalletType: ${palletType}`)
+  }
 }
 
 /**

@@ -1,4 +1,5 @@
 import {
+  DangerousGoods,
   GroupType,
   LineItemContainerType,
   OfferStatus,
@@ -103,6 +104,15 @@ export const PALLET_CONFIGS: PalletConfig[] = [
     heightCm: 90,
   },
 ]
+
+export const DANGEROUS_GOODS_LIST = [
+  { value: DangerousGoods.Batteries, label: 'Batteries' },
+  { value: DangerousGoods.Explosive, label: 'Explosives' },
+  { value: DangerousGoods.Flammable, label: 'Flammable' },
+  { value: DangerousGoods.Liquids, label: 'Liquids' },
+  { value: DangerousGoods.Medicine, label: 'Medicine' },
+  { value: DangerousGoods.Other, label: 'Other' },
+] as const
 
 export const COUNTRY_CODES_TO_NAME = {
   AF: 'Afghanistan',

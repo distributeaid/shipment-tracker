@@ -22,7 +22,7 @@ const Label: FunctionComponent<Props> = ({
 }) => {
   return (
     <label
-      className="block text-gray-600 text-sm mb-2"
+      className="block text-gray-700 text-sm mb-2"
       aria-required={required}
       {...otherProps}
     >
