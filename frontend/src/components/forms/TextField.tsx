@@ -72,12 +72,17 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
    * A set of FieldErrors provided by `react-hook-form`
    */
   errors?: DeepMap<any, FieldError>
+  /**
+   * An optional way to provide extra information about this field
+   */
+  helpText?: ReactNode
 }
 
 const TextField: FunctionComponent<Props> = ({
   id,
   label,
   errors,
+  helpText,
   ...otherProps
 }) => {
   // Create a unique ID in case the use doesn't provide one
@@ -98,6 +103,7 @@ const TextField: FunctionComponent<Props> = ({
       <Label htmlFor={fieldId} required={otherProps.required}>
         {label}
       </Label>
+      {helpText && <p className="text-sm text-gray-600 mb-2">{helpText}</p>}
       <ErrorMessage
         name={otherProps.name}
         errors={errors || {}}

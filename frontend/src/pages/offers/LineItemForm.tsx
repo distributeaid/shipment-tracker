@@ -1,12 +1,16 @@
 import _pick from 'lodash/pick'
-import { FunctionComponent, useEffect } from 'react'
+import { FunctionComponent, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
 import Spinner from '../../components/Spinner'
-import { LINE_ITEM_CONTAINER_OPTIONS } from '../../data/constants'
 import {
+  DANGEROUS_GOODS_LIST,
+  LINE_ITEM_CONTAINER_OPTIONS,
+} from '../../data/constants'
+import {
+  DangerousGoods,
   LineItemUpdateInput,
   useLineItemQuery,
   useUpdateLineItemMutation,
@@ -32,6 +36,10 @@ const LineItemForm: FunctionComponent<Props> = ({
     variables: { id: lineItemId },
   })
 
+  const [dangerousGoodsList, setDangerousGoodsList] = useState<
+    DangerousGoods[]
+  >([])
+
   const {
     register,
     handleSubmit,
@@ -50,6 +58,7 @@ const LineItemForm: FunctionComponent<Props> = ({
     function resetForm() {
       if (data?.lineItem) {
         reset(data.lineItem)
+        setDangerousGoodsList(data.lineItem.dangerousGoods)
       }
     },
     [data?.lineItem, reset],
@@ -64,6 +73,10 @@ const LineItemForm: FunctionComponent<Props> = ({
     if (!data?.lineItem) {
       return
     }
+
+    // Override the list of dangerous goods because it's not controlled by
+    // react-hook-form
+    input.dangerousGoods = dangerousGoodsList
 
     // We need to all the fields from LineItemUpdateInput, even the ones that
     // didn't change. We then _pick the fields to make sure we don't send things
@@ -95,6 +108,14 @@ const LineItemForm: FunctionComponent<Props> = ({
     })
   })
 
+  const toggleDangerousGood = (value: DangerousGoods) => {
+    if (dangerousGoodsList.includes(value)) {
+      setDangerousGoodsList(dangerousGoodsList.filter((g) => g !== value))
+    } else {
+      setDangerousGoodsList([...dangerousGoodsList, value])
+    }
+  }
+
   return (
     <form onSubmit={submitForm}>
       <div className="flex items-center justify-between mb-4">
@@ -117,6 +138,7 @@ const LineItemForm: FunctionComponent<Props> = ({
           minLength={5}
           register={register}
           errors={errors}
+          helpText="Pallets with comprehensive descriptions are more likely to get picked up."
         />
         <div className="md:flex md:space-x-4">
           <SelectField
@@ -193,34 +215,26 @@ const LineItemForm: FunctionComponent<Props> = ({
           />
         </div>
       </fieldset>
+
       <fieldset className="mt-12">
         <legend className="font-semibold text-gray-700 mb-4">
-          Dangerous items
+          Dangerous goods
         </legend>
-        <label className="flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" name="dangerousItems.FLAMMABLE" />
-          <span>Flammable</span>
-        </label>
-        <label className="flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" name="dangerousItems.EXPLOSIVE" />
-          <span>Explosive</span>
-        </label>
-        <label className="flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" name="dangerousItems.MEDICINE" />
-          <span>Medicine</span>
-        </label>
-        <label className="flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" name="dangerousItems.BATTERIES" />
-          <span>Batteries</span>
-        </label>
-        <label className="flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" name="dangerousItems.LIQUIDS" />
-          <span>Liquids</span>
-        </label>
-        <label className="flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" name="dangerousItems.OTHER" />
-          <span>Other</span>
-        </label>
+        <div className="md:grid grid-cols-3 rounded-sm gap-4">
+          {DANGEROUS_GOODS_LIST.map((good) => (
+            <label
+              className="flex items-center space-x-2 cursor-pointer"
+              key={good.value}
+            >
+              <input
+                type="checkbox"
+                checked={dangerousGoodsList.includes(good.value)}
+                onChange={() => toggleDangerousGood(good.value)}
+              />
+              <span>{good.label}</span>
+            </label>
+          ))}
+        </div>
       </fieldset>
     </form>
   )

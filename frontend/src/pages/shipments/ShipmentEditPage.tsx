@@ -35,7 +35,7 @@ const ShipmentEditPage: FunctionComponent = () => {
 
   return (
     <LayoutWithNav>
-      <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
+      <div className="max-w-5xl mx-auto bg-white border-l border-r border-gray-200 min-h-content">
         <header className="p-4 md:p-6 border-b border-gray-200">
           <InternalLink
             className="inline-block mb-2"

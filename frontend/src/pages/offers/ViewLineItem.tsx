@@ -96,9 +96,7 @@ const ViewLineItem: FunctionComponent<Props> = ({
           Line Item {lineItemIsLoading && <Spinner className="ml-2" />}
         </h2>
         <div className="space-x-4">
-          <Button variant="danger" onClick={showDeleteConfirmation}>
-            Delete
-          </Button>
+          <Button onClick={showDeleteConfirmation}>Delete</Button>
           <Button onClick={editLineItem}>Edit</Button>
         </div>
       </div>
@@ -158,14 +156,15 @@ const ViewLineItem: FunctionComponent<Props> = ({
             <legend className="font-semibold text-gray-700 mb-4">
               Dangerous goods
             </legend>
-            {data.lineItem.dangerousGoods.length === 0 && (
+            {data.lineItem.dangerousGoods.length === 0 ? (
               <p className="text-gray-600">No dangerous goods</p>
+            ) : (
+              <p className="text-red-700 capitalize">
+                {data.lineItem.dangerousGoods
+                  .map((item) => item.toLowerCase())
+                  .join(', ')}
+              </p>
             )}
-            <ul>
-              {data.lineItem.dangerousGoods.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
           </fieldset>
         </>
       )}

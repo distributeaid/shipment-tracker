@@ -16,6 +16,7 @@ import {
 import CreatePalletModal from './CreatePalletModal'
 import LineItemForm from './LineItemForm'
 import ViewLineItem from './ViewLineItem'
+import ViewPallet from './ViewPallet'
 interface Props {
   offerId: number
   pallets?: OfferQuery['offer']['pallets']
@@ -27,7 +28,7 @@ interface Props {
  * each line-item on the right.
  */
 const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
-  // TODO move this to the URL?
+  // TODO move this to the URL
   const [selectedPalletId, setSelectedPalletId] = useState<number>()
 
   const [createLineItem] = useCreateLineItemMutation()
@@ -136,10 +137,16 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
               <div className="bg-white">
                 <div
                   className={cx(
-                    'p-4 font-semibold flex items-center text-gray-800',
+                    'p-4 flex items-center text-gray-800 cursor-pointer border-l-4 border-transparent',
                     {
-                      'cursor-pointer hover:bg-gray-100':
-                        pallet.id !== selectedPalletId,
+                      'hover:bg-gray-100':
+                        pallet.id !== selectedPalletId ||
+                        selectedLineItemId != null,
+                      'border-navy-600 font-semibold':
+                        pallet.id === selectedPalletId,
+                      'bg-navy-100':
+                        pallet.id === selectedPalletId &&
+                        selectedLineItemId == null,
                     },
                   )}
                 >
@@ -202,12 +209,12 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
           </div>
         )}
         {selectedPalletId != null && selectedLineItemId == null && (
-          <div className="flex h-full w-full items-center justify-center bg-gray-50 text-gray-500">
-            <p>← Select a line item</p>
+          <div className="h-full w-full p-8">
+            <ViewPallet palletId={selectedPalletId} />
           </div>
         )}
         {selectedPalletId != null && selectedLineItemId != null && (
-          <div className="h-full w-full p-4">
+          <div className="h-full w-full p-8">
             {allowEditingLineItem ? (
               <LineItemForm
                 lineItemId={selectedLineItemId}
