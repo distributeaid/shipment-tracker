@@ -253,6 +253,7 @@ describe('LineItems API', () => {
             id: lineItem.id,
             input: {
               status: LineItemStatus.Accepted,
+              category: LineItemCategory.Electronics,
             },
           },
         })
@@ -260,6 +261,9 @@ describe('LineItems API', () => {
         expect(res.errors).toBeUndefined()
         expect(res.data?.updateLineItem?.status).toEqual(
           LineItemStatus.Accepted,
+        )
+        expect(res.data?.updateLineItem?.category).toEqual(
+          LineItemCategory.Electronics,
         )
       })
     })

@@ -121,6 +121,11 @@ async function getUpdateAttributes(
     updateAttributes.containerType = input.containerType
   }
 
+  if (input.category && input.category != lineItem.category) {
+    validateEnumMembership(LineItemCategory, input.category)
+    updateAttributes.category = input.category
+  }
+
   if (
     input.dangerousGoods &&
     !isEqual(input.dangerousGoods, lineItem.dangerousGoods)

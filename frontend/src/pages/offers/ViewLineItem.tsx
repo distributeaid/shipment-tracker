@@ -125,10 +125,10 @@ const ViewLineItem: FunctionComponent<Props> = ({
               <ReadOnlyField label="Number of items">
                 {data.lineItem.itemCount || 0}
               </ReadOnlyField>
-              <ReadOnlyField label="Category">
-                {formatLineItemCategory(data.lineItem.category)}
-              </ReadOnlyField>
             </div>
+            <ReadOnlyField label="Category">
+              {formatLineItemCategory(data.lineItem.category)}
+            </ReadOnlyField>
           </fieldset>
           <fieldset className="space-y-4 mt-12">
             <legend className="font-semibold text-gray-700 ">
