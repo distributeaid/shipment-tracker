@@ -10,6 +10,7 @@ import {
   useDestroyLineItemMutation,
   useLineItemQuery,
 } from '../../types/api-types'
+import { formatLineItemCategory } from '../../utils/format'
 
 interface Props {
   /**
@@ -124,9 +125,10 @@ const ViewLineItem: FunctionComponent<Props> = ({
               <ReadOnlyField label="Number of items">
                 {data.lineItem.itemCount || 0}
               </ReadOnlyField>
+              <ReadOnlyField label="Category">
+                {formatLineItemCategory(data.lineItem.category)}
+              </ReadOnlyField>
             </div>
-            {/* TODO add a category dropdown after we create some enums */}
-            {/* <SelectField label="Category" name="category" options={[]} /> */}
           </fieldset>
           <fieldset className="space-y-4 mt-12">
             <legend className="font-semibold text-gray-700 ">

@@ -1,7 +1,12 @@
 import { BadgeColor } from '../components/Badge'
-import { COUNTRY_CODES_TO_NAME, MONTHS } from '../data/constants'
+import {
+  COUNTRY_CODES_TO_NAME,
+  LINE_ITEM_CATEGORY_OPTIONS,
+  MONTHS,
+} from '../data/constants'
 import {
   GroupType,
+  LineItemCategory,
   Maybe,
   PalletType,
   Shipment,
@@ -39,6 +44,13 @@ export function formatCountryCodeToName(countryCode?: Maybe<string>) {
   }
 
   return 'Unknown Country'
+}
+
+export function formatLineItemCategory(category: LineItemCategory) {
+  const matchingCategory = LINE_ITEM_CATEGORY_OPTIONS.find(
+    (c) => c.value === category,
+  )
+  return matchingCategory?.label || category
 }
 
 export function formatPalletType(palletType: PalletType) {
