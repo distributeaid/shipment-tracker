@@ -1,12 +1,9 @@
-import { FunctionComponent, useState } from 'react'
+import { FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import InternalLink from '../../components/InternalLink'
-import ConfirmationModal from '../../components/modal/ConfirmationModal'
-import useModalState from '../../hooks/useModalState'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
-  useDestroyPalletMutation,
   useGroupQuery,
   useOfferQuery,
   useShipmentQuery,
@@ -31,36 +28,6 @@ const ViewOfferPage: FunctionComponent = () => {
     skip: !sendingGroupId, // Don't execute this query until the group ID is known
     variables: { id: sendingGroupId! },
   })
-
-  const [
-    deleteModalIsVisible,
-    showDeleteModal,
-    hideDeleteModal,
-  ] = useModalState()
-
-  const [selectedPallet, setSelectedPallet] = useState<number>()
-
-  const selectPalletToDestroy = (palletId: number) => {
-    setSelectedPallet(palletId)
-    showDeleteModal()
-  }
-
-  // The mutation below will automatically update the cache because the API
-  // returns the offer. However, it'll create a warning in the console, and I
-  // can't find a way to get rid of it without some redundant configuration
-  // "Cache data may be lost when replacing the pallets field of a Offer object"
-  const [destroyPallet] = useDestroyPalletMutation()
-
-  const confirmDeletePallet = () => {
-    if (selectedPallet == null) {
-      return
-    }
-
-    destroyPallet({ variables: { id: selectedPallet } }).then(() => {
-      setSelectedPallet(undefined)
-      hideDeleteModal()
-    })
-  }
 
   return (
     <LayoutWithNav>
@@ -100,21 +67,7 @@ const ViewOfferPage: FunctionComponent = () => {
           )}
         </header>
         <main className="flex-grow flex items-stretch">
-          <PalletsEditor
-            offerId={offerId}
-            pallets={offer?.offer.pallets}
-            initiateDeletePallet={selectPalletToDestroy}
-          />
-          <ConfirmationModal
-            isOpen={deleteModalIsVisible}
-            onCancel={hideDeleteModal}
-            onConfirm={confirmDeletePallet}
-            confirmLabel="Yes, delete pallet"
-            title="Confirm pallet deletion"
-          >
-            Are you sure you want to delete this pallet? This action is
-            irreversible.
-          </ConfirmationModal>
+          <PalletsEditor offerId={offerId} pallets={offer?.offer.pallets} />
         </main>
       </div>
     </LayoutWithNav>
