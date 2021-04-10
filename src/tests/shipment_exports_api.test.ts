@@ -6,6 +6,7 @@ import Offer from '../models/offer'
 import Pallet from '../models/pallet'
 import Shipment from '../models/shipment'
 import UserAccount from '../models/user_account'
+import { HEADER_ROW } from '../resolvers/shipment_exports'
 import { sequelize } from '../sequelize'
 import {
   GroupType,
@@ -129,6 +130,7 @@ describe('ShipmentExports API', () => {
 
       expect(services.generateCsvCalls[0]).toEqual({
         rows: [
+          HEADER_ROW,
           [
             'group 1',
             'offer contact name',

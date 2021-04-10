@@ -52,6 +52,8 @@ const exportShipment: MutationResolvers['exportShipment'] = async (
     ),
   )
 
+  rows.unshift(HEADER_ROW)
+
   const csv = services.generateCsv(rows)
 
   const exportRecord = await ShipmentExport.create({
@@ -63,6 +65,22 @@ const exportShipment: MutationResolvers['exportShipment'] = async (
   return exportRecord.toWireFormat()
 }
 
+export const HEADER_ROW = [
+  'Sending group',
+  'Contact name',
+  'Contact email',
+  'Contact WhatsApp',
+  'Receiving group',
+  'UK Hub',
+  'Category of aid',
+  'Item description',
+  'Pallet ID',
+  'Container count',
+  'Pallet weight',
+  'Dangerous items',
+  'Sending hub delivery date',
+]
+
 function makeExportRow(
   offer: Offer,
   pallet: Pallet,
@@ -71,7 +89,9 @@ function makeExportRow(
   const contact = offer.contact || offer.sendingGroup.primaryContact
   const receivingGroupName = lineItem?.acceptedReceivingGroup
     ? `${lineItem.acceptedReceivingGroup.name} (accepted)`
-    : `${lineItem?.proposedReceivingGroup?.name} (proposed)`
+    : lineItem?.proposedReceivingGroup
+    ? `${lineItem?.proposedReceivingGroup?.name} (proposed)`
+    : 'unset'
 
   return [
     offer.sendingGroup.name,
