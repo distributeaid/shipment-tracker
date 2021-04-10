@@ -40,6 +40,10 @@ const ShipmentViewPage: FunctionComponent = () => {
   ] = useExportShipmentToCsvMutation()
 
   const exportToCSV = async () => {
+    if (!shipment) {
+      return
+    }
+
     const shipmentExport = await exportShipment({ variables: { shipmentId } })
     const downloadPath = shipmentExport.data?.exportShipment.downloadPath
 
@@ -55,7 +59,7 @@ const ShipmentViewPage: FunctionComponent = () => {
 
     // Download the CSV file by creating a link and clicking it. Yay HTML
     const anchorElement = document.createElement('a')
-    const fileName = `shipment-${shipmentId}.csv`
+    const fileName = `${formatShipmentName(shipment.shipment)}.csv`
 
     if (URL && 'download' in anchorElement) {
       anchorElement.href = URL.createObjectURL(
