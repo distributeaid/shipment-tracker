@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react'
 import { FunctionComponent, useContext } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
 import Button from '../../components/Button'
@@ -21,6 +22,8 @@ import ShipmentDetails from './ShipmentDetails'
 import ShipmentOffers from './ShipmentOffers'
 
 const ShipmentViewPage: FunctionComponent = () => {
+  const { getAccessTokenSilently } = useAuth0()
+
   const user = useContext(UserProfileContext)
   const params = useParams<{ shipmentId: string }>()
   const shipmentId = parseInt(params.shipmentId, 10)
@@ -36,16 +39,38 @@ const ShipmentViewPage: FunctionComponent = () => {
     { loading: exportIsProcessing },
   ] = useExportShipmentToCsvMutation()
 
-  const exportToCSV = () => {
-    exportShipment({ variables: { shipmentId } }).then((data) => {
-      const downloadPath = data.data?.exportShipment.downloadPath
+  const exportToCSV = async () => {
+    const shipmentExport = await exportShipment({ variables: { shipmentId } })
+    const downloadPath = shipmentExport.data?.exportShipment.downloadPath
 
-      if (downloadPath) {
-        window.location.href = downloadPath
-      } else {
-        console.error('Unable to download the shipment')
-      }
-    })
+    if (!downloadPath) {
+      throw new Error("Unable to download the shipment's data")
+    }
+
+    const accessToken = await getAccessTokenSilently()
+
+    const spreadsheet = await fetch(downloadPath, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }).then((res) => res.text())
+
+    // Download the CSV file by creating a link and clicking it. Yay HTML
+    const anchorElement = document.createElement('a')
+    const fileName = `shipment-${shipmentId}.csv`
+
+    if (URL && 'download' in anchorElement) {
+      anchorElement.href = URL.createObjectURL(
+        new Blob([spreadsheet], {
+          type: 'application/octet-stream',
+        }),
+      )
+      anchorElement.setAttribute('download', fileName)
+      document.body.appendChild(anchorElement)
+      anchorElement.click()
+      document.body.removeChild(anchorElement)
+    } else {
+      window.location.href =
+        'data:application/octet-stream,' + encodeURIComponent(spreadsheet)
+    }
   }
 
   return (
@@ -65,7 +90,9 @@ const ShipmentViewPage: FunctionComponent = () => {
           </div>
           <div className="flex-shrink space-x-4 mt-4 md:mt-0">
             {user?.isAdmin && (
-              <Button onClick={exportToCSV}>Export to CSV</Button>
+              <Button disabled={exportIsProcessing} onClick={exportToCSV}>
+                Export to CSV
+              </Button>
             )}
             <ButtonLink to={shipmentEditRoute(shipmentId)}>Edit</ButtonLink>
           </div>
