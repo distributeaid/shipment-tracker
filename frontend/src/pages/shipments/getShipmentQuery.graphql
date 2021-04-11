@@ -1,5 +1,13 @@
 query Shipment($id: Int!) {
   shipment(id: $id) {
     ...AllShipmentFields
+    exports {
+      id
+      downloadPath
+      createdBy {
+        id
+      }
+      createdAt
+    }
   }
 }

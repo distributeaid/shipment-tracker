@@ -1,7 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import { FunctionComponent, useContext } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
-import Button from '../../components/Button'
 import ButtonLink from '../../components/ButtonLink'
 import InternalLink from '../../components/InternalLink'
 import TabLink from '../../components/tabs/TabLink'
@@ -18,6 +17,7 @@ import ROUTES, {
   shipmentViewOffersRoute,
   shipmentViewRoute,
 } from '../../utils/routes'
+import DownloadCSVMenu from './DownloadCSVMenu'
 import ShipmentDetails from './ShipmentDetails'
 import ShipmentOffers from './ShipmentOffers'
 
@@ -93,14 +93,13 @@ const ShipmentViewPage: FunctionComponent = () => {
             </h1>
           </div>
           <div className="flex-shrink space-x-4 mt-4 md:mt-0">
-            {user?.isAdmin && (
-              <Button disabled={exportIsProcessing} onClick={exportToCSV}>
-                Export to CSV
-              </Button>
+            {user?.isAdmin && shipment && (
+              <DownloadCSVMenu shipment={shipment.shipment} />
             )}
             <ButtonLink to={shipmentEditRoute(shipmentId)}>Edit</ButtonLink>
           </div>
         </header>
+
         <TabList>
           <TabLink to={shipmentViewRoute(shipmentId)}>Details</TabLink>
           <TabLink to={shipmentViewOffersRoute(shipmentId)}>Offers</TabLink>

@@ -12,6 +12,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/react-table": "^7.0.28",
     "classnames": "^2.2.6",
+    "date-fns": "^2.20.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hook-form": "^7.0.0",
