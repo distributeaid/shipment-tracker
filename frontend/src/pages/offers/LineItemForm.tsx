@@ -7,10 +7,13 @@ import TextField from '../../components/forms/TextField'
 import Spinner from '../../components/Spinner'
 import {
   DANGEROUS_GOODS_LIST,
+  LINE_ITEM_CATEGORY_OPTIONS,
   LINE_ITEM_CONTAINER_OPTIONS,
 } from '../../data/constants'
 import {
   DangerousGoods,
+  LineItemCategory,
+  LineItemContainerType,
   LineItemUpdateInput,
   useLineItemQuery,
   useUpdateLineItemMutation,
@@ -147,6 +150,14 @@ const LineItemForm: FunctionComponent<Props> = ({
             options={LINE_ITEM_CONTAINER_OPTIONS}
             register={register}
             required
+            registerOptions={{
+              validate: {
+                notUnset: (value: LineItemContainerType) =>
+                  value !== LineItemContainerType.Unset ||
+                  'Please select a container type',
+              },
+            }}
+            errors={errors}
           />
           <TextField
             label="Amount of items"
@@ -158,8 +169,20 @@ const LineItemForm: FunctionComponent<Props> = ({
             errors={errors}
           />
         </div>
-        {/* TODO add a category dropdown after we create some enums */}
-        {/* <SelectField label="Category" name="category" options={[]} /> */}
+        <SelectField
+          label="Category"
+          name="category"
+          options={LINE_ITEM_CATEGORY_OPTIONS}
+          register={register}
+          registerOptions={{
+            validate: {
+              notUnset: (value: LineItemCategory) =>
+                value !== LineItemCategory.Unset || 'Please select a category',
+            },
+          }}
+          required
+          errors={errors}
+        />
       </fieldset>
       <fieldset className="space-y-4 mt-12">
         <legend className="font-semibold text-gray-700 ">

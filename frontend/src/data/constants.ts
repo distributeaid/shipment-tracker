@@ -1,6 +1,7 @@
 import {
   DangerousGoods,
   GroupType,
+  LineItemCategory,
   LineItemContainerType,
   OfferStatus,
   PalletType,
@@ -60,6 +61,43 @@ export const PALLET_PAYMENT_STATUS_OPTIONS = [
     label: "Won't pay",
     value: PaymentStatus.WontPay,
   },
+]
+
+export const LINE_ITEM_CATEGORY_OPTIONS = [
+  { label: 'Not set', value: LineItemCategory.Unset },
+  {
+    label: "Clothing (men's, women's, children's, babies, shoes)",
+    value: LineItemCategory.Clothing,
+  },
+  {
+    label: 'Shelter & Bedding (tents, sleeping bags, roll mats, blankets)',
+    value: LineItemCategory.Shelter,
+  },
+  {
+    label:
+      'Hygiene & Toiletries (toothbrush, deodorant, shampoo, diapers, soap, etc.)',
+    value: LineItemCategory.Hygiene,
+  },
+  {
+    label:
+      'Food & Drink (canned food, dried food, cooking oil, bottled water, etc.)',
+    value: LineItemCategory.Food,
+  },
+  {
+    label:
+      'Games & Toys (board games, card games, musical instruments, baby toys)',
+    value: LineItemCategory.Games,
+  },
+  {
+    label: 'Electronics (phones, batteries, cables, laptops)',
+    value: LineItemCategory.Electronics,
+  },
+  {
+    label: 'Medical (bandages, plasters, first aid supplies)',
+    value: LineItemCategory.Medical,
+  },
+  { label: 'PPE (masks, antibacterial hand gel)', value: LineItemCategory.Ppe },
+  { label: 'Other (washing machines)', value: LineItemCategory.Other },
 ]
 
 export const LINE_ITEM_CONTAINER_OPTIONS = [
