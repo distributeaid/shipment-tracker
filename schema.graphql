@@ -1,4 +1,5 @@
 scalar Date
+scalar DateTime
 scalar Currency
 
 type Location {
@@ -38,8 +39,8 @@ type Group {
   website: String
   captainId: Int!
 
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 input GroupCreateInput {
@@ -150,9 +151,9 @@ type Shipment {
   exports: [ShipmentExport!]
 
   # default to created
-  statusChangeTime: Date!
-  createdAt: Date!
-  updatedAt: Date!
+  statusChangeTime: DateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type ShipmentPricing {
@@ -208,9 +209,9 @@ type Offer {
   photoUris: [String!]!
   pallets: [Pallet!]!
 
-  statusChangeTime: Date!
-  updatedAt: Date!
-  createdAt: Date!
+  statusChangeTime: DateTime!
+  updatedAt: DateTime!
+  createdAt: DateTime!
 }
 
 input OfferCreateInput {
@@ -246,9 +247,9 @@ type Pallet {
   palletType: PalletType!
   lineItems: [LineItem!]!
   paymentStatus: PaymentStatus!
-  paymentStatusChangeTime: Date!
-  createdAt: Date!
-  updatedAt: Date!
+  paymentStatusChangeTime: DateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 input PalletCreateInput {
@@ -319,9 +320,9 @@ type LineItem {
   dangerousGoods: [DangerousGoods!]!
   photoUris: [String!]!
   sendingHubDeliveryDate: Date
-  statusChangeTime: Date!
-  createdAt: Date!
-  updatedAt: Date!
+  statusChangeTime: DateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 input LineItemUpdateInput {
@@ -349,5 +350,5 @@ type ShipmentExport {
   downloadPath: String!
   shipmentId: Int!
   createdBy: UserProfile!
-  createdAt: Date!
+  createdAt: DateTime!
 }
