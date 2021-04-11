@@ -63,23 +63,27 @@ const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
     }
   }
 
-  const sortedExports = useMemo(() => {
-    if (shipment.exports) {
-      const sorted = [...shipment.exports]
-      sorted.sort((a, b) => {
-        const aValue = new Date(a.createdAt)
-        const bValue = new Date(b.createdAt)
-        if (aValue > bValue) {
-          return -1
-        } else if (aValue < bValue) {
-          return 1
-        }
-        return 0
-      })
-      return sorted
-    }
-    return []
-  }, [shipment.exports])
+  const sortedExports = useMemo(
+    function sortExportsChronologically() {
+      if (shipment.exports) {
+        const sorted = [...shipment.exports]
+        sorted.sort((a, b) => {
+          const aValue = new Date(a.createdAt)
+          const bValue = new Date(b.createdAt)
+          if (aValue > bValue) {
+            return -1
+          } else if (aValue < bValue) {
+            return 1
+          }
+          return 0
+        })
+        return sorted
+      }
+
+      return []
+    },
+    [shipment.exports],
+  )
 
   if (!shipment.exports || shipment.exports.length === 0) {
     return <Button disabled={exportIsProcessing}>Export to CSV</Button>

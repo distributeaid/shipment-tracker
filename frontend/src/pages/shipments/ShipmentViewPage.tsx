@@ -1,4 +1,3 @@
-import { useAuth0 } from '@auth0/auth0-react'
 import { FunctionComponent, useContext } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
 import ButtonLink from '../../components/ButtonLink'
@@ -7,10 +6,7 @@ import TabLink from '../../components/tabs/TabLink'
 import TabList from '../../components/tabs/TabList'
 import { UserProfileContext } from '../../components/UserProfileContext'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import {
-  useExportShipmentToCsvMutation,
-  useShipmentQuery,
-} from '../../types/api-types'
+import { useShipmentQuery } from '../../types/api-types'
 import { formatShipmentName } from '../../utils/format'
 import ROUTES, {
   shipmentEditRoute,
@@ -22,8 +18,6 @@ import ShipmentDetails from './ShipmentDetails'
 import ShipmentOffers from './ShipmentOffers'
 
 const ShipmentViewPage: FunctionComponent = () => {
-  const { getAccessTokenSilently } = useAuth0()
-
   const user = useContext(UserProfileContext)
   const params = useParams<{ shipmentId: string }>()
   const shipmentId = parseInt(params.shipmentId, 10)
@@ -33,49 +27,6 @@ const ShipmentViewPage: FunctionComponent = () => {
   })
 
   const shipmentData = shipment?.shipment
-
-  const [
-    exportShipment,
-    { loading: exportIsProcessing },
-  ] = useExportShipmentToCsvMutation()
-
-  const exportToCSV = async () => {
-    if (!shipment) {
-      return
-    }
-
-    const shipmentExport = await exportShipment({ variables: { shipmentId } })
-    const downloadPath = shipmentExport.data?.exportShipment.downloadPath
-
-    if (!downloadPath) {
-      throw new Error("Unable to download the shipment's data")
-    }
-
-    const accessToken = await getAccessTokenSilently()
-
-    const spreadsheet = await fetch(downloadPath, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }).then((res) => res.text())
-
-    // Download the CSV file by creating a link and clicking it. Yay HTML
-    const anchorElement = document.createElement('a')
-    const fileName = `${formatShipmentName(shipment.shipment)}.csv`
-
-    if (URL && 'download' in anchorElement) {
-      anchorElement.href = URL.createObjectURL(
-        new Blob([spreadsheet], {
-          type: 'application/octet-stream',
-        }),
-      )
-      anchorElement.setAttribute('download', fileName)
-      document.body.appendChild(anchorElement)
-      anchorElement.click()
-      document.body.removeChild(anchorElement)
-    } else {
-      window.location.href =
-        'data:application/octet-stream,' + encodeURIComponent(spreadsheet)
-    }
-  }
 
   return (
     <LayoutWithNav>
