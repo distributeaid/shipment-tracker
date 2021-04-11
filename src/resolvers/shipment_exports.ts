@@ -5,7 +5,7 @@ import Offer from '../models/offer'
 import Pallet from '../models/pallet'
 import Shipment from '../models/shipment'
 import ShipmentExport from '../models/shipment_export'
-import { MutationResolvers } from '../server-internal-types'
+import { MutationResolvers, QueryResolvers } from '../server-internal-types'
 
 const exportShipment: MutationResolvers['exportShipment'] = async (
   _,
@@ -110,4 +110,18 @@ function makeExportRow(
   ]
 }
 
-export { exportShipment }
+const listShipmentExports: QueryResolvers['listShipmentExports'] = async (
+  _,
+  { shipmentId },
+  { auth },
+) => {
+  if (!auth.isAdmin) {
+    throw new ForbiddenError('Must be admin')
+  }
+
+  return (
+    await ShipmentExport.findAll({ where: { shipmentId } })
+  ).map((shipmentExport: ShipmentExport) => shipmentExport.toWireFormat())
+}
+
+export { exportShipment, listShipmentExports }
