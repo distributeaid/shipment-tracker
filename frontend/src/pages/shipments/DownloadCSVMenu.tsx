@@ -1,6 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import format from 'date-fns/format'
-import { FunctionComponent } from 'react'
+import { FunctionComponent, useMemo } from 'react'
 import Button from '../../components/Button'
 import PlainModal from '../../components/modal/PlainModal'
 import useModalState from '../../hooks/useModalState'
@@ -63,6 +63,24 @@ const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
     }
   }
 
+  const sortedExports = useMemo(() => {
+    if (shipment.exports) {
+      const sorted = [...shipment.exports]
+      sorted.sort((a, b) => {
+        const aValue = new Date(a.createdAt)
+        const bValue = new Date(b.createdAt)
+        if (aValue > bValue) {
+          return -1
+        } else if (aValue < bValue) {
+          return 1
+        }
+        return 0
+      })
+      return sorted
+    }
+    return []
+  }, [shipment.exports])
+
   if (!shipment.exports || shipment.exports.length === 0) {
     return <Button disabled={exportIsProcessing}>Export to CSV</Button>
   }
@@ -81,12 +99,14 @@ const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
         </div>
         <div className="max-h-80 overflow-y-auto p-4">
           <div className="divide-y divide-gray-100 pb-2">
-            {shipment.exports.map((e) => (
+            {sortedExports.map((e) => (
               <div
                 key={e.id}
                 className="py-2 flex items-center justify-between"
               >
-                <span>{format(new Date(e.createdAt), 'MMM do, yyyy')}</span>
+                <span>
+                  {format(new Date(e.createdAt), 'MMM d, yyyy, H:mm')}
+                </span>
                 <Button
                   slim
                   disabled={exportIsProcessing}
