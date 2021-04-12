@@ -8,11 +8,12 @@ import {
   ShipmentQuery,
   useExportShipmentToCsvMutation,
 } from '../../types/api-types'
-import { formatShipmentName } from '../../utils/format'
 
 interface Props {
   shipment: ShipmentQuery['shipment']
 }
+
+const SERVER_URL = process.env.REACT_APP_SERVER_URL
 
 const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
   const { getAccessTokenSilently } = useAuth0()
@@ -39,28 +40,9 @@ const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
   const downloadShipment = async (downloadPath: string) => {
     const accessToken = await getAccessTokenSilently()
 
-    const spreadsheet = await fetch(downloadPath, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }).then((res) => res.text())
-
-    // Download the CSV file by creating a link and clicking it. Yay HTML
-    const anchorElement = document.createElement('a')
-    const fileName = `${formatShipmentName(shipment)}.csv`
-
-    if (URL && 'download' in anchorElement) {
-      anchorElement.href = URL.createObjectURL(
-        new Blob([spreadsheet], {
-          type: 'application/octet-stream',
-        }),
-      )
-      anchorElement.setAttribute('download', fileName)
-      document.body.appendChild(anchorElement)
-      anchorElement.click()
-      document.body.removeChild(anchorElement)
-    } else {
-      window.location.href =
-        'data:application/octet-stream,' + encodeURIComponent(spreadsheet)
-    }
+    const downloadUrl = new URL(downloadPath, SERVER_URL)
+    downloadUrl.searchParams.append('authorization', `Bearer ${accessToken}`)
+    window.open(downloadUrl.href)
   }
 
   const sortedExports = useMemo(
