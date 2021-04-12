@@ -1,13 +1,13 @@
-import gql from 'graphql-tag'
 import { ApolloServerTestClient } from 'apollo-server-testing'
+import gql from 'graphql-tag'
 import { omit } from 'lodash'
-import { makeAdminTestServer, makeTestServer } from '../testServer'
-import { sequelize } from '../sequelize'
-import Group, { GroupAttributes } from '../models/group'
-import { createGroup } from './helpers'
-import { GroupType } from '../server-internal-types'
-import UserAccount from '../models/user_account'
 import { fakeUserAuth } from '../authenticateRequest'
+import Group, { GroupAttributes } from '../models/group'
+import UserAccount from '../models/user_account'
+import { sequelize } from '../sequelize'
+import { GroupType } from '../server-internal-types'
+import { makeAdminTestServer, makeTestServer } from '../testServer'
+import { createGroup } from './helpers'
 
 describe('Groups API', () => {
   let otherUserTestServer: ApolloServerTestClient,
@@ -19,7 +19,7 @@ describe('Groups API', () => {
   const group1Name: string = 'group1'
   const group1Params = {
     name: group1Name,
-    groupType: GroupType.DaHub,
+    groupType: GroupType.SendingGroup,
     primaryLocation: { countryCode: 'UK', townCity: 'Bristol' },
     primaryContact: { name: 'Contact', email: 'contact@example.com' },
     website: 'http://www.example.com',

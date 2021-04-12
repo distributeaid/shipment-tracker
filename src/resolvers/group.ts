@@ -79,7 +79,11 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
     throw new ForbiddenError('Not permitted to update group')
   }
 
-  if (input.groupType !== group.groupType && !context.auth.isAdmin) {
+  if (
+    input.groupType &&
+    input.groupType !== group.groupType &&
+    !context.auth.isAdmin
+  ) {
     throw new ForbiddenError('Not permitted to change group type')
   }
 
