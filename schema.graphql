@@ -187,6 +187,7 @@ enum GroupType {
 type UserProfile {
   id: Int!
   isAdmin: Boolean!
+  groupId: Int
 }
 
 enum OfferStatus {

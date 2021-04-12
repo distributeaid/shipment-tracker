@@ -4,6 +4,15 @@ import { createContext, FunctionComponent, useEffect, useState } from 'react'
 export interface UserProfile {
   id: number
   isAdmin: boolean
+  groupId?: number
+}
+
+interface UserProfileData {
+  profile?: UserProfile
+  /**
+   * Call this method to refresh the values stored in the UserProfile
+   */
+  refetch: () => void
 }
 
 const fetchProfile = (token: string) => {
@@ -12,12 +21,16 @@ const fetchProfile = (token: string) => {
   })
 }
 
-const UserProfileContext = createContext<UserProfile | undefined>(undefined)
+const UserProfileContext = createContext<UserProfileData>({
+  refetch: () => {},
+})
 
 const UserProfileProvider: FunctionComponent = ({ children }) => {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0()
   const [profileIsLoaded, setProfileIsLoaded] = useState(false)
   const [profile, setProfile] = useState<UserProfile>()
+
+  const refetch = () => setProfileIsLoaded(false)
 
   useEffect(() => {
     if (isAuthenticated && !profileIsLoaded) {
@@ -39,7 +52,7 @@ const UserProfileProvider: FunctionComponent = ({ children }) => {
   }, [isAuthenticated, getAccessTokenSilently, profileIsLoaded])
 
   return (
-    <UserProfileContext.Provider value={profile}>
+    <UserProfileContext.Provider value={{ profile, refetch }}>
       {children}
     </UserProfileContext.Provider>
   )

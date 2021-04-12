@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import InternalLink from '../../components/InternalLink'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
@@ -11,6 +11,8 @@ import { groupViewRoute } from '../../utils/routes'
 import GroupForm from './GroupForm'
 
 const GroupEditPage: FunctionComponent = () => {
+  const history = useHistory()
+
   // Extract the group's ID from the URL
   const { groupId } = useParams<{ groupId: string }>()
 
@@ -25,10 +27,15 @@ const GroupEditPage: FunctionComponent = () => {
     { loading: mutationIsLoading, error: mutationError },
   ] = useUpdateGroupMutation()
 
-  const onSubmit = (input: GroupUpdateInput) => {
-    updateGroup({ variables: { id: parseInt(groupId, 10), input } }).catch(
-      console.error,
-    )
+  const onSubmit = async (input: GroupUpdateInput) => {
+    try {
+      await updateGroup({
+        variables: { id: parseInt(groupId, 10), input },
+      })
+      history.push(groupViewRoute(groupId))
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (

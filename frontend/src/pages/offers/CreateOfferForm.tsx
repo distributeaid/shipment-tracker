@@ -35,7 +35,7 @@ const OfferForm: FunctionComponent<Props> = (props) => {
   // Each group leader is assigned to a single group
   // We need to figure out which group that is
   // TODO: handle the fact that admins can be assigned to any number of groups
-  const profile = useContext(UserProfileContext)
+  const { profile } = useContext(UserProfileContext)
   const { data: groups, loading: isLoadingGroups } = useAllGroupsMinimalQuery()
 
   const groupForUser = useMemo(() => {

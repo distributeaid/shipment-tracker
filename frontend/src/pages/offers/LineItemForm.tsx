@@ -81,9 +81,9 @@ const LineItemForm: FunctionComponent<Props> = ({
     // react-hook-form
     input.dangerousGoods = dangerousGoodsList
 
-    // We need to all the fields from LineItemUpdateInput, even the ones that
-    // didn't change. We then _pick the fields to make sure we don't send things
-    // like `id` or `__typename`
+    // We need to send all the fields from LineItemUpdateInput, even the ones
+    // that didn't change. We then _pick the fields to make sure we don't send
+    // things like `id` or `__typename`.
     const updatedLineItem = _pick(Object.assign({}, data.lineItem, input), [
       'status',
       'proposedReceivingGroupId',

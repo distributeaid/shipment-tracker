@@ -1,12 +1,15 @@
 import { Request, Response } from 'express'
+import { Maybe } from 'graphql-tools'
 import { authenticateRequest } from './authenticateRequest'
+import Group from './models/group'
 import UserAccount from './models/user_account'
 
 const sendProfile = (
   response: Response,
   userAccount: UserAccount,
   isAdmin = false,
-) => response.json(userAccount.asProfile(isAdmin)).end()
+  groupId?: number,
+) => response.json(userAccount.asProfile(isAdmin, groupId)).end()
 
 const findOrCreateProfile = async (request: Request, response: Response) => {
   const auth = await authenticateRequest(request)
@@ -14,7 +17,15 @@ const findOrCreateProfile = async (request: Request, response: Response) => {
   if (auth.userAccount != null) {
     console.info('found account for profile', auth.claims.sub)
 
-    sendProfile(response, auth.userAccount, auth.isAdmin)
+    let groupForUser: Maybe<Group>
+    if (!auth.isAdmin) {
+      groupForUser = await Group.findOne({
+        where: { captainId: auth.userAccount.id },
+        attributes: ['id'],
+      })
+    }
+
+    sendProfile(response, auth.userAccount, auth.isAdmin, groupForUser?.id)
     return
   }
 

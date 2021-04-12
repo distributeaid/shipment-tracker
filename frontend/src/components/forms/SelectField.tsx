@@ -1,4 +1,5 @@
 import { ErrorMessage } from '@hookform/error-message'
+import cx from 'classnames'
 import _get from 'lodash/get'
 import { nanoid } from 'nanoid'
 import {
@@ -82,6 +83,7 @@ const SelectField: FunctionComponent<Props> = ({
   label,
   errors,
   options = [],
+  className,
   ...otherProps
 }) => {
   // Create a unique ID in case the use doesn't provide one
@@ -94,7 +96,7 @@ const SelectField: FunctionComponent<Props> = ({
   const hasError = _get(errors, otherProps.name, null) != null
 
   return (
-    <div className="w-full">
+    <div className={cx(className, 'w-full')}>
       <Label htmlFor={fieldId} required={otherProps.required}>
         {label}
       </Label>

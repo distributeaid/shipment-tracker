@@ -4,6 +4,7 @@ import Group, { GroupAttributes } from '../models/group'
 import UserAccount from '../models/user_account'
 import {
   GroupCreateInput,
+  GroupType,
   MutationResolvers,
   QueryResolvers,
 } from '../server-internal-types'
@@ -41,6 +42,11 @@ const addGroup: MutationResolvers['addGroup'] = async (
     })
   }
 
+  // Non-admins should only be allowed to create sending groups
+  if (input.groupType !== GroupType.SendingGroup && !context.auth.isAdmin) {
+    throw new ForbiddenError(`Non-admins can only create sending groups`)
+  }
+
   if (input.website && !stringIsUrl(input.website)) {
     throw new UserInputError(`URL is not valid: ${input.website}`)
   }
@@ -73,7 +79,7 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
     throw new ForbiddenError('Not permitted to update group')
   }
 
-  if (input.groupType && !context.auth.isAdmin) {
+  if (input.groupType !== group.groupType && !context.auth.isAdmin) {
     throw new ForbiddenError('Not permitted to change group type')
   }
 

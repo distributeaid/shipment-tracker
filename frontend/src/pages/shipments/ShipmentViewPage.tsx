@@ -18,7 +18,7 @@ import ShipmentDetails from './ShipmentDetails'
 import ShipmentOffers from './ShipmentOffers'
 
 const ShipmentViewPage: FunctionComponent = () => {
-  const user = useContext(UserProfileContext)
+  const { profile } = useContext(UserProfileContext)
   const params = useParams<{ shipmentId: string }>()
   const shipmentId = parseInt(params.shipmentId, 10)
 
@@ -44,7 +44,7 @@ const ShipmentViewPage: FunctionComponent = () => {
             </h1>
           </div>
           <div className="flex-shrink space-x-4 mt-4 md:mt-0">
-            {user?.isAdmin && shipment && (
+            {profile?.isAdmin && shipment && (
               <DownloadCSVMenu shipment={shipment.shipment} />
             )}
             <ButtonLink to={shipmentEditRoute(shipmentId)}>Edit</ButtonLink>
