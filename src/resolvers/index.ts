@@ -25,7 +25,7 @@ import {
   shipmentExports,
   updateShipment,
 } from './shipment'
-import { exportShipment } from './shipment_exports'
+import { exportShipment, listShipmentExports } from './shipment_exports'
 
 const resolvers: Resolvers = {
   // Third Party Resolvers
@@ -41,6 +41,7 @@ const resolvers: Resolvers = {
     listOffers,
     pallet,
     lineItem,
+    listShipmentExports,
   },
 
   // Mutation Resolvers

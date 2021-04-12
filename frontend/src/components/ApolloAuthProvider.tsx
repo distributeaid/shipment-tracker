@@ -14,7 +14,7 @@ const clientUrl = process.env.REACT_APP_CLIENT_URL
 
 // https://www.apollographql.com/docs/link/links/http/
 const httpLink = new HttpLink({
-  uri: process.env.REACT_APP_SERVER_URL,
+  uri: process.env.REACT_APP_GRAPHQL_URL,
   credentials: 'include',
 })
 

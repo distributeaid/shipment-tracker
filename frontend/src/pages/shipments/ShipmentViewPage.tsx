@@ -1,9 +1,10 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, useContext } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
 import ButtonLink from '../../components/ButtonLink'
 import InternalLink from '../../components/InternalLink'
 import TabLink from '../../components/tabs/TabLink'
 import TabList from '../../components/tabs/TabList'
+import { UserProfileContext } from '../../components/UserProfileContext'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { useShipmentQuery } from '../../types/api-types'
 import { formatShipmentName } from '../../utils/format'
@@ -12,10 +13,12 @@ import ROUTES, {
   shipmentViewOffersRoute,
   shipmentViewRoute,
 } from '../../utils/routes'
+import DownloadCSVMenu from './DownloadCSVMenu'
 import ShipmentDetails from './ShipmentDetails'
 import ShipmentOffers from './ShipmentOffers'
 
 const ShipmentViewPage: FunctionComponent = () => {
+  const user = useContext(UserProfileContext)
   const params = useParams<{ shipmentId: string }>()
   const shipmentId = parseInt(params.shipmentId, 10)
 
@@ -40,10 +43,14 @@ const ShipmentViewPage: FunctionComponent = () => {
               {shipmentData ? formatShipmentName(shipmentData) : ''}
             </h1>
           </div>
-          <div className="flex-shrink mt-4 md:mt-0">
+          <div className="flex-shrink space-x-4 mt-4 md:mt-0">
+            {user?.isAdmin && shipment && (
+              <DownloadCSVMenu shipment={shipment.shipment} />
+            )}
             <ButtonLink to={shipmentEditRoute(shipmentId)}>Edit</ButtonLink>
           </div>
         </header>
+
         <TabList>
           <TabLink to={shipmentViewRoute(shipmentId)}>Details</TabLink>
           <TabLink to={shipmentViewOffersRoute(shipmentId)}>Offers</TabLink>

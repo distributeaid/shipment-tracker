@@ -24,6 +24,7 @@ export interface ShipmentExportCreationAttributes
 
 @Table({
   createdAt: true,
+  updatedAt: false,
 })
 export default class ShipmentExport extends Model {
   public id!: number

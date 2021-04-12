@@ -11,7 +11,7 @@ const convertCsvField = (value: CsvFieldValue) => {
     case 'number':
       return value
     case 'string':
-      return '"' + value.replace(/[\S\s]+/gm, ' ') + '"'
+      return '"' + value.replace(/[\n\s\r\v\t]+/gm, ' ') + '"'
     default:
       throw new Error(
         `unrecognized value type in CSV generation: ${typeof value}`,

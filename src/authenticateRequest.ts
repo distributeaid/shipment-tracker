@@ -132,7 +132,7 @@ export const authenticateRequest = async (req: Request): Promise<Auth> => {
     return fakeAdminAuth
   }
 
-  const { authorization: token } = req.headers
+  const token = req.headers.authorization || req.query.authorization?.toString()
 
   if (token == null) {
     throw new ForbiddenError('you must be logged in')

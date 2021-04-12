@@ -5,7 +5,9 @@ import LineItem from '../models/line_item'
 import Offer from '../models/offer'
 import Pallet from '../models/pallet'
 import Shipment from '../models/shipment'
+import ShipmentExport from '../models/shipment_export'
 import UserAccount from '../models/user_account'
+import { HEADER_ROW } from '../resolvers/shipment_exports'
 import { sequelize } from '../sequelize'
 import {
   GroupType,
@@ -15,7 +17,7 @@ import {
   OfferStatus,
   PalletType,
   PaymentStatus,
-  ShipmentExport,
+  ShipmentExport as WireShipmentExport,
   ShipmentStatus,
   ShippingRoute,
 } from '../server-internal-types'
@@ -100,6 +102,20 @@ describe('ShipmentExports API', () => {
   })
 
   describe('exportShipment', () => {
+    const LIST_SHIPMENT_EXPORTS = gql`
+      query($shipmentId: Int!) {
+        listShipmentExports(shipmentId: $shipmentId) {
+          id
+          shipmentId
+          downloadPath
+          createdBy {
+            id
+          }
+          createdAt
+        }
+      }
+    `
+
     const EXPORT_SHIPMENT = gql`
       mutation($shipmentId: Int!) {
         exportShipment(shipmentId: $shipmentId) {
@@ -114,7 +130,7 @@ describe('ShipmentExports API', () => {
       }
     `
 
-    it('exports to CSV and creates a record of the export', async () => {
+    it('exports to CSV and creates a record of the export, lists it', async () => {
       const res = await adminTestServer.mutate<
         { exportShipment: ShipmentExport },
         { shipmentId: number }
@@ -129,6 +145,7 @@ describe('ShipmentExports API', () => {
 
       expect(services.generateCsvCalls[0]).toEqual({
         rows: [
+          HEADER_ROW,
           [
             'group 1',
             'offer contact name',
@@ -146,6 +163,22 @@ describe('ShipmentExports API', () => {
           ],
         ],
       })
+
+      const listRes = await adminTestServer.query<
+        { listShipmentExports: WireShipmentExport[] },
+        { shipmentId: number }
+      >({
+        query: LIST_SHIPMENT_EXPORTS,
+        variables: {
+          shipmentId: shipment.id,
+        },
+      })
+
+      expect(listRes.errors).toBeUndefined()
+
+      const export1 = listRes.data?.listShipmentExports?.[0]!
+
+      expect(export1.shipmentId).toEqual(shipment.id)
     })
   })
 })
