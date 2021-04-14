@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react'
-import { FunctionComponent, ReactNode, useContext, useMemo } from 'react'
+import { FunctionComponent, ReactNode, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import ROUTES from '../utils/routes'
 import DistributeAidLogo from './branding/DistributeAidLogo'
@@ -49,12 +49,9 @@ const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
   const { user, logout } = useAuth0()
   const { profile } = useContext(UserProfileContext)
 
-  const filteredNavLinks = useMemo(() => {
-    if (!profile?.isAdmin) {
-      return NAV_LINKS.filter((link) => !link.adminOnly)
-    }
-    return NAV_LINKS
-  }, [profile])
+  const filteredNavLinks = NAV_LINKS.filter(
+    (link) => link.adminOnly === profile?.isAdmin,
+  )
 
   return (
     <header className="py-2 bg-navy-800 h-nav sticky top-0">

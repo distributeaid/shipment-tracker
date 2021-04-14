@@ -36,7 +36,7 @@ export default class UserAccount extends Model<
   @Column
   public readonly updatedAt!: Date
 
-  public asProfile(isAdmin = false, groupId?: number): UserProfile {
+  public asProfile(groupId?: number, isAdmin = false): UserProfile {
     return {
       id: this.id,
       isAdmin,

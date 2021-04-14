@@ -11,7 +11,9 @@ import { groupViewRoute } from '../../utils/routes'
 import GroupForm from './GroupForm'
 
 const GroupCreatePage: FunctionComponent = () => {
-  const { refetch } = useContext(UserProfileContext)
+  const { refetch: refreshUserGroupAssociation } = useContext(
+    UserProfileContext,
+  )
   const history = useHistory()
 
   const [
@@ -28,10 +30,10 @@ const GroupCreatePage: FunctionComponent = () => {
         refetchQueries: [{ query: AllGroupsDocument }],
       })
 
-      // If the user is a group leader, refresh their credentials so that the UI
-      // is aware that they created their own group and finished their
-      // onboarding
-      refetch()
+      // Because we cache the association between a group captain and their
+      // group, we need to refresh that association when they create their first
+      // group.
+      refreshUserGroupAssociation()
 
       if (data) {
         const newGroupId = data.addGroup.id

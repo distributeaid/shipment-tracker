@@ -9,7 +9,7 @@ const sendProfile = (
   userAccount: UserAccount,
   isAdmin = false,
   groupId?: number,
-) => response.json(userAccount.asProfile(isAdmin, groupId)).end()
+) => response.json(userAccount.asProfile(groupId, isAdmin)).end()
 
 const findOrCreateProfile = async (request: Request, response: Response) => {
   const auth = await authenticateRequest(request)
@@ -19,6 +19,11 @@ const findOrCreateProfile = async (request: Request, response: Response) => {
 
     let groupForUser: Maybe<Group>
     if (!auth.isAdmin) {
+      // Note: this assumes that there is only 1 captain per group, where in
+      // reality there are no restrictions on the number of groups with the same
+      // captain. For now, we've agreed that this is okay, but we probably need
+      // to solidify some restrictions later on.
+      // See https://github.com/distributeaid/shipment-tracker/issues/133
       groupForUser = await Group.findOne({
         where: { captainId: auth.userAccount.id },
         attributes: ['id'],
