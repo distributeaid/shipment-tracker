@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react'
-import { FunctionComponent, ReactNode } from 'react'
+import { FunctionComponent, ReactNode, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import ROUTES from '../utils/routes'
 import DistributeAidLogo from './branding/DistributeAidLogo'
@@ -9,11 +9,13 @@ import TruckIcon from './icons/TruckIcon'
 import UserIcon from './icons/UserIcon'
 import DesktopNavigation from './navigation/DesktopNavigation'
 import MobileNavigation from './navigation/MobileNavigation'
+import { UserProfileContext } from './UserProfileContext'
 
 export interface NavLinkItem {
   path: string
   label: ReactNode
   icon?: ReactNode
+  adminOnly?: boolean
 }
 
 const NAV_LINKS: NavLinkItem[] = [
@@ -26,6 +28,7 @@ const NAV_LINKS: NavLinkItem[] = [
     path: ROUTES.ADMIN_ROOT,
     label: 'Admin',
     icon: <CogIcon className="w-5 h-5 mr-2" />,
+    adminOnly: true,
   },
 ]
 
@@ -44,17 +47,22 @@ interface Props {
  */
 const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
   const { user, logout } = useAuth0()
+  const { profile } = useContext(UserProfileContext)
+
+  const filteredNavLinks = NAV_LINKS.filter(
+    (link) => link.adminOnly === profile?.isAdmin,
+  )
 
   return (
     <header className="py-2 bg-navy-800 h-nav sticky top-0">
       <div className="max-w-5xl px-4 mx-auto h-full flex items-center justify-between">
-        <MobileNavigation navLinks={NAV_LINKS} />
+        <MobileNavigation navLinks={filteredNavLinks} />
         <div className="flex items-center">
           <Link to="/" className="text-white" aria-label="Go to the home page">
             <DistributeAidLogo className="block h-8" />
           </Link>
         </div>
-        <DesktopNavigation navLinks={NAV_LINKS} />
+        <DesktopNavigation navLinks={filteredNavLinks} />
         {!hideControls && user && (
           <div className="flex items-center text-white">
             <DropdownMenu

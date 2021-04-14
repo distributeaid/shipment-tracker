@@ -1,10 +1,12 @@
-import { FunctionComponent, ReactNode, useEffect } from 'react'
+import _omit from 'lodash/omit'
+import { FunctionComponent, ReactNode, useContext, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
+import { UserProfileContext } from '../../components/UserProfileContext'
 import { COUNTRY_CODE_OPTIONS, GROUP_TYPE_OPTIONS } from '../../data/constants'
-import { GroupCreateInput, GroupQuery } from '../../types/api-types'
+import { GroupCreateInput, GroupQuery, GroupType } from '../../types/api-types'
 
 interface Props {
   /**
@@ -30,40 +32,53 @@ interface Props {
  * This component encapsulates a form for creating and editing groups.
  */
 const GroupForm: FunctionComponent<Props> = (props) => {
+  const { profile } = useContext(UserProfileContext)
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm()
+  } = useForm<GroupCreateInput>()
 
   useEffect(
     function resetFormValues() {
       if (props.defaultValues) {
         // Update the values of the fields
-        reset(props.defaultValues.group)
+        reset(_omit(props.defaultValues.group, ['id', '__typename']))
       }
     },
     [props.defaultValues, reset],
   )
 
+  const submitForm = handleSubmit((input) => {
+    // Non-admins can only create sending groups
+    if (!profile?.isAdmin) {
+      input.groupType = GroupType.SendingGroup
+    }
+
+    props.onSubmit(input)
+  })
+
   return (
-    <form onSubmit={handleSubmit(props.onSubmit)}>
+    <form onSubmit={submitForm}>
       <TextField
-        label="Name"
+        label="Group name"
         name="name"
         register={register}
-        className="mb-4"
         required
         errors={errors}
       />
-      <SelectField
-        label="Type"
-        name="groupType"
-        options={GROUP_TYPE_OPTIONS}
-        required
-        register={register}
-      />
+      {profile?.isAdmin && (
+        <SelectField
+          label="Type"
+          name="groupType"
+          options={GROUP_TYPE_OPTIONS}
+          className="mt-4"
+          required
+          register={register}
+        />
+      )}
       <fieldset className="space-y-4 mt-8">
         <legend>Location</legend>
         <TextField

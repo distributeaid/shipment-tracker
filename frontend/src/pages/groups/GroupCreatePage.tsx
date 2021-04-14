@@ -1,5 +1,6 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, useContext } from 'react'
 import { useHistory } from 'react-router-dom'
+import { UserProfileContext } from '../../components/UserProfileContext'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
   AllGroupsDocument,
@@ -10,6 +11,9 @@ import { groupViewRoute } from '../../utils/routes'
 import GroupForm from './GroupForm'
 
 const GroupCreatePage: FunctionComponent = () => {
+  const { refetch: refreshUserGroupAssociation } = useContext(
+    UserProfileContext,
+  )
   const history = useHistory()
 
   const [
@@ -17,20 +21,27 @@ const GroupCreatePage: FunctionComponent = () => {
     { loading: mutationIsLoading, error: mutationError },
   ] = useCreateGroupMutation()
 
-  const onSubmit = (input: GroupCreateInput) => {
-    // Create the group and then redirect to its view/edit page
-    addGroup({
-      variables: { input },
-      // Fetch the updated list of groups
-      refetchQueries: [{ query: AllGroupsDocument }],
-    })
-      .then(({ data }) => {
-        if (data) {
-          const newGroupId = data.addGroup.id
-          history.push(groupViewRoute(newGroupId))
-        }
+  const onSubmit = async (input: GroupCreateInput) => {
+    try {
+      // Create the group and then redirect to its view/edit page
+      const { data } = await addGroup({
+        variables: { input },
+        // Fetch the updated list of groups
+        refetchQueries: [{ query: AllGroupsDocument }],
       })
-      .catch(console.error)
+
+      // Because we cache the association between a group captain and their
+      // group, we need to refresh that association when they create their first
+      // group.
+      refreshUserGroupAssociation()
+
+      if (data) {
+        const newGroupId = data.addGroup.id
+        history.push(groupViewRoute(newGroupId))
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (

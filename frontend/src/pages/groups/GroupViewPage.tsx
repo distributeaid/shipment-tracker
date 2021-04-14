@@ -1,32 +1,42 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 import ButtonLink from '../../components/ButtonLink'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import InternalLink from '../../components/InternalLink'
+import { UserProfileContext } from '../../components/UserProfileContext'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { useGroupQuery } from '../../types/api-types'
 import { formatCountryCodeToName, formatGroupType } from '../../utils/format'
 import ROUTES, { groupEditRoute } from '../../utils/routes'
 
 const GroupViewPage: FunctionComponent = () => {
+  const { profile } = useContext(UserProfileContext)
+
   // Extract the group's ID from the URL
-  const { groupId } = useParams<{ groupId: string }>()
+  const groupId = parseInt(useParams<{ groupId: string }>().groupId, 10)
 
   // Load the group's information
   const { data: group } = useGroupQuery({
-    variables: { id: parseInt(groupId, 10) },
+    variables: { id: groupId },
   })
 
   const groupData = group?.group
+
+  const canEditGroup = profile?.isAdmin || profile?.groupId === groupId
 
   return (
     <LayoutWithNav>
       <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
         <header className="p-4 md:p-6 border-b border-gray-200 md:flex items-center">
           <div className="flex-grow">
-            <InternalLink className="inline-block mb-2" to={ROUTES.GROUP_LIST}>
-              ← back to list
-            </InternalLink>
+            {profile?.isAdmin && (
+              <InternalLink
+                className="inline-block mb-2"
+                to={ROUTES.GROUP_LIST}
+              >
+                ← back to list
+              </InternalLink>
+            )}
             <h1 className="text-navy-800 text-2xl md:text-3xl mb-2">
               {groupData?.name}
             </h1>
@@ -35,9 +45,11 @@ const GroupViewPage: FunctionComponent = () => {
               services across the world.
             </p>
           </div>
-          <div className="flex-shrink mt-4 md:mt-0">
-            <ButtonLink to={groupEditRoute(groupId)}>Edit</ButtonLink>
-          </div>
+          {canEditGroup && (
+            <div className="flex-shrink mt-4 md:mt-0">
+              <ButtonLink to={groupEditRoute(groupId)}>Edit</ButtonLink>
+            </div>
+          )}
         </header>
         {groupData && (
           <main className="p-4 md:p-6 max-w-lg pb-20 space-y-6">
