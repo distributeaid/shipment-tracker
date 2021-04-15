@@ -71,6 +71,7 @@ See the README in the `frontend` directory for instructions on setting up for fr
 
 - [Database Migrations](./docs/migrations.md)
 - [Graphql Codegen](./docs/codegen.md)
+- [Auth0 configuration](./docs/auth0.md)
 
 ### Type definitions
 
