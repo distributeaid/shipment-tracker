@@ -12,10 +12,15 @@ export type BadgeColor =
 
 interface Props {
   color?: BadgeColor
+  className?: string
 }
 
-const Badge: FunctionComponent<Props> = ({ color = 'gray', children }) => {
-  const classes = cx('rounded-sm py-1 px-2 text-sm font-semibold', {
+const Badge: FunctionComponent<Props> = ({
+  color = 'gray',
+  className,
+  children,
+}) => {
+  const classes = cx(className, 'rounded-sm py-1 px-2 text-sm font-semibold', {
     'bg-red-100 text-red-700': color === 'red',
     'bg-navy-100 text-navy-600': color === 'navy',
     'bg-blue-100 text-blue-700': color === 'blue',
