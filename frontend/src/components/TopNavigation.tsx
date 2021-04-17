@@ -2,6 +2,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { FunctionComponent, ReactNode, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import ROUTES from '../utils/routes'
+import Badge from './Badge'
 import DistributeAidLogo from './branding/DistributeAidLogo'
 import DropdownMenu from './DropdownMenu'
 import CogIcon from './icons/CogIcon'
@@ -49,8 +50,10 @@ const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
   const { user, logout } = useAuth0()
   const { profile } = useContext(UserProfileContext)
 
-  const filteredNavLinks = NAV_LINKS.filter(
-    (link) => link.adminOnly === profile?.isAdmin,
+  const userIsAdmin = profile?.isAdmin
+
+  const filteredNavLinks = NAV_LINKS.filter((link) =>
+    link.adminOnly ? userIsAdmin : true,
   )
 
   return (
@@ -71,7 +74,10 @@ const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
               label={<UserIcon className="w-6 h-6" />}
             >
               <DropdownMenu.Text>
-                <div>{user.name}</div>
+                <div>
+                  {user.name}
+                  {userIsAdmin && <Badge className="ml-4">Admin</Badge>}
+                </div>
                 <div className="text-sm text-gray-500">{user.email}</div>
               </DropdownMenu.Text>
               <DropdownMenu.Divider />
