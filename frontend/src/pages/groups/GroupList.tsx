@@ -1,9 +1,10 @@
 import cx from 'classnames'
-import { FunctionComponent, useMemo } from 'react'
+import { FunctionComponent, useContext, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Column, useSortBy, useTable } from 'react-table'
 import ButtonLink from '../../components/ButtonLink'
 import TableHeader from '../../components/table/TableHeader'
+import { UserProfileContext } from '../../components/UserProfileContext'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { AllGroupsQuery, useAllGroupsQuery } from '../../types/api-types'
 import { formatGroupType } from '../../utils/format'
@@ -34,6 +35,9 @@ const COLUMNS: Column<AllGroupsQuery['listGroups'][0]>[] = [
  * Display a list of all the groups in the database
  */
 const GroupList: FunctionComponent = () => {
+  const { profile } = useContext(UserProfileContext)
+  const groupLeaderHasCreatedGroup = profile?.groupId != null
+
   const { data } = useAllGroupsQuery()
 
   // We must memoize the data for react-table to function properly
@@ -52,7 +56,9 @@ const GroupList: FunctionComponent = () => {
       <div className="max-w-5xl mx-auto bg-white border-l border-r border-gray-200 min-h-content">
         <header className="p-6 border-b border-gray-200 flex items-center justify-between">
           <h1 className="text-navy-800 text-3xl">Groups</h1>
-          <ButtonLink to={ROUTES.GROUP_CREATE}>Create group</ButtonLink>
+          {!groupLeaderHasCreatedGroup && (
+            <ButtonLink to={ROUTES.GROUP_CREATE}>Create group</ButtonLink>
+          )}
         </header>
         <main className="overflow-x-auto pb-8">
           <table className="w-full whitespace-nowrap" {...getTableProps()}>
