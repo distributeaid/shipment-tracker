@@ -25,6 +25,38 @@ describe('Groups API', () => {
     website: 'http://www.example.com',
   }
 
+  const group2Params = {
+    name: 'group2',
+    groupType: GroupType.SendingGroup,
+    primaryLocation: { countryCode: 'FR', townCity: 'Calais' },
+    primaryContact: { name: 'Contact', email: 'contact@example.com' },
+    website: 'http://www.example.com',
+  }
+
+  const ADD_GROUP = gql`
+    mutation(
+      $name: String!
+      $groupType: GroupType!
+      $primaryLocation: LocationInput!
+      $primaryContact: ContactInfoInput!
+      $website: String
+    ) {
+      addGroup(
+        input: {
+          name: $name
+          groupType: $groupType
+          primaryLocation: $primaryLocation
+          primaryContact: $primaryContact
+          website: $website
+        }
+      ) {
+        id
+        name
+        groupType
+      }
+    }
+  `
+
   beforeEach(async () => {
     await UserAccount.truncate({ cascade: true, force: true })
     await Group.truncate({ cascade: true, force: true })
@@ -47,30 +79,6 @@ describe('Groups API', () => {
 
   describe('addGroup', () => {
     it('adds a new group', async () => {
-      const ADD_GROUP = gql`
-        mutation(
-          $name: String!
-          $groupType: GroupType!
-          $primaryLocation: LocationInput!
-          $primaryContact: ContactInfoInput!
-          $website: String
-        ) {
-          addGroup(
-            input: {
-              name: $name
-              groupType: $groupType
-              primaryLocation: $primaryLocation
-              primaryContact: $primaryContact
-              website: $website
-            }
-          ) {
-            id
-            name
-            groupType
-          }
-        }
-      `
-
       const res = await testServer.mutate({
         mutation: ADD_GROUP,
         variables: group1Params,
@@ -79,6 +87,25 @@ describe('Groups API', () => {
       expect(res.errors).toBeUndefined()
       expect(res?.data?.addGroup?.name).toEqual(group1Name)
       expect(res?.data?.addGroup?.id).not.toBeNull()
+    })
+
+    it('prevents group captains from creating more than 1 group', async () => {
+      await testServer.mutate({
+        mutation: ADD_GROUP,
+        variables: group1Params,
+      })
+
+      const res = await testServer.mutate({
+        mutation: ADD_GROUP,
+        variables: group2Params,
+      })
+
+      expect(res.errors).not.toBeUndefined()
+      if (res.errors) {
+        expect(res.errors[0].message).toBe(
+          'Group captains can only create a single group',
+        )
+      }
     })
   })
 

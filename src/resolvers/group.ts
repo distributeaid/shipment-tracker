@@ -47,6 +47,17 @@ const addGroup: MutationResolvers['addGroup'] = async (
     throw new ForbiddenError(`Non-admins can only create sending groups`)
   }
 
+  // Non-admins are only allowed to create a single group
+  if (!context.auth.isAdmin) {
+    const numGroupsForUser = await Group.count({
+      where: { captainId: context.auth.userAccount.id },
+    })
+
+    if (numGroupsForUser > 0) {
+      throw new ForbiddenError('Group captains can only create a single group')
+    }
+  }
+
   if (input.website && !stringIsUrl(input.website)) {
     throw new UserInputError(`URL is not valid: ${input.website}`)
   }
