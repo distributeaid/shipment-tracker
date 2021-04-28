@@ -1,0 +1,21 @@
+mutation CreateOffer($input: OfferCreateInput!) {
+  addOffer(input: $input) {
+    id
+    shipmentId
+  }
+}
+
+mutation UpdateOffer($input: OfferUpdateInput!) {
+  updateOffer(input: $input) {
+    id
+    status
+    contact {
+      name
+      email
+      phone
+      signal
+      whatsApp
+    }
+    photoUris
+  }
+}

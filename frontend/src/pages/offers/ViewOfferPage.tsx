@@ -1,15 +1,22 @@
+import _omit from 'lodash/omit'
 import { FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import InternalLink from '../../components/InternalLink'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
+  OfferDocument,
+  OfferQuery,
+  OfferStatus,
+  OfferUpdateInput,
   useGroupQuery,
   useOfferQuery,
   useShipmentQuery,
+  useUpdateOfferMutation,
 } from '../../types/api-types'
 import { formatShipmentName } from '../../utils/format'
 import { shipmentViewOffersRoute } from '../../utils/routes'
+import OfferStatusSwitcher from './OfferStatusSwitcher'
 import PalletsEditor from './PalletsEditor'
 
 const ViewOfferPage: FunctionComponent = () => {
@@ -28,6 +35,38 @@ const ViewOfferPage: FunctionComponent = () => {
     skip: !sendingGroupId, // Don't execute this query until the group ID is known
     variables: { id: sendingGroupId! },
   })
+
+  const [updateOffer] = useUpdateOfferMutation()
+
+  const updateOfferStatus = (newStatus: OfferStatus) => {
+    if (!offer) {
+      return
+    }
+
+    const updatedOffer: OfferUpdateInput = {
+      id: offer.offer.id,
+      status: newStatus,
+      contact: _omit(offer.offer.contact, ['__typename']),
+      photoUris: offer.offer.photoUris,
+    }
+
+    updateOffer({
+      variables: { input: updatedOffer },
+      update: (cache) => {
+        try {
+          cache.writeQuery<OfferQuery>({
+            query: OfferDocument,
+            variables: { id: offerId },
+            data: {
+              offer: Object.assign({}, offer.offer, { status: newStatus }),
+            },
+          })
+        } catch (error) {
+          console.error(error)
+        }
+      },
+    })
+  }
 
   return (
     <LayoutWithNav>
@@ -63,6 +102,12 @@ const ViewOfferPage: FunctionComponent = () => {
                   {sendingGroup?.group.primaryLocation.townCity}
                 </p>
               </ReadOnlyField>
+              <div>
+                <OfferStatusSwitcher
+                  currentOfferStatus={offer.offer.status}
+                  updateStatus={updateOfferStatus}
+                />
+              </div>
             </div>
           )}
         </header>
