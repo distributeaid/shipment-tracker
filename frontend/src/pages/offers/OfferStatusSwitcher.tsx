@@ -40,7 +40,11 @@ const OfferStatusSwitcher: FunctionComponent<Props> = ({
       [OfferStatus.Rejected]: 'This offer was rejected',
     }
 
-    return <p>{content[currentOfferStatus]}</p>
+    return (
+      <ReadOnlyField label="Status">
+        {content[currentOfferStatus]}
+      </ReadOnlyField>
+    )
   }
 
   if (currentOfferStatus === OfferStatus.Proposed) {

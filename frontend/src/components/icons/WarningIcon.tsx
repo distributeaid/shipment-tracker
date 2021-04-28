@@ -1,6 +1,6 @@
 import { FunctionComponent, SVGProps } from 'react'
 
-const CogIcon: FunctionComponent<SVGProps<SVGSVGElement>> = (props) => (
+const WarningIcon: FunctionComponent<SVGProps<SVGSVGElement>> = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="currentColor"
@@ -15,4 +15,4 @@ const CogIcon: FunctionComponent<SVGProps<SVGSVGElement>> = (props) => (
   </svg>
 )
 
-export default CogIcon
+export default WarningIcon
