@@ -127,10 +127,11 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
           </Button>
         </div>
         <ul className="divide-y divide-gray-100">
-          {pallets.map((pallet) => (
+          {pallets.map((pallet, index) => (
             <li
               key={pallet.id}
               className="bg-white"
+              data-qa={`pallet-${pallet.id}`}
               onClick={() => selectPallet(pallet.id)}
             >
               <div className="bg-white">
@@ -155,7 +156,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
                       pallet.id === selectedPalletId ? 'down' : 'right'
                     }
                   />
-                  Pallet {pallet.id}
+                  Pallet {index + 1}
                 </div>
                 {selectedPalletId === pallet.id && (
                   <div className="flex flex-col pb-4 pr-4 pl-8">

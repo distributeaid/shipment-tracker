@@ -1,6 +1,7 @@
-import { FunctionComponent, useEffect } from 'react'
+import React, { FunctionComponent, useEffect } from 'react'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
+import WarningIcon from '../../components/icons/WarningIcon'
 import ConfirmationModal from '../../components/modal/ConfirmationModal'
 import Spinner from '../../components/Spinner'
 import useModalState from '../../hooks/useModalState'
@@ -10,7 +11,11 @@ import {
   useDestroyLineItemMutation,
   useLineItemQuery,
 } from '../../types/api-types'
-import { formatLineItemCategory } from '../../utils/format'
+import {
+  formatContainerType,
+  formatLineItemCategory,
+  getLineItemVolumeInSquareMeters,
+} from '../../utils/format'
 
 interface Props {
   /**
@@ -118,9 +123,9 @@ const ViewLineItem: FunctionComponent<Props> = ({
             <ReadOnlyField label="Description">
               {data.lineItem.description || 'No description provided'}
             </ReadOnlyField>
-            <div className="md:flex md:space-x-4">
+            <div className="md:flex md:space-x-8">
               <ReadOnlyField label="Container">
-                {data.lineItem.containerType}
+                {formatContainerType(data.lineItem.containerType)}
               </ReadOnlyField>
               <ReadOnlyField label="Number of items">
                 {data.lineItem.itemCount || 0}
@@ -134,7 +139,7 @@ const ViewLineItem: FunctionComponent<Props> = ({
             <legend className="font-semibold text-gray-700 ">
               Dimensions and weight
             </legend>
-            <div className="md:flex md:space-x-4">
+            <div className="md:flex md:space-x-8">
               <ReadOnlyField label="Width">
                 {data.lineItem.containerWidthCm || 0}cm
               </ReadOnlyField>
@@ -144,8 +149,11 @@ const ViewLineItem: FunctionComponent<Props> = ({
               <ReadOnlyField label="Height">
                 {data.lineItem.containerHeightCm || 0}cm
               </ReadOnlyField>
+              <ReadOnlyField label="Volume">
+                {getLineItemVolumeInSquareMeters(data.lineItem)}
+              </ReadOnlyField>
             </div>
-            <div className="md:flex md:space-x-4">
+            <div className="md:flex md:space-x-8">
               <ReadOnlyField label="Weight">
                 {data.lineItem.containerWeightGrams || 0}g
               </ReadOnlyField>
@@ -165,6 +173,7 @@ const ViewLineItem: FunctionComponent<Props> = ({
                 {data.lineItem.dangerousGoods
                   .map((item) => item.toLowerCase())
                   .join(', ')}
+                <WarningIcon className="w-5 h-5 ml-2 inline-block" />
               </p>
             )}
           </fieldset>
