@@ -1,4 +1,3 @@
-import _omit from 'lodash/omit'
 import { FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
@@ -16,6 +15,7 @@ import {
 } from '../../types/api-types'
 import { formatShipmentName } from '../../utils/format'
 import { shipmentViewOffersRoute } from '../../utils/routes'
+import { stripIdAndTypename } from '../../utils/types'
 import OfferStatusSwitcher from './OfferStatusSwitcher'
 import PalletsEditor from './PalletsEditor'
 
@@ -46,7 +46,7 @@ const ViewOfferPage: FunctionComponent = () => {
     const updatedOffer: OfferUpdateInput = {
       id: offer.offer.id,
       status: newStatus,
-      contact: _omit(offer.offer.contact, ['__typename']),
+      contact: stripIdAndTypename(offer.offer.contact),
       photoUris: offer.offer.photoUris,
     }
 

@@ -6,6 +6,7 @@ import {
 } from '../data/constants'
 import {
   GroupType,
+  LineItem,
   LineItemCategory,
   LineItemContainerType,
   Maybe,
@@ -119,15 +120,21 @@ export function formatContainerType(type: LineItemContainerType) {
   }[type]
 }
 
-export function getLineItemVolume(lineItem: any) {
+export function getLineItemVolumeInSquareMeters(
+  lineItem: Pick<
+    LineItem,
+    'containerWidthCm' | 'containerHeightCm' | 'containerLengthCm'
+  >,
+) {
   const {
     containerWidthCm = 0,
     containerLengthCm = 0,
     containerHeightCm = 0,
   } = lineItem
+
   return (
     (
-      (containerHeightCm * containerLengthCm * containerWidthCm) /
+      (containerHeightCm! * containerLengthCm! * containerWidthCm!) /
       1000000
     ).toFixed(2) + 'm³'
   )

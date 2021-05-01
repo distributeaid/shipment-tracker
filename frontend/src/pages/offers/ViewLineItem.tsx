@@ -14,7 +14,7 @@ import {
 import {
   formatContainerType,
   formatLineItemCategory,
-  getLineItemVolume,
+  getLineItemVolumeInSquareMeters,
 } from '../../utils/format'
 
 interface Props {
@@ -150,7 +150,7 @@ const ViewLineItem: FunctionComponent<Props> = ({
                 {data.lineItem.containerHeightCm || 0}cm
               </ReadOnlyField>
               <ReadOnlyField label="Volume">
-                {getLineItemVolume(data.lineItem)}
+                {getLineItemVolumeInSquareMeters(data.lineItem)}
               </ReadOnlyField>
             </div>
             <div className="md:flex md:space-x-8">
