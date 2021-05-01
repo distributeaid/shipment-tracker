@@ -1,6 +1,9 @@
-import { FunctionComponent } from 'react'
+import { ApolloError } from '@apollo/client'
+import _pick from 'lodash/pick'
+import { FunctionComponent, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import InternalLink from '../../components/InternalLink'
+import useSaveConfirmation from '../../hooks/useSaveConfirmation'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
   ShipmentUpdateInput,
@@ -13,6 +16,8 @@ import ShipmentForm from './ShipmentForm'
 
 const ShipmentEditPage: FunctionComponent = () => {
   const { shipmentId } = useParams<{ shipmentId: string }>()
+  const [error, setError] = useState<string>()
+  const { showConfirmation, triggerConfirmation } = useSaveConfirmation()
 
   const {
     data: originalShipmentData,
@@ -26,11 +31,28 @@ const ShipmentEditPage: FunctionComponent = () => {
   ] = useUpdateShipmentMutation()
 
   const onSubmit = (input: ShipmentUpdateInput) => {
+    setError(undefined)
+
+    const formattedInput = _pick(input, [
+      'shippingRoute',
+      'labelYear',
+      'labelMonth',
+      'sendingHubId',
+      'receivingHubId',
+      'status',
+      'pricing',
+    ])
+
     updateShipmentMutation({
-      variables: { id: parseInt(shipmentId, 10), input },
-    }).catch((error) => {
-      console.log(error)
+      variables: { id: parseInt(shipmentId, 10), input: formattedInput },
     })
+      .then(() => {
+        triggerConfirmation()
+      })
+      .catch((error: ApolloError) => {
+        setError(error.message)
+        console.error(error)
+      })
   }
 
   return (
@@ -50,11 +72,17 @@ const ShipmentEditPage: FunctionComponent = () => {
           </h1>
         </header>
         <main className="p-4 md:p-6 max-w-lg pb-20">
+          {error && (
+            <div className="bg-red-50 text-red-800 p-4 rounded-sm mb-6">
+              {error}
+            </div>
+          )}
           <ShipmentForm
             isLoading={queryIsLoading || mutationIsLoading}
             submitButtonLabel="Save changes"
             onSubmit={onSubmit}
             defaultValues={originalShipmentData}
+            showSaveConfirmation={showConfirmation}
           />
         </main>
       </div>

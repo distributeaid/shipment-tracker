@@ -33,6 +33,11 @@ interface Props {
    * The callback triggered when the user submits the form
    */
   onSubmit: (input: ShipmentCreateInput) => void
+  /**
+   * If true, the form will display a confirmation that the data update was
+   * successful
+   */
+  showSaveConfirmation?: boolean
 }
 
 const STATUS_OPTIONS = [
@@ -82,7 +87,12 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
     [hubListIsLoading, groups],
   )
 
-  const { register, handleSubmit, reset } = useForm()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm()
 
   useEffect(
     function resetFormValues() {
@@ -103,6 +113,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
         name="status"
         register={register}
         required
+        errors={errors}
       />
       <SelectField
         options={SHIPPING_ROUTE_OPTIONS}
@@ -110,6 +121,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
         name="shippingRoute"
         register={register}
         required
+        errors={errors}
       />
       <div className="flex space-x-4">
         <SelectField
@@ -119,6 +131,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
           castAsNumber
           register={register}
           required
+          errors={errors}
         />
         <TextField
           label="Label year"
@@ -128,6 +141,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
           type="number"
           minLength={4}
           maxLength={4}
+          errors={errors}
         />
       </div>
       <SelectField
@@ -138,6 +152,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
         register={register}
         required
         disabled={hubListIsLoading}
+        errors={errors}
       />
       <SelectField
         label="Receiving hub"
@@ -147,11 +162,19 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
         register={register}
         required
         disabled={hubListIsLoading}
+        errors={errors}
       />
 
-      <Button variant="primary" type="submit" disabled={props.isLoading}>
-        {props.submitButtonLabel}
-      </Button>
+      <div className="flex items-center">
+        <Button variant="primary" type="submit" disabled={props.isLoading}>
+          {props.submitButtonLabel}
+        </Button>
+        {props.showSaveConfirmation && (
+          <span className="ml-8 text-green-800 flex items-center">
+            Changes saved!
+          </span>
+        )}
+      </div>
     </form>
   )
 }
