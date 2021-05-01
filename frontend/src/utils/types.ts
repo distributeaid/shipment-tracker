@@ -1,3 +1,5 @@
+import _omit from 'lodash/omit'
+
 /**
  * Returns an array with all the keys in an enum
  * @example
@@ -28,4 +30,13 @@ export function enumValues<O extends object, K extends keyof O = keyof O>(
   obj: O,
 ): K[] {
   return Object.values(obj) as K[]
+}
+
+/**
+ * Strips the `id` and `__typename` fields from an entity
+ */
+export const stripIdAndTypename = <T extends object>(
+  entity: T | null | undefined,
+) => {
+  return _omit(entity, ['id', '__typename']) as Omit<T, '__typename' | 'id'>
 }

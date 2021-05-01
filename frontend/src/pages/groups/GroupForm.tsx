@@ -1,4 +1,3 @@
-import _omit from 'lodash/omit'
 import { FunctionComponent, ReactNode, useContext, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
@@ -7,6 +6,7 @@ import TextField from '../../components/forms/TextField'
 import { UserProfileContext } from '../../components/UserProfileContext'
 import { COUNTRY_CODE_OPTIONS, GROUP_TYPE_OPTIONS } from '../../data/constants'
 import { GroupCreateInput, GroupQuery, GroupType } from '../../types/api-types'
+import { stripIdAndTypename } from '../../utils/types'
 
 interface Props {
   /**
@@ -45,7 +45,7 @@ const GroupForm: FunctionComponent<Props> = (props) => {
     function resetFormValues() {
       if (props.defaultValues) {
         // Update the values of the fields
-        reset(_omit(props.defaultValues.group, ['id', '__typename']))
+        reset(stripIdAndTypename(props.defaultValues.group))
       }
     },
     [props.defaultValues, reset],

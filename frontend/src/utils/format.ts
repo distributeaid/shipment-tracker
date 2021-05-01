@@ -6,7 +6,9 @@ import {
 } from '../data/constants'
 import {
   GroupType,
+  LineItem,
   LineItemCategory,
+  LineItemContainerType,
   Maybe,
   PalletType,
   Shipment,
@@ -107,4 +109,33 @@ export function formatShipmentName(
 ) {
   const month = shipment.labelMonth.toString().padStart(2, '0')
   return `${shipment.shippingRoute}-${shipment.labelYear}-${month}`
+}
+
+export function formatContainerType(type: LineItemContainerType) {
+  return {
+    [LineItemContainerType.Box]: 'Box',
+    [LineItemContainerType.BulkBag]: 'Bulk bag',
+    [LineItemContainerType.FullPallet]: 'Full pallet',
+    [LineItemContainerType.Unset]: 'Not set',
+  }[type]
+}
+
+export function getLineItemVolumeInSquareMeters(
+  lineItem: Pick<
+    LineItem,
+    'containerWidthCm' | 'containerHeightCm' | 'containerLengthCm'
+  >,
+) {
+  const {
+    containerWidthCm = 0,
+    containerLengthCm = 0,
+    containerHeightCm = 0,
+  } = lineItem
+
+  return (
+    (
+      (containerHeightCm! * containerLengthCm! * containerWidthCm!) /
+      1000000
+    ).toFixed(2) + 'm³'
+  )
 }
