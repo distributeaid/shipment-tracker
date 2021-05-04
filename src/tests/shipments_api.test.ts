@@ -22,6 +22,9 @@ describe('Shipments API', () => {
     group1: Group,
     group2: Group
 
+  // Shipments cannot be created in the past, so we use the following year
+  const nextYear = new Date().getFullYear() + 1
+
   beforeEach(async () => {
     await sequelize.sync({ force: true })
     await Group.truncate({ cascade: true, force: true })
@@ -71,7 +74,7 @@ describe('Shipments API', () => {
         variables: {
           input: {
             shippingRoute: ShippingRoute.Uk,
-            labelYear: 2020,
+            labelYear: nextYear,
             labelMonth: 1,
             sendingHubId: group1.id,
             receivingHubId: group2.id,
@@ -101,7 +104,7 @@ describe('Shipments API', () => {
         variables: {
           input: {
             shippingRoute: ShippingRoute.Uk,
-            labelYear: 2020,
+            labelYear: nextYear,
             labelMonth: 1,
             sendingHubId: group1.id,
             receivingHubId: group2.id,
@@ -112,7 +115,7 @@ describe('Shipments API', () => {
 
       expect(res.errors).toBeUndefined()
       expect(res?.data?.addShipment?.shippingRoute).toEqual(ShippingRoute.Uk)
-      expect(res?.data?.addShipment?.labelYear).toEqual(2020)
+      expect(res?.data?.addShipment?.labelYear).toEqual(nextYear)
       expect(res?.data?.addShipment?.labelMonth).toEqual(1)
       expect(res?.data?.addShipment?.sendingHubId).toEqual(group1.id)
       expect(res?.data?.addShipment?.receivingHubId).toEqual(group2.id)
@@ -141,7 +144,7 @@ describe('Shipments API', () => {
     beforeEach(async () => {
       shipment = await createShipment({
         shippingRoute: ShippingRoute.Uk,
-        labelYear: 2020,
+        labelYear: nextYear,
         labelMonth: 1,
         sendingHubId: group1.id,
         receivingHubId: group2.id,
@@ -275,7 +278,7 @@ describe('Shipments API', () => {
     it('lists existing shipments', async () => {
       const shipment1 = await createShipment({
         shippingRoute: ShippingRoute.Uk,
-        labelYear: 2020,
+        labelYear: nextYear,
         labelMonth: 1,
         sendingHubId: group1.id,
         receivingHubId: group2.id,
@@ -284,7 +287,7 @@ describe('Shipments API', () => {
 
       const shipment2 = await createShipment({
         shippingRoute: ShippingRoute.Uk,
-        labelYear: 2021,
+        labelYear: nextYear + 1,
         labelMonth: 6,
         sendingHubId: group2.id,
         receivingHubId: group1.id,
@@ -348,7 +351,7 @@ describe('Shipments API', () => {
     beforeEach(async () => {
       shipment = await createShipment({
         shippingRoute: ShippingRoute.Uk,
-        labelYear: 2020,
+        labelYear: nextYear,
         labelMonth: 1,
         sendingHubId: group1.id,
         receivingHubId: group2.id,

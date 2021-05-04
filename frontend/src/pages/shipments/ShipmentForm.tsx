@@ -1,8 +1,8 @@
+import _range from 'lodash/range'
 import { FunctionComponent, ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField, { SelectOption } from '../../components/forms/SelectField'
-import TextField from '../../components/forms/TextField'
 import { MONTH_OPTIONS } from '../../data/constants'
 import {
   AllGroupsMinimalQuery,
@@ -49,6 +49,13 @@ const STATUS_OPTIONS = [
   { label: 'Abandoned', value: ShipmentStatus.Abandoned },
 ]
 
+const YEAR_OPTIONS = _range(
+  new Date().getFullYear(),
+  new Date().getFullYear() + 5,
+).map((year) => ({ label: year.toString(), value: year }))
+
+const DEFAULT_MONTH = (new Date().getMonth() + 2) % 12
+
 const SHIPPING_ROUTE_OPTIONS = enumValues(ShippingRoute).map((routeKey) => ({
   label: routeKey,
   value: routeKey,
@@ -91,8 +98,9 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
     register,
     handleSubmit,
     reset,
+    getValues,
     formState: { errors },
-  } = useForm()
+  } = useForm<ShipmentCreateInput>()
 
   useEffect(
     function resetFormValues() {
@@ -104,8 +112,17 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
     [props.defaultValues, reset],
   )
 
+  const validateShipmentDate = () => {
+    const year = getValues('labelYear')
+    const month = getValues('labelMonth')
+    const shipmentDate = new Date(year, month)
+    return shipmentDate > new Date()
+      ? true
+      : 'The shipment date cannot be in the past'
+  }
+
   return (
-    <form onSubmit={handleSubmit(props.onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(props.onSubmit)} className="space-y-6">
       <SelectField
         defaultValue={ShipmentStatus.Announced}
         options={STATUS_OPTIONS}
@@ -125,22 +142,28 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
       />
       <div className="flex space-x-4">
         <SelectField
+          defaultValue={DEFAULT_MONTH}
           options={MONTH_OPTIONS}
           label="Label month"
           name="labelMonth"
           castAsNumber
           register={register}
+          registerOptions={{
+            validate: validateShipmentDate,
+          }}
           required
           errors={errors}
         />
-        <TextField
+        <SelectField
+          options={YEAR_OPTIONS}
           label="Label year"
           name="labelYear"
+          castAsNumber
           register={register}
+          registerOptions={{
+            validate: validateShipmentDate,
+          }}
           required
-          type="number"
-          minLength={4}
-          maxLength={4}
           errors={errors}
         />
       </div>

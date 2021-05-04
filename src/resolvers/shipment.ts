@@ -66,6 +66,13 @@ const addShipment: MutationResolvers['addShipment'] = async (
     throw new ApolloError('Receiving hub not found')
   }
 
+  if (new Date(input.labelYear, input.labelMonth) < new Date()) {
+    throw new UserInputError('The shipment date cannot be in the past', [
+      'labelYear',
+      'labelMonth',
+    ])
+  }
+
   validateEnumMembership(ShipmentStatus, input.status)
 
   return Shipment.create({
