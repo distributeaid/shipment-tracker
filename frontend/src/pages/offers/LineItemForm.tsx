@@ -20,6 +20,7 @@ import {
   useLineItemQuery,
   useUpdateLineItemMutation,
 } from '../../types/api-types'
+import { getContainerCountLabel } from '../../utils/format'
 
 interface Props {
   /**
@@ -150,12 +151,9 @@ const LineItemForm: FunctionComponent<Props> = ({
     }
   }
 
-  const containerCountLabel = {
-    [LineItemContainerType.Unset]: 'Amount of containers',
-    [LineItemContainerType.Box]: 'Amount of boxes',
-    [LineItemContainerType.BulkBag]: 'Amount of bags',
-    [LineItemContainerType.FullPallet]: 'Amount of pallets',
-  }[watchContainerType || LineItemContainerType.Unset]
+  const containerCountLabel = getContainerCountLabel(
+    watchContainerType || LineItemContainerType.Unset,
+  )
 
   return (
     <form onSubmit={submitForm}>

@@ -76,7 +76,7 @@ export const HEADER_ROW = [
   'Item description',
   'Pallet ID',
   'Container count',
-  'Pallet weight',
+  'Pallet weight (kg)',
   'Dangerous items',
   'Sending hub delivery date',
 ]
@@ -104,7 +104,7 @@ function makeExportRow(
     lineItem.description,
     lineItem.offerPalletId,
     lineItem.containerCount,
-    pallet.weightGrams(),
+    pallet.weightKilos(),
     lineItem.dangerousGoods.join(', ') || 'None',
     lineItem.sendingHubDeliveryDate?.toISOString()?.split('T')[0],
   ]

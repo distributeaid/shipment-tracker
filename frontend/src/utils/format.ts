@@ -139,3 +139,12 @@ export function getLineItemVolumeInSquareMeters(
     ).toFixed(2) + 'm³'
   )
 }
+
+export function getContainerCountLabel(containerType: LineItemContainerType) {
+  return {
+    [LineItemContainerType.Unset]: 'Amount of containers',
+    [LineItemContainerType.Box]: 'Amount of boxes',
+    [LineItemContainerType.BulkBag]: 'Amount of bags',
+    [LineItemContainerType.FullPallet]: 'Amount of pallets',
+  }[containerType]
+}
