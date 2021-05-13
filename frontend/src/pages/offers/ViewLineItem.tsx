@@ -155,7 +155,7 @@ const ViewLineItem: FunctionComponent<Props> = ({
             </div>
             <div className="md:flex md:space-x-8">
               <ReadOnlyField label="Weight">
-                {data.lineItem.containerWeightGrams || 0}g
+                {data.lineItem.containerWeightKilos || 0}g
               </ReadOnlyField>
               <ReadOnlyField label="Amount of containers">
                 {data.lineItem.containerCount || 0}

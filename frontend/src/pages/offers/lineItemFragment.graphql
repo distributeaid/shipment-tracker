@@ -15,7 +15,7 @@ fragment AllLineItemFields on LineItem {
   description
   itemCount
   containerCount
-  containerWeightGrams
+  containerWeightKilos
   containerLengthCm
   containerWidthCm
   containerHeightCm

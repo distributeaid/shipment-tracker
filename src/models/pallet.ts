@@ -63,7 +63,7 @@ export default class Pallet extends Model<
 
   public weightGrams() {
     return this.lineItems
-      .map((lineItem) => lineItem.containerWeightGrams || 0)
+      .map((lineItem) => lineItem.containerWeightKilos || 0)
       .reduce((result, current) => result + current)
   }
 }

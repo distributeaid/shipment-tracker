@@ -9,12 +9,14 @@ import {
   DANGEROUS_GOODS_LIST,
   LINE_ITEM_CATEGORY_OPTIONS,
   LINE_ITEM_CONTAINER_OPTIONS,
+  PALLET_CONFIGS,
 } from '../../data/constants'
 import {
   DangerousGoods,
   LineItemCategory,
   LineItemContainerType,
   LineItemUpdateInput,
+  PalletType,
   useLineItemQuery,
   useUpdateLineItemMutation,
 } from '../../types/api-types'
@@ -29,11 +31,17 @@ interface Props {
    * parent component should handle this side effect.
    */
   onEditingComplete: () => void
+  /**
+   * The type of pallet for this line item. We use this to calculate the default
+   * values for some form fields.
+   */
+  palletType: PalletType
 }
 
 const LineItemForm: FunctionComponent<Props> = ({
   lineItemId,
   onEditingComplete,
+  palletType,
 }) => {
   const { data, refetch, loading: lineItemIsLoading } = useLineItemQuery({
     variables: { id: lineItemId },
@@ -47,8 +55,31 @@ const LineItemForm: FunctionComponent<Props> = ({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<LineItemUpdateInput>()
+
+  const watchContainerType = watch('containerType')
+
+  useEffect(() => {
+    const palletDimensions = PALLET_CONFIGS.find(
+      (config) => config.type === palletType,
+    )
+
+    if (watchContainerType === LineItemContainerType.BulkBag) {
+      // Do NOT pre-fill the height since it varies wildly
+      setValue('containerWidthCm', palletDimensions?.widthCm)
+      setValue('containerLengthCm', palletDimensions?.lengthCm)
+    } else if (watchContainerType === LineItemContainerType.FullPallet) {
+      setValue('containerCount', 1) // There can only be one pallet per... pallet
+
+      // Pre-fill dimensions if they're not already set
+      setValue('containerWidthCm', palletDimensions?.widthCm)
+      setValue('containerLengthCm', palletDimensions?.lengthCm)
+      setValue('containerHeightCm', palletDimensions?.heightCm)
+    }
+  }, [watchContainerType, palletType])
 
   useEffect(
     function fetchLineItem() {
@@ -93,7 +124,7 @@ const LineItemForm: FunctionComponent<Props> = ({
       'description',
       'itemCount',
       'containerCount',
-      'containerWeightGrams',
+      'containerWeightKilos',
       'containerLengthCm',
       'containerWidthCm',
       'containerHeightCm',
@@ -118,6 +149,13 @@ const LineItemForm: FunctionComponent<Props> = ({
       setDangerousGoodsList([...dangerousGoodsList, value])
     }
   }
+
+  const containerCountLabel = {
+    [LineItemContainerType.Unset]: 'Amount of containers',
+    [LineItemContainerType.Box]: 'Amount of boxes',
+    [LineItemContainerType.BulkBag]: 'Amount of bags',
+    [LineItemContainerType.FullPallet]: 'Amount of pallets',
+  }[watchContainerType || LineItemContainerType.Unset]
 
   return (
     <form onSubmit={submitForm}>
@@ -145,7 +183,7 @@ const LineItemForm: FunctionComponent<Props> = ({
         />
         <div className="md:flex md:space-x-4">
           <SelectField
-            label="Container"
+            label="Container type"
             name="containerType"
             options={LINE_ITEM_CONTAINER_OPTIONS}
             register={register}
@@ -160,7 +198,17 @@ const LineItemForm: FunctionComponent<Props> = ({
             errors={errors}
           />
           <TextField
-            label="Amount of items"
+            label={containerCountLabel}
+            name="containerCount"
+            type="number"
+            min={1}
+            required
+            register={register}
+            errors={errors}
+            disabled={watchContainerType === LineItemContainerType.FullPallet}
+          />
+          <TextField
+            label="Number of items"
             name="itemCount"
             type="number"
             required
@@ -217,19 +265,10 @@ const LineItemForm: FunctionComponent<Props> = ({
             errors={errors}
           />
         </div>
-        <div className="md:flex md:space-x-4">
+        <div className="md:w-1/3">
           <TextField
-            label="Weight (grams)"
-            name="containerWeightGrams"
-            type="number"
-            min={1}
-            required
-            register={register}
-            errors={errors}
-          />
-          <TextField
-            label="Amount of containers"
-            name="containerCount"
+            label="Weight (kg)"
+            name="containerWeightKilos"
             type="number"
             min={1}
             required

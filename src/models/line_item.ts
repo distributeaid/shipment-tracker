@@ -28,7 +28,7 @@ export interface LineItemAttributes {
   description: string
   itemCount: number
   containerCount?: number
-  containerWeightGrams?: number
+  containerWeightKilos?: number
   containerLengthCm?: number
   containerWidthCm?: number
   containerHeightCm?: number
@@ -104,7 +104,7 @@ export default class LineItem extends Model<
   public containerCount?: number
 
   @Column
-  public containerWeightGrams?: number
+  public containerWeightKilos?: number
 
   @Column
   public containerLengthCm?: number
