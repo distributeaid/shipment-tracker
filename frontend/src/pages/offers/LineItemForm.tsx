@@ -1,6 +1,6 @@
 import _pick from 'lodash/pick'
 import { FunctionComponent, useEffect, useState } from 'react'
-import { Control, FieldValues, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
@@ -20,21 +20,11 @@ import {
   useLineItemQuery,
   useUpdateLineItemMutation,
 } from '../../types/api-types'
-import { getContainerCountLabel } from '../../utils/format'
-
-type UnitExchangeControllerProps = {
-  control: Control<FieldValues>
-  transform: {
-    input: (value: any) => any
-    output: (e: any) => any
-  }
-  name: string
-  defaultValue?: any
-}
-
-const kilosToGrams = (kilos: number) => kilos * 1000
-
-const gramsToKilos = (grams: number) => grams / 1000
+import {
+  getContainerCountLabel,
+  gramsToKilos,
+  kilosToGrams,
+} from '../../utils/format'
 
 interface Props {
   /**

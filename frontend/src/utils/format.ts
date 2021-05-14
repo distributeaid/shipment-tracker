@@ -148,3 +148,7 @@ export function getContainerCountLabel(containerType: LineItemContainerType) {
     [LineItemContainerType.FullPallet]: 'Amount of pallets',
   }[containerType]
 }
+
+export const kilosToGrams = (kilos: number) => kilos * 1000
+
+export const gramsToKilos = (grams: number) => grams / 1000
