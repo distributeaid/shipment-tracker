@@ -153,7 +153,7 @@ async function getUpdateAttributes(
     'description',
     'itemCount',
     'containerCount',
-    'containerWeightKilos',
+    'containerWeightGrams',
     'containerLengthCm',
     'containerWidthCm',
     'containerHeightCm',

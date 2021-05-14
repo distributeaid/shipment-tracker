@@ -1,6 +1,6 @@
 import _pick from 'lodash/pick'
 import { FunctionComponent, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Control, FieldValues, useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
@@ -21,6 +21,20 @@ import {
   useUpdateLineItemMutation,
 } from '../../types/api-types'
 import { getContainerCountLabel } from '../../utils/format'
+
+type UnitExchangeControllerProps = {
+  control: Control<FieldValues>
+  transform: {
+    input: (value: any) => any
+    output: (e: any) => any
+  }
+  name: string
+  defaultValue?: any
+}
+
+const kilosToGrams = (kilos: number) => kilos * 1000
+
+const gramsToKilos = (grams: number) => grams / 1000
 
 interface Props {
   /**
@@ -62,6 +76,11 @@ const LineItemForm: FunctionComponent<Props> = ({
   } = useForm<LineItemUpdateInput>()
 
   const watchContainerType = watch('containerType')
+  const [
+    watchContainerWidth,
+    watchContainerLength,
+    watchContainerHeight,
+  ] = watch(['containerWidthCm', 'containerLengthCm', 'containerHeightCm'])
 
   useEffect(() => {
     const palletDimensions = PALLET_CONFIGS.find(
@@ -70,15 +89,25 @@ const LineItemForm: FunctionComponent<Props> = ({
 
     if (watchContainerType === LineItemContainerType.BulkBag) {
       // Do NOT pre-fill the height since it varies wildly
-      setValue('containerWidthCm', palletDimensions?.widthCm)
-      setValue('containerLengthCm', palletDimensions?.lengthCm)
+      if (!watchContainerWidth) {
+        setValue('containerWidthCm', palletDimensions?.widthCm)
+      }
+      if (!watchContainerLength) {
+        setValue('containerLengthCm', palletDimensions?.lengthCm)
+      }
     } else if (watchContainerType === LineItemContainerType.FullPallet) {
       setValue('containerCount', 1) // There can only be one pallet per... pallet
 
       // Pre-fill dimensions if they're not already set
-      setValue('containerWidthCm', palletDimensions?.widthCm)
-      setValue('containerLengthCm', palletDimensions?.lengthCm)
-      setValue('containerHeightCm', palletDimensions?.heightCm)
+      if (!watchContainerWidth) {
+        setValue('containerWidthCm', palletDimensions?.widthCm)
+      }
+      if (!watchContainerLength) {
+        setValue('containerLengthCm', palletDimensions?.lengthCm)
+      }
+      if (!watchContainerHeight) {
+        setValue('containerHeightCm', palletDimensions?.heightCm)
+      }
     }
   }, [watchContainerType, palletType])
 
@@ -92,7 +121,12 @@ const LineItemForm: FunctionComponent<Props> = ({
   useEffect(
     function resetForm() {
       if (data?.lineItem) {
-        reset(data.lineItem)
+        reset({
+          ...data.lineItem,
+          containerWeightGrams: gramsToKilos(
+            data.lineItem.containerWeightGrams || 0,
+          ),
+        })
         setDangerousGoodsList(data.lineItem.dangerousGoods)
       }
     },
@@ -113,6 +147,12 @@ const LineItemForm: FunctionComponent<Props> = ({
     // react-hook-form
     input.dangerousGoods = dangerousGoodsList
 
+    // Override the weight because we ask for it in kilos but want to store it
+    // in grams
+    if (input.containerWeightGrams) {
+      input.containerWeightGrams = kilosToGrams(input.containerWeightGrams)
+    }
+
     // We need to send all the fields from LineItemUpdateInput, even the ones
     // that didn't change. We then _pick the fields to make sure we don't send
     // things like `id` or `__typename`.
@@ -125,7 +165,7 @@ const LineItemForm: FunctionComponent<Props> = ({
       'description',
       'itemCount',
       'containerCount',
-      'containerWeightKilos',
+      'containerWeightGrams',
       'containerLengthCm',
       'containerWidthCm',
       'containerHeightCm',
@@ -264,9 +304,10 @@ const LineItemForm: FunctionComponent<Props> = ({
           />
         </div>
         <div className="md:w-1/3">
+          {/* Note that we ask for KILOS but save the value in GRAMS */}
           <TextField
             label="Weight (kg)"
-            name="containerWeightKilos"
+            name="containerWeightGrams"
             type="number"
             min={1}
             required

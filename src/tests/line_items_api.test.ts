@@ -98,7 +98,7 @@ describe('LineItems API', () => {
           description
           itemCount
           containerCount
-          containerWeightKilos
+          containerWeightGrams
           containerLengthCm
           containerWidthCm
           containerHeightCm

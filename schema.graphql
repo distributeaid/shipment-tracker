@@ -312,7 +312,7 @@ type LineItem {
   description: String
   itemCount: Int!
   containerCount: Int
-  containerWeightKilos: Int
+  containerWeightGrams: Int
   containerLengthCm: Int
   containerWidthCm: Int
   containerHeightCm: Int
@@ -335,7 +335,7 @@ input LineItemUpdateInput {
   description: String
   itemCount: Int
   containerCount: Int
-  containerWeightKilos: Int
+  containerWeightGrams: Int
   containerLengthCm: Int
   containerWidthCm: Int
   containerHeightCm: Int
