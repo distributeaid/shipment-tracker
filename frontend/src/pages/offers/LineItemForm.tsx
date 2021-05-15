@@ -9,15 +9,22 @@ import {
   DANGEROUS_GOODS_LIST,
   LINE_ITEM_CATEGORY_OPTIONS,
   LINE_ITEM_CONTAINER_OPTIONS,
+  PALLET_CONFIGS,
 } from '../../data/constants'
 import {
   DangerousGoods,
   LineItemCategory,
   LineItemContainerType,
   LineItemUpdateInput,
+  PalletType,
   useLineItemQuery,
   useUpdateLineItemMutation,
 } from '../../types/api-types'
+import {
+  getContainerCountLabel,
+  gramsToKilos,
+  kilosToGrams,
+} from '../../utils/format'
 
 interface Props {
   /**
@@ -29,11 +36,17 @@ interface Props {
    * parent component should handle this side effect.
    */
   onEditingComplete: () => void
+  /**
+   * The type of pallet for this line item. We use this to calculate the default
+   * values for some form fields.
+   */
+  palletType: PalletType
 }
 
 const LineItemForm: FunctionComponent<Props> = ({
   lineItemId,
   onEditingComplete,
+  palletType,
 }) => {
   const { data, refetch, loading: lineItemIsLoading } = useLineItemQuery({
     variables: { id: lineItemId },
@@ -47,8 +60,46 @@ const LineItemForm: FunctionComponent<Props> = ({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<LineItemUpdateInput>()
+
+  const watchContainerType = watch('containerType')
+  const [
+    watchContainerWidth,
+    watchContainerLength,
+    watchContainerHeight,
+  ] = watch(['containerWidthCm', 'containerLengthCm', 'containerHeightCm'])
+
+  useEffect(() => {
+    const palletDimensions = PALLET_CONFIGS.find(
+      (config) => config.type === palletType,
+    )
+
+    if (watchContainerType === LineItemContainerType.BulkBag) {
+      // Do NOT pre-fill the height since it varies wildly
+      if (!watchContainerWidth) {
+        setValue('containerWidthCm', palletDimensions?.widthCm)
+      }
+      if (!watchContainerLength) {
+        setValue('containerLengthCm', palletDimensions?.lengthCm)
+      }
+    } else if (watchContainerType === LineItemContainerType.FullPallet) {
+      setValue('containerCount', 1) // There can only be one pallet per... pallet
+
+      // Pre-fill dimensions if they're not already set
+      if (!watchContainerWidth) {
+        setValue('containerWidthCm', palletDimensions?.widthCm)
+      }
+      if (!watchContainerLength) {
+        setValue('containerLengthCm', palletDimensions?.lengthCm)
+      }
+      if (!watchContainerHeight) {
+        setValue('containerHeightCm', palletDimensions?.heightCm)
+      }
+    }
+  }, [watchContainerType, palletType])
 
   useEffect(
     function fetchLineItem() {
@@ -60,7 +111,12 @@ const LineItemForm: FunctionComponent<Props> = ({
   useEffect(
     function resetForm() {
       if (data?.lineItem) {
-        reset(data.lineItem)
+        reset({
+          ...data.lineItem,
+          containerWeightGrams: gramsToKilos(
+            data.lineItem.containerWeightGrams || 0,
+          ),
+        })
         setDangerousGoodsList(data.lineItem.dangerousGoods)
       }
     },
@@ -80,6 +136,12 @@ const LineItemForm: FunctionComponent<Props> = ({
     // Override the list of dangerous goods because it's not controlled by
     // react-hook-form
     input.dangerousGoods = dangerousGoodsList
+
+    // Override the weight because we ask for it in kilos but want to store it
+    // in grams
+    if (input.containerWeightGrams) {
+      input.containerWeightGrams = kilosToGrams(input.containerWeightGrams)
+    }
 
     // We need to send all the fields from LineItemUpdateInput, even the ones
     // that didn't change. We then _pick the fields to make sure we don't send
@@ -119,6 +181,10 @@ const LineItemForm: FunctionComponent<Props> = ({
     }
   }
 
+  const containerCountLabel = getContainerCountLabel(
+    watchContainerType || LineItemContainerType.Unset,
+  )
+
   return (
     <form onSubmit={submitForm}>
       <div className="flex items-center justify-between mb-4">
@@ -145,7 +211,7 @@ const LineItemForm: FunctionComponent<Props> = ({
         />
         <div className="md:flex md:space-x-4">
           <SelectField
-            label="Container"
+            label="Container type"
             name="containerType"
             options={LINE_ITEM_CONTAINER_OPTIONS}
             register={register}
@@ -160,7 +226,17 @@ const LineItemForm: FunctionComponent<Props> = ({
             errors={errors}
           />
           <TextField
-            label="Amount of items"
+            label={containerCountLabel}
+            name="containerCount"
+            type="number"
+            min={1}
+            required
+            register={register}
+            errors={errors}
+            disabled={watchContainerType === LineItemContainerType.FullPallet}
+          />
+          <TextField
+            label="Number of items"
             name="itemCount"
             type="number"
             required
@@ -217,19 +293,11 @@ const LineItemForm: FunctionComponent<Props> = ({
             errors={errors}
           />
         </div>
-        <div className="md:flex md:space-x-4">
+        <div className="md:w-1/3">
+          {/* Note that we ask for KILOS but save the value in GRAMS */}
           <TextField
-            label="Weight (grams)"
+            label="Weight (kg)"
             name="containerWeightGrams"
-            type="number"
-            min={1}
-            required
-            register={register}
-            errors={errors}
-          />
-          <TextField
-            label="Amount of containers"
-            name="containerCount"
             type="number"
             min={1}
             required

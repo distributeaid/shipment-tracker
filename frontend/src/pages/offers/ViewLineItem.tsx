@@ -15,6 +15,7 @@ import {
   formatContainerType,
   formatLineItemCategory,
   getLineItemVolumeInSquareMeters,
+  gramsToKilos,
 } from '../../utils/format'
 
 interface Props {
@@ -155,7 +156,10 @@ const ViewLineItem: FunctionComponent<Props> = ({
             </div>
             <div className="md:flex md:space-x-8">
               <ReadOnlyField label="Weight">
-                {data.lineItem.containerWeightGrams || 0}g
+                {Math.round(
+                  gramsToKilos(data.lineItem.containerWeightGrams || 0),
+                )}
+                kg
               </ReadOnlyField>
               <ReadOnlyField label="Amount of containers">
                 {data.lineItem.containerCount || 0}

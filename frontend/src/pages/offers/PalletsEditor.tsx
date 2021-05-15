@@ -177,7 +177,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
                           setSelectedLineItemId(item.id)
                         }}
                       >
-                        Item {item.id}
+                        {item.description || `Item ${item.id}`}
                       </button>
                     ))}
                     <Button
@@ -187,7 +187,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
                         addLineItem(pallet.id)
                       }}
                     >
-                      Add a line item
+                      Add an item
                     </Button>
                   </div>
                 )}
@@ -221,6 +221,10 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
             {allowEditingLineItem ? (
               <LineItemForm
                 lineItemId={selectedLineItemId}
+                palletType={
+                  selectedPalletData.data?.pallet.palletType ||
+                  PalletType.Standard
+                }
                 onEditingComplete={() => setEditingMode(false)}
               />
             ) : (

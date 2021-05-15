@@ -61,9 +61,10 @@ export default class Pallet extends Model<
   @Column
   public readonly updatedAt!: Date
 
-  public weightGrams() {
-    return this.lineItems
+  public weightKilos() {
+    const weightInGrams = this.lineItems
       .map((lineItem) => lineItem.containerWeightGrams || 0)
       .reduce((result, current) => result + current)
+    return Math.round(weightInGrams / 1000)
   }
 }

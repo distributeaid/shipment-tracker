@@ -46,7 +46,7 @@ const CreatePalletModal: FunctionComponent<Props> = (props) => {
 
   return (
     <PlainModal
-      modalWidth="35rem"
+      modalWidth="40rem"
       isOpen={props.isOpen}
       onRequestClose={props.onRequestClose}
     >
@@ -55,7 +55,16 @@ const CreatePalletModal: FunctionComponent<Props> = (props) => {
 
         <Label required>Pallet type</Label>
         <p className="mb-4">
-          Choose the pallet type that best matches the items to transport.
+          Choose the pallet type that best matches the{' '}
+          <strong>maximum dimensions</strong> of the items to transport. If your
+          pallet doesn't fit within those dimensions, please let us know at{' '}
+          <a
+            className="text-blue-700 hover:underline"
+            href="mailto:dom@distributeaid.org"
+          >
+            dom@distributeaid.org
+          </a>
+          .
         </p>
         <table className="w-full border-separate" style={{ borderSpacing: 0 }}>
           <thead>
