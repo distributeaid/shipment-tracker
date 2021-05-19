@@ -38,20 +38,6 @@ const lineItem: QueryResolvers['lineItem'] = async (_, { id }, context) => {
 
   authorizeOfferQuery(pallet.offer, context)
 
-  // if (lineItem.proposedReceivingGroupId) {
-  //   const proposedReceivingGroup = await Group.findByPk(
-  //     lineItem.proposedReceivingGroupId,
-  //   )
-  //   lineItem.proposedReceivingGroup = proposedReceivingGroup || undefined
-  // }
-
-  // if (lineItem.acceptedReceivingGroupId) {
-  //   const acceptedReceivingGroup = await Group.findByPk(
-  //     lineItem.acceptedReceivingGroupId,
-  //   )
-  //   lineItem.acceptedReceivingGroup = acceptedReceivingGroup || undefined
-  // }
-
   return lineItem
 }
 
