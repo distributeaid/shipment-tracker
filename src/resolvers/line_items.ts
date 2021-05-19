@@ -10,6 +10,7 @@ import {
   GroupType,
   LineItemCategory,
   LineItemContainerType,
+  LineItemResolvers,
   LineItemStatus,
   LineItemUpdateInput,
   MutationResolvers,
@@ -36,6 +37,20 @@ const lineItem: QueryResolvers['lineItem'] = async (_, { id }, context) => {
   }
 
   authorizeOfferQuery(pallet.offer, context)
+
+  // if (lineItem.proposedReceivingGroupId) {
+  //   const proposedReceivingGroup = await Group.findByPk(
+  //     lineItem.proposedReceivingGroupId,
+  //   )
+  //   lineItem.proposedReceivingGroup = proposedReceivingGroup || undefined
+  // }
+
+  // if (lineItem.acceptedReceivingGroupId) {
+  //   const acceptedReceivingGroup = await Group.findByPk(
+  //     lineItem.acceptedReceivingGroupId,
+  //   )
+  //   lineItem.acceptedReceivingGroup = acceptedReceivingGroup || undefined
+  // }
 
   return lineItem
 }
@@ -278,4 +293,45 @@ const moveLineItem: MutationResolvers['moveLineItem'] = async (
   return lineItem.offerPallet.offer
 }
 
-export { lineItem, addLineItem, updateLineItem, destroyLineItem, moveLineItem }
+// Line item custom resolvers
+const proposedReceivingGroup: LineItemResolvers['proposedReceivingGroup'] = async (
+  parent,
+) => {
+  if (!parent.proposedReceivingGroupId) {
+    return null
+  }
+
+  const receivingGroup = await Group.findByPk(parent.proposedReceivingGroupId)
+
+  if (!receivingGroup) {
+    throw new ApolloError('No group exists with that ID')
+  }
+
+  return receivingGroup
+}
+
+const acceptedReceivingGroup: LineItemResolvers['acceptedReceivingGroup'] = async (
+  parent,
+) => {
+  if (!parent.acceptedReceivingGroupId) {
+    return null
+  }
+
+  const receivingGroup = await Group.findByPk(parent.acceptedReceivingGroupId)
+
+  if (!receivingGroup) {
+    throw new ApolloError('No group exists with that ID')
+  }
+
+  return receivingGroup
+}
+
+export {
+  lineItem,
+  addLineItem,
+  updateLineItem,
+  destroyLineItem,
+  moveLineItem,
+  proposedReceivingGroup,
+  acceptedReceivingGroup,
+}

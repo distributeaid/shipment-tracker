@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useEffect } from 'react'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
+import ExternalLinkIcon from '../../components/icons/ExternalLinkIcon'
 import WarningIcon from '../../components/icons/WarningIcon'
 import ConfirmationModal from '../../components/modal/ConfirmationModal'
 import Spinner from '../../components/Spinner'
@@ -17,6 +18,7 @@ import {
   getLineItemVolumeInSquareMeters,
   gramsToKilos,
 } from '../../utils/format'
+import { groupViewRoute } from '../../utils/routes'
 
 interface Props {
   /**
@@ -119,14 +121,36 @@ const ViewLineItem: FunctionComponent<Props> = ({
       </ConfirmationModal>
       {data?.lineItem && (
         <>
+          <fieldset className="mb-6">
+            <legend className="font-semibold text-gray-700 mb-2">
+              Receiving group
+            </legend>
+            {data.lineItem.proposedReceivingGroup ? (
+              <a
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center text-blue-700 hover:underline"
+                href={groupViewRoute(data.lineItem.proposedReceivingGroup.id)}
+              >
+                {data.lineItem.proposedReceivingGroup.name}
+                <ExternalLinkIcon className="ml-2 w-4 h-4" />
+              </a>
+            ) : (
+              <span>No receiving group</span>
+            )}
+          </fieldset>
           <fieldset className="space-y-4">
-            <legend className="font-semibold text-gray-700 ">Contents</legend>
+            <legend className="font-semibold text-gray-700">Contents</legend>
             <ReadOnlyField label="Description">
               {data.lineItem.description || 'No description provided'}
             </ReadOnlyField>
             <div className="md:flex md:space-x-8">
               <ReadOnlyField label="Container">
-                {formatContainerType(data.lineItem.containerType)}
+                {data.lineItem.containerCount || 1}{' '}
+                {formatContainerType(
+                  data.lineItem.containerType,
+                  data.lineItem.containerCount !== 1,
+                ).toLowerCase()}
               </ReadOnlyField>
               <ReadOnlyField label="Number of items">
                 {data.lineItem.itemCount || 0}
@@ -154,17 +178,13 @@ const ViewLineItem: FunctionComponent<Props> = ({
                 {getLineItemVolumeInSquareMeters(data.lineItem)}
               </ReadOnlyField>
             </div>
-            <div className="md:flex md:space-x-8">
-              <ReadOnlyField label="Weight">
-                {Math.round(
-                  gramsToKilos(data.lineItem.containerWeightGrams || 0),
-                )}
-                kg
-              </ReadOnlyField>
-              <ReadOnlyField label="Amount of containers">
-                {data.lineItem.containerCount || 0}
-              </ReadOnlyField>
-            </div>
+
+            <ReadOnlyField label="Weight">
+              {Math.round(
+                gramsToKilos(data.lineItem.containerWeightGrams || 0),
+              )}
+              kg
+            </ReadOnlyField>
           </fieldset>
           <fieldset className="mt-12">
             <legend className="font-semibold text-gray-700 mb-4">

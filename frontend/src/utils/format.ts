@@ -1,10 +1,12 @@
 import { BadgeColor } from '../components/Badge'
+import { SelectOption } from '../components/forms/SelectField'
 import {
   COUNTRY_CODES_TO_NAME,
   LINE_ITEM_CATEGORY_OPTIONS,
   MONTHS,
 } from '../data/constants'
 import {
+  AllGroupsMinimalQuery,
   GroupType,
   LineItem,
   LineItemCategory,
@@ -111,11 +113,16 @@ export function formatShipmentName(
   return `${shipment.shippingRoute}-${shipment.labelYear}-${month}`
 }
 
-export function formatContainerType(type: LineItemContainerType) {
+export function formatContainerType(
+  type: LineItemContainerType,
+  pluralize?: boolean,
+) {
   return {
-    [LineItemContainerType.Box]: 'Box',
-    [LineItemContainerType.BulkBag]: 'Bulk bag',
-    [LineItemContainerType.FullPallet]: 'Full pallet',
+    [LineItemContainerType.Box]: pluralize ? 'Boxes' : 'Box',
+    [LineItemContainerType.BulkBag]: pluralize ? 'Bulk bags' : 'Bulk bag',
+    [LineItemContainerType.FullPallet]: pluralize
+      ? 'Full pallets'
+      : 'Full pallet',
     [LineItemContainerType.Unset]: 'Not set',
   }[type]
 }
@@ -152,3 +159,9 @@ export function getContainerCountLabel(containerType: LineItemContainerType) {
 export const kilosToGrams = (kilos: number) => kilos * 1000
 
 export const gramsToKilos = (grams: number) => grams / 1000
+
+export function groupToSelectOption(
+  group: AllGroupsMinimalQuery['listGroups'][0],
+): SelectOption {
+  return { value: group.id, label: group.name }
+}

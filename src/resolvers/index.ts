@@ -2,10 +2,12 @@ import { DateResolver } from 'graphql-scalars'
 import { Resolvers } from '../server-internal-types'
 import { addGroup, group, listGroups, updateGroup } from './group'
 import {
+  acceptedReceivingGroup,
   addLineItem,
   destroyLineItem,
   lineItem,
   moveLineItem,
+  proposedReceivingGroup,
   updateLineItem,
 } from './line_items'
 import { addOffer, listOffers, offer, offerPallets, updateOffer } from './offer'
@@ -75,6 +77,11 @@ const resolvers: Resolvers = {
 
   Pallet: {
     lineItems: palletLineItems,
+  },
+
+  LineItem: {
+    proposedReceivingGroup,
+    acceptedReceivingGroup,
   },
 }
 
