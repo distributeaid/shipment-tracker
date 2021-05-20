@@ -5,7 +5,6 @@ import Button from '../../components/Button'
 import SelectField, { SelectOption } from '../../components/forms/SelectField'
 import { MONTH_OPTIONS } from '../../data/constants'
 import {
-  AllGroupsMinimalQuery,
   GroupType,
   ShipmentCreateInput,
   ShipmentQuery,
@@ -13,6 +12,7 @@ import {
   ShippingRoute,
   useAllGroupsMinimalQuery,
 } from '../../types/api-types'
+import { groupToSelectOption } from '../../utils/format'
 import { enumValues } from '../../utils/types'
 
 interface Props {
@@ -60,12 +60,6 @@ const SHIPPING_ROUTE_OPTIONS = enumValues(ShippingRoute).map((routeKey) => ({
   label: routeKey,
   value: routeKey,
 }))
-
-function groupToSelectOption(
-  group: AllGroupsMinimalQuery['listGroups'][0],
-): SelectOption {
-  return { value: group.id, label: group.name }
-}
 
 const ShipmentForm: FunctionComponent<Props> = (props) => {
   const [receivingGroups, setReceivingGroups] = useState<SelectOption[]>([])

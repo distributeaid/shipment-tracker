@@ -2,7 +2,8 @@ import _pick from 'lodash/pick'
 import { FunctionComponent, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
-import SelectField from '../../components/forms/SelectField'
+import PlaceholderField from '../../components/forms/PlaceholderField'
+import SelectField, { SelectOption } from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
 import Spinner from '../../components/Spinner'
 import {
@@ -13,16 +14,19 @@ import {
 } from '../../data/constants'
 import {
   DangerousGoods,
+  GroupType,
   LineItemCategory,
   LineItemContainerType,
   LineItemUpdateInput,
   PalletType,
+  useAllGroupsMinimalQuery,
   useLineItemQuery,
   useUpdateLineItemMutation,
 } from '../../types/api-types'
 import {
   getContainerCountLabel,
   gramsToKilos,
+  groupToSelectOption,
   kilosToGrams,
 } from '../../utils/format'
 
@@ -51,6 +55,21 @@ const LineItemForm: FunctionComponent<Props> = ({
   const { data, refetch, loading: lineItemIsLoading } = useLineItemQuery({
     variables: { id: lineItemId },
   })
+
+  const [receivingGroups, setReceivingGroups] = useState<SelectOption[]>([])
+  const { data: groups } = useAllGroupsMinimalQuery()
+  useEffect(
+    function organizeGroups() {
+      if (groups && groups.listGroups) {
+        setReceivingGroups(
+          groups.listGroups
+            .filter((group) => group.groupType === GroupType.ReceivingGroup)
+            .map(groupToSelectOption),
+        )
+      }
+    },
+    [groups],
+  )
 
   const [dangerousGoodsList, setDangerousGoodsList] = useState<
     DangerousGoods[]
@@ -99,7 +118,14 @@ const LineItemForm: FunctionComponent<Props> = ({
         setValue('containerHeightCm', palletDimensions?.heightCm)
       }
     }
-  }, [watchContainerType, palletType])
+  }, [
+    watchContainerType,
+    palletType,
+    watchContainerWidth,
+    watchContainerHeight,
+    watchContainerLength,
+    setValue,
+  ])
 
   useEffect(
     function fetchLineItem() {
@@ -198,6 +224,20 @@ const LineItemForm: FunctionComponent<Props> = ({
           </Button>
         </div>
       </div>
+      {receivingGroups.length > 0 ? (
+        <SelectField
+          name="proposedReceivingGroupId"
+          label="Receiving group"
+          castAsNumber
+          required
+          options={receivingGroups}
+          register={register}
+          errors={errors}
+          className="mb-6 max-w-md"
+        />
+      ) : (
+        <PlaceholderField className="mb-6 max-w-md" />
+      )}
       <fieldset className="space-y-4">
         <legend className="font-semibold text-gray-700 ">Contents</legend>
         <TextField

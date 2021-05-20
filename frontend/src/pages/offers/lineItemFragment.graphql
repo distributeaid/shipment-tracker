@@ -10,6 +10,8 @@ fragment AllLineItemFields on LineItem {
     id
     name
   }
+  proposedReceivingGroupId
+  acceptedReceivingGroupId
   containerType
   category
   description
