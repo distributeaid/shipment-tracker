@@ -10,6 +10,7 @@ import { AllShipmentsQuery, useAllShipmentsQuery } from '../../types/api-types'
 import {
   formatLabelMonth,
   formatShipmentName,
+  formatShippingRouteName,
   getShipmentStatusBadgeColor,
 } from '../../utils/format'
 import ROUTES, { shipmentViewRoute } from '../../utils/routes'
@@ -21,7 +22,7 @@ const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
   },
   {
     Header: 'Route',
-    accessor: 'shippingRoute',
+    accessor: (row) => formatShippingRouteName(row.shippingRoute),
   },
   {
     Header: 'Sending hub',
@@ -46,7 +47,7 @@ const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
 ]
 
 const ShipmentList: FunctionComponent = () => {
-  const { data } = useAllShipmentsQuery()
+  const { data, error } = useAllShipmentsQuery()
 
   // We must memoize the data for react-table to function properly
   const shipments = useMemo(() => data?.listShipments || [], [data])
@@ -67,6 +68,12 @@ const ShipmentList: FunctionComponent = () => {
           <ButtonLink to={ROUTES.SHIPMENT_CREATE}>Create shipment</ButtonLink>
         </header>
         <main className="pb-20 overflow-x-auto">
+          {error && (
+            <div className="p-4 rounded bg-red-50 mb-6 text-red-800">
+              <p className="font-semibold">Error:</p>
+              <p>{error.message}</p>
+            </div>
+          )}
           <table className="w-full whitespace-nowrap" {...getTableProps()}>
             <thead className="border-b border-gray-200">
               {headerGroups.map((headerGroup) => (

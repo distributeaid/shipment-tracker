@@ -3,17 +3,15 @@ import { FunctionComponent, ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField, { SelectOption } from '../../components/forms/SelectField'
-import { MONTH_OPTIONS } from '../../data/constants'
+import { MONTH_OPTIONS, SHIPPING_ROUTE_OPTIONS } from '../../data/constants'
 import {
   GroupType,
   ShipmentCreateInput,
   ShipmentQuery,
   ShipmentStatus,
-  ShippingRoute,
   useAllGroupsMinimalQuery,
 } from '../../types/api-types'
 import { groupToSelectOption } from '../../utils/format'
-import { enumValues } from '../../utils/types'
 
 interface Props {
   /**
@@ -56,14 +54,8 @@ const YEAR_OPTIONS = _range(
 
 const DEFAULT_MONTH = (new Date().getMonth() + 2) % 12
 
-const SHIPPING_ROUTE_OPTIONS = enumValues(ShippingRoute).map((routeKey) => ({
-  label: routeKey,
-  value: routeKey,
-}))
-
 const ShipmentForm: FunctionComponent<Props> = (props) => {
-  const [receivingGroups, setReceivingGroups] = useState<SelectOption[]>([])
-  const [sendingGroups, setSendingGroups] = useState<SelectOption[]>([])
+  const [hubs, setHubs] = useState<SelectOption[]>([])
 
   // Load the list of groups
   const { data: groups, loading: hubListIsLoading } = useAllGroupsMinimalQuery()
@@ -73,14 +65,9 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
   useEffect(
     function organizeGroups() {
       if (groups && groups.listGroups) {
-        setReceivingGroups(
+        setHubs(
           groups.listGroups
-            .filter((group) => group.groupType === GroupType.ReceivingGroup)
-            .map(groupToSelectOption),
-        )
-        setSendingGroups(
-          groups.listGroups
-            .filter((group) => group.groupType === GroupType.SendingGroup)
+            .filter((group) => group.groupType === GroupType.DaHub)
             .map(groupToSelectOption),
         )
       }
@@ -92,6 +79,8 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
     register,
     handleSubmit,
     reset,
+    watch,
+    clearErrors,
     getValues,
     formState: { errors },
   } = useForm<ShipmentCreateInput>()
@@ -99,11 +88,27 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
   useEffect(
     function resetFormValues() {
       if (props.defaultValues) {
-        // Update the values of the fields
         reset(props.defaultValues.shipment)
       }
     },
     [props.defaultValues, reset],
+  )
+
+  const [sendingHubId, receivingHubId] = watch([
+    'sendingHubId',
+    'receivingHubId',
+  ])
+
+  useEffect(
+    function updateHubValidationErrors() {
+      // The sendingHubId and receivingHubId fields depend on each other for
+      // validation. Therefore, if one of them is updated, we clear the errors
+      // for both of them
+      if (sendingHubId !== receivingHubId) {
+        clearErrors(['sendingHubId', 'receivingHubId'])
+      }
+    },
+    [sendingHubId, receivingHubId, clearErrors],
   )
 
   const validateShipmentDate = () => {
@@ -113,6 +118,16 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
     return shipmentDate > new Date()
       ? true
       : 'The shipment date cannot be in the past'
+  }
+
+  const validateHubSelection = () => {
+    const sendingHub = getValues('sendingHubId')
+    const receivingHub = getValues('receivingHubId')
+    if (sendingHub === receivingHub) {
+      return 'The sending and receiving hubs must be different'
+    }
+
+    return true
   }
 
   return (
@@ -164,9 +179,12 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
       <SelectField
         label="Sending hub"
         name="sendingHubId"
-        options={sendingGroups}
+        options={hubs}
         castAsNumber
         register={register}
+        registerOptions={{
+          validate: validateHubSelection,
+        }}
         required
         disabled={hubListIsLoading}
         errors={errors}
@@ -174,14 +192,16 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
       <SelectField
         label="Receiving hub"
         name="receivingHubId"
-        options={receivingGroups}
+        options={hubs}
         castAsNumber
         register={register}
+        registerOptions={{
+          validate: validateHubSelection,
+        }}
         required
         disabled={hubListIsLoading}
         errors={errors}
       />
-
       <div className="flex items-center">
         <Button variant="primary" type="submit" disabled={props.isLoading}>
           {props.submitButtonLabel}

@@ -55,7 +55,7 @@ describe('LineItems API', () => {
     })
 
     shipment = await Shipment.create({
-      shippingRoute: ShippingRoute.Uk,
+      shippingRoute: ShippingRoute.UkToBa,
       labelYear: 2020,
       labelMonth: 1,
       sendingHubId: group.id,

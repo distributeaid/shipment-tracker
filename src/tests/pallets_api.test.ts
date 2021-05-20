@@ -59,7 +59,7 @@ describe('Pallets API', () => {
     })
 
     shipment = await Shipment.create({
-      shippingRoute: ShippingRoute.Uk,
+      shippingRoute: ShippingRoute.UkToCs,
       labelYear: 2020,
       labelMonth: 1,
       sendingHubId: group.id,

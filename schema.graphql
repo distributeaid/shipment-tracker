@@ -120,7 +120,16 @@ input ShipmentCreateInput {
 }
 
 enum ShippingRoute {
-  UK
+  UK_TO_FR
+  UK_TO_GR
+  UK_TO_CS
+  UK_TO_BA
+  UK_TO_LB
+  DE_TO_FR
+  DE_TO_GR
+  DE_TO_CS
+  DE_TO_BA
+  DE_TO_LB
 }
 
 enum ShipmentStatus {

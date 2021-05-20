@@ -5,6 +5,8 @@ fragment AllShipmentFields on Shipment {
   labelMonth
   offerSubmissionDeadline
   status
+  receivingHubId
+  sendingHubId
   receivingHub {
     id
     name
