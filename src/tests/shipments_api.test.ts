@@ -73,7 +73,7 @@ describe('Shipments API', () => {
         mutation: ADD_SHIPMENT,
         variables: {
           input: {
-            shippingRoute: ShippingRoute.Uk,
+            shippingRoute: ShippingRoute.UkToFr,
             labelYear: nextYear,
             labelMonth: 1,
             sendingHubId: group1.id,
@@ -103,7 +103,7 @@ describe('Shipments API', () => {
         mutation: ADD_SHIPMENT,
         variables: {
           input: {
-            shippingRoute: ShippingRoute.Uk,
+            shippingRoute: ShippingRoute.UkToFr,
             labelYear: nextYear,
             labelMonth: 1,
             sendingHubId: group1.id,
@@ -114,7 +114,9 @@ describe('Shipments API', () => {
       })
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.addShipment?.shippingRoute).toEqual(ShippingRoute.Uk)
+      expect(res?.data?.addShipment?.shippingRoute).toEqual(
+        ShippingRoute.UkToFr,
+      )
       expect(res?.data?.addShipment?.labelYear).toEqual(nextYear)
       expect(res?.data?.addShipment?.labelMonth).toEqual(1)
       expect(res?.data?.addShipment?.sendingHubId).toEqual(group1.id)
@@ -143,7 +145,7 @@ describe('Shipments API', () => {
 
     beforeEach(async () => {
       shipment = await createShipment({
-        shippingRoute: ShippingRoute.Uk,
+        shippingRoute: ShippingRoute.UkToFr,
         labelYear: nextYear,
         labelMonth: 1,
         sendingHubId: group1.id,
@@ -277,7 +279,7 @@ describe('Shipments API', () => {
   describe('listShipments', () => {
     it('lists existing shipments', async () => {
       const shipment1 = await createShipment({
-        shippingRoute: ShippingRoute.Uk,
+        shippingRoute: ShippingRoute.UkToFr,
         labelYear: nextYear,
         labelMonth: 1,
         sendingHubId: group1.id,
@@ -286,7 +288,7 @@ describe('Shipments API', () => {
       })
 
       const shipment2 = await createShipment({
-        shippingRoute: ShippingRoute.Uk,
+        shippingRoute: ShippingRoute.UkToFr,
         labelYear: nextYear + 1,
         labelMonth: 6,
         sendingHubId: group2.id,
@@ -350,7 +352,7 @@ describe('Shipments API', () => {
 
     beforeEach(async () => {
       shipment = await createShipment({
-        shippingRoute: ShippingRoute.Uk,
+        shippingRoute: ShippingRoute.UkToFr,
         labelYear: nextYear,
         labelMonth: 1,
         sendingHubId: group1.id,

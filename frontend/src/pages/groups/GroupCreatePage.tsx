@@ -46,7 +46,7 @@ const GroupCreatePage: FunctionComponent = () => {
 
   return (
     <LayoutWithNav>
-      <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
+      <div className="bg-white max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
         <header className="p-4 md:p-6 border-b border-gray-200">
           <h1 className="text-navy-800 text-3xl mb-2">New group</h1>
           <p className="text-gray-700">

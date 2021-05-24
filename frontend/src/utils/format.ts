@@ -4,6 +4,7 @@ import {
   COUNTRY_CODES_TO_NAME,
   LINE_ITEM_CATEGORY_OPTIONS,
   MONTHS,
+  SHIPPING_ROUTE_OPTIONS,
 } from '../data/constants'
 import {
   AllGroupsMinimalQuery,
@@ -16,6 +17,7 @@ import {
   Shipment,
   ShipmentQuery,
   ShipmentStatus,
+  ShippingRoute,
 } from '../types/api-types'
 
 export function formatGroupType(type: GroupType) {
@@ -99,7 +101,7 @@ export function getShipmentStatusBadgeColor(
  * unique identifier!
  * @param shipment
  * @returns A non-unique identifier for the shipment
- * @example "UK-2021-03"
+ * @example formatShipmentName(shipment) // "UK-FR-2021-03"
  */
 export function formatShipmentName(
   shipment:
@@ -110,7 +112,16 @@ export function formatShipmentName(
       >,
 ) {
   const month = shipment.labelMonth.toString().padStart(2, '0')
-  return `${shipment.shippingRoute}-${shipment.labelYear}-${month}`
+  return `${shipment.shippingRoute.toString().replace('_TO_', '-')}-${
+    shipment.labelYear
+  }-${month}`
+}
+
+export function formatShippingRouteName(shippingRoute: ShippingRoute) {
+  const matchingRoute = SHIPPING_ROUTE_OPTIONS.find(
+    (option) => option.value === shippingRoute,
+  )
+  return matchingRoute?.label || 'Unknown route'
 }
 
 export function formatContainerType(

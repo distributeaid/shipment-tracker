@@ -6,6 +6,7 @@ import {
   OfferStatus,
   PalletType,
   PaymentStatus,
+  ShippingRoute,
 } from '../types/api-types'
 import { enumValues } from '../utils/types'
 
@@ -404,3 +405,59 @@ export const COUNTRY_CODE_OPTIONS = Object.entries(COUNTRY_CODES_TO_NAME).map(
     value: countryCode,
   }),
 )
+
+export const SENDING_REGIONS = [
+  { code: 'UK', label: 'United Kingdom' },
+  { code: 'DE', label: 'Germany' },
+]
+
+export const RECEIVING_REGIONS = [
+  { code: 'FR', label: 'France' },
+  { code: 'GR', label: 'Greece' },
+  { code: 'CS', label: 'Serbia' },
+  { code: 'BA', label: 'Bosnia' },
+  { code: 'LB', label: 'Lebanon' },
+]
+
+export const SHIPPING_ROUTE_OPTIONS = [
+  {
+    value: ShippingRoute.DeToBa,
+    label: 'Germany to Bosnia',
+  },
+  {
+    value: ShippingRoute.DeToCs,
+    label: 'Germany to Serbia',
+  },
+  {
+    value: ShippingRoute.DeToFr,
+    label: 'Germany to France',
+  },
+  {
+    value: ShippingRoute.DeToGr,
+    label: 'Germany to Greece',
+  },
+  {
+    value: ShippingRoute.DeToLb,
+    label: 'Germany to Lebanon',
+  },
+  {
+    value: ShippingRoute.UkToBa,
+    label: 'UK to Bosnia',
+  },
+  {
+    value: ShippingRoute.UkToCs,
+    label: 'UK to Serbia',
+  },
+  {
+    value: ShippingRoute.UkToFr,
+    label: 'UK to France',
+  },
+  {
+    value: ShippingRoute.UkToGr,
+    label: 'UK to Greece',
+  },
+  {
+    value: ShippingRoute.UkToLb,
+    label: 'UK to Lebanon',
+  },
+]

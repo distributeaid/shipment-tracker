@@ -6,6 +6,7 @@ import { useShipmentQuery } from '../../types/api-types'
 import {
   formatCountryCodeToName,
   formatLabelMonth,
+  formatShippingRouteName,
   getShipmentStatusBadgeColor,
 } from '../../utils/format'
 
@@ -44,8 +45,8 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
       <h2 className="font-semibold mt-6 mb-4">Itinerary</h2>
       <p className="text-gray-600 mb-4">
         This shipment follows the{' '}
-        <span className="text-semibold text-gray-800">
-          {shipmentData.shippingRoute}
+        <span className="font-semibold text-gray-800">
+          {formatShippingRouteName(shipmentData.shippingRoute)}
         </span>{' '}
         route.
       </p>

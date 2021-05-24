@@ -65,7 +65,7 @@ describe('Offers API', () => {
       },
     })
     shipment = await createShipment({
-      shippingRoute: ShippingRoute.Uk,
+      shippingRoute: ShippingRoute.UkToGr,
       labelYear: 2020,
       labelMonth: 1,
       sendingHubId: captainsGroup.id,
@@ -360,7 +360,7 @@ describe('Offers API', () => {
       otherShipment = await createShipment({
         labelYear: 2021,
         labelMonth: 1,
-        shippingRoute: ShippingRoute.Uk,
+        shippingRoute: ShippingRoute.UkToFr,
         sendingHubId: captainsGroup.id,
         receivingHubId: captainsGroup.id,
         status: ShipmentStatus.Open,
