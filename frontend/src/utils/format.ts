@@ -101,7 +101,7 @@ export function getShipmentStatusBadgeColor(
  * unique identifier!
  * @param shipment
  * @returns A non-unique identifier for the shipment
- * @example "UK-2021-03"
+ * @example formatShipmentName(shipment) // "UK-FR-2021-03"
  */
 export function formatShipmentName(
   shipment:
