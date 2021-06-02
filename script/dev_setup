@@ -128,7 +128,7 @@ function start_postgresql() {
   if is_macos; then
     brew services start postgresql
   elif is_linux; then
-    sudo service postgresql-13.2 start
+    sudo service postgresql start
   fi
 }
 
@@ -173,6 +173,9 @@ else
 fi
 
 copy_env_file
+
+# Build frontend
+pushd frontend && yarn install && yarn run build:styles && yarn build && popd
 
 echo
 colorized "@blue@b[[✓ All done!]]"
