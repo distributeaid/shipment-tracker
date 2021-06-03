@@ -34,6 +34,7 @@ if [ "$?" -eq 0 ]; then
 else
     printf 'creating pg user distributeaid... '
     createuser distributeaid
+    psql -d postgres -c "ALTER USER distributeaid PASSWORD 'distributeaid';"
     echo done.
 
     printf 'granting access privileges to pg user distributeaid... '

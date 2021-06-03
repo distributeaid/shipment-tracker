@@ -1,0 +1,17 @@
+{
+  "name": "Node.js",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/zsh"
+  },
+  "extensions": [
+    "esbenp.prettier-vscode",
+    "jpoissonnier.vscode-styled-components",
+    "graphql.vscode-graphql"
+  ],
+  "forwardPorts": [3000],
+  "postCreateCommand": "script/dev_setup && yarn dev",
+  "remoteUser": "node"
+}

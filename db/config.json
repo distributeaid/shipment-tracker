@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "distributeaid",
-    "password": null,
+    "password": "distributeaid",
     "database": "distributeaid_dev",
     "host": "127.0.0.1",
     "dialect": "postgres"
