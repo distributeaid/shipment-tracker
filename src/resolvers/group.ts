@@ -1,14 +1,15 @@
+import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { has } from 'lodash'
 import Group, { GroupAttributes } from '../models/group'
 import UserAccount from '../models/user_account'
 import {
-  GroupCreateInput,
   GroupType,
   MutationResolvers,
   QueryResolvers,
 } from '../server-internal-types'
 import stringIsUrl from './stringIsUrl'
+import { validateWithJSONSchema } from './validateWithJSONSchema'
 
 // Group query resolvers
 const listGroups: QueryResolvers['listGroups'] = async () => {
@@ -23,27 +24,63 @@ const group: QueryResolvers['group'] = async (_, { id }) => {
 
   return group
 }
+
+const openLocationCodeRegEx = /^[23456789C][23456789CFGHJMPQRV][23456789CFGHJMPQRVWX]{6}\+[23456789CFGHJMPQRVWX]{2,3}/i
+const phoneRegEx = /^\+[1-9][0-9]+$/
+
+export const addGroupInputSchema = Type.Object(
+  {
+    name: Type.String({
+      minLength: 1,
+      maxLength: 255,
+    }),
+    groupType: Type.Enum(GroupType),
+    primaryLocation: Type.Object({
+      countryCode: Type.Optional(
+        Type.String({
+          minLength: 2,
+          maxLength: 2,
+        }),
+      ),
+      townCity: Type.String({
+        minLength: 1,
+        maxLength: 255,
+      }),
+      openLocationCode: Type.Optional(Type.RegEx(openLocationCodeRegEx)),
+    }),
+    primaryContact: Type.Object({
+      name: Type.String({
+        minLength: 1,
+        maxLength: 255,
+      }),
+      email: Type.Optional(Type.String({ format: 'email' })),
+      phone: Type.Optional(Type.RegEx(phoneRegEx)),
+      signal: Type.Optional(Type.RegEx(phoneRegEx)),
+      whatsApp: Type.Optional(Type.RegEx(phoneRegEx)),
+    }),
+    website: Type.Optional(Type.String({ format: 'uri' })),
+  },
+  { additionalProperties: false },
+)
+
+const validateInput = validateWithJSONSchema(addGroupInputSchema)
+
 // Group mutation resolvers
 const addGroup: MutationResolvers['addGroup'] = async (
   _parent,
   { input },
   context,
 ) => {
-  if (
-    !input.name ||
-    !input.groupType ||
-    !input.primaryLocation ||
-    !input.primaryContact
-  ) {
-    throw new UserInputError('Group arguments invalid', {
-      invalidArgs: Object.keys(input).filter(
-        (key) => !input[key as keyof GroupCreateInput],
-      ),
-    })
+  const valid = validateInput(input)
+  if ('errors' in valid) {
+    throw new UserInputError('Group arguments invalid', valid.errors)
   }
 
   // Non-admins should only be allowed to create sending groups
-  if (input.groupType !== GroupType.SendingGroup && !context.auth.isAdmin) {
+  if (
+    valid.value.groupType !== GroupType.SendingGroup &&
+    !context.auth.isAdmin
+  ) {
     throw new ForbiddenError(`Non-admins can only create sending groups`)
   }
 
@@ -58,16 +95,8 @@ const addGroup: MutationResolvers['addGroup'] = async (
     }
   }
 
-  if (input.website && !stringIsUrl(input.website)) {
-    throw new UserInputError(`URL is not valid: ${input.website}`)
-  }
-
   return Group.create({
-    name: input.name,
-    groupType: input.groupType,
-    primaryLocation: input.primaryLocation,
-    primaryContact: input.primaryContact,
-    website: input.website,
+    ...valid.value,
     captainId: context.auth.userAccount.id,
   })
 }
