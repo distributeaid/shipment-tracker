@@ -33,6 +33,8 @@ const UserProfileProvider: FunctionComponent = ({ children }) => {
   const refetch = () => setTokenWasFetched(false)
 
   useEffect(() => {
+    // We fetch the token again in case the client-side cookie has expired but
+    // the remote session hasn't
     if (!tokenWasFetched) {
       getAccessTokenSilently()
         .then(fetchProfile)
