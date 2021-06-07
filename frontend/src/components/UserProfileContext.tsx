@@ -26,30 +26,30 @@ const UserProfileContext = createContext<UserProfileData>({
 })
 
 const UserProfileProvider: FunctionComponent = ({ children }) => {
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0()
-  const [profileIsLoaded, setProfileIsLoaded] = useState(false)
+  const { getAccessTokenSilently } = useAuth0()
+  const [tokenWasFetched, setTokenWasFetched] = useState(false)
   const [profile, setProfile] = useState<UserProfile>()
 
-  const refetch = () => setProfileIsLoaded(false)
+  const refetch = () => setTokenWasFetched(false)
 
   useEffect(() => {
-    if (isAuthenticated && !profileIsLoaded) {
+    // We fetch the token again in case the client-side cookie has expired but
+    // the remote session hasn't
+    if (!tokenWasFetched) {
       getAccessTokenSilently()
         .then(fetchProfile)
-        .then((response) => {
-          if (response.ok) {
-            setProfileIsLoaded(true)
-          } else {
-            console.error('Non-OK server response retrieving profile')
-          }
-
-          return response.json()
+        .then((response) => response.json())
+        .catch(() => {
+          // The user is not logged in
         })
         .then((data) => {
           setProfile(data)
         })
+        .finally(() => {
+          setTokenWasFetched(true)
+        })
     }
-  }, [isAuthenticated, getAccessTokenSilently, profileIsLoaded])
+  }, [tokenWasFetched, getAccessTokenSilently])
 
   return (
     <UserProfileContext.Provider value={{ profile, refetch }}>
