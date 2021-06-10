@@ -175,6 +175,7 @@ fi
 copy_env_file
 
 # Build frontend
+yarn run codegen
 pushd frontend && yarn install && yarn run build:styles && yarn build && popd
 
 echo
