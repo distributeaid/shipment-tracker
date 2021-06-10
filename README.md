@@ -65,7 +65,7 @@ And then view graphql sandbox at http://localhost:3000/graphql
 
 If you run into problems setting up your development environment please create an issue describing any errors you encounter.
 
-See the README in the `frontend` directory for instructions on setting up for front end development.
+See [the README in the `frontend` directory](/frontend/README.md) for instructions on setting up for front end development.
 
 ## Technical documentation
 
