@@ -3,8 +3,13 @@ query AllGroups {
     id
     name
     groupType
+    captainId
     primaryContact {
       name
+      whatsApp
+      phone
+      email
+      signal
     }
     primaryLocation {
       countryCode

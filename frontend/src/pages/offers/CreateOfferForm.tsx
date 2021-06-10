@@ -3,11 +3,12 @@ import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import TextField from '../../components/forms/TextField'
+import Spinner from '../../components/Spinner'
 import { UserProfileContext } from '../../components/UserProfileContext'
 import {
   GroupType,
   OfferCreateInput,
-  useAllGroupsMinimalQuery,
+  useAllGroupsQuery,
   useShipmentQuery,
 } from '../../types/api-types'
 import { formatShipmentName } from '../../utils/format'
@@ -36,7 +37,7 @@ const OfferForm: FunctionComponent<Props> = (props) => {
   // We need to figure out which group that is
   // TODO: handle the fact that admins can be assigned to any number of groups
   const { profile } = useContext(UserProfileContext)
-  const { data: groups, loading: isLoadingGroups } = useAllGroupsMinimalQuery()
+  const { data: groups, loading: isLoadingGroups } = useAllGroupsQuery()
 
   const groupForUser = useMemo(() => {
     if (groups?.listGroups && profile) {
@@ -77,6 +78,14 @@ const OfferForm: FunctionComponent<Props> = (props) => {
     props.onSubmit(input)
   }
 
+  if (!groupForUser || !profile) {
+    return (
+      <div>
+        <Spinner /> Loading form data
+      </div>
+    )
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
       <ReadOnlyField label="Sending group">
@@ -93,17 +102,39 @@ const OfferForm: FunctionComponent<Props> = (props) => {
           </>
         )}
       </ReadOnlyField>
-      <fieldset>
+      <fieldset className="space-y-6">
         <legend>Primary contact</legend>
         <TextField
           label="Contact name"
           name="contact.name"
           register={register}
           errors={errors}
+          defaultValue={groupForUser.primaryContact.name}
+        />
+        <TextField
+          label="WhatsApp"
+          name="contact.whatsApp"
+          register={register}
+          errors={errors}
+          defaultValue={groupForUser.primaryContact.whatsApp || ''}
+        />
+        <TextField
+          label="Phone"
+          name="contact.phone"
+          register={register}
+          errors={errors}
+          defaultValue={groupForUser.primaryContact.phone || ''}
+        />
+        <TextField
+          label="Signal"
+          name="contact.signal"
+          register={register}
+          errors={errors}
+          defaultValue={groupForUser.primaryContact.signal || ''}
         />
       </fieldset>
       <fieldset>
-        <legend>Photos</legend>
+        <legend>Photos (WIP)</legend>
       </fieldset>
       <Button
         variant="primary"
