@@ -37,6 +37,8 @@ const OfferForm: FunctionComponent<Props> = (props) => {
   // We need to figure out which group that is
   // TODO: handle the fact that admins can be assigned to any number of groups
   const { profile } = useContext(UserProfileContext)
+
+  // TODO switch to filtering groups when the resolver supports it
   const { data: groups, loading: isLoadingGroups } = useAllGroupsQuery()
 
   const groupForUser = useMemo(() => {
