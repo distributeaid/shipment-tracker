@@ -14,6 +14,7 @@ describe('validateWithJSONSchema', () => {
       errors: undefined,
     })
   })
+
   it('should return errors if input does not match the JSON schema', () => {
     expect(
       validateWithJSONSchema(

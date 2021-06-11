@@ -26,11 +26,14 @@ export const validateWithJSONSchema = <T extends TObject<TProperties>>(
       value: Static<typeof schema>
     }) => {
   const v = ajv.compile(schema)
+
   return (value: Record<string, any>) => {
     const valid = v(value)
+
     if (valid !== true) {
       return { errors: v.errors as ErrorObject[] }
     }
+
     return { value: value as Static<typeof schema> }
   }
 }
