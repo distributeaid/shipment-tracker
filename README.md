@@ -32,7 +32,7 @@ When you begin working on an issue, please self-assign or comment on it indicati
 
 ### Pull requests
 
-When you're ready to submit your code, open a pull request with "Closes #X" to link the relavant issue. When your PR is approved by at least one maintainer it is ready to submit.
+When you're ready to submit your code, open a pull request with "Closes #X" to link the relevant issue. When your PR is approved by at least one maintainer it is ready to submit.
 
 It's easy for the intention of code review comments to be unclear or get misinterpreted. To help with communication, reviewers are encouraged to use [conventional comments](https://conventionalcomments.org/) and explicitly indicate that comments are `(blocking)`, where the discussion must be resolved for PR to be merged, or `(non-blocking)` where resolving the discussion is optional for the implementer.
 
@@ -65,7 +65,7 @@ And then view graphql sandbox at http://localhost:3000/graphql
 
 If you run into problems setting up your development environment please create an issue describing any errors you encounter.
 
-See the README in the `frontend` directory for instructions on setting up for front end development.
+See [the README in the `frontend` directory](/frontend/README.md) for instructions on setting up for front end development.
 
 ## Technical documentation
 
@@ -82,7 +82,7 @@ Types are defined in `schema.graphql`. Type code for TypeScript is generated fro
 - `./src/server-internal-types.ts` for the server
 - `./frontend/src/types/api-types.ts` for the browser client
 
-Make sure to run `yarn codegen` and include the generated code changes in any commits that alter the GraphQL schema.
+You can use `yarn codegen` to generate the code, or you can use `yarn dev` to generate and watch changes to the schema.
 
 ## Technologies
 
