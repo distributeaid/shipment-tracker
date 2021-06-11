@@ -114,6 +114,13 @@ const OfferForm: FunctionComponent<Props> = (props) => {
           defaultValue={groupForUser.primaryContact.name}
         />
         <TextField
+          label="Email"
+          name="contact.email"
+          register={register}
+          errors={errors}
+          defaultValue={groupForUser.primaryContact.email || ''}
+        />
+        <TextField
           label="WhatsApp"
           name="contact.whatsApp"
           register={register}
