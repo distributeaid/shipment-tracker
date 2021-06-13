@@ -2,9 +2,11 @@ import { Type } from '@sinclair/typebox'
 import {
   Email,
   NonEmptyShortString,
+  OptionalValueOrUnset,
   PhoneNumber,
   TwoLetterCountryCode,
   URI,
+  ValueOrUnset,
 } from '../../resolvers/input-validation/types'
 import { validateWithJSONSchema } from '../../resolvers/input-validation/validateWithJSONSchema'
 
@@ -86,6 +88,38 @@ describe('input validation types', () => {
         }),
       )({ shortString })
       expect('errors' in res).toEqual(!isValid)
+    })
+  })
+
+  describe('passing null to unset a property', () => {
+    describe('use ValueOrUnset to enforce either passing the value or null to unset', () => {
+      it.each([
+        ['some string', true],
+        [null, true],
+        [undefined, false],
+      ])('should validate %s as %s', (optionalValue, isValid) => {
+        const res = validateWithJSONSchema(
+          Type.Object({
+            optionalValue: ValueOrUnset(NonEmptyShortString),
+          }),
+        )({ optionalValue })
+        expect('errors' in res).toEqual(!isValid)
+      })
+    })
+
+    describe('use OptionalValueOrUnset to make it optional', () => {
+      it.each([
+        ['some string', true],
+        [null, true],
+        [undefined, true],
+      ])('should validate %s as %s', (optionalValue, isValid) => {
+        const res = validateWithJSONSchema(
+          Type.Object({
+            optionalValue: OptionalValueOrUnset(NonEmptyShortString),
+          }),
+        )({ optionalValue })
+        expect('errors' in res).toEqual(!isValid)
+      })
     })
   })
 })
