@@ -8,8 +8,16 @@ import {
   MutationResolvers,
   QueryResolvers,
 } from '../server-internal-types'
+import {
+  Email,
+  NonEmptyShortString,
+  OpenLocationCode,
+  PhoneNumber,
+  TwoLetterCountryCode,
+  URI,
+} from './input-validation/types'
+import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
 import stringIsUrl from './stringIsUrl'
-import { validateWithJSONSchema } from './validateWithJSONSchema'
 
 // Group query resolvers
 const listGroups: QueryResolvers['listGroups'] = async () => {
@@ -25,45 +33,28 @@ const group: QueryResolvers['group'] = async (_, { id }) => {
   return group
 }
 
-const openLocationCodeRegEx = /^[23456789C][23456789CFGHJMPQRV][23456789CFGHJMPQRVWX]{6}\+[23456789CFGHJMPQRVWX]{2,3}/i
-const phoneRegEx = /^\+[1-9][0-9]+$/
-
 export const addGroupInputSchema = Type.Object(
   {
-    name: Type.String({
-      minLength: 1,
-      maxLength: 255,
-    }),
+    name: NonEmptyShortString,
     groupType: Type.Enum(GroupType),
     primaryLocation: Type.Object({
-      countryCode: Type.Optional(
-        Type.String({
-          minLength: 2,
-          maxLength: 2,
-        }),
-      ),
-      townCity: Type.String({
-        minLength: 1,
-        maxLength: 255,
-      }),
-      openLocationCode: Type.Optional(Type.RegEx(openLocationCodeRegEx)),
+      townCity: NonEmptyShortString,
+      countryCode: Type.Optional(TwoLetterCountryCode),
+      openLocationCode: Type.Optional(OpenLocationCode),
     }),
     primaryContact: Type.Object({
-      name: Type.String({
-        minLength: 1,
-        maxLength: 255,
-      }),
-      email: Type.Optional(Type.String({ format: 'email' })),
-      phone: Type.Optional(Type.RegEx(phoneRegEx)),
-      signal: Type.Optional(Type.RegEx(phoneRegEx)),
-      whatsApp: Type.Optional(Type.RegEx(phoneRegEx)),
+      name: NonEmptyShortString,
+      email: Type.Optional(Email),
+      phone: Type.Optional(PhoneNumber),
+      signal: Type.Optional(PhoneNumber),
+      whatsApp: Type.Optional(PhoneNumber),
     }),
-    website: Type.Optional(Type.String({ format: 'uri' })),
+    website: Type.Optional(URI),
   },
   { additionalProperties: false },
 )
 
-const validateInput = validateWithJSONSchema(addGroupInputSchema)
+const validateAddGroupInput = validateWithJSONSchema(addGroupInputSchema)
 
 // Group mutation resolvers
 const addGroup: MutationResolvers['addGroup'] = async (
@@ -71,7 +62,7 @@ const addGroup: MutationResolvers['addGroup'] = async (
   { input },
   context,
 ) => {
-  const valid = validateInput(input)
+  const valid = validateAddGroupInput(input)
   if ('errors' in valid) {
     throw new UserInputError('Group arguments invalid', valid.errors)
   }
