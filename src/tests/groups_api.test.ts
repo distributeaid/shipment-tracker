@@ -20,7 +20,7 @@ describe('Groups API', () => {
   const group1Params = {
     name: group1Name,
     groupType: GroupType.SendingGroup,
-    primaryLocation: { countryCode: 'UK', townCity: 'Bristol' },
+    primaryLocation: { countryCode: 'GB', townCity: 'Bristol' },
     primaryContact: { name: 'Contact', email: 'contact@example.com' },
     website: 'http://www.example.com',
   }
