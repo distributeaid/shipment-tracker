@@ -1,6 +1,5 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
-import { has } from 'lodash'
 import Group, { GroupAttributes } from '../models/group'
 import UserAccount from '../models/user_account'
 import {
@@ -8,16 +7,16 @@ import {
   MutationResolvers,
   QueryResolvers,
 } from '../server-internal-types'
+import { Contact } from './input-validation/Contact'
+import { validateIdInput } from './input-validation/idInputSchema'
+import { Location } from './input-validation/Location'
 import {
-  Email,
+  ID,
   NonEmptyShortString,
-  OpenLocationCode,
-  PhoneNumber,
-  TwoLetterCountryCode,
+  OptionalValueOrUnset,
   URI,
 } from './input-validation/types'
 import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
-import stringIsUrl from './stringIsUrl'
 
 // Group query resolvers
 const listGroups: QueryResolvers['listGroups'] = async () => {
@@ -25,30 +24,28 @@ const listGroups: QueryResolvers['listGroups'] = async () => {
 }
 
 const group: QueryResolvers['group'] = async (_, { id }) => {
-  const group = await Group.findByPk(id)
+  const valid = validateIdInput({ id })
+  if ('errors' in valid) {
+    throw new UserInputError('Group arguments invalid', valid.errors)
+  }
+
+  const group = await Group.findByPk(valid.value.id)
   if (!group) {
-    throw new ApolloError('No group exists with that ID')
+    throw new ApolloError(`No group exists with ID ${valid.value.id}`)
   }
 
   return group
 }
 
+// Group mutation resolvers
+
+// - add a group
 export const addGroupInputSchema = Type.Object(
   {
     name: NonEmptyShortString,
     groupType: Type.Enum(GroupType),
-    primaryLocation: Type.Object({
-      townCity: NonEmptyShortString,
-      countryCode: Type.Optional(TwoLetterCountryCode),
-      openLocationCode: Type.Optional(OpenLocationCode),
-    }),
-    primaryContact: Type.Object({
-      name: NonEmptyShortString,
-      email: Type.Optional(Email),
-      phone: Type.Optional(PhoneNumber),
-      signal: Type.Optional(PhoneNumber),
-      whatsApp: Type.Optional(PhoneNumber),
-    }),
+    primaryLocation: Location,
+    primaryContact: Contact,
     website: Type.Optional(URI),
   },
   { additionalProperties: false },
@@ -56,7 +53,6 @@ export const addGroupInputSchema = Type.Object(
 
 const validateAddGroupInput = validateWithJSONSchema(addGroupInputSchema)
 
-// Group mutation resolvers
 const addGroup: MutationResolvers['addGroup'] = async (
   _parent,
   { input },
@@ -92,11 +88,32 @@ const addGroup: MutationResolvers['addGroup'] = async (
   })
 }
 
+// - update a group
+
+export const updateGroupInput = Type.Object(
+  {
+    name: Type.Optional(NonEmptyShortString),
+    groupType: Type.Optional(Type.Enum(GroupType)),
+    primaryLocation: Type.Optional(Location),
+    primaryContact: Type.Optional(Contact),
+    website: OptionalValueOrUnset(URI),
+    captainId: Type.Optional(ID),
+  },
+  { additionalProperties: false },
+)
+
+const validateUpdateGroupInput = validateWithJSONSchema(updateGroupInput)
+
 const updateGroup: MutationResolvers['updateGroup'] = async (
   _,
   { id, input },
   context,
 ) => {
+  const valid = validateUpdateGroupInput(input)
+  if ('errors' in valid) {
+    throw new UserInputError('Update group arguments invalid', valid.errors)
+  }
+
   const group = await Group.findByPk(id)
 
   if (!group) {
@@ -110,43 +127,38 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
     throw new ForbiddenError('Not permitted to update group')
   }
 
-  if (
-    input.groupType &&
-    input.groupType !== group.groupType &&
-    !context.auth.isAdmin
-  ) {
-    throw new ForbiddenError('Not permitted to change group type')
-  }
-
   const updateAttributes: Partial<Omit<GroupAttributes, 'id'>> = {}
 
-  if (input.name) updateAttributes.name = input.name
-  if (input.groupType) updateAttributes.groupType = input.groupType
-  if (input.primaryContact) {
-    updateAttributes.primaryContact = input.primaryContact
-  }
-  if (input.primaryLocation) {
-    updateAttributes.primaryLocation = input.primaryLocation
-  }
+  if (valid.value.name !== undefined) updateAttributes.name = valid.value.name
 
-  if (has(input, 'website')) {
-    if (input.website && !stringIsUrl(input.website)) {
-      throw new UserInputError(`URL is not valid: ${input.website}`)
+  if (valid.value.groupType !== undefined) {
+    if (valid.value.groupType !== group.groupType && !context.auth.isAdmin) {
+      throw new ForbiddenError('Not permitted to change group type')
     }
-
-    updateAttributes.website = input.website || null
+    updateAttributes.groupType = valid.value.groupType
   }
 
-  if (input.captainId) {
-    const captain = await UserAccount.findByPk(input.captainId)
+  if (valid.value.primaryContact !== undefined) {
+    updateAttributes.primaryContact = valid.value.primaryContact
+  }
+  if (valid.value.primaryLocation !== undefined) {
+    updateAttributes.primaryLocation = valid.value.primaryLocation
+  }
+
+  if (valid.value.website !== undefined) {
+    updateAttributes.website = valid.value.website
+  }
+
+  if (valid.value.captainId !== undefined) {
+    const captain = await UserAccount.findByPk(valid.value.captainId)
 
     if (!captain) {
       throw new UserInputError(
-        `No user account found with id ${input.captainId}`,
+        `No user account found with id ${valid.value.captainId}`,
       )
     }
 
-    updateAttributes.captainId = input.captainId
+    updateAttributes.captainId = captain.id
   }
 
   return group.update(updateAttributes)

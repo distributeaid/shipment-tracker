@@ -2,7 +2,7 @@
  * Defines re-usable types for input validation.
  */
 
-import { Static, Type } from '@sinclair/typebox'
+import { Static, TSchema, Type } from '@sinclair/typebox'
 import { countryCodes } from './country-codes'
 
 export const OpenLocationCode = Type.RegEx(
@@ -41,3 +41,17 @@ export const TwoLetterCountryCode = Type.Union(
   countryCodes.map(({ alpha2 }) => Type.Literal(alpha2)),
   { title: 'ISO 3166 country code' },
 )
+
+export const ID = Type.Number({ minimum: 1, title: 'ID' })
+
+/**
+ * Use to denote a type that can unset by passing null instead of the value.
+ */
+export const ValueOrUnset = <T extends TSchema>(t: T) =>
+  Type.Union([Type.Null(), t])
+
+/**
+ * Use to denote an optional type that can unset by passing null instead of the value.
+ */
+export const OptionalValueOrUnset = <T extends TSchema>(t: T) =>
+  Type.Optional(ValueOrUnset(t))
