@@ -133,9 +133,7 @@ describe('Offers API', () => {
         },
       })
 
-      expect(res.errors?.[0].message).toContain(
-        'Invalid URI(s): one, www.example.com',
-      )
+      expect(res.errors?.[0].message).toContain('Add offer arguments invalid')
     })
 
     it('fails validation if missing required inputs', async () => {
