@@ -38,7 +38,7 @@ const CreateOfferPage: FunctionComponent = () => {
 
   return (
     <LayoutWithNav>
-      <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content">
+      <div className="max-w-5xl mx-auto border-l border-r border-gray-200 min-h-content bg-white">
         <header className="p-6 border-b border-gray-200 flex items-center justify-between">
           <h1 className="text-navy-800 text-3xl">New offer</h1>
         </header>

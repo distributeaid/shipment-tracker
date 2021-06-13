@@ -47,7 +47,7 @@ describe('ShipmentExports API', () => {
     group = await Group.create({
       name: 'group 1',
       groupType: GroupType.DaHub,
-      primaryLocation: { countryCode: 'UK', townCity: 'Bristol' },
+      primaryLocation: { countryCode: 'GB', townCity: 'Bristol' },
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
       captainId: captain.id,
     })
