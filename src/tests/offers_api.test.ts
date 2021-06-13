@@ -49,7 +49,7 @@ describe('Offers API', () => {
       {
         name: 'group 1',
         groupType: GroupType.DaHub,
-        primaryLocation: { countryCode: 'UK', townCity: 'Bristol' },
+        primaryLocation: { countryCode: 'GB', townCity: 'Bristol' },
         primaryContact: { name: 'Contact', email: 'contact@example.com' },
       },
       captain.id,
@@ -133,9 +133,7 @@ describe('Offers API', () => {
         },
       })
 
-      expect(res.errors?.[0].message).toContain(
-        'Invalid URI(s): one, www.example.com',
-      )
+      expect(res.errors?.[0].message).toContain('Add offer arguments invalid')
     })
 
     it('fails validation if missing required inputs', async () => {

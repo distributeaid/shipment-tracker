@@ -20,7 +20,7 @@ describe('Groups API', () => {
   const group1Params = {
     name: group1Name,
     groupType: GroupType.SendingGroup,
-    primaryLocation: { countryCode: 'UK', townCity: 'Bristol' },
+    primaryLocation: { countryCode: 'GB', townCity: 'Bristol' },
     primaryContact: { name: 'Contact', email: 'contact@example.com' },
     website: 'http://www.example.com',
   }
@@ -213,9 +213,7 @@ describe('Groups API', () => {
         },
       })
 
-      expect(res.errors?.[0].message).toEqual(
-        'URL is not valid: www.-example.com',
-      )
+      expect(res.errors?.[0].message).toEqual('Update group arguments invalid')
     })
 
     it('disallows non-admins from updating group type', async () => {
@@ -338,7 +336,7 @@ describe('Groups API', () => {
             return
           }
 
-          expect(res.errors[0].message).toBe('No group exists with that ID')
+          expect(res.errors[0].message).toBe('No group exists with ID 17')
         })
       })
     })
