@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { validateWithJSONSchema } from '../resolvers/validateWithJSONSchema'
+import { validateWithJSONSchema } from '../../resolvers/input-validation/validateWithJSONSchema'
 
 describe('validateWithJSONSchema', () => {
   it('should validate input against a JSON schema', () => {
