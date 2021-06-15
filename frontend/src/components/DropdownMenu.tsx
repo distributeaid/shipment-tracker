@@ -1,14 +1,16 @@
-import { FunctionComponent, ReactNode, useRef, useState } from 'react'
 import cx from 'classnames'
-import DropdownMenuText from './DropdownMenuText'
+import { FunctionComponent, ReactNode, useRef, useState } from 'react'
+import Button, { ButtonVariant } from './Button'
 import DropdownMenuButton from './DropdownMenuButton'
 import DropdownMenuDivider from './DropdownMenuDivider'
+import DropdownMenuText from './DropdownMenuText'
+import ChevronIcon from './icons/ChevronIcon'
 
 interface Props {
   /**
    * An optional way to style the button that triggers the dropdown
    */
-  buttonClassname?: string
+  buttonVariant?: ButtonVariant
   /**
    * The content of the trigger
    */
@@ -45,7 +47,7 @@ enum MenuAnim {
  */
 const DropdownMenu: FunctionComponent<Props> & NestedComponents = ({
   position = 'left',
-  buttonClassname,
+  buttonVariant,
   label,
   children,
 }) => {
@@ -104,12 +106,12 @@ const DropdownMenu: FunctionComponent<Props> & NestedComponents = ({
   }
 
   return (
-    <div className="relative">
-      <button type="button" onClick={toggleMenu} className={buttonClassname}>
-        {label}
-      </button>
+    <div className="relative inline-block">
+      <Button type="button" onClick={toggleMenu} variant={buttonVariant}>
+        {label} <ChevronIcon direction="down" className="ml-2 w-5 h-5 -mr-2" />
+      </Button>
       <div
-        className={cx('absolute', {
+        className={cx('absolute min-w-full mt-1', {
           hidden: !showMenu && animation === MenuAnim.Hidden,
           'right-0': position === 'right',
           'left-0': position === 'left',

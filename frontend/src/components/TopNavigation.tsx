@@ -69,7 +69,7 @@ const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
         {!hideControls && user && (
           <div className="flex items-center text-white">
             <DropdownMenu
-              buttonClassname="p-2"
+              buttonVariant="primary"
               position="right"
               label={<UserIcon className="w-6 h-6" />}
             >

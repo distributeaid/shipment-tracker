@@ -6,6 +6,7 @@ import {
   OfferStatus,
   PalletType,
   PaymentStatus,
+  ShipmentStatus,
   ShippingRoute,
 } from '../types/api-types'
 import { enumValues } from '../utils/types'
@@ -44,6 +45,15 @@ export const OFFER_STATUS_OPTIONS = enumValues(OfferStatus).map((routeKey) => ({
   label: routeKey,
   value: routeKey,
 }))
+
+export const SHIPMENT_STATUS_OPTIONS = [
+  { label: 'Abandoned', value: ShipmentStatus.Abandoned },
+  { label: 'Announced', value: ShipmentStatus.Announced },
+  { label: 'Complete', value: ShipmentStatus.Complete },
+  { label: 'In progress', value: ShipmentStatus.InProgress },
+  { label: 'Open', value: ShipmentStatus.Open },
+  { label: 'In staging', value: ShipmentStatus.Staging },
+] as const
 
 export const PALLET_PAYMENT_STATUS_OPTIONS = [
   {
