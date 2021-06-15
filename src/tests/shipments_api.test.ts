@@ -277,8 +277,27 @@ describe('Shipments API', () => {
   })
 
   describe('listShipments', () => {
-    it('lists existing shipments', async () => {
-      const shipment1 = await createShipment({
+    let shipment1: Shipment, shipment2: Shipment
+
+    const LIST_SHIPMENTS = gql`
+      query listShipments($status: [ShipmentStatus!]) {
+        listShipments(status: $status) {
+          id
+          status
+          sendingHub {
+            id
+            name
+          }
+          receivingHub {
+            id
+            name
+          }
+        }
+      }
+    `
+
+    beforeEach(async () => {
+      shipment1 = await createShipment({
         shippingRoute: ShippingRoute.UkToFr,
         labelYear: nextYear,
         labelMonth: 1,
@@ -287,7 +306,7 @@ describe('Shipments API', () => {
         status: ShipmentStatus.Open,
       })
 
-      const shipment2 = await createShipment({
+      shipment2 = await createShipment({
         shippingRoute: ShippingRoute.UkToFr,
         labelYear: nextYear + 1,
         labelMonth: 6,
@@ -295,24 +314,9 @@ describe('Shipments API', () => {
         receivingHubId: group1.id,
         status: ShipmentStatus.InProgress,
       })
+    })
 
-      const LIST_SHIPMENTS = gql`
-        query listShipments {
-          listShipments {
-            id
-            status
-            sendingHub {
-              id
-              name
-            }
-            receivingHub {
-              id
-              name
-            }
-          }
-        }
-      `
-
+    it('lists existing shipments', async () => {
       const res = await testServer.query<{ listShipments: Shipment[] }>({
         query: LIST_SHIPMENTS,
       })
@@ -341,6 +345,31 @@ describe('Shipments API', () => {
           receivingHub: {
             id: group1.id,
             name: group1.name,
+          },
+        },
+      ])
+    })
+
+    it('filters shipments by status', async () => {
+      const res = await testServer.query<{ listShipments: Shipment[] }>({
+        query: LIST_SHIPMENTS,
+        variables: {
+          status: [ShipmentStatus.Open],
+        },
+      })
+
+      expect(res.errors).toBeUndefined()
+      expect(res?.data?.listShipments).toIncludeSameMembers([
+        {
+          id: shipment1.id,
+          status: shipment1.status,
+          sendingHub: {
+            id: group1.id,
+            name: group1.name,
+          },
+          receivingHub: {
+            id: group2.id,
+            name: group2.name,
           },
         },
       ])
