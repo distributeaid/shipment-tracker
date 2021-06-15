@@ -76,7 +76,7 @@ type Query {
   listGroups: [Group!]!
 
   shipment(id: Int!): Shipment!
-  listShipments: [Shipment!]!
+  listShipments(status: [ShipmentStatus!]): [Shipment!]!
 
   offer(id: Int!): Offer!
   listOffers(shipmentId: Int!): [Offer!]!

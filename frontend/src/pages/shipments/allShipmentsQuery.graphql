@@ -1,5 +1,5 @@
-query AllShipments {
-  listShipments {
+query AllShipments($status: [ShipmentStatus!]) {
+  listShipments(status: $status) {
     id
     shippingRoute
     labelYear

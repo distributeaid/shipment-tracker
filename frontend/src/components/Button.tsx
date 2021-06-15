@@ -14,6 +14,8 @@ import ButtonIcon from './ButtonIcon'
  *
  */
 
+export type ButtonVariant = 'default' | 'primary' | 'danger'
+
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   /**
    * Use this in a table or list to avoid increasing the height of the container.
@@ -24,7 +26,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
    * @param default This is the default button. Use another style if the button requires a different visual weight.
    * @param primary Used to highlight the most important actions. Use sparingly! Avoid showing multiple primary buttons in the same section.
    */
-  variant?: 'default' | 'primary' | 'danger'
+  variant?: ButtonVariant
   /**
    * An optional way to pass a ref down to the <button> element
    */

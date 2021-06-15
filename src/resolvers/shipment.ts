@@ -14,7 +14,18 @@ import {
 import validateEnumMembership from './validateEnumMembership'
 
 // Shipment query resolvers
-const listShipments: QueryResolvers['listShipments'] = async () => {
+const listShipments: QueryResolvers['listShipments'] = async (
+  _,
+  { status },
+) => {
+  if (status && status.length) {
+    return Shipment.findAll({
+      where: {
+        status,
+      },
+    })
+  }
+
   return Shipment.findAll()
 }
 

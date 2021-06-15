@@ -1,12 +1,19 @@
 import cx from 'classnames'
-import { FunctionComponent, useMemo } from 'react'
+import { FunctionComponent, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Column, useSortBy, useTable } from 'react-table'
 import Badge from '../../components/Badge'
 import ButtonLink from '../../components/ButtonLink'
+import DropdownMenu from '../../components/DropdownMenu'
+import CheckboxField from '../../components/forms/CheckboxField'
 import TableHeader from '../../components/table/TableHeader'
+import { SHIPMENT_STATUS_OPTIONS } from '../../data/constants'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { AllShipmentsQuery, useAllShipmentsQuery } from '../../types/api-types'
+import {
+  AllShipmentsQuery,
+  ShipmentStatus,
+  useAllShipmentsQuery,
+} from '../../types/api-types'
 import {
   formatLabelMonth,
   formatShipmentName,
@@ -47,7 +54,24 @@ const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
 ]
 
 const ShipmentList: FunctionComponent = () => {
-  const { data, error } = useAllShipmentsQuery()
+  const [shipmentStatuses, setShipmentStatuses] = useState([
+    ShipmentStatus.Open,
+    ShipmentStatus.Staging,
+    ShipmentStatus.Announced,
+    ShipmentStatus.InProgress,
+  ])
+
+  const { data, error } = useAllShipmentsQuery({
+    variables: { status: shipmentStatuses },
+  })
+
+  const toggleShipmentStatus = (shipmentStatus: ShipmentStatus) => {
+    if (shipmentStatuses.includes(shipmentStatus)) {
+      setShipmentStatuses(shipmentStatuses.filter((s) => s !== shipmentStatus))
+    } else {
+      setShipmentStatuses([...shipmentStatuses, shipmentStatus])
+    }
+  }
 
   // We must memoize the data for react-table to function properly
   const shipments = useMemo(() => data?.listShipments || [], [data])
@@ -63,11 +87,26 @@ const ShipmentList: FunctionComponent = () => {
   return (
     <LayoutWithNav>
       <div className="max-w-5xl mx-auto bg-white border-l border-r border-gray-200 min-h-content">
-        <header className="p-6 border-b border-gray-200 md:flex items-center justify-between">
-          <h1 className="text-navy-800 text-3xl mb-4 md:mb-0">Shipments</h1>
-          <ButtonLink to={ROUTES.SHIPMENT_CREATE}>Create shipment</ButtonLink>
+        <header className="p-6 border-b border-gray-200">
+          <div className="md:flex items-center justify-between">
+            <h1 className="text-navy-800 text-3xl mb-4 md:mb-0">Shipments</h1>
+            <ButtonLink to={ROUTES.SHIPMENT_CREATE}>Create shipment</ButtonLink>
+          </div>
+          <div className="mt-4">
+            <DropdownMenu label="Shipment status" position="right">
+              {SHIPMENT_STATUS_OPTIONS.map((status) => (
+                <DropdownMenu.Text key={status.value}>
+                  <CheckboxField
+                    label={status.label}
+                    checked={shipmentStatuses.includes(status.value)}
+                    onChange={() => toggleShipmentStatus(status.value)}
+                  />
+                </DropdownMenu.Text>
+              ))}
+            </DropdownMenu>
+          </div>
         </header>
-        <main className="pb-20 overflow-x-auto">
+        <main className="pb-20 overflow-x-auto min-h-half-screen">
           {error && (
             <div className="p-4 rounded bg-red-50 mb-6 text-red-800">
               <p className="font-semibold">Error:</p>
