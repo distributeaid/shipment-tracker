@@ -93,6 +93,8 @@ const OfferForm: FunctionComponent<Props> = (props) => {
       input.contact.signal = input.contact?.signal || undefined
     }
 
+    input.photoUris = input.photoUris || []
+
     props.onSubmit(input)
   }
 
