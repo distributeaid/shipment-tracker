@@ -29,6 +29,12 @@ interface Props {
 }
 
 /**
+ * TODO
+ * If the user is an admin, they should be able to select a SENDING group.
+ * If the user is not an admin, they should automatically use their own group
+ */
+
+/**
  * This form allows users to create a new offer. It is very specific to offer
  * creation, and therefore difficult to reuse for editing offers.
  */
@@ -41,6 +47,7 @@ const OfferForm: FunctionComponent<Props> = (props) => {
   // TODO switch to filtering groups when the resolver supports it
   const { data: groups, loading: isLoadingGroups } = useAllGroupsQuery()
 
+  // TODO this won't work if the user is an admin
   const groupForUser = useMemo(() => {
     if (groups?.listGroups && profile) {
       return groups.listGroups.find(
@@ -77,15 +84,27 @@ const OfferForm: FunctionComponent<Props> = (props) => {
     input.shipmentId = props.shipmentId
     input.sendingGroupId = groupForUser.id
 
+    // TODO fix the fact that the backend validations consider null values as
+    // invalid inputs.
+    if (input.contact) {
+      input.contact.email = input.contact?.email || undefined
+      input.contact.phone = input.contact?.phone || undefined
+      input.contact.whatsApp = input.contact?.whatsApp || undefined
+      input.contact.signal = input.contact?.signal || undefined
+    }
+
     props.onSubmit(input)
   }
 
-  if (!groupForUser || !profile) {
-    return (
-      <div>
-        <Spinner /> Loading form data
-      </div>
-    )
+  // TODO this won't work if the user is an admin
+  if (!profile?.isAdmin) {
+    if (!groupForUser || !profile) {
+      return (
+        <div>
+          <Spinner /> Loading form data
+        </div>
+      )
+    }
   }
 
   return (
@@ -111,35 +130,35 @@ const OfferForm: FunctionComponent<Props> = (props) => {
           name="contact.name"
           register={register}
           errors={errors}
-          defaultValue={groupForUser.primaryContact.name}
+          defaultValue={groupForUser?.primaryContact.name}
         />
         <TextField
           label="Email"
           name="contact.email"
           register={register}
           errors={errors}
-          defaultValue={groupForUser.primaryContact.email || ''}
+          defaultValue={groupForUser?.primaryContact.email || ''}
         />
         <TextField
           label="WhatsApp"
           name="contact.whatsApp"
           register={register}
           errors={errors}
-          defaultValue={groupForUser.primaryContact.whatsApp || ''}
+          defaultValue={groupForUser?.primaryContact.whatsApp || ''}
         />
         <TextField
           label="Phone"
           name="contact.phone"
           register={register}
           errors={errors}
-          defaultValue={groupForUser.primaryContact.phone || ''}
+          defaultValue={groupForUser?.primaryContact.phone || ''}
         />
         <TextField
           label="Signal"
           name="contact.signal"
           register={register}
           errors={errors}
-          defaultValue={groupForUser.primaryContact.signal || ''}
+          defaultValue={groupForUser?.primaryContact.signal || ''}
         />
       </fieldset>
       <fieldset>
