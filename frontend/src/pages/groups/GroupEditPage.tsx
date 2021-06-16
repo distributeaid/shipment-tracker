@@ -29,6 +29,21 @@ const GroupEditPage: FunctionComponent = () => {
 
   const onSubmit = async (input: GroupUpdateInput) => {
     try {
+      // TODO fix the fact that the backend validations consider null values as
+      // invalid inputs.
+      // Potential solutions:
+      // 1. make fields undefined on the frontend
+      // 2. support undefined in the validations
+      // 3. transform to undefined on the backend
+
+      if (input.primaryContact) {
+        input.primaryContact.whatsApp =
+          input.primaryContact.whatsApp || undefined
+        input.primaryContact.phone = input.primaryContact.phone || undefined
+        input.primaryContact.signal = input.primaryContact.signal || undefined
+        input.primaryContact.email = input.primaryContact.email || undefined
+      }
+
       await updateGroup({
         variables: { id: parseInt(groupId, 10), input },
       })

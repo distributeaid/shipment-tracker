@@ -24,6 +24,17 @@ const GroupCreatePage: FunctionComponent = () => {
   const onSubmit = async (input: GroupCreateInput) => {
     try {
       // Create the group and then redirect to its view/edit page
+
+      // TODO fix the fact that the backend validations consider null values as
+      // invalid inputs.
+      if (input.primaryContact) {
+        input.primaryContact.whatsApp =
+          input.primaryContact.whatsApp || undefined
+        input.primaryContact.phone = input.primaryContact.phone || undefined
+        input.primaryContact.signal = input.primaryContact.signal || undefined
+        input.primaryContact.email = input.primaryContact.email || undefined
+      }
+
       const { data } = await addGroup({
         variables: { input },
         // Fetch the updated list of groups
