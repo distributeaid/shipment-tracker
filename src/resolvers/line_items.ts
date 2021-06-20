@@ -1,5 +1,6 @@
+import { Static, Type } from '@sinclair/typebox'
 import { ApolloError, UserInputError } from 'apollo-server'
-import { has, isEqual } from 'lodash'
+import { isEqual } from 'lodash'
 import { AuthenticatedContext } from '../apolloServer'
 import Group from '../models/group'
 import LineItem, { LineItemAttributes } from '../models/line_item'
@@ -12,27 +13,36 @@ import {
   LineItemContainerType,
   LineItemResolvers,
   LineItemStatus,
-  LineItemUpdateInput,
   MutationResolvers,
   QueryResolvers,
 } from '../server-internal-types'
 import getPalletWithParentAssociations from './getPalletWithParentAssociations'
+import { validateIdInput } from './input-validation/idInputSchema'
+import {
+  DateTime,
+  ID,
+  NonEmptyShortString,
+  PositiveInteger,
+  URI,
+} from './input-validation/types'
+import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
 import {
   authorizeOfferMutation,
   authorizeOfferQuery,
 } from './offer_authorization'
-import validateEnumMembership from './validateEnumMembership'
-import validateUris from './validateUris'
+
+// Line item mutation resolvers
+
+// - get line item
 
 const lineItem: QueryResolvers['lineItem'] = async (_, { id }, context) => {
   const lineItem = await getLineItemWithParentAssociations(id)
-
-  if (!lineItem) {
-    throw new UserInputError(`LineItem ${id} does not exist`)
+  if (lineItem === null) {
+    throw new UserInputError(`Line item ${id} does not exist`)
   }
 
   const pallet = lineItem.offerPallet
-  if (!pallet) {
+  if (pallet === null) {
     throw new UserInputError(`LineItem ${id} has no pallet!`)
   }
 
@@ -41,25 +51,32 @@ const lineItem: QueryResolvers['lineItem'] = async (_, { id }, context) => {
   return lineItem
 }
 
+// - add new line item
+
 const addLineItem: MutationResolvers['addLineItem'] = async (
   _,
   { palletId },
   context,
 ) => {
-  const pallet = await getPalletWithParentAssociations(palletId)
-
-  if (!pallet) {
-    throw new UserInputError(`Pallet ${palletId} does not exist`)
+  const valid = validateIdInput({ id: palletId })
+  if ('errors' in valid) {
+    throw new UserInputError('Offer arguments invalid', valid.errors)
   }
 
-  if (!pallet?.offer) {
-    throw new ApolloError(`Pallet ${palletId} has no offer!`)
+  const pallet = await getPalletWithParentAssociations(valid.value.id)
+
+  if (pallet === null) {
+    throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
+  }
+
+  if (pallet.offer === null) {
+    throw new ApolloError(`Pallet ${valid.value.id} has no offer!`)
   }
 
   authorizeOfferMutation(pallet.offer, context)
 
   return LineItem.create({
-    offerPalletId: palletId,
+    offerPalletId: valid.value.id,
     status: LineItemStatus.Proposed,
     containerType: LineItemContainerType.Unset,
     category: LineItemCategory.Unset,
@@ -72,15 +89,57 @@ const addLineItem: MutationResolvers['addLineItem'] = async (
   })
 }
 
+// - update line item
+
+const updateLineItemInput = Type.Object(
+  {
+    id: ID,
+    input: Type.Object(
+      {
+        status: Type.Optional(Type.Enum(LineItemStatus)),
+        proposedReceivingGroupId: Type.Optional(ID),
+        acceptedReceivingGroupId: Type.Optional(ID),
+        containerType: Type.Optional(Type.Enum(LineItemContainerType)),
+        category: Type.Optional(Type.Enum(LineItemCategory)),
+        description: Type.Optional(NonEmptyShortString),
+        itemCount: Type.Optional(PositiveInteger),
+        containerCount: Type.Optional(PositiveInteger),
+        containerWeightGrams: Type.Optional(PositiveInteger),
+        containerLengthCm: Type.Optional(PositiveInteger),
+        containerWidthCm: Type.Optional(PositiveInteger),
+        containerHeightCm: Type.Optional(PositiveInteger),
+        affirmLiability: Type.Optional(Type.Boolean()),
+        tosAccepted: Type.Optional(Type.Boolean()),
+        dangerousGoods: Type.Optional(Type.Array(Type.Enum(DangerousGoods))),
+        photoUris: Type.Optional(Type.Array(URI)),
+        sendingHubDeliveryDate: Type.Optional(DateTime),
+      },
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+)
+
+const validateUpdateLineItemInput = validateWithJSONSchema(updateLineItemInput)
+
 const updateLineItem: MutationResolvers['updateLineItem'] = async (
   _,
-  { id, input },
+  input,
   context,
 ) => {
-  const maybeLineItem = await getLineItemWithParentAssociations(id)
-  const lineItem = await authorizeLineItemMutation(id, maybeLineItem, context)
+  const valid = validateUpdateLineItemInput(input)
+  if ('errors' in valid) {
+    throw new UserInputError('Update line item arguments invalid', valid.errors)
+  }
 
-  return lineItem.update(await getUpdateAttributes(lineItem, input))
+  const maybeLineItem = await getLineItemWithParentAssociations(valid.value.id)
+  const lineItem = await authorizeLineItemMutation(
+    valid.value.id,
+    maybeLineItem,
+    context,
+  )
+
+  return lineItem.update(await getUpdateAttributes(lineItem, valid.value.input))
 }
 
 async function authorizeLineItemMutation(
@@ -92,11 +151,11 @@ async function authorizeLineItemMutation(
     throw new UserInputError(`LineItem ${id} does not exist`)
   }
 
-  if (!lineItem.offerPallet) {
+  if (lineItem.offerPallet === null) {
     throw new UserInputError(`Pallet ${lineItem.offerPalletId} does not exist`)
   }
 
-  if (!lineItem.offerPallet.offer) {
+  if (lineItem.offerPallet.offer === null) {
     throw new ApolloError(`Pallet ${lineItem.offerPalletId} has no offer!`)
   }
 
@@ -107,31 +166,30 @@ async function authorizeLineItemMutation(
 
 async function getUpdateAttributes(
   lineItem: LineItem,
-  input: LineItemUpdateInput,
+  input: Static<typeof updateLineItemInput>['input'],
 ): Promise<Partial<LineItemAttributes>> {
   const updateAttributes: Partial<LineItemAttributes> = {}
 
-  if (input.status && input.status !== lineItem.status) {
-    validateEnumMembership(LineItemStatus, input.status)
+  if (input.status !== undefined && input.status !== lineItem.status) {
     updateAttributes.status = input.status
     updateAttributes.statusChangeTime = new Date()
   }
 
-  if (input.containerType && input.containerType !== lineItem.containerType) {
-    validateEnumMembership(LineItemContainerType, input.containerType)
+  if (
+    input.containerType !== undefined &&
+    input.containerType !== lineItem.containerType
+  ) {
     updateAttributes.containerType = input.containerType
   }
 
-  if (input.category && input.category != lineItem.category) {
-    validateEnumMembership(LineItemCategory, input.category)
+  if (input.category !== undefined && input.category != lineItem.category) {
     updateAttributes.category = input.category
   }
 
   if (
-    input.dangerousGoods &&
+    input.dangerousGoods !== undefined &&
     !isEqual(input.dangerousGoods, lineItem.dangerousGoods)
   ) {
-    validateEnumMembership(DangerousGoods, input.dangerousGoods)
     updateAttributes.dangerousGoods = input.dangerousGoods
   }
 
@@ -141,6 +199,7 @@ async function getUpdateAttributes(
     updateAttributes,
     'proposedReceivingGroupId',
   )
+
   await updateGroupIdAttr(
     lineItem,
     input,
@@ -148,31 +207,50 @@ async function getUpdateAttributes(
     'acceptedReceivingGroupId',
   )
 
-  const commonScalarAttributes: Array<
-    keyof LineItemAttributes & keyof LineItemUpdateInput
-  > = [
-    'description',
-    'itemCount',
-    'containerCount',
-    'containerWeightGrams',
-    'containerLengthCm',
-    'containerWidthCm',
-    'containerHeightCm',
-    'affirmLiability',
-    'tosAccepted',
-    'sendingHubDeliveryDate',
-  ]
+  if (input.description !== undefined) {
+    updateAttributes.description = input.description
+  }
 
-  commonScalarAttributes.forEach((attr) => {
-    if (has(input, attr)) {
-      updateAttributes[attr] = input[attr] || undefined
-    }
-  })
+  if (input.itemCount !== undefined) {
+    updateAttributes.itemCount = input.itemCount
+  }
 
-  if (has(input, 'photoUris')) {
-    const uris = input.photoUris || []
-    validateUris(uris)
-    updateAttributes.photoUris = uris
+  if (input.containerCount !== undefined) {
+    updateAttributes.containerCount = input.containerCount
+  }
+
+  if (input.containerWeightGrams !== undefined) {
+    updateAttributes.containerWeightGrams = input.containerWeightGrams
+  }
+
+  if (input.containerLengthCm !== undefined) {
+    updateAttributes.containerLengthCm = input.containerLengthCm
+  }
+
+  if (input.containerWidthCm !== undefined) {
+    updateAttributes.containerWidthCm = input.containerWidthCm
+  }
+
+  if (input.containerHeightCm !== undefined) {
+    updateAttributes.containerHeightCm = input.containerHeightCm
+  }
+
+  if (input.affirmLiability !== undefined) {
+    updateAttributes.affirmLiability = input.affirmLiability
+  }
+
+  if (input.tosAccepted !== undefined) {
+    updateAttributes.tosAccepted = input.tosAccepted
+  }
+
+  if (input.sendingHubDeliveryDate !== undefined) {
+    updateAttributes.sendingHubDeliveryDate = new Date(
+      input.sendingHubDeliveryDate,
+    )
+  }
+
+  if (input.photoUris !== undefined) {
+    updateAttributes.photoUris = input.photoUris
   }
 
   return updateAttributes
@@ -180,23 +258,23 @@ async function getUpdateAttributes(
 
 async function updateGroupIdAttr(
   lineItem: LineItem,
-  input: LineItemUpdateInput,
+  input: Static<typeof updateLineItemInput>['input'],
   updateAttributes: Partial<LineItemAttributes>,
   attr: 'acceptedReceivingGroupId' | 'proposedReceivingGroupId',
 ) {
   if (
-    !has(input, 'acceptedReceivingGroupId') ||
+    !('acceptedReceivingGroupId' in input) ||
     input[attr] === lineItem[attr]
   ) {
     return
   }
 
-  if (!input[attr]) {
+  if (input[attr] === undefined) {
     updateAttributes[attr] = undefined
     return
   }
 
-  const group = await Group.findByPk(input[attr]!)
+  const group = await Group.findByPk(input[attr])
 
   if (!group) {
     throw new UserInputError(`Group ${input[attr]} does not exist`)
@@ -206,10 +284,12 @@ async function updateGroupIdAttr(
     throw new UserInputError(`Group ${input[attr]} is not a receiving group`)
   }
 
-  updateAttributes[attr] = input[attr]!
+  updateAttributes[attr] = input[attr]
 }
 
-async function getLineItemWithParentAssociations(id: number) {
+async function getLineItemWithParentAssociations(
+  id: number,
+): Promise<(LineItem & { offerPallet: Pallet | null }) | null> {
   return LineItem.findByPk(id, {
     include: {
       association: 'offerPallet',
@@ -226,17 +306,25 @@ async function getLineItemWithParentAssociations(id: number) {
   })
 }
 
+// - delete line item
+
 const destroyLineItem: MutationResolvers['destroyLineItem'] = async (
   _,
   { id },
   context,
 ) => {
-  const maybeLineItem: LineItem | null = await getLineItemWithParentAssociations(
-    id,
-  )
+  const valid = validateIdInput({ id })
+  if ('errors' in valid) {
+    throw new UserInputError('Destroy line item input invalid', valid.errors)
+  }
 
-  const lineItem: LineItem = await authorizeLineItemMutation(
-    id,
+  const maybeLineItem = await getLineItemWithParentAssociations(valid.value.id)
+  if (maybeLineItem === null) {
+    throw new UserInputError(`Line item ${id} does not exist`)
+  }
+
+  const lineItem = await authorizeLineItemMutation(
+    valid.value.id,
     maybeLineItem,
     context,
   )
@@ -247,34 +335,54 @@ const destroyLineItem: MutationResolvers['destroyLineItem'] = async (
   return pallet
 }
 
+// - move line item
+
+const moveLineItemInput = Type.Object(
+  {
+    id: ID,
+    targetPalletId: ID,
+  },
+  { additionalProperties: false },
+)
+
+const validateMoveLineItemInput = validateWithJSONSchema(moveLineItemInput)
+
 const moveLineItem: MutationResolvers['moveLineItem'] = async (
   _,
-  { id, targetPalletId },
+  input,
   context,
 ) => {
-  const maybeLineItem = getLineItemWithParentAssociations(id)
-  const targetPalletPromise = Pallet.findByPk(targetPalletId)
+  const valid = validateMoveLineItemInput(input)
+  if ('errors' in valid) {
+    throw new UserInputError('Move line item input invalid', valid.errors)
+  }
+
+  const maybeLineItem = await getLineItemWithParentAssociations(valid.value.id)
+  if (maybeLineItem === null) {
+    throw new UserInputError(`Line item ${valid.value.id} does not exist`)
+  }
+
+  const targetPallet = await Pallet.findByPk(valid.value.targetPalletId)
+  if (!targetPallet) {
+    throw new UserInputError(
+      `Pallet ${valid.value.targetPalletId} does not exist`,
+    )
+  }
 
   const lineItemPromise = authorizeLineItemMutation(
-    id,
-    await maybeLineItem,
+    valid.value.id,
+    maybeLineItem,
     context,
   )
-
-  const targetPallet = await targetPalletPromise
-
-  if (!targetPallet) {
-    throw new UserInputError(`Pallet ${targetPalletId} does not exist`)
-  }
 
   const lineItem = await lineItemPromise
   if (targetPallet.offerId !== lineItem.offerPallet.offerId) {
     throw new UserInputError(
-      `Target pallet ${targetPalletId} is not in the same offer`,
+      `Target pallet ${valid.value.targetPalletId} is not in the same offer`,
     )
   }
 
-  await lineItem.update({ offerPalletId: targetPalletId })
+  await lineItem.update({ offerPalletId: valid.value.targetPalletId })
 
   return lineItem.offerPallet.offer
 }
