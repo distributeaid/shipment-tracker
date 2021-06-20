@@ -4,6 +4,7 @@
 
 import { Static, TSchema, Type } from '@sinclair/typebox'
 import { countryCodes } from './country-codes'
+import { currencyCodes } from './currency-codes'
 
 export const OpenLocationCode = Type.RegEx(
   /^[23456789C][23456789CFGHJMPQRV][23456789CFGHJMPQRVWX]{6}\+[23456789CFGHJMPQRVWX]{2,3}/i,
@@ -44,11 +45,24 @@ export const TwoLetterCountryCode = Type.Union(
   { title: 'ISO 3166 country code' },
 )
 
+export type CurrencyCode = Static<typeof CurrencyCode>
+export const CurrencyCode = Type.Union(
+  currencyCodes.map(({ alpha }) => Type.Literal(alpha)),
+  { title: 'ISO 4217 currency code' },
+)
+
 export const ID = Type.Integer({ minimum: 1, title: 'ID' })
 export const PositiveInteger = Type.Integer({
   minimum: 1,
   title: 'positive integer',
 })
+
+export const CurrentYearOrGreater = (date?: Date) =>
+  Type.Integer({
+    minimum: (date ?? new Date()).getFullYear(),
+  })
+
+export const MonthIndexStartingAt1 = Type.Integer({ minimum: 1, maximum: 12 })
 
 /**
  * Use to denote a type that can unset by passing null instead of the value.
@@ -61,3 +75,20 @@ export const ValueOrUnset = <T extends TSchema>(t: T) =>
  */
 export const OptionalValueOrUnset = <T extends TSchema>(t: T) =>
   Type.Optional(ValueOrUnset(t))
+
+export const Pricing = Type.Optional(
+  Type.Union([
+    Type.Object({
+      singlePallet: Type.Object({
+        currency: CurrencyCode,
+        quantityInMinorUnits: PositiveInteger,
+      }),
+    }),
+    Type.Object({
+      halfPallet: Type.Object({
+        currency: CurrencyCode,
+        quantityInMinorUnits: PositiveInteger,
+      }),
+    }),
+  ]),
+)

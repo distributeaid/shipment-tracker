@@ -192,7 +192,7 @@ describe('Shipments API', () => {
 
         expect(res.errors).not.toBeUndefined()
         expect(res.errors).not.toBeEmpty()
-        expect(res.errors?.[0]?.message).toBe('No shipment exists with that ID')
+        expect(res.errors?.[0]?.message).toBe(`No shipment exists with ID "43"`)
       })
     })
 
@@ -214,7 +214,7 @@ describe('Shipments API', () => {
         expect(res.errors).not.toBeUndefined()
         expect(res.errors).not.toBeEmpty()
         expect(res.errors?.[0]?.message).toBe(
-          'No sending group exists with that ID',
+          'No sending group exists with ID "43"',
         )
       })
     })
@@ -237,7 +237,7 @@ describe('Shipments API', () => {
         expect(res.errors).not.toBeUndefined()
         expect(res.errors).not.toBeEmpty()
         expect(res.errors?.[0]?.message).toBe(
-          'No receiving group exists with that ID',
+          'No receiving group exists with ID "43"',
         )
       })
     })
@@ -469,7 +469,7 @@ describe('Shipments API', () => {
           expect(res.errors).not.toBeUndefined()
           expect(res.errors).not.toBeEmpty()
           expect(res.errors?.[0]?.message).toBe(
-            'No shipment exists with that ID',
+            'No shipment exists with ID "17"',
           )
         })
       })
