@@ -1,5 +1,6 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
+import { FindOptions, Op } from 'sequelize'
 import Group, { GroupAttributes } from '../models/group'
 import UserAccount from '../models/user_account'
 import {
@@ -19,8 +20,42 @@ import {
 import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
 
 // Group query resolvers
-const listGroups: QueryResolvers['listGroups'] = async () => {
-  return Group.findAll()
+
+const listGroupsInput = Type.Object(
+  {
+    groupType: Type.Optional(Type.Array(Type.Enum(GroupType))),
+    captainId: Type.Optional(ID),
+  },
+  { additionalProperties: false },
+)
+
+const validateListGroupsInput = validateWithJSONSchema(listGroupsInput)
+
+const listGroups: QueryResolvers['listGroups'] = async (_, input) => {
+  const valid = validateListGroupsInput(input)
+  if ('errors' in valid) {
+    throw new UserInputError('List groups arguments invalid', valid.errors)
+  }
+
+  const query = {} as FindOptions<Group['_attributes']>
+
+  const { groupType, captainId } = valid.value
+
+  if (groupType !== undefined || captainId !== undefined) {
+    query.where = {}
+
+    if (groupType !== undefined) {
+      query.where.groupType = {
+        [Op.in]: groupType,
+      }
+    }
+
+    if (captainId !== undefined) {
+      query.where.captainId = captainId
+    }
+  }
+
+  return Group.findAll(query)
 }
 
 const group: QueryResolvers['group'] = async (_, { id }) => {
