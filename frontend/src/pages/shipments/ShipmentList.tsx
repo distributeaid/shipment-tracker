@@ -17,6 +17,7 @@ import {
 import {
   formatLabelMonth,
   formatShipmentName,
+  formatShipmentStatus,
   formatShippingRouteName,
   getShipmentStatusBadgeColor,
 } from '../../utils/format'
@@ -48,7 +49,9 @@ const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
     Header: 'Status',
     accessor: 'status',
     Cell: ({ value }: any) => (
-      <Badge color={getShipmentStatusBadgeColor(value)}>{value}</Badge>
+      <Badge color={getShipmentStatusBadgeColor(value)}>
+        {formatShipmentStatus(value)}
+      </Badge>
     ),
   },
 ]

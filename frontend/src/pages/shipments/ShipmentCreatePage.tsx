@@ -4,6 +4,7 @@ import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
   AllShipmentsDocument,
   ShipmentCreateInput,
+  ShipmentStatus,
   useCreateShipmentMutation,
 } from '../../types/api-types'
 import { shipmentViewRoute } from '../../utils/routes'
@@ -19,6 +20,8 @@ const ShipmentCreatePage: FunctionComponent = () => {
 
   const onSubmit = (input: ShipmentCreateInput) => {
     // Create the shipment and then redirect to its "view" page
+    input.status = ShipmentStatus.Draft
+
     addShipment({
       variables: { input },
       // Fetch the updated list of shipments

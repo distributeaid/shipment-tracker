@@ -133,12 +133,15 @@ enum ShippingRoute {
 }
 
 enum ShipmentStatus {
+  DRAFT
   ANNOUNCED
   OPEN
+  AID_MATCHING
   STAGING
   IN_PROGRESS
   COMPLETE
   ABANDONED
+  ARCHIVED
 }
 
 type Shipment {

@@ -57,7 +57,7 @@ const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
   )
 
   return (
-    <header className="py-2 bg-navy-800 h-nav sticky top-0">
+    <header className="py-2 bg-navy-800 h-nav sticky top-0 z-20">
       <div className="max-w-5xl px-4 mx-auto h-full flex items-center justify-between">
         <MobileNavigation navLinks={filteredNavLinks} />
         <div className="flex items-center">

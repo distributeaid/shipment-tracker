@@ -4,6 +4,7 @@ import {
   COUNTRY_CODES_TO_NAME,
   LINE_ITEM_CATEGORY_OPTIONS,
   MONTHS,
+  SHIPMENT_STATUS_OPTIONS,
   SHIPPING_ROUTE_OPTIONS,
 } from '../data/constants'
 import {
@@ -80,17 +81,12 @@ export function getShipmentStatusBadgeColor(
   status: ShipmentStatus,
 ): BadgeColor {
   switch (status) {
-    case ShipmentStatus.Abandoned:
-      return 'red'
     case ShipmentStatus.Announced:
       return 'blue'
-    case ShipmentStatus.Complete:
-      return 'green'
-    case ShipmentStatus.InProgress:
-      return 'blue'
     case ShipmentStatus.Open:
-      return 'yellow'
-    case ShipmentStatus.Staging:
+      return 'green'
+    case ShipmentStatus.Abandoned:
+      return 'red'
     default:
       return 'gray'
   }
@@ -122,6 +118,13 @@ export function formatShippingRouteName(shippingRoute: ShippingRoute) {
     (option) => option.value === shippingRoute,
   )
   return matchingRoute?.label || 'Unknown route'
+}
+
+export function formatShipmentStatus(shipmentStatus: ShipmentStatus) {
+  const matchingStatus = SHIPMENT_STATUS_OPTIONS.find(
+    (option) => option.value === shipmentStatus,
+  )
+  return matchingStatus?.label || shipmentStatus
 }
 
 export function formatContainerType(

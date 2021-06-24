@@ -3,12 +3,15 @@ import { FunctionComponent, ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField, { SelectOption } from '../../components/forms/SelectField'
-import { MONTH_OPTIONS, SHIPPING_ROUTE_OPTIONS } from '../../data/constants'
+import {
+  MONTH_OPTIONS,
+  SHIPMENT_STATUS_OPTIONS,
+  SHIPPING_ROUTE_OPTIONS,
+} from '../../data/constants'
 import {
   GroupType,
   ShipmentCreateInput,
   ShipmentQuery,
-  ShipmentStatus,
   useAllGroupsMinimalQuery,
 } from '../../types/api-types'
 import { groupToSelectOption } from '../../utils/format'
@@ -38,15 +41,6 @@ interface Props {
   showSaveConfirmation?: boolean
 }
 
-const STATUS_OPTIONS = [
-  { label: 'Announced', value: ShipmentStatus.Announced },
-  { label: 'In progress', value: ShipmentStatus.InProgress },
-  { label: 'Open', value: ShipmentStatus.Open },
-  { label: 'In staging', value: ShipmentStatus.Staging },
-  { label: 'Complete', value: ShipmentStatus.Complete },
-  { label: 'Abandoned', value: ShipmentStatus.Abandoned },
-]
-
 const YEAR_OPTIONS = _range(
   new Date().getFullYear(),
   new Date().getFullYear() + 5,
@@ -56,6 +50,7 @@ const DEFAULT_MONTH = (new Date().getMonth() + 2) % 12
 
 const ShipmentForm: FunctionComponent<Props> = (props) => {
   const [hubs, setHubs] = useState<SelectOption[]>([])
+  const [isExistingShipment, setIsExistingShipment] = useState(false)
 
   // Load the list of groups
   const { data: groups, loading: hubListIsLoading } = useAllGroupsMinimalQuery()
@@ -89,6 +84,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
     function resetFormValues() {
       if (props.defaultValues) {
         reset(props.defaultValues.shipment)
+        setIsExistingShipment(props.defaultValues.shipment.id != null)
       }
     },
     [props.defaultValues, reset],
@@ -132,15 +128,16 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
 
   return (
     <form onSubmit={handleSubmit(props.onSubmit)} className="space-y-6">
-      <SelectField
-        defaultValue={ShipmentStatus.Announced}
-        options={STATUS_OPTIONS}
-        label="Status"
-        name="status"
-        register={register}
-        required
-        errors={errors}
-      />
+      {isExistingShipment && (
+        <SelectField
+          options={SHIPMENT_STATUS_OPTIONS}
+          label="Status"
+          name="status"
+          register={register}
+          required
+          errors={errors}
+        />
+      )}
       <SelectField
         options={SHIPPING_ROUTE_OPTIONS}
         label="Shipping route"
