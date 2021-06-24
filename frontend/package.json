@@ -8,7 +8,7 @@
     "@hookform/error-message": "0.0.5",
     "@types/classnames": "2.2.11",
     "@types/react": "17.0.11",
-    "@types/react-dom": "17.0.1",
+    "@types/react-dom": "17.0.8",
     "@types/react-router-dom": "5.1.7",
     "@types/react-table": "7.0.28",
     "classnames": "2.2.6",
