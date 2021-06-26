@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:14
+FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:16
 
 # Install PostgreSQL
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - \
