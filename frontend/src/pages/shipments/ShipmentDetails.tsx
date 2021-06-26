@@ -6,6 +6,7 @@ import { useShipmentQuery } from '../../types/api-types'
 import {
   formatCountryCodeToName,
   formatLabelMonth,
+  formatShipmentStatus,
   formatShippingRouteName,
   getShipmentStatusBadgeColor,
 } from '../../utils/format'
@@ -38,7 +39,7 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
         </ReadOnlyField>
         <ReadOnlyField label="Status">
           <Badge color={getShipmentStatusBadgeColor(shipmentData.status)}>
-            {shipmentData.status}
+            {formatShipmentStatus(shipmentData.status)}
           </Badge>
         </ReadOnlyField>
       </div>

@@ -46,13 +46,23 @@ export const OFFER_STATUS_OPTIONS = enumValues(OfferStatus).map((routeKey) => ({
   value: routeKey,
 }))
 
+/**
+ * Order of shipment statuses:
+ * draft → announced → open to offers → aid matching → staging at a hub
+ * → in transit → complete
+ *
+ * A shipment can also be 'abandoned' or 'archived' at any point.
+ */
 export const SHIPMENT_STATUS_OPTIONS = [
-  { label: 'Abandoned', value: ShipmentStatus.Abandoned },
+  { label: 'Draft', value: ShipmentStatus.Draft },
   { label: 'Announced', value: ShipmentStatus.Announced },
+  { label: 'Open to offers', value: ShipmentStatus.Open },
+  { label: 'Aid matching', value: ShipmentStatus.AidMatching },
+  { label: 'Staging at a hub', value: ShipmentStatus.Staging },
+  { label: 'In transit', value: ShipmentStatus.InProgress },
   { label: 'Complete', value: ShipmentStatus.Complete },
-  { label: 'In progress', value: ShipmentStatus.InProgress },
-  { label: 'Open', value: ShipmentStatus.Open },
-  { label: 'In staging', value: ShipmentStatus.Staging },
+  { label: 'Abandoned', value: ShipmentStatus.Abandoned },
+  { label: 'Archived', value: ShipmentStatus.Archived },
 ] as const
 
 export const PALLET_PAYMENT_STATUS_OPTIONS = [
