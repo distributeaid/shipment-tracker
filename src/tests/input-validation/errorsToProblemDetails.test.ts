@@ -9,14 +9,18 @@ import { validateWithJSONSchema } from '../../resolvers/input-validation/validat
 
 describe('errorsToProblemDetails() should turn validation errors into Problem Details for HTTP APIs (RFC7807)', () => {
   it('should format an unknown property in the top-level object', () => {
-    const valid = validateWithJSONSchema(Type.Object({}))({
+    const valid = validateWithJSONSchema(
+      Type.Object({}, { additionalProperties: false }),
+    )({
       extraField: 'not allowed',
     })
     expect(
       errorsToProblemDetails(
-        (valid as {
-          errors: ErrorObject[]
-        }).errors,
+        (
+          valid as {
+            errors: ErrorObject[]
+          }
+        ).errors,
       ),
     ).toEqual([
       {
@@ -32,7 +36,7 @@ describe('errorsToProblemDetails() should turn validation errors into Problem De
     const valid = validateWithJSONSchema(
       Type.Object({
         contact: Type.Object({
-          properties: Type.Object({}),
+          properties: Type.Object({}, { additionalProperties: false }),
         }),
       }),
     )({
@@ -42,9 +46,11 @@ describe('errorsToProblemDetails() should turn validation errors into Problem De
     })
     expect(
       errorsToProblemDetails(
-        (valid as {
-          errors: ErrorObject[]
-        }).errors,
+        (
+          valid as {
+            errors: ErrorObject[]
+          }
+        ).errors,
       ),
     ).toEqual([
       {
@@ -65,9 +71,11 @@ describe('errorsToProblemDetails() should turn validation errors into Problem De
       })
       expect(
         errorsToProblemDetails(
-          (valid as {
-            errors: ErrorObject[]
-          }).errors,
+          (
+            valid as {
+              errors: ErrorObject[]
+            }
+          ).errors,
         ),
       ).toEqual([
         {
@@ -86,9 +94,11 @@ describe('errorsToProblemDetails() should turn validation errors into Problem De
       })
       expect(
         errorsToProblemDetails(
-          (valid as {
-            errors: ErrorObject[]
-          }).errors,
+          (
+            valid as {
+              errors: ErrorObject[]
+            }
+          ).errors,
         ),
       ).toEqual([
         {
