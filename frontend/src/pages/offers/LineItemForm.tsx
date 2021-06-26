@@ -192,6 +192,12 @@ const LineItemForm: FunctionComponent<Props> = ({
       'sendingHubDeliveryDate',
     ])
 
+    // We don't wanna send null values to the backend
+    updatedLineItem.acceptedReceivingGroupId =
+      updatedLineItem.acceptedReceivingGroupId ?? undefined
+    updatedLineItem.sendingHubDeliveryDate =
+      updatedLineItem.sendingHubDeliveryDate ?? undefined
+
     updateLineItem({
       variables: { id: lineItemId, input: updatedLineItem },
     }).then(() => {
