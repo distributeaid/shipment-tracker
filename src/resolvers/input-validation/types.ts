@@ -17,6 +17,8 @@ export const Email = Type.String({ format: 'email', title: 'email' })
 
 export const URI = Type.String({ format: 'uri', title: 'URI' })
 
+export const DateTime = Type.String({ format: 'date-time', title: 'date' })
+
 export const NonEmptyLimitedString = ({
   maxLength,
   title,
@@ -42,7 +44,11 @@ export const TwoLetterCountryCode = Type.Union(
   { title: 'ISO 3166 country code' },
 )
 
-export const ID = Type.Number({ minimum: 1, title: 'ID' })
+export const ID = Type.Integer({ minimum: 1, title: 'ID' })
+export const PositiveInteger = Type.Integer({
+  minimum: 1,
+  title: 'positive integer',
+})
 
 /**
  * Use to denote a type that can unset by passing null instead of the value.
