@@ -14,7 +14,7 @@
     "@types/react-table": "7.0.28",
     "body-scroll-lock": "2.6.1",
     "classnames": "2.2.6",
-    "date-fns": "2.20.1",
+    "date-fns": "2.22.1",
     "nanoid": "3.1.23",
     "react": "17.0.1",
     "react-dom": "17.0.1",
