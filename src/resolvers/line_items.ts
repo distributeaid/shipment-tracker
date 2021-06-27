@@ -60,7 +60,7 @@ const addLineItem: MutationResolvers['addLineItem'] = async (
 ) => {
   const valid = validateIdInput({ id: palletId })
   if ('errors' in valid) {
-    throw new UserInputError('Line item arguments invalid', valid.errors)
+    throw new UserInputError('Offer arguments invalid', valid.errors)
   }
 
   const pallet = await getPalletWithParentAssociations(valid.value.id)

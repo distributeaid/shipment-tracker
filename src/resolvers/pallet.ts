@@ -1,3 +1,4 @@
+import { Type } from '@sinclair/typebox'
 import { ApolloError, UserInputError } from 'apollo-server'
 import LineItem from '../models/line_item'
 import Offer from '../models/offer'
@@ -10,30 +11,46 @@ import {
   QueryResolvers,
 } from '../server-internal-types'
 import getPalletWithParentAssociations from './getPalletWithParentAssociations'
+import { validateIdInput } from './input-validation/idInputSchema'
+import { ID } from './input-validation/types'
+import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
 import {
   authorizeOfferMutation,
   authorizeOfferQuery,
 } from './offer_authorization'
-import validateEnumMembership from './validateEnumMembership'
+
+// Pallet mutation resolvers
+
+// - add pallet
+
+const addPalletInput = Type.Object(
+  {
+    offerId: ID,
+    palletType: Type.Optional(Type.Enum(PalletType)),
+  },
+  { additionalProperties: false },
+)
+
+const validateAddPalletInput = validateWithJSONSchema(addPalletInput)
 
 const addPallet: MutationResolvers['addPallet'] = async (
   _,
   { input },
   context,
 ) => {
-  const offer = await Offer.findByPk(input.offerId, {
+  const valid = validateAddPalletInput(input)
+  if ('errors' in valid) {
+    throw new UserInputError('Add pallet arguments invalid', valid.errors)
+  }
+
+  const offer = await Offer.findByPk(valid.value.offerId, {
     include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
   })
-
-  if (!offer) {
-    throw new UserInputError(`Offer ${input.offerId} does not exist`)
+  if (offer === null) {
+    throw new UserInputError(`Offer ${valid.value.offerId} does not exist`)
   }
 
   authorizeOfferMutation(offer, context)
-
-  if (input.palletType) {
-    validateEnumMembership(PalletType, input.palletType)
-  }
 
   return Pallet.create({
     ...input,
@@ -42,15 +59,38 @@ const addPallet: MutationResolvers['addPallet'] = async (
   })
 }
 
+// - update pallet
+
+const updatePalletInput = Type.Object(
+  {
+    id: ID,
+    input: Type.Object(
+      {
+        paymentStatus: Type.Optional(Type.Enum(PaymentStatus)),
+        palletType: Type.Optional(Type.Enum(PalletType)),
+      },
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+)
+
+const validateUpdatePalletInput = validateWithJSONSchema(updatePalletInput)
+
 const updatePallet: MutationResolvers['updatePallet'] = async (
   _,
-  { id, input },
+  input,
   context,
 ) => {
-  const pallet = await getPalletWithParentAssociations(id)
+  const valid = validateUpdatePalletInput(input)
+  if ('errors' in valid) {
+    throw new UserInputError('Add pallet arguments invalid', valid.errors)
+  }
+
+  const pallet = await getPalletWithParentAssociations(valid.value.id)
 
   if (!pallet) {
-    throw new UserInputError(`Pallet ${id} does not exist`)
+    throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
   }
 
   const offer = pallet.offer
@@ -63,30 +103,35 @@ const updatePallet: MutationResolvers['updatePallet'] = async (
 
   const updateAttributes: Partial<PalletAttributes> = {}
 
-  if (input.paymentStatus && input.paymentStatus !== pallet.paymentStatus) {
-    validateEnumMembership(PaymentStatus, input.paymentStatus)
-    updateAttributes.paymentStatus = input.paymentStatus
+  if (valid.value.input.paymentStatus !== undefined) {
+    updateAttributes.paymentStatus = valid.value.input.paymentStatus
     updateAttributes.paymentStatusChangeTime = new Date()
   }
 
-  if (input.palletType) {
-    validateEnumMembership(PalletType, input.palletType)
-    updateAttributes.palletType = input.palletType
+  if (valid.value.input.palletType !== undefined) {
+    updateAttributes.palletType = valid.value.input.palletType
   }
 
   return pallet.update(updateAttributes)
 }
 
-const pallet: QueryResolvers['pallet'] = async (_, { id }, context) => {
-  const pallet = await getPalletWithParentAssociations(id)
+// - get pallet
 
-  if (!pallet) {
-    throw new UserInputError(`Pallet ${id} does not exist`)
+const pallet: QueryResolvers['pallet'] = async (_, { id }, context) => {
+  const valid = validateIdInput({ id })
+  if ('errors' in valid) {
+    throw new UserInputError('Get pallet input invalid', valid.errors)
+  }
+
+  const pallet = await getPalletWithParentAssociations(valid.value.id)
+
+  if (pallet === null) {
+    throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
   }
 
   const offer = pallet.offer
 
-  if (!offer) {
+  if (offer === null) {
     throw new ApolloError(`Pallet ${pallet.offerId} has no offer!`)
   }
 
@@ -95,20 +140,27 @@ const pallet: QueryResolvers['pallet'] = async (_, { id }, context) => {
   return pallet
 }
 
+// - destroy pallet
+
 const destroyPallet: MutationResolvers['destroyPallet'] = async (
   _,
   { id },
   context,
 ) => {
-  const pallet = await getPalletWithParentAssociations(id)
+  const valid = validateIdInput({ id })
+  if ('errors' in valid) {
+    throw new UserInputError('Destroy pallet input invalid', valid.errors)
+  }
 
-  if (!pallet) {
-    throw new UserInputError(`Pallet ${id} does not exist`)
+  const pallet = await getPalletWithParentAssociations(valid.value.id)
+
+  if (pallet === null) {
+    throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
   }
 
   const offer = pallet.offer
 
-  if (!offer) {
+  if (offer === null) {
     throw new ApolloError(`Pallet ${pallet.offerId} has no offer!`)
   }
 
@@ -117,6 +169,8 @@ const destroyPallet: MutationResolvers['destroyPallet'] = async (
   await pallet.destroy()
   return offer
 }
+
+// - list line items
 
 const palletLineItems: PalletResolvers['lineItems'] = async (parent) => {
   return LineItem.findAll({ where: { offerPalletId: parent.id } })
