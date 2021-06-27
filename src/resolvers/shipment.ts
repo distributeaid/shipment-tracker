@@ -1,27 +1,50 @@
+import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
-import { has, isEqual } from 'lodash'
+import { isEqual } from 'lodash'
 import Group from '../models/group'
 import Shipment, { ShipmentAttributes } from '../models/shipment'
 import ShipmentExport from '../models/shipment_export'
 import {
   MutationResolvers,
   QueryResolvers,
-  ShipmentCreateInput,
   ShipmentResolvers,
   ShipmentStatus,
   ShippingRoute,
 } from '../server-internal-types'
-import validateEnumMembership from './validateEnumMembership'
+import { validateIdInput } from './input-validation/idInputSchema'
+import {
+  CurrentYearOrGreater,
+  ID,
+  MonthIndexStartingAt1,
+  Pricing,
+} from './input-validation/types'
+import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
 
 // Shipment query resolvers
-const listShipments: QueryResolvers['listShipments'] = async (
-  _,
-  { status },
-) => {
-  if (status && status.length) {
+
+// - list shipments by status
+
+const listShipmentsInput = Type.Object(
+  {
+    status: Type.Optional(
+      Type.Array(Type.Enum(ShipmentStatus), { minItems: 1 }),
+    ),
+  },
+  { additionalProperties: false },
+)
+
+const validateListShipmentsInput = validateWithJSONSchema(listShipmentsInput)
+
+const listShipments: QueryResolvers['listShipments'] = async (_, input) => {
+  const valid = validateListShipmentsInput(input)
+  if ('errors' in valid) {
+    throw new UserInputError('List shipments input invalid', valid.errors)
+  }
+
+  if (valid.value.status !== undefined) {
     return Shipment.findAll({
       where: {
-        status,
+        status: valid.value.status,
       },
     })
   }
@@ -29,43 +52,58 @@ const listShipments: QueryResolvers['listShipments'] = async (
   return Shipment.findAll()
 }
 
+// - get shipment
+
 const shipment: QueryResolvers['shipment'] = async (_, { id }) => {
-  const shipment = await Shipment.findByPk(id)
+  const valid = validateIdInput({ id })
+  if ('errors' in valid) {
+    throw new UserInputError('Get shipment input invalid', valid.errors)
+  }
+
+  const shipment = await Shipment.findByPk(valid.value.id)
 
   if (!shipment) {
-    throw new ApolloError('No shipment exists with that ID')
+    throw new ApolloError(`No shipment exists with ID "${valid.value.id}"`)
   }
 
   return shipment
 }
 
 // Shipment mutation resolvers
+
+// - add shipment
+
+const addShipmentInput = Type.Object(
+  {
+    shippingRoute: Type.Enum(ShippingRoute),
+    labelYear: CurrentYearOrGreater(),
+    labelMonth: MonthIndexStartingAt1,
+    sendingHubId: ID,
+    receivingHubId: ID,
+    status: Type.Enum(ShipmentStatus),
+    pricing: Pricing,
+  },
+  { additionalProperties: false },
+)
+
+const validateAddShipmentsInput = validateWithJSONSchema(addShipmentInput)
+
 const addShipment: MutationResolvers['addShipment'] = async (
   _,
   { input },
   context,
 ) => {
+  const valid = validateAddShipmentsInput(input)
+  if ('errors' in valid) {
+    throw new UserInputError('Add shipment input invalid', valid.errors)
+  }
+
   if (!context.auth.isAdmin) {
     throw new ForbiddenError('addShipment forbidden to non-admin users')
   }
 
-  if (
-    !input.shippingRoute ||
-    !input.labelYear ||
-    !input.labelMonth ||
-    !input.sendingHubId ||
-    !input.receivingHubId ||
-    !input.status
-  ) {
-    throw new UserInputError('Shipment arguments invalid', {
-      invalidArgs: Object.keys(input).filter(
-        (key) => !input[key as keyof ShipmentCreateInput],
-      ),
-    })
-  }
-
-  const sendingHubPromise = Group.findByPk(input.sendingHubId)
-  const receivingHubPromise = Group.findByPk(input.receivingHubId)
+  const sendingHubPromise = Group.findByPk(valid.value.sendingHubId)
+  const receivingHubPromise = Group.findByPk(valid.value.receivingHubId)
 
   const sendingHub = await sendingHubPromise
   if (!sendingHub) {
@@ -77,40 +115,69 @@ const addShipment: MutationResolvers['addShipment'] = async (
     throw new ApolloError('Receiving hub not found')
   }
 
-  if (new Date(input.labelYear, input.labelMonth) < new Date()) {
-    throw new UserInputError('The shipment date cannot be in the past', [
-      'labelYear',
-      'labelMonth',
-    ])
+  const shipmentDate = new Date(
+    valid.value.labelYear,
+    valid.value.labelMonth - 1,
+  )
+  if (shipmentDate < new Date()) {
+    throw new UserInputError(
+      `The shipment date "${shipmentDate.toISOString()}" cannot be in the past`,
+    )
   }
 
-  validateEnumMembership(ShipmentStatus, input.status)
-
   return Shipment.create({
-    shippingRoute: input.shippingRoute,
-    labelYear: input.labelYear,
-    labelMonth: input.labelMonth,
-    sendingHubId: input.sendingHubId,
-    receivingHubId: input.receivingHubId,
-    status: input.status,
+    shippingRoute: valid.value.shippingRoute,
+    labelYear: valid.value.labelYear,
+    labelMonth: valid.value.labelMonth,
+    sendingHubId: valid.value.sendingHubId,
+    receivingHubId: valid.value.receivingHubId,
+    status: valid.value.status,
     statusChangeTime: new Date(),
-    pricing: input.pricing || undefined,
+    pricing: valid.value.pricing,
   })
 }
 
+// - update shipment
+
+const updateShipmentInput = Type.Object(
+  {
+    id: ID,
+    input: Type.Object(
+      {
+        status: Type.Optional(Type.Enum(ShipmentStatus)),
+        sendingHubId: Type.Optional(ID),
+        receivingHubId: Type.Optional(ID),
+        labelYear: Type.Optional(CurrentYearOrGreater()),
+        labelMonth: Type.Optional(MonthIndexStartingAt1),
+        shippingRoute: Type.Optional(Type.Enum(ShippingRoute)),
+        pricing: Type.Optional(Pricing),
+      },
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+)
+
+const validateUpdateShipmentInput = validateWithJSONSchema(updateShipmentInput)
+
 const updateShipment: MutationResolvers['updateShipment'] = async (
   _,
-  { id, input },
+  input,
   context,
 ) => {
+  const valid = validateUpdateShipmentInput(input)
+  if ('errors' in valid) {
+    throw new UserInputError('Update line item arguments invalid', valid.errors)
+  }
+
   if (!context.auth.isAdmin) {
     throw new ForbiddenError('updateShipment forbidden to non-admin users')
   }
 
-  const shipment = await Shipment.findByPk(id)
+  const shipment = await Shipment.findByPk(valid.value.id)
 
-  if (!shipment) {
-    throw new ApolloError('No shipment exists with that ID')
+  if (shipment === null) {
+    throw new ApolloError(`No shipment exists with ID "${valid.value.id}"`)
   }
 
   const {
@@ -120,19 +187,22 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     labelMonth,
     labelYear,
     shippingRoute,
-  } = input
+    pricing,
+  } = valid.value.input
+
   const updateAttributes: Partial<ShipmentAttributes> = {}
 
-  if (status) {
-    validateEnumMembership(ShipmentStatus, status)
+  if (status !== undefined) {
     updateAttributes.status = status
     updateAttributes.statusChangeTime = new Date()
   }
 
-  if (receivingHubId) {
+  if (receivingHubId !== undefined) {
     const receivingHub = await Group.findByPk(receivingHubId)
-    if (!receivingHub) {
-      throw new ApolloError('No receiving group exists with that ID')
+    if (receivingHub === null) {
+      throw new ApolloError(
+        `No receiving group exists with ID "${receivingHubId}"`,
+      )
     }
 
     updateAttributes.receivingHubId = receivingHubId
@@ -140,28 +210,37 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
 
   if (sendingHubId) {
     const sendingHub = await Group.findByPk(sendingHubId)
-    if (!sendingHub) {
-      throw new ApolloError('No sending group exists with that ID')
+    if (sendingHub === null) {
+      throw new ApolloError(`No sending group exists with ID "${sendingHubId}"`)
     }
 
     updateAttributes.sendingHubId = sendingHubId
   }
 
-  if (labelMonth) {
+  if (labelMonth !== undefined) {
     updateAttributes.labelMonth = labelMonth
   }
 
-  if (labelYear) {
+  if (labelYear !== undefined) {
     updateAttributes.labelYear = labelYear
   }
 
-  if (shippingRoute) {
-    validateEnumMembership(ShippingRoute, shippingRoute)
+  const shipmentDate = new Date(
+    labelYear ?? shipment.labelYear,
+    (labelMonth ?? shipment.labelMonth) - 1,
+  )
+  if (shipmentDate < new Date()) {
+    throw new UserInputError(
+      `The shipment date "${shipmentDate.toISOString()}" cannot be in the past`,
+    )
+  }
+
+  if (shippingRoute !== undefined) {
     updateAttributes.shippingRoute = shippingRoute
   }
 
-  if (has(input, 'pricing') && !isEqual(input.pricing, shipment.pricing)) {
-    updateAttributes.pricing = input.pricing || undefined
+  if (pricing !== undefined && !isEqual(pricing, shipment.pricing)) {
+    updateAttributes.pricing = pricing
   }
 
   return shipment.update(updateAttributes)
@@ -172,7 +251,9 @@ const sendingHub: ShipmentResolvers['sendingHub'] = async (parent) => {
   const sendingHub = await Group.findByPk(parent.sendingHubId)
 
   if (!sendingHub) {
-    throw new ApolloError('No sending group exists with that Id')
+    throw new ApolloError(
+      `No sending group exists with ID "${parent.sendingHubId}"`,
+    )
   }
 
   return sendingHub
@@ -182,7 +263,9 @@ const receivingHub: ShipmentResolvers['receivingHub'] = async (parent) => {
   const receivingHub = await Group.findByPk(parent.receivingHubId)
 
   if (!receivingHub) {
-    throw new ApolloError('No receiving group exists with that ID')
+    throw new ApolloError(
+      `No receiving group exists with ID "${parent.receivingHubId}"`,
+    )
   }
 
   return receivingHub
