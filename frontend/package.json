@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "3.3.11",
-    "@auth0/auth0-react": "1.3.0",
+    "@auth0/auth0-react": "1.5.0",
     "@hookform/error-message": "0.0.5",
     "@types/body-scroll-lock": "2.6.1",
     "@types/classnames": "2.2.11",
