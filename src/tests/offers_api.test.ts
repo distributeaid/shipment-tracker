@@ -76,7 +76,7 @@ describe('Offers API', () => {
 
   describe('addOffer', () => {
     const ADD_OFFER = gql`
-      mutation($input: OfferCreateInput!) {
+      mutation ($input: OfferCreateInput!) {
         addOffer(input: $input) {
           id
           status
@@ -92,32 +92,71 @@ describe('Offers API', () => {
       }
     `
 
-    it('creates a new offer', async () => {
-      const res = await captainTestServer.mutate<
-        { addOffer: Offer },
-        { input: OfferCreateInput }
-      >({
-        mutation: ADD_OFFER,
-        variables: {
-          input: {
-            sendingGroupId: captainsGroup.id,
-            shipmentId: shipment.id,
-            contact: { name: 'Savannah', email: 'test@example.com' },
-            photoUris: validPhotoUris,
+    describe('creation', () => {
+      it('creates a new offer for an OPEN shipment', async () => {
+        const res = await captainTestServer.mutate<
+          { addOffer: Offer },
+          { input: OfferCreateInput }
+        >({
+          mutation: ADD_OFFER,
+          variables: {
+            input: {
+              sendingGroupId: captainsGroup.id,
+              shipmentId: shipment.id,
+              contact: { name: 'Savannah', email: 'test@example.com' },
+              photoUris: validPhotoUris,
+            },
           },
-        },
+        })
+
+        expect(res.errors).toBeUndefined()
+        expect(res?.data?.addOffer?.id).toBeNumber()
+        expect(res?.data?.addOffer?.status).toEqual(OfferStatus.Draft)
+        expect(res?.data?.addOffer?.contact?.name).toEqual('Savannah')
+        expect(res?.data?.addOffer?.contact?.email).toEqual('test@example.com')
+        expect(res?.data?.addOffer?.contact?.signal).toBeNull
+        expect(res?.data?.addOffer?.photoUris).toContain(validPhotoUris[0])
+        expect(res?.data?.addOffer?.photoUris).toContain(validPhotoUris[1])
+        expect(res?.data?.addOffer?.shipmentId).toEqual(shipment.id)
+        expect(res?.data?.addOffer?.sendingGroupId).toEqual(captainsGroup.id)
       })
 
-      expect(res.errors).toBeUndefined()
-      expect(res?.data?.addOffer?.id).toBeNumber()
-      expect(res?.data?.addOffer?.status).toEqual(OfferStatus.Draft)
-      expect(res?.data?.addOffer?.contact?.name).toEqual('Savannah')
-      expect(res?.data?.addOffer?.contact?.email).toEqual('test@example.com')
-      expect(res?.data?.addOffer?.contact?.signal).toBeNull
-      expect(res?.data?.addOffer?.photoUris).toContain(validPhotoUris[0])
-      expect(res?.data?.addOffer?.photoUris).toContain(validPhotoUris[1])
-      expect(res?.data?.addOffer?.shipmentId).toEqual(shipment.id)
-      expect(res?.data?.addOffer?.sendingGroupId).toEqual(captainsGroup.id)
+      const shipmentStatusExceptOpen = Object.values(ShipmentStatus).filter(
+        (v) => v !== ShipmentStatus.Open,
+      )
+
+      it.each(shipmentStatusExceptOpen)(
+        `does not create an offer shipment status is %s`,
+        async (shipmentStatus) => {
+          const shipment = await createShipment({
+            shippingRoute: ShippingRoute.UkToGr,
+            labelYear: 2020,
+            labelMonth: 1,
+            sendingHubId: captainsGroup.id,
+            receivingHubId: group2.id,
+            status: shipmentStatus,
+          })
+
+          const res = await captainTestServer.mutate<
+            { addOffer: Offer },
+            { input: OfferCreateInput }
+          >({
+            mutation: ADD_OFFER,
+            variables: {
+              input: {
+                sendingGroupId: captainsGroup.id,
+                shipmentId: shipment.id,
+                contact: { name: 'Savannah', email: 'test@example.com' },
+                photoUris: validPhotoUris,
+              },
+            },
+          })
+
+          expect(res.errors?.[0].message).toContain(
+            `Shipment ${shipment.id} is not accepting offers`,
+          )
+        },
+      )
     })
 
     it('fails validation if photoUris are not valid URLs', async () => {
@@ -267,7 +306,7 @@ describe('Offers API', () => {
 
   describe('updateOffer', () => {
     const UPDATE_OFFER = gql`
-      mutation($input: OfferUpdateInput!) {
+      mutation ($input: OfferUpdateInput!) {
         updateOffer(input: $input) {
           id
           status
@@ -338,7 +377,7 @@ describe('Offers API', () => {
       otherShipmentOffer: Offer
 
     const LIST_OFFERS_QUERY = gql`
-      query($shipmentId: Int!) {
+      query ($shipmentId: Int!) {
         listOffers(shipmentId: $shipmentId) {
           id
           status
@@ -429,7 +468,7 @@ describe('Offers API', () => {
 
   describe('offer', () => {
     const OFFER_QUERY = gql`
-      query($id: Int!) {
+      query ($id: Int!) {
         offer(id: $id) {
           id
           status
