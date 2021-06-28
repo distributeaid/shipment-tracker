@@ -1,5 +1,6 @@
 import { ApolloServerTestClient } from 'apollo-server-testing'
 import gql from 'graphql-tag'
+import { fakeUserAuth } from '../authenticateRequest'
 import Group from '../models/group'
 import Shipment from '../models/shipment'
 import ShipmentExport from '../models/shipment_export'
@@ -20,7 +21,8 @@ describe('Shipments API', () => {
   let testServer: ApolloServerTestClient,
     adminTestServer: ApolloServerTestClient,
     group1: Group,
-    group2: Group
+    group2: Group,
+    captain: UserAccount
 
   // Shipments cannot be created in the past, so we use the following year
   const nextYear = new Date().getFullYear() + 1
@@ -30,15 +32,24 @@ describe('Shipments API', () => {
     await Group.truncate({ cascade: true, force: true })
     await Shipment.truncate({ cascade: true, force: true })
 
-    testServer = await makeTestServer()
+    captain = await UserAccount.create({
+      auth0Id: 'captain-id',
+    })
+
+    testServer = await makeTestServer({
+      context: () => ({ auth: { ...fakeUserAuth, userAccount: captain } }),
+    })
     adminTestServer = await makeAdminTestServer()
 
-    group1 = await createGroup({
-      name: 'group 1',
-      groupType: GroupType.DaHub,
-      primaryLocation: { countryCode: 'GB', townCity: 'Bristol' },
-      primaryContact: { name: 'Contact', email: 'contact@example.com' },
-    })
+    group1 = await createGroup(
+      {
+        name: 'group 1',
+        groupType: GroupType.DaHub,
+        primaryLocation: { countryCode: 'GB', townCity: 'Bristol' },
+        primaryContact: { name: 'Contact', email: 'contact@example.com' },
+      },
+      captain.id,
+    )
     group2 = await createGroup({
       name: 'group 2',
       groupType: GroupType.ReceivingGroup,
@@ -52,7 +63,7 @@ describe('Shipments API', () => {
 
   describe('addShipment', () => {
     const ADD_SHIPMENT = gql`
-      mutation($input: ShipmentCreateInput!) {
+      mutation ($input: ShipmentCreateInput!) {
         addShipment(input: $input) {
           id
           shippingRoute
@@ -65,35 +76,69 @@ describe('Shipments API', () => {
       }
     `
 
-    it('forbids non-admin access', async () => {
-      const res = await testServer.mutate<
-        { addShipment: Shipment },
-        { input: ShipmentCreateInput }
-      >({
-        mutation: ADD_SHIPMENT,
-        variables: {
-          input: {
-            shippingRoute: ShippingRoute.UkToFr,
-            labelYear: nextYear,
-            labelMonth: 1,
-            sendingHubId: group1.id,
-            receivingHubId: group2.id,
-            status: ShipmentStatus.Open,
+    it.each([ShipmentStatus.Open])(
+      'allows creation of %s shipments for captains',
+      async (status) => {
+        const res = await testServer.mutate<
+          { addShipment: Shipment },
+          { input: ShipmentCreateInput }
+        >({
+          mutation: ADD_SHIPMENT,
+          variables: {
+            input: {
+              shippingRoute: ShippingRoute.UkToFr,
+              labelYear: nextYear,
+              labelMonth: 1,
+              sendingHubId: group1.id,
+              receivingHubId: group2.id,
+              status,
+            },
           },
-        },
-      })
+        })
 
-      expect(res.errors).not.toBeUndefined()
-      expect(res.errors).not.toBeEmpty()
+        expect(res.errors).toBeUndefined()
+        expect(res?.data?.addShipment?.status).toEqual(status)
+        expect(res?.data?.addShipment?.sendingHubId).toEqual(group1.id)
+        expect(res?.data?.addShipment?.receivingHubId).toEqual(group2.id)
+      },
+    )
 
-      if (res.errors == null || res.errors.length === 0) {
-        return
-      }
+    const allShipmentStatusExceptOpen = Object.values(ShipmentStatus).filter(
+      (v) => v !== ShipmentStatus.Open,
+    )
 
-      expect(res.errors[0].message).toEqual(
-        'addShipment forbidden to non-admin users',
-      )
-    })
+    it.each(allShipmentStatusExceptOpen)(
+      'forbids non-admin access for status %s',
+      async (status) => {
+        const res = await testServer.mutate<
+          { addShipment: Shipment },
+          { input: ShipmentCreateInput }
+        >({
+          mutation: ADD_SHIPMENT,
+          variables: {
+            input: {
+              shippingRoute: ShippingRoute.UkToFr,
+              labelYear: nextYear,
+              labelMonth: 1,
+              sendingHubId: group1.id,
+              receivingHubId: group2.id,
+              status,
+            },
+          },
+        })
+
+        expect(res.errors).not.toBeUndefined()
+        expect(res.errors).not.toBeEmpty()
+
+        if (res.errors == null || res.errors.length === 0) {
+          return
+        }
+
+        expect(res.errors[0].message).toEqual(
+          'addShipment forbidden to non-admin users',
+        )
+      },
+    )
 
     it('adds a new shipment', async () => {
       const res = await adminTestServer.mutate<
@@ -128,7 +173,7 @@ describe('Shipments API', () => {
     let shipment: Shipment
 
     const UPDATE_SHIPMENT = gql`
-      mutation($id: Int!, $input: ShipmentUpdateInput!) {
+      mutation ($id: Int!, $input: ShipmentUpdateInput!) {
         updateShipment(id: $id, input: $input) {
           id
           status
@@ -399,7 +444,7 @@ describe('Shipments API', () => {
     })
 
     const SHIPMENT = gql`
-      query($id: Int!) {
+      query ($id: Int!) {
         shipment(id: $id) {
           shippingRoute
         }
@@ -407,7 +452,7 @@ describe('Shipments API', () => {
     `
 
     const SHIPMENT_WITH_EXPORTS = gql`
-      query($id: Int!) {
+      query ($id: Int!) {
         shipment(id: $id) {
           shippingRoute
           exports {

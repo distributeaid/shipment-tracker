@@ -98,12 +98,12 @@ const addShipment: MutationResolvers['addShipment'] = async (
     throw new UserInputError('Add shipment input invalid', valid.errors)
   }
 
-  if (!context.auth.isAdmin) {
-    throw new ForbiddenError('addShipment forbidden to non-admin users')
-  }
-
-  const sendingHubPromise = Group.findByPk(valid.value.sendingHubId)
-  const receivingHubPromise = Group.findByPk(valid.value.receivingHubId)
+  const sendingHubPromise = Group.findByPk(valid.value.sendingHubId, {
+    include: [{ association: 'captain' }],
+  })
+  const receivingHubPromise = Group.findByPk(valid.value.receivingHubId, {
+    include: [{ association: 'captain' }],
+  })
 
   const sendingHub = await sendingHubPromise
   if (!sendingHub) {
@@ -113,6 +113,17 @@ const addShipment: MutationResolvers['addShipment'] = async (
   const receivingHub = await receivingHubPromise
   if (!receivingHub) {
     throw new ApolloError('Receiving hub not found')
+  }
+
+  const creatorIsGroupCaptain = [
+    receivingHub.captain.id,
+    sendingHub.captain.id,
+  ].includes(context.auth.userAccount.id)
+
+  if (creatorIsGroupCaptain && valid.value.status === ShipmentStatus.Open) {
+    // Pass: Group captains can create OPEN shipments
+  } else if (!context.auth.isAdmin) {
+    throw new ForbiddenError('addShipment forbidden to non-admin users')
   }
 
   const shipmentDate = new Date(
