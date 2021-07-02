@@ -58,7 +58,7 @@
     "@graphql-codegen/cli": "1.21.6",
     "@graphql-codegen/typescript": "1.22.4",
     "@graphql-codegen/typescript-operations": "1.18.3",
-    "@graphql-codegen/typescript-react-apollo": "2.2.8",
+    "@graphql-codegen/typescript-react-apollo": "2.3.0",
     "@graphql-codegen/typescript-resolvers": "1.19.5",
     "@types/bluebird": "3.5.35",
     "@types/compression": "1.7.0",
