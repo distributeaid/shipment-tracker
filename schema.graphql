@@ -73,7 +73,7 @@ input ShipmentUpdateInput {
 type Query {
   group(id: Int!): Group!
 
-  listGroups: [Group!]!
+  listGroups(groupType: [GroupType!], captainId: Int): [Group!]!
 
   shipment(id: Int!): Shipment!
   listShipments(status: [ShipmentStatus!]): [Shipment!]!
