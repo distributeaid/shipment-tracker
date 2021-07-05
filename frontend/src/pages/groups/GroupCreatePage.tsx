@@ -7,34 +7,24 @@ import {
   GroupCreateInput,
   useCreateGroupMutation,
 } from '../../types/api-types'
+import { setEmptyFieldsToUndefined } from '../../utils/data'
 import { groupViewRoute } from '../../utils/routes'
 import GroupForm from './GroupForm'
 
 const GroupCreatePage: FunctionComponent = () => {
-  const { refetch: refreshUserGroupAssociation } = useContext(
-    UserProfileContext,
-  )
+  const { refetch: refreshUserGroupAssociation } =
+    useContext(UserProfileContext)
   const history = useHistory()
 
-  const [
-    addGroup,
-    { loading: mutationIsLoading, error: mutationError },
-  ] = useCreateGroupMutation()
+  const [addGroup, { loading: mutationIsLoading, error: mutationError }] =
+    useCreateGroupMutation()
 
   const onSubmit = async (input: GroupCreateInput) => {
     try {
+      // The backend doesn't want null values for optional fields
+      input.primaryContact = setEmptyFieldsToUndefined(input.primaryContact)
+
       // Create the group and then redirect to its view/edit page
-
-      // TODO fix the fact that the backend validations consider null values as
-      // invalid inputs.
-      if (input.primaryContact) {
-        input.primaryContact.whatsApp =
-          input.primaryContact.whatsApp || undefined
-        input.primaryContact.phone = input.primaryContact.phone || undefined
-        input.primaryContact.signal = input.primaryContact.signal || undefined
-        input.primaryContact.email = input.primaryContact.email || undefined
-      }
-
       const { data } = await addGroup({
         variables: { input },
         // Fetch the updated list of groups

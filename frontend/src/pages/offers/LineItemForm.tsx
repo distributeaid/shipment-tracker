@@ -23,6 +23,7 @@ import {
   useLineItemQuery,
   useUpdateLineItemMutation,
 } from '../../types/api-types'
+import { setEmptyFieldsToUndefined } from '../../utils/data'
 import {
   getContainerCountLabel,
   gramsToKilos,
@@ -52,7 +53,11 @@ const LineItemForm: FunctionComponent<Props> = ({
   onEditingComplete,
   palletType,
 }) => {
-  const { data, refetch, loading: lineItemIsLoading } = useLineItemQuery({
+  const {
+    data,
+    refetch,
+    loading: lineItemIsLoading,
+  } = useLineItemQuery({
     variables: { id: lineItemId },
   })
 
@@ -85,11 +90,8 @@ const LineItemForm: FunctionComponent<Props> = ({
   } = useForm<LineItemUpdateInput>()
 
   const watchContainerType = watch('containerType')
-  const [
-    watchContainerWidth,
-    watchContainerLength,
-    watchContainerHeight,
-  ] = watch(['containerWidthCm', 'containerLengthCm', 'containerHeightCm'])
+  const [watchContainerWidth, watchContainerLength, watchContainerHeight] =
+    watch(['containerWidthCm', 'containerLengthCm', 'containerHeightCm'])
 
   useEffect(() => {
     const palletDimensions = PALLET_CONFIGS.find(
@@ -149,10 +151,8 @@ const LineItemForm: FunctionComponent<Props> = ({
     [data?.lineItem, reset],
   )
 
-  const [
-    updateLineItem,
-    { loading: mutationIsLoading },
-  ] = useUpdateLineItemMutation()
+  const [updateLineItem, { loading: mutationIsLoading }] =
+    useUpdateLineItemMutation()
 
   const submitForm = handleSubmit((input) => {
     if (!data?.lineItem) {
@@ -172,7 +172,7 @@ const LineItemForm: FunctionComponent<Props> = ({
     // We need to send all the fields from LineItemUpdateInput, even the ones
     // that didn't change. We then _pick the fields to make sure we don't send
     // things like `id` or `__typename`.
-    const updatedLineItem = _pick(Object.assign({}, data.lineItem, input), [
+    let updatedLineItem = _pick(Object.assign({}, data.lineItem, input), [
       'status',
       'proposedReceivingGroupId',
       'acceptedReceivingGroupId',
@@ -192,11 +192,8 @@ const LineItemForm: FunctionComponent<Props> = ({
       'sendingHubDeliveryDate',
     ])
 
-    // We don't wanna send null values to the backend
-    updatedLineItem.acceptedReceivingGroupId =
-      updatedLineItem.acceptedReceivingGroupId ?? undefined
-    updatedLineItem.sendingHubDeliveryDate =
-      updatedLineItem.sendingHubDeliveryDate ?? undefined
+    // The backend doesn't want null values for optional fields
+    updatedLineItem = setEmptyFieldsToUndefined(updatedLineItem)
 
     updateLineItem({
       variables: { id: lineItemId, input: updatedLineItem },
