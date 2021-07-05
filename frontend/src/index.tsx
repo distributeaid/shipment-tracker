@@ -7,8 +7,8 @@ import './stylesheets/index.output.css'
 ReactDOM.render(
   <React.StrictMode>
     <Auth0Provider
-      domain="distributeaid.eu.auth0.com"
-      clientId="hfNo3Nw2ZrAGv0Vwh7tjU4nJ7lAuPTNH"
+      domain={process.env.REACT_APP_AUTH0_DOMAIN ?? ''}
+      clientId={process.env.REACT_APP_AUTH0_CLIENT_ID ?? ''}
       redirectUri={window.location.origin}
       audience={process.env.REACT_APP_AUTH0_AUDIENCE}
     >

@@ -1,0 +1,66 @@
+name: Frontend End-to-End tests
+
+on:
+  push:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    env:
+      # scripts/dev_setup complains if TERM is unset
+      TERM: xterm
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: distributeaid_test
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Run backend server
+        run: |
+          yarn install
+          script/dev_setup
+          yarn run build
+          yarn dev &
+
+      - name: Run frontend server
+        run: |
+          cd frontend
+          yarn install
+          yarn start &
+
+      - name: Wait for backend to be up
+        run: until nc -w 10 127.0.0.1 3000; do sleep 1; done
+
+      - name: Wait for frontend to be up
+        run: until nc -w 10 127.0.0.1 8080; do sleep 1; done
+
+      - name: Run tests
+        run: |
+          cd frontend
+          npx playwright test --browser=firefox
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: screenshots
+          path: |
+            frontend/*.png
