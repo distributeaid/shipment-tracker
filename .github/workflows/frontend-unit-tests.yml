@@ -13,6 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install modules
-        run: yarn
+        run: cd frontend && yarn
       - name: Run tests
         run: yarn test
