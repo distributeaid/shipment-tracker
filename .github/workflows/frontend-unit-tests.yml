@@ -2,6 +2,10 @@ name: Frontend unit tests
 
 on: push
 
+defaults:
+  run:
+    working-directory: frontend
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,6 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install modules
-        run: cd frontend && yarn
+        run: yarn
       - name: Run tests
         run: yarn test
