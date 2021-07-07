@@ -36,7 +36,7 @@
     "chokidar-cli": "2.1.0",
     "jest": "^27.0.6",
     "npm-run-all": "4.1.5",
-    "postcss": "8.2.10"
+    "postcss": "8.3.5"
   },
   "scripts": {
     "start": "npm-run-all build:styles --parallel watch:styles start:react",
