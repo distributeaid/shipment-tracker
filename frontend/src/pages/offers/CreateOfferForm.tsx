@@ -11,6 +11,7 @@ import {
   useAllGroupsQuery,
   useShipmentQuery,
 } from '../../types/api-types'
+import { setEmptyFieldsToUndefined } from '../../utils/data'
 import { formatShipmentName } from '../../utils/format'
 
 interface Props {
@@ -84,13 +85,9 @@ const OfferForm: FunctionComponent<Props> = (props) => {
     input.shipmentId = props.shipmentId
     input.sendingGroupId = groupForUser.id
 
-    // TODO fix the fact that the backend validations consider null values as
-    // invalid inputs.
+    // The backend doesn't want null values for optional fields
     if (input.contact) {
-      input.contact.email = input.contact?.email || undefined
-      input.contact.phone = input.contact?.phone || undefined
-      input.contact.whatsApp = input.contact?.whatsApp || undefined
-      input.contact.signal = input.contact?.signal || undefined
+      input.contact = setEmptyFieldsToUndefined(input.contact)
     }
 
     input.photoUris = input.photoUris || []

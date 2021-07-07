@@ -7,6 +7,7 @@ import {
   useGroupQuery,
   useUpdateGroupMutation,
 } from '../../types/api-types'
+import { setEmptyFieldsToUndefined } from '../../utils/data'
 import { groupViewRoute } from '../../utils/routes'
 import GroupForm from './GroupForm'
 
@@ -22,26 +23,14 @@ const GroupEditPage: FunctionComponent = () => {
   })
 
   // Set up the mutation to update the group
-  const [
-    updateGroup,
-    { loading: mutationIsLoading, error: mutationError },
-  ] = useUpdateGroupMutation()
+  const [updateGroup, { loading: mutationIsLoading, error: mutationError }] =
+    useUpdateGroupMutation()
 
   const onSubmit = async (input: GroupUpdateInput) => {
     try {
-      // TODO fix the fact that the backend validations consider null values as
-      // invalid inputs.
-      // Potential solutions:
-      // 1. make fields undefined on the frontend
-      // 2. support undefined in the validations
-      // 3. transform to undefined on the backend
-
       if (input.primaryContact) {
-        input.primaryContact.whatsApp =
-          input.primaryContact.whatsApp || undefined
-        input.primaryContact.phone = input.primaryContact.phone || undefined
-        input.primaryContact.signal = input.primaryContact.signal || undefined
-        input.primaryContact.email = input.primaryContact.email || undefined
+        // The backend doesn't want null values for optional fields
+        input.primaryContact = setEmptyFieldsToUndefined(input.primaryContact)
       }
 
       await updateGroup({

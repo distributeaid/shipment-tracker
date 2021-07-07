@@ -1,0 +1,22 @@
+name: Frontend unit tests
+
+on: push
+
+defaults:
+  run:
+    working-directory: frontend
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      # scripts/dev_setup complains if TERM is unset
+      TERM: xterm
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install modules
+        run: yarn
+      - name: Run tests
+        run: yarn test

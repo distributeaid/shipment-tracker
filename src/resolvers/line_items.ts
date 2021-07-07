@@ -193,17 +193,13 @@ async function getUpdateAttributes(
     updateAttributes.dangerousGoods = input.dangerousGoods
   }
 
-  await updateGroupIdAttr(
-    lineItem,
+  updateAttributes.proposedReceivingGroupId = await getUpdateGroupIdAttr(
     input,
-    updateAttributes,
     'proposedReceivingGroupId',
   )
 
-  await updateGroupIdAttr(
-    lineItem,
+  updateAttributes.acceptedReceivingGroupId = await getUpdateGroupIdAttr(
     input,
-    updateAttributes,
     'acceptedReceivingGroupId',
   )
 
@@ -256,22 +252,12 @@ async function getUpdateAttributes(
   return updateAttributes
 }
 
-async function updateGroupIdAttr(
-  lineItem: LineItem,
+async function getUpdateGroupIdAttr(
   input: Static<typeof updateLineItemInput>['input'],
-  updateAttributes: Partial<LineItemAttributes>,
   attr: 'acceptedReceivingGroupId' | 'proposedReceivingGroupId',
 ) {
-  if (
-    !('acceptedReceivingGroupId' in input) ||
-    input[attr] === lineItem[attr]
-  ) {
-    return
-  }
-
   if (input[attr] === undefined) {
-    updateAttributes[attr] = undefined
-    return
+    return undefined
   }
 
   const group = await Group.findByPk(input[attr])
@@ -284,7 +270,7 @@ async function updateGroupIdAttr(
     throw new UserInputError(`Group ${input[attr]} is not a receiving group`)
   }
 
-  updateAttributes[attr] = input[attr]
+  return input[attr]
 }
 
 async function getLineItemWithParentAssociations(
@@ -388,37 +374,35 @@ const moveLineItem: MutationResolvers['moveLineItem'] = async (
 }
 
 // Line item custom resolvers
-const proposedReceivingGroup: LineItemResolvers['proposedReceivingGroup'] = async (
-  parent,
-) => {
-  if (!parent.proposedReceivingGroupId) {
-    return null
+const proposedReceivingGroup: LineItemResolvers['proposedReceivingGroup'] =
+  async (parent) => {
+    if (!parent.proposedReceivingGroupId) {
+      return null
+    }
+
+    const receivingGroup = await Group.findByPk(parent.proposedReceivingGroupId)
+
+    if (!receivingGroup) {
+      throw new ApolloError('No group exists with that ID')
+    }
+
+    return receivingGroup
   }
 
-  const receivingGroup = await Group.findByPk(parent.proposedReceivingGroupId)
+const acceptedReceivingGroup: LineItemResolvers['acceptedReceivingGroup'] =
+  async (parent) => {
+    if (!parent.acceptedReceivingGroupId) {
+      return null
+    }
 
-  if (!receivingGroup) {
-    throw new ApolloError('No group exists with that ID')
+    const receivingGroup = await Group.findByPk(parent.acceptedReceivingGroupId)
+
+    if (!receivingGroup) {
+      throw new ApolloError('No group exists with that ID')
+    }
+
+    return receivingGroup
   }
-
-  return receivingGroup
-}
-
-const acceptedReceivingGroup: LineItemResolvers['acceptedReceivingGroup'] = async (
-  parent,
-) => {
-  if (!parent.acceptedReceivingGroupId) {
-    return null
-  }
-
-  const receivingGroup = await Group.findByPk(parent.acceptedReceivingGroupId)
-
-  if (!receivingGroup) {
-    throw new ApolloError('No group exists with that ID')
-  }
-
-  return receivingGroup
-}
 
 export {
   lineItem,
