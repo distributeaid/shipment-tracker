@@ -65,7 +65,7 @@
     "@types/express": "4.17.12",
     "@types/jest": "26.0.23",
     "@types/node": "14.17.4",
-    "@types/validator": "13.6.2",
+    "@types/validator": "13.6.3",
     "apollo-server-testing": "2.25.2",
     "husky": "7.0.0",
     "jest": "27.0.6",
