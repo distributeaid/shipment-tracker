@@ -56,7 +56,10 @@ const addOffer: MutationResolvers['addOffer'] = async (
   })
 
   const sendingGroup = await sendingGroupPromise
-  if (sendingGroup?.captainId !== context.auth.userAccount.id) {
+  if (
+    sendingGroup?.captainId !== context.auth.userAccount.id &&
+    !context.auth.isAdmin
+  ) {
     throw new ForbiddenError(
       `User ${context.auth.userAccount.id} not permitted to create offer for group ${valid.value.sendingGroupId}`,
     )

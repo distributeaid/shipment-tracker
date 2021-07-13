@@ -1,14 +1,16 @@
-import { FunctionComponent, useContext, useMemo } from 'react'
+import _pick from 'lodash/pick'
+import { FunctionComponent, useContext, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
+import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
 import Spinner from '../../components/Spinner'
 import { UserProfileContext } from '../../components/UserProfileContext'
 import {
   GroupType,
   OfferCreateInput,
-  useAllGroupsQuery,
+  useAllGroupsLazyQuery,
   useShipmentQuery,
 } from '../../types/api-types'
 import { setEmptyFieldsToUndefined } from '../../utils/data'
@@ -30,87 +32,125 @@ interface Props {
 }
 
 /**
- * TODO
- * If the user is an admin, they should be able to select a SENDING group.
- * If the user is not an admin, they should automatically use their own group
- */
-
-/**
  * This form allows users to create a new offer. It is very specific to offer
  * creation, and therefore difficult to reuse for editing offers.
+ *
+ * There is a situation that makes things complex:
+ * - some users (usually admins) have the ability to create offers for any group
+ * - other users only have access to a single sending group
  */
-const OfferForm: FunctionComponent<Props> = (props) => {
-  // Each group leader is assigned to a single group
-  // We need to figure out which group that is
-  // TODO: handle the fact that admins can be assigned to any number of groups
-  const { profile } = useContext(UserProfileContext)
-
-  // TODO switch to filtering groups when the resolver supports it
-  const { data: groups, loading: isLoadingGroups } = useAllGroupsQuery()
-
-  // TODO this won't work if the user is an admin
-  const groupForUser = useMemo(() => {
-    if (groups?.listGroups && profile) {
-      return groups.listGroups.find(
-        (group) =>
-          group.captainId === profile.id &&
-          group.groupType === GroupType.SendingGroup,
-      )
-    }
-  }, [groups, profile])
-
+const CreateOfferForm: FunctionComponent<Props> = (props) => {
+  // Display the shipment information (read-only)
   const { data: targetShipment, loading: isLoadingShipment } = useShipmentQuery(
     {
       variables: { id: props.shipmentId },
     },
   )
 
+  const { profile } = useContext(UserProfileContext)
+
+  const [getGroups, { loading: isLoadingGroups, data: groups }] =
+    useAllGroupsLazyQuery()
+
+  useEffect(
+    function loadGroupsForUser() {
+      if (profile?.id != null) {
+        // If the user is an admin, display all the sending groups in a dropdown
+        // Otherwise, display all the groups captained by that user
+        getGroups({
+          variables: {
+            groupType: [GroupType.SendingGroup],
+            captainId: profile.isAdmin ? undefined : profile.id,
+          },
+        })
+      }
+    },
+    [profile, getGroups],
+  )
+
   const {
     register,
     handleSubmit,
+    watch,
+    reset,
     formState: { errors },
   } = useForm<OfferCreateInput>()
+  const watchSendingGroupId = watch('sendingGroupId')
+
+  useEffect(
+    function updateContactInformation() {
+      if (groups?.listGroups) {
+        // When the sendingGroupId changes, we pre-fill the contact info
+        const sendingGroupId = watchSendingGroupId || profile?.groupId
+        const matchingGroup = groups.listGroups.find(
+          (group) => group.id === sendingGroupId,
+        )
+
+        if (matchingGroup != null) {
+          reset({
+            sendingGroupId,
+            contact: {
+              ..._pick(matchingGroup.primaryContact, [
+                'name',
+                'email',
+                'phone',
+                'signal',
+                'whatsApp',
+              ]),
+            },
+          })
+        }
+      }
+    },
+    [watchSendingGroupId, groups, reset],
+  )
 
   const onSubmitForm = (input: OfferCreateInput) => {
     if (!props.shipmentId) {
       throw new Error('The shipment ID is missing in the offer form')
     }
 
-    if (!groupForUser) {
-      throw new Error('Cannot find a shipping group in the offer form')
+    if (!groups) {
+      throw new Error('Unable to fetch groups')
     }
 
-    // The sending group ID and shipment ID aren't in the form, so we add them
-    // manually
-    input.shipmentId = props.shipmentId
-    input.sendingGroupId = groupForUser.id
-
-    // The backend doesn't want null values for optional fields
-    if (input.contact) {
-      input.contact = setEmptyFieldsToUndefined(input.contact)
+    const payload: OfferCreateInput = {
+      shipmentId: props.shipmentId,
+      sendingGroupId: input.shipmentId || groups.listGroups[0].id,
+      contact: setEmptyFieldsToUndefined(input.contact),
+      photoUris: input.photoUris || [],
     }
 
-    input.photoUris = input.photoUris || []
-
-    props.onSubmit(input)
+    props.onSubmit(payload)
   }
 
-  // TODO this won't work if the user is an admin
-  if (!profile?.isAdmin) {
-    if (!groupForUser || !profile) {
-      return (
-        <div>
-          <Spinner /> Loading form data
-        </div>
-      )
-    }
+  if (isLoadingGroups || !profile || !groups) {
+    return (
+      <div>
+        <Spinner /> Loading form data
+      </div>
+    )
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
-      <ReadOnlyField label="Sending group">
-        {groupForUser?.name || 'No group'}
-      </ReadOnlyField>
+      {groups.listGroups.length > 1 ? (
+        <SelectField
+          label="Sending group"
+          name="sendingGroupId"
+          castAsNumber
+          register={register}
+          required
+          options={groups.listGroups.map((group) => ({
+            label: group.name,
+            value: group.id,
+          }))}
+        />
+      ) : (
+        <ReadOnlyField label="Sending group">
+          {groups.listGroups[0].name || 'No group'}
+        </ReadOnlyField>
+      )}
       <ReadOnlyField label="Shipment">
         {targetShipment?.shipment && (
           <>
@@ -124,40 +164,41 @@ const OfferForm: FunctionComponent<Props> = (props) => {
       </ReadOnlyField>
       <fieldset className="space-y-6">
         <legend>Primary contact</legend>
+        {groups.listGroups.length > 0 && (
+          <p className="text-gray-600">
+            When you select a sending group, we will prefill the contact
+            information below.
+          </p>
+        )}
         <TextField
           label="Contact name"
           name="contact.name"
           register={register}
           errors={errors}
-          defaultValue={groupForUser?.primaryContact.name}
         />
         <TextField
           label="Email"
           name="contact.email"
           register={register}
           errors={errors}
-          defaultValue={groupForUser?.primaryContact.email || ''}
         />
         <TextField
           label="WhatsApp"
           name="contact.whatsApp"
           register={register}
           errors={errors}
-          defaultValue={groupForUser?.primaryContact.whatsApp || ''}
         />
         <TextField
           label="Phone"
           name="contact.phone"
           register={register}
           errors={errors}
-          defaultValue={groupForUser?.primaryContact.phone || ''}
         />
         <TextField
           label="Signal"
           name="contact.signal"
           register={register}
           errors={errors}
-          defaultValue={groupForUser?.primaryContact.signal || ''}
         />
       </fieldset>
       <fieldset>
@@ -175,4 +216,4 @@ const OfferForm: FunctionComponent<Props> = (props) => {
   )
 }
 
-export default OfferForm
+export default CreateOfferForm
