@@ -335,18 +335,7 @@ describe('Shipments API', () => {
             name: group2.name,
           },
         },
-        {
-          id: shipment2.id,
-          status: shipment2.status,
-          sendingHub: {
-            id: group2.id,
-            name: group2.name,
-          },
-          receivingHub: {
-            id: group1.id,
-            name: group1.name,
-          },
-        },
+        // Shipment 2 will be filtered out because of its status
       ])
     })
 
