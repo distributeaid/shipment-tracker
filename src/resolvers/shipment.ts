@@ -33,12 +33,41 @@ const listShipmentsInput = Type.Object(
   { additionalProperties: false },
 )
 
+const SHIPMENT_STATUSES_ALLOWED_FOR_CAPTAINS = [
+  ShipmentStatus.Announced,
+  ShipmentStatus.Open,
+  ShipmentStatus.Staging,
+]
+
 const validateListShipmentsInput = validateWithJSONSchema(listShipmentsInput)
 
-const listShipments: QueryResolvers['listShipments'] = async (_, input) => {
+const listShipments: QueryResolvers['listShipments'] = async (
+  _,
+  input,
+  context,
+) => {
   const valid = validateListShipmentsInput(input)
   if ('errors' in valid) {
     throw new UserInputError('List shipments input invalid', valid.errors)
+  }
+
+  if (!context.auth.isAdmin) {
+    // Group captains can only view a subset of shipments by status
+    if (valid.value.status == null) {
+      return Shipment.findAll({
+        where: {
+          status: SHIPMENT_STATUSES_ALLOWED_FOR_CAPTAINS,
+        },
+      })
+    } else {
+      return Shipment.findAll({
+        where: {
+          status: valid.value.status.filter((status) =>
+            SHIPMENT_STATUSES_ALLOWED_FOR_CAPTAINS.includes(status),
+          ),
+        },
+      })
+    }
   }
 
   if (valid.value.status !== undefined) {

@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { FunctionComponent, useMemo, useState } from 'react'
+import { FunctionComponent, useContext, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Column, useSortBy, useTable } from 'react-table'
 import Badge from '../../components/Badge'
@@ -7,6 +7,7 @@ import ButtonLink from '../../components/ButtonLink'
 import DropdownMenu from '../../components/DropdownMenu'
 import CheckboxField from '../../components/forms/CheckboxField'
 import TableHeader from '../../components/table/TableHeader'
+import { UserProfileContext } from '../../components/UserProfileContext'
 import { SHIPMENT_STATUS_OPTIONS } from '../../data/constants'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
@@ -56,14 +57,38 @@ const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
   },
 ]
 
-const ShipmentList: FunctionComponent = () => {
-  const [shipmentStatuses, setShipmentStatuses] = useState([
-    ShipmentStatus.Open,
-    ShipmentStatus.Staging,
-    ShipmentStatus.Announced,
-    ShipmentStatus.InProgress,
-  ])
+// Group captains can only see a subset of shipment statuses
+const NON_ADMIN_STATUSES = [
+  ShipmentStatus.Open,
+  ShipmentStatus.Staging,
+  ShipmentStatus.Announced,
+]
 
+const getShipmentStatusOptions = (isAdmin = false) => {
+  if (isAdmin) {
+    return [...SHIPMENT_STATUS_OPTIONS]
+  } else {
+    return SHIPMENT_STATUS_OPTIONS.filter((status) =>
+      NON_ADMIN_STATUSES.includes(status.value),
+    )
+  }
+}
+
+const ShipmentList: FunctionComponent = () => {
+  const { profile } = useContext(UserProfileContext)
+
+  const [shipmentStatuses, setShipmentStatuses] = useState(
+    profile?.isAdmin
+      ? [
+          ShipmentStatus.Open,
+          ShipmentStatus.Staging,
+          ShipmentStatus.Announced,
+          ShipmentStatus.InProgress,
+        ]
+      : [...NON_ADMIN_STATUSES],
+  )
+
+  // This query runs every time the shipment status list is updated
   const { data, error } = useAllShipmentsQuery({
     variables: { status: shipmentStatuses },
   })
@@ -79,13 +104,8 @@ const ShipmentList: FunctionComponent = () => {
   // We must memoize the data for react-table to function properly
   const shipments = useMemo(() => data?.listShipments || [], [data])
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({ columns: COLUMNS, data: shipments }, useSortBy)
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable({ columns: COLUMNS, data: shipments }, useSortBy)
 
   return (
     <LayoutWithNav>
@@ -97,7 +117,7 @@ const ShipmentList: FunctionComponent = () => {
           </div>
           <div className="mt-4">
             <DropdownMenu label="Shipment status" position="right">
-              {SHIPMENT_STATUS_OPTIONS.map((status) => (
+              {getShipmentStatusOptions(profile?.isAdmin).map((status) => (
                 <DropdownMenu.Text key={status.value}>
                   <CheckboxField
                     label={status.label}
