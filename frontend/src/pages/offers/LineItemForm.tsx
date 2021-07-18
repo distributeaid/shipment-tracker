@@ -1,7 +1,8 @@
 import _pick from 'lodash/pick'
-import { FunctionComponent, useEffect, useState } from 'react'
+import { ChangeEvent, FunctionComponent, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
+import InlineError from '../../components/forms/InlineError'
 import PlaceholderField from '../../components/forms/PlaceholderField'
 import SelectField, { SelectOption } from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
@@ -76,9 +77,50 @@ const LineItemForm: FunctionComponent<Props> = ({
     [groups],
   )
 
+  /**
+   * Store the list of dangerous goods. This logic works outside of
+   * react-hook-form.
+   */
   const [dangerousGoodsList, setDangerousGoodsList] = useState<
     DangerousGoods[]
   >([])
+  /**
+   * Force the user to confirm their selection when a pallet has no dangerous
+   * goods.
+   */
+  const [confirmNoDangerousGoods, setConfirmNoDangerousGoods] = useState(false)
+  /**
+   * Show a validation error when the user didn't confirm that their pallet
+   * contains no dangerous goods.
+   */
+  const [showDangerousGoodsError, setShowDangerousGoodsError] = useState(false)
+
+  /**
+   * Toggle the confirmation that the pallet contains no dangerous goods
+   */
+  const toggleNoDangerousGoods = (event: ChangeEvent<HTMLInputElement>) => {
+    const checked = event.currentTarget.checked
+    if (checked) {
+      setConfirmNoDangerousGoods(true)
+      setDangerousGoodsList([])
+    } else {
+      setConfirmNoDangerousGoods(false)
+    }
+    setShowDangerousGoodsError(false)
+  }
+
+  /**
+   * Add or remove a category to the list of dangerous goods.
+   */
+  const toggleDangerousGood = (value: DangerousGoods) => {
+    if (dangerousGoodsList.includes(value)) {
+      setDangerousGoodsList(dangerousGoodsList.filter((g) => g !== value))
+    } else {
+      setDangerousGoodsList([...dangerousGoodsList, value])
+      setConfirmNoDangerousGoods(false)
+      setShowDangerousGoodsError(false)
+    }
+  }
 
   const {
     register,
@@ -159,6 +201,13 @@ const LineItemForm: FunctionComponent<Props> = ({
       return
     }
 
+    // If the user hasn't checked any dangerous goods and hasn't checked the
+    // "No dangerous goods" checkbox, we force them to
+    if (!confirmNoDangerousGoods && dangerousGoodsList.length === 0) {
+      setShowDangerousGoodsError(true)
+      return
+    }
+
     // Override the list of dangerous goods because it's not controlled by
     // react-hook-form
     input.dangerousGoods = dangerousGoodsList
@@ -202,20 +251,12 @@ const LineItemForm: FunctionComponent<Props> = ({
     })
   })
 
-  const toggleDangerousGood = (value: DangerousGoods) => {
-    if (dangerousGoodsList.includes(value)) {
-      setDangerousGoodsList(dangerousGoodsList.filter((g) => g !== value))
-    } else {
-      setDangerousGoodsList([...dangerousGoodsList, value])
-    }
-  }
-
   const containerCountLabel = getContainerCountLabel(
     watchContainerType || LineItemContainerType.Unset,
   )
 
   return (
-    <form onSubmit={submitForm}>
+    <form onSubmit={submitForm} className="pb-12">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-gray-700 text-lg flex items-center">
           Line Item {lineItemIsLoading && <Spinner className="ml-2" />}
@@ -354,6 +395,20 @@ const LineItemForm: FunctionComponent<Props> = ({
         <legend className="font-semibold text-gray-700 mb-4">
           Dangerous goods
         </legend>
+        {showDangerousGoodsError && (
+          <InlineError id="dangerous-goods-error">
+            Please either confirm that there are no dangerous goods in this
+            pallet or select the types of dangerous goods it includes.
+          </InlineError>
+        )}
+        <label className="inline-flex items-center space-x-2 cursor-pointer mb-4">
+          <input
+            type="checkbox"
+            checked={confirmNoDangerousGoods}
+            onChange={toggleNoDangerousGoods}
+          />
+          <span>No dangerous goods</span>
+        </label>
         <div className="md:grid grid-cols-3 rounded-sm gap-4">
           {DANGEROUS_GOODS_LIST.map((good) => (
             <label
