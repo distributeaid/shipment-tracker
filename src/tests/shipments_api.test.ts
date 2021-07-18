@@ -1,4 +1,4 @@
-import { ApolloServerTestClient } from 'apollo-server-testing'
+import { ApolloServer } from 'apollo-server-express'
 import gql from 'graphql-tag'
 import Group from '../models/group'
 import Shipment from '../models/shipment'
@@ -8,17 +8,15 @@ import { sequelize } from '../sequelize'
 import {
   GroupType,
   Shipment as GqlShipment,
-  ShipmentCreateInput,
   ShipmentStatus,
-  ShipmentUpdateInput,
   ShippingRoute,
 } from '../server-internal-types'
 import { makeAdminTestServer, makeTestServer } from '../testServer'
-import { createGroup, createShipment } from './helpers'
+import { createGroup, createShipment, TypedGraphQLResponse } from './helpers'
 
 describe('Shipments API', () => {
-  let testServer: ApolloServerTestClient,
-    adminTestServer: ApolloServerTestClient,
+  let testServer: ApolloServer,
+    adminTestServer: ApolloServer,
     group1: Group,
     group2: Group
 
@@ -52,7 +50,7 @@ describe('Shipments API', () => {
 
   describe('addShipment', () => {
     const ADD_SHIPMENT = gql`
-      mutation($input: ShipmentCreateInput!) {
+      mutation ($input: ShipmentCreateInput!) {
         addShipment(input: $input) {
           id
           shippingRoute
@@ -66,11 +64,8 @@ describe('Shipments API', () => {
     `
 
     it('forbids non-admin access', async () => {
-      const res = await testServer.mutate<
-        { addShipment: Shipment },
-        { input: ShipmentCreateInput }
-      >({
-        mutation: ADD_SHIPMENT,
+      const res = (await testServer.executeOperation({
+        query: ADD_SHIPMENT,
         variables: {
           input: {
             shippingRoute: ShippingRoute.UkToFr,
@@ -81,7 +76,7 @@ describe('Shipments API', () => {
             status: ShipmentStatus.Open,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ addShipment: Shipment }>
 
       expect(res.errors).not.toBeUndefined()
       expect(res.errors).not.toBeEmpty()
@@ -96,11 +91,8 @@ describe('Shipments API', () => {
     })
 
     it('adds a new shipment', async () => {
-      const res = await adminTestServer.mutate<
-        { addShipment: Shipment },
-        { input: ShipmentCreateInput }
-      >({
-        mutation: ADD_SHIPMENT,
+      const res = (await adminTestServer.executeOperation({
+        query: ADD_SHIPMENT,
         variables: {
           input: {
             shippingRoute: ShippingRoute.UkToFr,
@@ -111,7 +103,7 @@ describe('Shipments API', () => {
             status: ShipmentStatus.Open,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ addShipment: Shipment }>
 
       expect(res.errors).toBeUndefined()
       expect(res?.data?.addShipment?.shippingRoute).toEqual(
@@ -128,7 +120,7 @@ describe('Shipments API', () => {
     let shipment: Shipment
 
     const UPDATE_SHIPMENT = gql`
-      mutation($id: Int!, $input: ShipmentUpdateInput!) {
+      mutation ($id: Int!, $input: ShipmentUpdateInput!) {
         updateShipment(id: $id, input: $input) {
           id
           status
@@ -155,18 +147,15 @@ describe('Shipments API', () => {
     })
 
     it('forbids non-admin access', async () => {
-      const res = await testServer.mutate<
-        { updateShipment: Shipment },
-        { id: number; input: ShipmentUpdateInput }
-      >({
-        mutation: UPDATE_SHIPMENT,
+      const res = (await testServer.executeOperation({
+        query: UPDATE_SHIPMENT,
         variables: {
           id: shipment.id,
           input: {
             status: ShipmentStatus.Complete,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ updateShipment: Shipment }>
 
       expect(res.errors).not.toBeUndefined()
       expect(res.errors).not.toBeEmpty()
@@ -177,18 +166,15 @@ describe('Shipments API', () => {
 
     describe('with a shipment that does not exist', () => {
       it('returns an error', async () => {
-        const res = await adminTestServer.mutate<
-          { updateShipment: Shipment },
-          { id: number; input: ShipmentUpdateInput }
-        >({
-          mutation: UPDATE_SHIPMENT,
+        const res = (await adminTestServer.executeOperation({
+          query: UPDATE_SHIPMENT,
           variables: {
             id: 43,
             input: {
               status: ShipmentStatus.Complete,
             },
           },
-        })
+        })) as TypedGraphQLResponse<{ updateShipment: Shipment }>
 
         expect(res.errors).not.toBeUndefined()
         expect(res.errors).not.toBeEmpty()
@@ -198,18 +184,15 @@ describe('Shipments API', () => {
 
     describe('with a sending hub that does not exist', () => {
       it('returns an error', async () => {
-        const res = await adminTestServer.mutate<
-          { updateShipment: Shipment },
-          { id: number; input: ShipmentUpdateInput }
-        >({
-          mutation: UPDATE_SHIPMENT,
+        const res = (await adminTestServer.executeOperation({
+          query: UPDATE_SHIPMENT,
           variables: {
             id: shipment.id,
             input: {
               sendingHubId: 43,
             },
           },
-        })
+        })) as TypedGraphQLResponse<{ updateShipment: Shipment }>
 
         expect(res.errors).not.toBeUndefined()
         expect(res.errors).not.toBeEmpty()
@@ -221,18 +204,15 @@ describe('Shipments API', () => {
 
     describe('with a receiving hub that does not exist', () => {
       it('returns an error', async () => {
-        const res = await adminTestServer.mutate<
-          { updateShipment: Shipment },
-          { id: number; input: ShipmentUpdateInput }
-        >({
-          mutation: UPDATE_SHIPMENT,
+        const res = (await adminTestServer.executeOperation({
+          query: UPDATE_SHIPMENT,
           variables: {
             id: shipment.id,
             input: {
               receivingHubId: 43,
             },
           },
-        })
+        })) as TypedGraphQLResponse<{ updateShipment: Shipment }>
 
         expect(res.errors).not.toBeUndefined()
         expect(res.errors).not.toBeEmpty()
@@ -244,11 +224,8 @@ describe('Shipments API', () => {
 
     describe('with a valid parameter passed in', () => {
       it('updates the shipment', async () => {
-        const res = await adminTestServer.mutate<
-          { updateShipment: Shipment },
-          { id: number; input: ShipmentUpdateInput }
-        >({
-          mutation: UPDATE_SHIPMENT,
+        const res = (await adminTestServer.executeOperation({
+          query: UPDATE_SHIPMENT,
           variables: {
             id: shipment.id,
             input: {
@@ -258,7 +235,7 @@ describe('Shipments API', () => {
               },
             },
           },
-        })
+        })) as TypedGraphQLResponse<{ updateShipment: Shipment }>
 
         expect(res.errors).toBeUndefined()
         expect(res.data?.updateShipment?.id).toBe(shipment.id)
@@ -317,9 +294,11 @@ describe('Shipments API', () => {
     })
 
     it('lists existing shipments', async () => {
-      const res = await testServer.query<{ listShipments: Shipment[] }>({
+      const res = (await testServer.executeOperation({
         query: LIST_SHIPMENTS,
-      })
+      })) as TypedGraphQLResponse<{
+        listShipments: Shipment[]
+      }>
 
       expect(res.errors).toBeUndefined()
       expect(res?.data?.listShipments).toIncludeSameMembers([
@@ -351,12 +330,14 @@ describe('Shipments API', () => {
     })
 
     it('filters shipments by status', async () => {
-      const res = await testServer.query<{ listShipments: Shipment[] }>({
+      const res = (await testServer.executeOperation({
         query: LIST_SHIPMENTS,
         variables: {
           status: [ShipmentStatus.Open],
         },
-      })
+      })) as TypedGraphQLResponse<{
+        listShipments: Shipment[]
+      }>
 
       expect(res.errors).toBeUndefined()
       expect(res?.data?.listShipments).toIncludeSameMembers([
@@ -399,7 +380,7 @@ describe('Shipments API', () => {
     })
 
     const SHIPMENT = gql`
-      query($id: Int!) {
+      query ($id: Int!) {
         shipment(id: $id) {
           shippingRoute
         }
@@ -407,7 +388,7 @@ describe('Shipments API', () => {
     `
 
     const SHIPMENT_WITH_EXPORTS = gql`
-      query($id: Int!) {
+      query ($id: Int!) {
         shipment(id: $id) {
           shippingRoute
           exports {
@@ -420,7 +401,7 @@ describe('Shipments API', () => {
 
     describe('with no id', () => {
       it('returns an error', async () => {
-        const res = await testServer.query({ query: SHIPMENT })
+        const res = await testServer.executeOperation({ query: SHIPMENT })
 
         expect(res.errors).not.toBeUndefined()
         expect(res.errors).not.toBeEmpty()
@@ -434,20 +415,22 @@ describe('Shipments API', () => {
     describe('with a parameter passed in', () => {
       describe('a valid id', () => {
         it('returns the correct group', async () => {
-          const res = await testServer.query<{ shipment: Shipment }>({
+          const res = (await testServer.executeOperation({
             query: SHIPMENT,
             variables: { id: shipment.id },
-          })
+          })) as TypedGraphQLResponse<{ shipment: Shipment }>
 
           expect(res.errors).toBeUndefined()
           expect(res.data?.shipment?.shippingRoute).toBe(shipment.shippingRoute)
         })
 
         it('returns exports when admins ask for them', async () => {
-          const res = await adminTestServer.query<{ shipment: GqlShipment }>({
+          const res = (await adminTestServer.executeOperation({
             query: SHIPMENT_WITH_EXPORTS,
             variables: { id: shipment.id },
-          })
+          })) as TypedGraphQLResponse<{
+            shipment: GqlShipment
+          }>
 
           expect(res.errors).toBeUndefined()
 
@@ -461,10 +444,10 @@ describe('Shipments API', () => {
 
       describe('with an invalid id', () => {
         it('returns a nice error', async () => {
-          const res = await testServer.query<{ shipment: Shipment }>({
+          const res = (await testServer.executeOperation({
             query: SHIPMENT,
             variables: { id: 17 },
-          })
+          })) as TypedGraphQLResponse<{ shipment: Shipment }>
 
           expect(res.errors).not.toBeUndefined()
           expect(res.errors).not.toBeEmpty()

@@ -1,4 +1,4 @@
-import { ApolloServerTestClient } from 'apollo-server-testing'
+import { ApolloServer } from 'apollo-server-express'
 import gql from 'graphql-tag'
 import { fakeUserAuth } from '../authenticateRequest'
 import Group from '../models/group'
@@ -13,7 +13,6 @@ import {
   LineItemCategory,
   LineItemContainerType,
   LineItemStatus,
-  LineItemUpdateInput,
   OfferStatus,
   PalletType,
   PaymentStatus,
@@ -21,11 +20,12 @@ import {
   ShippingRoute,
 } from '../server-internal-types'
 import { makeAdminTestServer, makeTestServer } from '../testServer'
+import { TypedGraphQLResponse } from './helpers'
 
 describe('LineItems API', () => {
-  let adminTestServer: ApolloServerTestClient,
-    captainTestServer: ApolloServerTestClient,
-    otherUserTestServer: ApolloServerTestClient,
+  let adminTestServer: ApolloServer,
+    captainTestServer: ApolloServer,
+    otherUserTestServer: ApolloServer,
     shipment: Shipment,
     group: Group,
     offer: Offer,
@@ -80,7 +80,7 @@ describe('LineItems API', () => {
 
   describe('lineItem', () => {
     const GET_LINE_ITEM = gql`
-      query($id: Int!) {
+      query ($id: Int!) {
         lineItem(id: $id) {
           id
           offerPalletId
@@ -135,7 +135,7 @@ describe('LineItems API', () => {
     })
 
     it('returns the line item for captains', async () => {
-      const res = await captainTestServer.query({
+      const res = await captainTestServer.executeOperation({
         query: GET_LINE_ITEM,
         variables: { id: lineItem.id },
       })
@@ -147,7 +147,7 @@ describe('LineItems API', () => {
     })
 
     it('returns the line item for admins', async () => {
-      const res = await adminTestServer.query({
+      const res = await adminTestServer.executeOperation({
         query: GET_LINE_ITEM,
         variables: { id: lineItem.id },
       })
@@ -159,7 +159,7 @@ describe('LineItems API', () => {
     })
 
     it('forbids access to other users', async () => {
-      const res = await otherUserTestServer.query({
+      const res = await otherUserTestServer.executeOperation({
         query: GET_LINE_ITEM,
         variables: { id: lineItem.id },
       })
@@ -170,7 +170,7 @@ describe('LineItems API', () => {
 
   describe('addLineItem', () => {
     const ADD_LINE_ITEM = gql`
-      mutation($palletId: Int!) {
+      mutation ($palletId: Int!) {
         addLineItem(palletId: $palletId) {
           offerPalletId
           status
@@ -187,15 +187,12 @@ describe('LineItems API', () => {
     `
 
     it('creates a new line item', async () => {
-      const res = await captainTestServer.mutate<
-        { addLineItem: LineItem },
-        { palletId: number }
-      >({
-        mutation: ADD_LINE_ITEM,
+      const res = (await captainTestServer.executeOperation({
+        query: ADD_LINE_ITEM,
         variables: {
           palletId: pallet.id,
         },
-      })
+      })) as TypedGraphQLResponse<{ addLineItem: LineItem }>
 
       expect(res.errors).toBeUndefined()
 
@@ -227,7 +224,7 @@ describe('LineItems API', () => {
 
     describe('updateLineItem', () => {
       const UPDATE_LINE_ITEM = gql`
-        mutation($id: Int!, $input: LineItemUpdateInput!) {
+        mutation ($id: Int!, $input: LineItemUpdateInput!) {
           updateLineItem(id: $id, input: $input) {
             offerPalletId
             status
@@ -244,11 +241,8 @@ describe('LineItems API', () => {
       `
 
       it('udpates an existing line item', async () => {
-        const res = await captainTestServer.mutate<
-          { updateLineItem: LineItem },
-          { id: number; input: LineItemUpdateInput }
-        >({
-          mutation: UPDATE_LINE_ITEM,
+        const res = (await captainTestServer.executeOperation({
+          query: UPDATE_LINE_ITEM,
           variables: {
             id: lineItem.id,
             input: {
@@ -256,7 +250,7 @@ describe('LineItems API', () => {
               category: LineItemCategory.Electronics,
             },
           },
-        })
+        })) as TypedGraphQLResponse<{ updateLineItem: LineItem }>
 
         expect(res.errors).toBeUndefined()
         expect(res.data?.updateLineItem?.status).toEqual(
@@ -270,7 +264,7 @@ describe('LineItems API', () => {
 
     describe('destroyLineItem', () => {
       const DESTROY_LINE_ITEM = gql`
-        mutation($id: Int!) {
+        mutation ($id: Int!) {
           destroyLineItem(id: $id) {
             id
             lineItems {
@@ -281,15 +275,12 @@ describe('LineItems API', () => {
       `
 
       it('destroys an existing line item', async () => {
-        const res = await captainTestServer.mutate<
-          { destroyLineItem: Pallet },
-          { id: number }
-        >({
-          mutation: DESTROY_LINE_ITEM,
+        const res = (await captainTestServer.executeOperation({
+          query: DESTROY_LINE_ITEM,
           variables: {
             id: lineItem.id,
           },
-        })
+        })) as TypedGraphQLResponse<{ destroyLineItem: Pallet }>
 
         expect(res.errors).toBeUndefined()
         expect(res.data?.destroyLineItem?.lineItems.length).toEqual(0)
@@ -300,7 +291,7 @@ describe('LineItems API', () => {
       let palletTwo: Pallet
 
       const MOVE_LINE_ITEM = gql`
-        mutation($id: Int!, $targetPalletId: Int!) {
+        mutation ($id: Int!, $targetPalletId: Int!) {
           moveLineItem(id: $id, targetPalletId: $targetPalletId) {
             pallets {
               id
@@ -322,16 +313,13 @@ describe('LineItems API', () => {
       })
 
       it('moves the line item to another pallet in the same offer', async () => {
-        const res = await captainTestServer.mutate<
-          { moveLineItem: Offer },
-          { id: number; targetPalletId: number }
-        >({
-          mutation: MOVE_LINE_ITEM,
+        const res = (await captainTestServer.executeOperation({
+          query: MOVE_LINE_ITEM,
           variables: {
             id: lineItem.id,
             targetPalletId: palletTwo.id,
           },
-        })
+        })) as TypedGraphQLResponse<{ moveLineItem: Offer }>
 
         expect(res.errors).toBeUndefined()
 

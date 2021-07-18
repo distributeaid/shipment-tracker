@@ -1,3 +1,4 @@
+import { GraphQLResponse } from 'apollo-server-types'
 import { Maybe } from 'graphql/jsutils/Maybe'
 import Group from '../../models/group'
 import Shipment from '../../models/shipment'
@@ -31,3 +32,8 @@ async function createShipment(input: ShipmentCreateInput): Promise<Shipment> {
 }
 
 export { createGroup, createShipment }
+
+export type TypedGraphQLResponse<DataType extends Record<string, any>> = Omit<
+  GraphQLResponse,
+  'data'
+> & { data: DataType | null | undefined }

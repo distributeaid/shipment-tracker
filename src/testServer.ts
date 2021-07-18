@@ -1,5 +1,4 @@
 import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
-import { ApolloServerTestClient, createTestClient } from 'apollo-server-testing'
 import { merge } from 'lodash'
 import { serverConfig, Services } from './apolloServer'
 import { fakeAdminAuth, fakeUserAuth } from './authenticateRequest'
@@ -28,7 +27,7 @@ const makeFakeGenerateCsvFn = () => {
 
 export const makeTestServer = async (
   overrides: Partial<ApolloServerExpressConfig> = {},
-): Promise<ApolloServerTestClient> => {
+): Promise<ApolloServer> => {
   if (overrides.context == null) {
     const userAccount = await UserAccount.create({
       auth0Id: 'user-auth0-id',
@@ -42,7 +41,7 @@ export const makeTestServer = async (
     })
   }
 
-  return createTestClient(new ApolloServer(merge(serverConfig, overrides)))
+  return new ApolloServer(merge(serverConfig, overrides))
 }
 
 export const makeAdminTestServer = async (
