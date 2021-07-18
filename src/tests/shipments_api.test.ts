@@ -346,12 +346,12 @@ describe('Shipments API', () => {
     })
 
     test('access denied error if filtering with denied shipment status as non-admin', async () => {
-      const res = await testServer.query<{ listShipments: Shipment[] }>({
+      const res = (await testServer.executeOperation({
         query: LIST_SHIPMENTS,
         variables: {
           status: [ShipmentStatus.InProgress],
         },
-      })
+      })) as TypedGraphQLResponse<{ listShipments: Shipment[] }>
 
       expect(res.errors).not.toBeUndefined()
       expect(res.errors).not.toBeEmpty()
@@ -473,10 +473,10 @@ describe('Shipments API', () => {
       })
     })
     test('access denied error if requesting shipment with denied shipment status as non-admin', async () => {
-      const res = await testServer.query<{ shipment: Shipment }>({
+      const res = (await testServer.executeOperation({
         query: SHIPMENT,
         variables: { id: adminOnlyShipment.id },
-      })
+      })) as TypedGraphQLResponse<{ shipment: Shipment }>
 
       expect(res.errors).not.toBeUndefined()
       expect(res.errors).not.toBeEmpty()
