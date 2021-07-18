@@ -20,6 +20,12 @@ import {
 } from './input-validation/types'
 import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
 
+const SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS: Readonly<ShipmentStatus[]> = [
+  ShipmentStatus.Announced,
+  ShipmentStatus.Open,
+  ShipmentStatus.Staging,
+] as const
+
 // Shipment query resolvers
 
 // - list shipments by status
@@ -33,12 +39,6 @@ const listShipmentsInput = Type.Object(
   { additionalProperties: false },
 )
 
-const SHIPMENT_STATUSES_ALLOWED_FOR_CAPTAINS = [
-  ShipmentStatus.Announced,
-  ShipmentStatus.Open,
-  ShipmentStatus.Staging,
-]
-
 const validateListShipmentsInput = validateWithJSONSchema(listShipmentsInput)
 
 const listShipments: QueryResolvers['listShipments'] = async (
@@ -50,40 +50,41 @@ const listShipments: QueryResolvers['listShipments'] = async (
   if ('errors' in valid) {
     throw new UserInputError('List shipments input invalid', valid.errors)
   }
+  const { status } = valid.value
 
-  if (!context.auth.isAdmin) {
-    // Group captains can only view a subset of shipments by status
-    if (valid.value.status == null) {
-      return Shipment.findAll({
-        where: {
-          status: SHIPMENT_STATUSES_ALLOWED_FOR_CAPTAINS,
-        },
-      })
-    } else {
-      return Shipment.findAll({
-        where: {
-          status: valid.value.status.filter((status) =>
-            SHIPMENT_STATUSES_ALLOWED_FOR_CAPTAINS.includes(status),
-          ),
-        },
-      })
-    }
+  if (!context.auth.isAdmin && status !== undefined) {
+    const forbiddenStatus = status.filter(
+      (s) => !SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS.includes(s),
+    )
+    if (forbiddenStatus.length > 0)
+      throw new ForbiddenError(
+        `non-admin users are not allowed to view shipments with status ${forbiddenStatus.join(
+          ', ',
+        )}`,
+      )
   }
 
-  if (valid.value.status !== undefined) {
+  if (status !== undefined) {
     return Shipment.findAll({
       where: {
-        status: valid.value.status,
+        status,
       },
     })
   }
+
+  if (!context.auth.isAdmin)
+    return Shipment.findAll({
+      where: {
+        status: SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS,
+      },
+    })
 
   return Shipment.findAll()
 }
 
 // - get shipment
 
-const shipment: QueryResolvers['shipment'] = async (_, { id }) => {
+const shipment: QueryResolvers['shipment'] = async (_, { id }, context) => {
   const valid = validateIdInput({ id })
   if ('errors' in valid) {
     throw new UserInputError('Get shipment input invalid', valid.errors)
@@ -93,6 +94,15 @@ const shipment: QueryResolvers['shipment'] = async (_, { id }) => {
 
   if (!shipment) {
     throw new ApolloError(`No shipment exists with ID "${valid.value.id}"`)
+  }
+
+  if (
+    !context.auth.isAdmin &&
+    !SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS.includes(shipment.status)
+  ) {
+    throw new ForbiddenError(
+      `non-admin users are not allowed to view shipments with status ${shipment.status}`,
+    )
   }
 
   return shipment

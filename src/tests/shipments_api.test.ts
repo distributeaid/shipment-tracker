@@ -363,10 +363,27 @@ describe('Shipments API', () => {
         },
       ])
     })
+
+    test('access denied error if filtering with denied shipment status as non-admin', async () => {
+      const res = await testServer.query<{ listShipments: Shipment[] }>({
+        query: LIST_SHIPMENTS,
+        variables: {
+          status: [ShipmentStatus.InProgress],
+        },
+      })
+
+      expect(res.errors).not.toBeUndefined()
+      expect(res.errors).not.toBeEmpty()
+      expect(res.errors?.[0]?.message).toBe(
+        `non-admin users are not allowed to view shipments with status ${ShipmentStatus.InProgress}`,
+      )
+    })
   })
 
   describe('shipment', () => {
-    let shipment: Shipment, shipmentExport: ShipmentExport
+    let shipment: Shipment,
+      adminOnlyShipment: Shipment,
+      shipmentExport: ShipmentExport
 
     beforeEach(async () => {
       shipment = await createShipment({
@@ -376,6 +393,15 @@ describe('Shipments API', () => {
         sendingHubId: group1.id,
         receivingHubId: group2.id,
         status: ShipmentStatus.Open,
+      })
+
+      adminOnlyShipment = await createShipment({
+        shippingRoute: ShippingRoute.UkToFr,
+        labelYear: nextYear,
+        labelMonth: 1,
+        sendingHubId: group1.id,
+        receivingHubId: group2.id,
+        status: ShipmentStatus.InProgress,
       })
 
       const user = await UserAccount.findOne()
@@ -462,6 +488,18 @@ describe('Shipments API', () => {
           )
         })
       })
+    })
+    test('access denied error if requesting shipment with denied shipment status as non-admin', async () => {
+      const res = await testServer.query<{ shipment: Shipment }>({
+        query: SHIPMENT,
+        variables: { id: adminOnlyShipment.id },
+      })
+
+      expect(res.errors).not.toBeUndefined()
+      expect(res.errors).not.toBeEmpty()
+      expect(res.errors?.[0]?.message).toBe(
+        'non-admin users are not allowed to view shipments with status IN_PROGRESS',
+      )
     })
   })
 })
