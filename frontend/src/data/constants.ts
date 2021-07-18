@@ -143,7 +143,7 @@ export const PALLET_CONFIGS: PalletConfig[] = [
     type: PalletType.Standard,
     weightKg: 700,
     lengthCm: 120,
-    widthCm: 120,
+    widthCm: 100,
     heightCm: 175,
   },
   {
@@ -153,14 +153,6 @@ export const PALLET_CONFIGS: PalletConfig[] = [
     lengthCm: 120,
     widthCm: 80,
     heightCm: 175,
-  },
-  {
-    name: 'Ton bag',
-    type: PalletType.Custom,
-    weightKg: 300,
-    lengthCm: 100,
-    widthCm: 100,
-    heightCm: 90,
   },
 ]
 
