@@ -71,38 +71,33 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
     })
   }
 
-  const [
-    createModalIsVisible,
-    showCreateModal,
-    hideCreateModal,
-  ] = useModalState()
+  const [createModalIsVisible, showCreateModal, hideCreateModal] =
+    useModalState()
 
-  const [
-    addPallet,
-    { loading: mutationIsLoading, error: mutationError },
-  ] = useCreatePalletMutation({
-    update: (cache, { data }) => {
-      // Manually update the cache with the new pallet
-      try {
-        const offerData = cache.readQuery<OfferQuery>({
-          query: OfferDocument,
-          variables: { id: offerId },
-        })
+  const [addPallet, { loading: mutationIsLoading, error: mutationError }] =
+    useCreatePalletMutation({
+      update: (cache, { data }) => {
+        // Manually update the cache with the new pallet
+        try {
+          const offerData = cache.readQuery<OfferQuery>({
+            query: OfferDocument,
+            variables: { id: offerId },
+          })
 
-        cache.writeQuery<OfferQuery>({
-          query: OfferDocument,
-          variables: { id: offerId },
-          data: {
-            offer: Object.assign({}, offerData!.offer, {
-              pallets: [...offerData!.offer.pallets, data!.addPallet],
-            }),
-          },
-        })
-      } catch (error) {
-        console.error(error)
-      }
-    },
-  })
+          cache.writeQuery<OfferQuery>({
+            query: OfferDocument,
+            variables: { id: offerId },
+            data: {
+              offer: Object.assign({}, offerData!.offer, {
+                pallets: [...offerData!.offer.pallets, data!.addPallet],
+              }),
+            },
+          })
+        } catch (error) {
+          console.error(error)
+        }
+      },
+    })
 
   const onCreatePallet = (palletType: PalletType) => {
     const newPallet: PalletCreateInput = {
@@ -110,7 +105,15 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
       offerId,
     }
 
-    addPallet({ variables: { input: newPallet } }).then(hideCreateModal)
+    addPallet({ variables: { input: newPallet } }).then((data) => {
+      hideCreateModal()
+
+      // Select the new pallet
+      const palletId = data.data?.addPallet.id
+      if (palletId) {
+        setSelectedPalletId(palletId)
+      }
+    })
   }
 
   const onLineItemDeleted = () => {
