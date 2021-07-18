@@ -305,7 +305,7 @@ const LineItemForm: FunctionComponent<Props> = ({
       </fieldset>
       <fieldset className="space-y-4 mt-12">
         <legend className="font-semibold text-gray-700 ">
-          Dimensions and weight
+          Container dimensions and weight
         </legend>
         <div className="md:flex md:space-x-4">
           <TextField

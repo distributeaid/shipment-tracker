@@ -44,7 +44,11 @@ const ViewLineItem: FunctionComponent<Props> = ({
   onLineItemDeleted,
   editLineItem,
 }) => {
-  const { data, refetch, loading: lineItemIsLoading } = useLineItemQuery({
+  const {
+    data,
+    refetch,
+    loading: lineItemIsLoading,
+  } = useLineItemQuery({
     variables: { id: lineItemId },
   })
 
@@ -162,7 +166,7 @@ const ViewLineItem: FunctionComponent<Props> = ({
           </fieldset>
           <fieldset className="space-y-4 mt-12">
             <legend className="font-semibold text-gray-700 ">
-              Dimensions and weight
+              Container dimensions and weight
             </legend>
             <div className="md:flex md:space-x-8">
               <ReadOnlyField label="Width">
