@@ -20,6 +20,12 @@ import {
 } from './input-validation/types'
 import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
 
+const SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS: Readonly<ShipmentStatus[]> = [
+  ShipmentStatus.Announced,
+  ShipmentStatus.Open,
+  ShipmentStatus.Staging,
+] as const
+
 // Shipment query resolvers
 
 // - list shipments by status
@@ -35,26 +41,50 @@ const listShipmentsInput = Type.Object(
 
 const validateListShipmentsInput = validateWithJSONSchema(listShipmentsInput)
 
-const listShipments: QueryResolvers['listShipments'] = async (_, input) => {
+const listShipments: QueryResolvers['listShipments'] = async (
+  _,
+  input,
+  context,
+) => {
   const valid = validateListShipmentsInput(input)
   if ('errors' in valid) {
     throw new UserInputError('List shipments input invalid', valid.errors)
   }
+  const { status } = valid.value
 
-  if (valid.value.status !== undefined) {
+  if (!context.auth.isAdmin && status !== undefined) {
+    const forbiddenStatus = status.filter(
+      (s) => !SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS.includes(s),
+    )
+    if (forbiddenStatus.length > 0)
+      throw new ForbiddenError(
+        `non-admin users are not allowed to view shipments with status ${forbiddenStatus.join(
+          ', ',
+        )}`,
+      )
+  }
+
+  if (status !== undefined) {
     return Shipment.findAll({
       where: {
-        status: valid.value.status,
+        status,
       },
     })
   }
+
+  if (!context.auth.isAdmin)
+    return Shipment.findAll({
+      where: {
+        status: SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS,
+      },
+    })
 
   return Shipment.findAll()
 }
 
 // - get shipment
 
-const shipment: QueryResolvers['shipment'] = async (_, { id }) => {
+const shipment: QueryResolvers['shipment'] = async (_, { id }, context) => {
   const valid = validateIdInput({ id })
   if ('errors' in valid) {
     throw new UserInputError('Get shipment input invalid', valid.errors)
@@ -64,6 +94,15 @@ const shipment: QueryResolvers['shipment'] = async (_, { id }) => {
 
   if (!shipment) {
     throw new ApolloError(`No shipment exists with ID "${valid.value.id}"`)
+  }
+
+  if (
+    !context.auth.isAdmin &&
+    !SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS.includes(shipment.status)
+  ) {
+    throw new ForbiddenError(
+      `non-admin users are not allowed to view shipments with status ${shipment.status}`,
+    )
   }
 
   return shipment
