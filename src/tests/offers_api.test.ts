@@ -92,7 +92,7 @@ describe('Offers API', () => {
       }
     `
 
-    describe('creation', () => {
+    describe('creation by captains', () => {
       it('creates a new offer for an OPEN shipment', async () => {
         const res = await captainTestServer.mutate<
           { addOffer: Offer },
@@ -207,25 +207,47 @@ describe('Offers API', () => {
       )
     })
 
-    it('does not allow non-captains to create offers', async () => {
-      const res = await otherUserTestServer.mutate<
-        { addOffer: Offer },
-        { input: OfferCreateInput }
-      >({
-        mutation: ADD_OFFER,
-        variables: {
-          input: {
-            sendingGroupId: captainsGroup.id,
-            shipmentId: shipment.id,
-            contact: { name: 'Savannah', email: 'test@example.com' },
-            photoUris: validPhotoUris,
+    describe('creation by non-captains', () => {
+      it('does not allow non-captains to create offers', async () => {
+        const res = await otherUserTestServer.mutate<
+          { addOffer: Offer },
+          { input: OfferCreateInput }
+        >({
+          mutation: ADD_OFFER,
+          variables: {
+            input: {
+              sendingGroupId: captainsGroup.id,
+              shipmentId: shipment.id,
+              contact: { name: 'Savannah', email: 'test@example.com' },
+              photoUris: validPhotoUris,
+            },
           },
-        },
+        })
+
+        expect(res.errors?.[0].message).toContain(
+          'not permitted to create offer for group',
+        )
       })
 
-      expect(res.errors?.[0].message).toContain(
-        'not permitted to create offer for group',
-      )
+      it('allows admins to create offers', async () => {
+        const res = await adminTestServer.mutate<
+          { addOffer: Offer },
+          { input: OfferCreateInput }
+        >({
+          mutation: ADD_OFFER,
+          variables: {
+            input: {
+              sendingGroupId: captainsGroup.id,
+              shipmentId: shipment.id,
+              contact: { name: 'Savannah', email: 'test@example.com' },
+              photoUris: validPhotoUris,
+            },
+          },
+        })
+
+        expect(res.errors).toBeUndefined()
+        expect(res?.data?.addOffer?.id).toBeNumber()
+      })
     })
 
     it('ensures the shipment exists', async () => {
