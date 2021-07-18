@@ -1,4 +1,4 @@
-import { ApolloServerTestClient } from 'apollo-server-testing'
+import { ApolloServer } from 'apollo-server-express'
 import gql from 'graphql-tag'
 import { fakeUserAuth } from '../authenticateRequest'
 import Group from '../models/group'
@@ -14,19 +14,18 @@ import {
   LineItemContainerType,
   LineItemStatus,
   OfferStatus,
-  PalletCreateInput,
   PalletType,
-  PalletUpdateInput,
   PaymentStatus,
   ShipmentStatus,
   ShippingRoute,
 } from '../server-internal-types'
 import { makeAdminTestServer, makeTestServer } from '../testServer'
+import { TypedGraphQLResponse } from './helpers'
 
 describe('Pallets API', () => {
-  let adminTestServer: ApolloServerTestClient,
-    captainTestServer: ApolloServerTestClient,
-    otherUserTestServer: ApolloServerTestClient,
+  let adminTestServer: ApolloServer,
+    captainTestServer: ApolloServer,
+    otherUserTestServer: ApolloServer,
     shipment: Shipment,
     group: Group,
     offer: Offer,
@@ -77,7 +76,7 @@ describe('Pallets API', () => {
 
   describe('addPallet', () => {
     const ADD_PALLET = gql`
-      mutation($input: PalletCreateInput!) {
+      mutation ($input: PalletCreateInput!) {
         addPallet(input: $input) {
           offerId
           palletType
@@ -87,18 +86,15 @@ describe('Pallets API', () => {
     `
 
     it('creates a new pallet', async () => {
-      const res = await captainTestServer.mutate<
-        { addPallet: Pallet },
-        { input: PalletCreateInput }
-      >({
-        mutation: ADD_PALLET,
+      const res = (await captainTestServer.executeOperation({
+        query: ADD_PALLET,
         variables: {
           input: {
             offerId: offer.id,
             palletType: PalletType.Standard,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ addPallet: Pallet }>
 
       expect(res.errors).toBeUndefined()
       expect(res?.data?.addPallet?.offerId).toEqual(offer.id)
@@ -109,18 +105,15 @@ describe('Pallets API', () => {
     })
 
     it('forbids anyone not a captain of the associated group or admin', async () => {
-      const res = await otherUserTestServer.mutate<
-        { addPallet: Pallet },
-        { input: PalletCreateInput }
-      >({
-        mutation: ADD_PALLET,
+      const res = (await otherUserTestServer.executeOperation({
+        query: ADD_PALLET,
         variables: {
           input: {
             offerId: offer.id,
             palletType: PalletType.Standard,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ addPallet: Pallet }>
 
       expect(res.errors?.[0].message).toEqual('Forbidden to access this offer')
     })
@@ -128,18 +121,15 @@ describe('Pallets API', () => {
     it('is forbidden for the captain when the offer is not in draft', async () => {
       await offer.update({ status: OfferStatus.BeingReviewed })
 
-      const res = await captainTestServer.mutate<
-        { addPallet: Pallet },
-        { input: PalletCreateInput }
-      >({
-        mutation: ADD_PALLET,
+      const res = (await captainTestServer.executeOperation({
+        query: ADD_PALLET,
         variables: {
           input: {
             offerId: offer.id,
             palletType: PalletType.Standard,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ addPallet: Pallet }>
 
       expect(res.errors?.[0].message).toEqual(
         'Cannot modify pallets for offer not in draft state',
@@ -149,18 +139,15 @@ describe('Pallets API', () => {
     it('is forbidden for the captain when the shipment is not open', async () => {
       await shipment.update({ status: ShipmentStatus.Staging })
 
-      const res = await captainTestServer.mutate<
-        { addPallet: Pallet },
-        { input: PalletCreateInput }
-      >({
-        mutation: ADD_PALLET,
+      const res = (await captainTestServer.executeOperation({
+        query: ADD_PALLET,
         variables: {
           input: {
             offerId: offer.id,
             palletType: PalletType.Standard,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ addPallet: Pallet }>
 
       expect(res.errors?.[0].message).toEqual(
         'Cannot modify pallets when the shipment is not open',
@@ -170,18 +157,15 @@ describe('Pallets API', () => {
     it('an admin can create the pallets when the shipment is not open', async () => {
       await shipment.update({ status: ShipmentStatus.Staging })
 
-      const res = await adminTestServer.mutate<
-        { addPallet: Pallet },
-        { input: PalletCreateInput }
-      >({
-        mutation: ADD_PALLET,
+      const res = (await adminTestServer.executeOperation({
+        query: ADD_PALLET,
         variables: {
           input: {
             offerId: offer.id,
             palletType: PalletType.Standard,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ addPallet: Pallet }>
 
       expect(res.errors).toBeUndefined()
       expect(res?.data?.addPallet).not.toBeNil()
@@ -192,7 +176,7 @@ describe('Pallets API', () => {
     let pallet: Pallet
 
     const UPDATE_PALLET = gql`
-      mutation($id: Int!, $input: PalletUpdateInput!) {
+      mutation ($id: Int!, $input: PalletUpdateInput!) {
         updatePallet(id: $id, input: $input) {
           palletType
           paymentStatus
@@ -210,11 +194,8 @@ describe('Pallets API', () => {
     })
 
     it('updates the existing pallet', async () => {
-      const res = await captainTestServer.mutate<
-        { updatePallet: Pallet },
-        { id: number; input: PalletUpdateInput }
-      >({
-        mutation: UPDATE_PALLET,
+      const res = (await captainTestServer.executeOperation({
+        query: UPDATE_PALLET,
         variables: {
           id: pallet.id,
           input: {
@@ -222,7 +203,7 @@ describe('Pallets API', () => {
             palletType: PalletType.Euro,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ updatePallet: Pallet }>
 
       expect(res.errors).toBeUndefined()
     })
@@ -232,7 +213,7 @@ describe('Pallets API', () => {
     let pallet: Pallet, lineItem: LineItem
 
     const GET_PALLET = gql`
-      query($id: Int!) {
+      query ($id: Int!) {
         pallet(id: $id) {
           id
           lineItems {
@@ -265,15 +246,12 @@ describe('Pallets API', () => {
     })
 
     it('updates the existing pallet', async () => {
-      const res = await captainTestServer.mutate<
-        { pallet: Pallet },
-        { id: number }
-      >({
-        mutation: GET_PALLET,
+      const res = (await captainTestServer.executeOperation({
+        query: GET_PALLET,
         variables: {
           id: pallet.id,
         },
-      })
+      })) as TypedGraphQLResponse<{ pallet: Pallet }>
 
       expect(res.errors).toBeUndefined()
       expect(res.data?.pallet?.id).toEqual(pallet.id)
@@ -285,7 +263,7 @@ describe('Pallets API', () => {
     let palletA: Pallet, palletB: Pallet
 
     const DESTROY_PALLET = gql`
-      mutation($id: Int!) {
+      mutation ($id: Int!) {
         destroyPallet(id: $id) {
           id
           pallets {
@@ -312,13 +290,10 @@ describe('Pallets API', () => {
     })
 
     it('destroys the pallet', async () => {
-      const res = await captainTestServer.mutate<
-        { destroyPallet: Offer },
-        { id: number }
-      >({
-        mutation: DESTROY_PALLET,
+      const res = (await captainTestServer.executeOperation({
+        query: DESTROY_PALLET,
         variables: { id: palletA.id },
-      })
+      })) as TypedGraphQLResponse<{ destroyPallet: Offer }>
 
       expect(res.errors).toBeUndefined()
       expect(await Pallet.findByPk(palletA.id)).toBeNull()

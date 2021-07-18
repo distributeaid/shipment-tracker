@@ -1,4 +1,4 @@
-import { ApolloServerTestClient } from 'apollo-server-testing'
+import { ApolloServer } from 'apollo-server-express'
 import gql from 'graphql-tag'
 import Group from '../models/group'
 import LineItem from '../models/line_item'
@@ -22,9 +22,10 @@ import {
   ShippingRoute,
 } from '../server-internal-types'
 import { makeAdminTestServerWithServices, TestServices } from '../testServer'
+import { TypedGraphQLResponse } from './helpers'
 
 describe('ShipmentExports API', () => {
-  let adminTestServer: ApolloServerTestClient,
+  let adminTestServer: ApolloServer,
     shipment: Shipment,
     captain: UserAccount,
     group: Group,
@@ -103,7 +104,7 @@ describe('ShipmentExports API', () => {
 
   describe('exportShipment', () => {
     const LIST_SHIPMENT_EXPORTS = gql`
-      query($shipmentId: Int!) {
+      query ($shipmentId: Int!) {
         listShipmentExports(shipmentId: $shipmentId) {
           id
           shipmentId
@@ -117,7 +118,7 @@ describe('ShipmentExports API', () => {
     `
 
     const EXPORT_SHIPMENT = gql`
-      mutation($shipmentId: Int!) {
+      mutation ($shipmentId: Int!) {
         exportShipment(shipmentId: $shipmentId) {
           id
           shipmentId
@@ -131,15 +132,12 @@ describe('ShipmentExports API', () => {
     `
 
     it('exports to CSV and creates a record of the export, lists it', async () => {
-      const res = await adminTestServer.mutate<
-        { exportShipment: ShipmentExport },
-        { shipmentId: number }
-      >({
-        mutation: EXPORT_SHIPMENT,
+      const res = (await adminTestServer.executeOperation({
+        query: EXPORT_SHIPMENT,
         variables: {
           shipmentId: shipment.id,
         },
-      })
+      })) as TypedGraphQLResponse<{ exportShipment: ShipmentExport }>
 
       expect(res.errors).toBeUndefined()
 
@@ -164,15 +162,12 @@ describe('ShipmentExports API', () => {
         ],
       })
 
-      const listRes = await adminTestServer.query<
-        { listShipmentExports: WireShipmentExport[] },
-        { shipmentId: number }
-      >({
+      const listRes = (await adminTestServer.executeOperation({
         query: LIST_SHIPMENT_EXPORTS,
         variables: {
           shipmentId: shipment.id,
         },
-      })
+      })) as TypedGraphQLResponse<{ listShipmentExports: WireShipmentExport[] }>
 
       expect(listRes.errors).toBeUndefined()
 

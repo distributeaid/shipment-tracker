@@ -1,4 +1,4 @@
-import { ApolloServerTestClient } from 'apollo-server-testing'
+import { ApolloServer } from 'apollo-server-express'
 import gql from 'graphql-tag'
 import { fakeUserAuth } from '../authenticateRequest'
 import Group from '../models/group'
@@ -8,19 +8,17 @@ import UserAccount from '../models/user_account'
 import { sequelize } from '../sequelize'
 import {
   GroupType,
-  OfferCreateInput,
   OfferStatus,
-  OfferUpdateInput,
   ShipmentStatus,
   ShippingRoute,
 } from '../server-internal-types'
 import { makeAdminTestServer, makeTestServer } from '../testServer'
-import { createGroup, createShipment } from './helpers'
+import { createGroup, createShipment, TypedGraphQLResponse } from './helpers'
 
 describe('Offers API', () => {
-  let captainTestServer: ApolloServerTestClient,
-    otherUserTestServer: ApolloServerTestClient,
-    adminTestServer: ApolloServerTestClient,
+  let captainTestServer: ApolloServer,
+    otherUserTestServer: ApolloServer,
+    adminTestServer: ApolloServer,
     captain: UserAccount,
     captainsGroup: Group,
     group2: Group,
@@ -94,11 +92,8 @@ describe('Offers API', () => {
 
     describe('creation by captains', () => {
       it('creates a new offer for an OPEN shipment', async () => {
-        const res = await captainTestServer.mutate<
-          { addOffer: Offer },
-          { input: OfferCreateInput }
-        >({
-          mutation: ADD_OFFER,
+        const res = (await captainTestServer.executeOperation({
+          query: ADD_OFFER,
           variables: {
             input: {
               sendingGroupId: captainsGroup.id,
@@ -107,7 +102,7 @@ describe('Offers API', () => {
               photoUris: validPhotoUris,
             },
           },
-        })
+        })) as TypedGraphQLResponse<{ addOffer: Offer }>
 
         expect(res.errors).toBeUndefined()
         expect(res?.data?.addOffer?.id).toBeNumber()
@@ -137,11 +132,8 @@ describe('Offers API', () => {
             status: shipmentStatus,
           })
 
-          const res = await captainTestServer.mutate<
-            { addOffer: Offer },
-            { input: OfferCreateInput }
-          >({
-            mutation: ADD_OFFER,
+          const res = (await captainTestServer.executeOperation({
+            query: ADD_OFFER,
             variables: {
               input: {
                 sendingGroupId: captainsGroup.id,
@@ -150,7 +142,7 @@ describe('Offers API', () => {
                 photoUris: validPhotoUris,
               },
             },
-          })
+          })) as TypedGraphQLResponse<{ addOffer: Offer }>
 
           expect(res.errors?.[0].message).toContain(
             `Shipment ${shipment.id} is not accepting offers`,
@@ -160,8 +152,8 @@ describe('Offers API', () => {
     })
 
     it('fails validation if photoUris are not valid URLs', async () => {
-      const res = await captainTestServer.mutate({
-        mutation: ADD_OFFER,
+      const res = await captainTestServer.executeOperation({
+        query: ADD_OFFER,
         variables: {
           input: {
             sendingGroupId: captainsGroup.id,
@@ -176,8 +168,8 @@ describe('Offers API', () => {
     })
 
     it('fails validation if missing required inputs', async () => {
-      let res = await captainTestServer.mutate({
-        mutation: ADD_OFFER,
+      let res = await captainTestServer.executeOperation({
+        query: ADD_OFFER,
         variables: {
           input: {
             shipmentId: shipment.id,
@@ -191,8 +183,8 @@ describe('Offers API', () => {
         'Field "sendingGroupId" of required type "Int!" was not provided.',
       )
 
-      res = await captainTestServer.mutate({
-        mutation: ADD_OFFER,
+      res = await captainTestServer.executeOperation({
+        query: ADD_OFFER,
         variables: {
           input: {
             sendingGroupId: captainsGroup.id,
@@ -209,11 +201,8 @@ describe('Offers API', () => {
 
     describe('creation by non-captains', () => {
       it('does not allow non-captains to create offers', async () => {
-        const res = await otherUserTestServer.mutate<
-          { addOffer: Offer },
-          { input: OfferCreateInput }
-        >({
-          mutation: ADD_OFFER,
+        const res = (await otherUserTestServer.executeOperation({
+          query: ADD_OFFER,
           variables: {
             input: {
               sendingGroupId: captainsGroup.id,
@@ -222,7 +211,7 @@ describe('Offers API', () => {
               photoUris: validPhotoUris,
             },
           },
-        })
+        })) as TypedGraphQLResponse<{ addOffer: Offer }>
 
         expect(res.errors?.[0].message).toContain(
           'not permitted to create offer for group',
@@ -230,11 +219,8 @@ describe('Offers API', () => {
       })
 
       it('allows admins to create offers', async () => {
-        const res = await adminTestServer.mutate<
-          { addOffer: Offer },
-          { input: OfferCreateInput }
-        >({
-          mutation: ADD_OFFER,
+        const res = (await adminTestServer.executeOperation({
+          query: ADD_OFFER,
           variables: {
             input: {
               sendingGroupId: captainsGroup.id,
@@ -243,7 +229,7 @@ describe('Offers API', () => {
               photoUris: validPhotoUris,
             },
           },
-        })
+        })) as TypedGraphQLResponse<{ addOffer: Offer }>
 
         expect(res.errors).toBeUndefined()
         expect(res?.data?.addOffer?.id).toBeNumber()
@@ -251,11 +237,8 @@ describe('Offers API', () => {
     })
 
     it('ensures the shipment exists', async () => {
-      const res = await captainTestServer.mutate<
-        { addOffer: Offer },
-        { input: OfferCreateInput }
-      >({
-        mutation: ADD_OFFER,
+      const res = (await captainTestServer.executeOperation({
+        query: ADD_OFFER,
         variables: {
           input: {
             sendingGroupId: captainsGroup.id,
@@ -264,7 +247,7 @@ describe('Offers API', () => {
             photoUris: validPhotoUris,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ addOffer: Offer }>
 
       expect(res.errors?.[0].message).toContain(
         `Shipment ${shipment.id + 1} does not exist`,
@@ -277,11 +260,8 @@ describe('Offers API', () => {
         { where: { id: shipment.id } },
       )
 
-      const res = await captainTestServer.mutate<
-        { addOffer: Offer },
-        { input: OfferCreateInput }
-      >({
-        mutation: ADD_OFFER,
+      const res = (await captainTestServer.executeOperation({
+        query: ADD_OFFER,
         variables: {
           input: {
             sendingGroupId: captainsGroup.id,
@@ -290,7 +270,7 @@ describe('Offers API', () => {
             photoUris: validPhotoUris,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ addOffer: Offer }>
 
       expect(res.errors?.[0].message).toContain(
         `Shipment ${shipment.id} is not accepting offers`,
@@ -299,11 +279,8 @@ describe('Offers API', () => {
 
     it('does not allow multiple offers for the same sending group and shipment', async () => {
       const doMutation = async () =>
-        await captainTestServer.mutate<
-          { addOffer: Offer },
-          { input: OfferCreateInput }
-        >({
-          mutation: ADD_OFFER,
+        (await captainTestServer.executeOperation({
+          query: ADD_OFFER,
           variables: {
             input: {
               sendingGroupId: captainsGroup.id,
@@ -312,7 +289,7 @@ describe('Offers API', () => {
               photoUris: validPhotoUris,
             },
           },
-        })
+        })) as TypedGraphQLResponse<{ addOffer: Offer }>
 
       let res = await doMutation()
 
@@ -355,18 +332,15 @@ describe('Offers API', () => {
     })
 
     it('updates the provided attributes', async () => {
-      const res = await captainTestServer.mutate<
-        { updateOffer: Offer },
-        { input: OfferUpdateInput }
-      >({
-        mutation: UPDATE_OFFER,
+      const res = (await captainTestServer.executeOperation({
+        query: UPDATE_OFFER,
         variables: {
           input: {
             id: offer.id,
             status: OfferStatus.Proposed,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ updateOffer: Offer }>
 
       expect(res.errors).toBeUndefined()
       expect(res?.data?.updateOffer?.id).toBeNumber()
@@ -376,18 +350,15 @@ describe('Offers API', () => {
     })
 
     it('restricts access', async () => {
-      const res = await otherUserTestServer.mutate<
-        { updateOffer: Offer },
-        { input: OfferUpdateInput }
-      >({
-        mutation: UPDATE_OFFER,
+      const res = (await otherUserTestServer.executeOperation({
+        query: UPDATE_OFFER,
         variables: {
           input: {
             id: offer.id,
             status: OfferStatus.Proposed,
           },
         },
-      })
+      })) as TypedGraphQLResponse<{ updateOffer: Offer }>
 
       expect(res.errors?.[0].message).toEqual('Forbidden to access this offer')
     })
@@ -451,7 +422,7 @@ describe('Offers API', () => {
     })
 
     it('returns the offers for the group the user is captain of', async () => {
-      const res = await captainTestServer.query({
+      const res = await captainTestServer.executeOperation({
         query: LIST_OFFERS_QUERY,
         variables: { shipmentId: shipment.id },
       })
@@ -465,7 +436,7 @@ describe('Offers API', () => {
     })
 
     it('admins get all offers for the shipment', async () => {
-      const res = await adminTestServer.query({
+      const res = await adminTestServer.executeOperation({
         query: LIST_OFFERS_QUERY,
         variables: { shipmentId: shipment.id },
       })
@@ -478,7 +449,7 @@ describe('Offers API', () => {
     })
 
     it('returns empty if user has no authorized offers for shipment', async () => {
-      const res = await otherUserTestServer.query({
+      const res = await otherUserTestServer.executeOperation({
         query: LIST_OFFERS_QUERY,
         variables: { shipmentId: shipment.id },
       })
@@ -517,7 +488,7 @@ describe('Offers API', () => {
     })
 
     it('returns the offer for captain', async () => {
-      const res = await captainTestServer.query({
+      const res = await captainTestServer.executeOperation({
         query: OFFER_QUERY,
         variables: { id: offer.id },
       })
@@ -530,7 +501,7 @@ describe('Offers API', () => {
     })
 
     it('returns the offer for admins', async () => {
-      const res = await adminTestServer.query({
+      const res = await adminTestServer.executeOperation({
         query: OFFER_QUERY,
         variables: { id: offer.id },
       })
@@ -543,7 +514,7 @@ describe('Offers API', () => {
     })
 
     it('forbids other users', async () => {
-      const res = await otherUserTestServer.query({
+      const res = await otherUserTestServer.executeOperation({
         query: OFFER_QUERY,
         variables: { id: offer.id },
       })

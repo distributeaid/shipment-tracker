@@ -1,4 +1,4 @@
-import { ApolloServerTestClient } from 'apollo-server-testing'
+import { ApolloServer } from 'apollo-server-express'
 import gql from 'graphql-tag'
 import { omit } from 'lodash'
 import { fakeUserAuth } from '../authenticateRequest'
@@ -31,8 +31,8 @@ describe('Groups API', () => {
       ...commonGroupData,
     }
 
-    let testServer: ApolloServerTestClient,
-      adminTestServer: ApolloServerTestClient,
+    let testServer: ApolloServer,
+      adminTestServer: ApolloServer,
       captain: UserAccount,
       newCaptain: UserAccount
 
@@ -80,8 +80,8 @@ describe('Groups API', () => {
       `
 
       it('adds a new group', async () => {
-        const res = await testServer.mutate({
-          mutation: ADD_GROUP,
+        const res = await testServer.executeOperation({
+          query: ADD_GROUP,
           variables: group1Params,
         })
 
@@ -91,13 +91,13 @@ describe('Groups API', () => {
       })
 
       it('prevents group captains from creating more than 1 group', async () => {
-        await testServer.mutate({
-          mutation: ADD_GROUP,
+        await testServer.executeOperation({
+          query: ADD_GROUP,
           variables: group1Params,
         })
 
-        const res = await testServer.mutate({
-          mutation: ADD_GROUP,
+        const res = await testServer.executeOperation({
+          query: ADD_GROUP,
           variables: group2Params,
         })
 
@@ -153,8 +153,8 @@ describe('Groups API', () => {
       })
 
       it('updates the group', async () => {
-        const res = await adminTestServer.mutate({
-          mutation: UPDATE_GROUP,
+        const res = await adminTestServer.executeOperation({
+          query: UPDATE_GROUP,
           variables: {
             id: existingGroup.id,
             input: updateParams,
@@ -182,8 +182,8 @@ describe('Groups API', () => {
       })
 
       it('updates the group not including type for captains', async () => {
-        const res = await testServer.mutate({
-          mutation: UPDATE_GROUP,
+        const res = await testServer.executeOperation({
+          query: UPDATE_GROUP,
           variables: {
             id: existingGroup.id,
             input: omit(updateParams, 'groupType'),
@@ -195,8 +195,8 @@ describe('Groups API', () => {
       })
 
       it('supports setting website to null', async () => {
-        const res = await adminTestServer.mutate({
-          mutation: UPDATE_GROUP,
+        const res = await adminTestServer.executeOperation({
+          query: UPDATE_GROUP,
           variables: {
             id: existingGroup.id,
             input: { ...updateParams, website: null },
@@ -208,8 +208,8 @@ describe('Groups API', () => {
       })
 
       it('validates the website look like a URL', async () => {
-        const res = await adminTestServer.mutate({
-          mutation: UPDATE_GROUP,
+        const res = await adminTestServer.executeOperation({
+          query: UPDATE_GROUP,
           variables: {
             id: existingGroup.id,
             input: { ...updateParams, website: 'www.-example.com' },
@@ -222,8 +222,8 @@ describe('Groups API', () => {
       })
 
       it('disallows non-admins from updating group type', async () => {
-        const res = await testServer.mutate({
-          mutation: UPDATE_GROUP,
+        const res = await testServer.executeOperation({
+          query: UPDATE_GROUP,
           variables: {
             id: existingGroup.id,
             input: updateParams,
@@ -238,8 +238,8 @@ describe('Groups API', () => {
       it('disallows non-admin non-captains from updating', async () => {
         const res = await (
           await makeTestServer()
-        ).mutate({
-          mutation: UPDATE_GROUP,
+        ).executeOperation({
+          query: UPDATE_GROUP,
           variables: {
             id: existingGroup.id,
             input: updateParams,
@@ -252,7 +252,7 @@ describe('Groups API', () => {
   })
 
   describe('reading', () => {
-    let testServer: ApolloServerTestClient
+    let testServer: ApolloServer
     let captain1: UserAccount, captain2: UserAccount, daCaptain: UserAccount
     let sendingGroup1: Group,
       receivingGroup1: Group,
@@ -328,7 +328,7 @@ describe('Groups API', () => {
       `
       describe('with no id', () => {
         it('returns an error', async () => {
-          const res = await testServer.query({ query: GROUP })
+          const res = await testServer.executeOperation({ query: GROUP })
 
           expect(res.errors).not.toBeUndefined()
           expect(res.errors).not.toBeEmpty()
@@ -346,7 +346,7 @@ describe('Groups API', () => {
       describe('with a parameter passed in', () => {
         describe('a valid id', () => {
           it('returns the correct group', async () => {
-            const res = await testServer.query({
+            const res = await testServer.executeOperation({
               query: GROUP,
               variables: { id: sendingGroup1.id },
             })
@@ -358,7 +358,7 @@ describe('Groups API', () => {
 
         describe('with an invalid id', () => {
           it('returns a nice error', async () => {
-            const res = await testServer.query({
+            const res = await testServer.executeOperation({
               query: GROUP,
               variables: { id: 17 },
             })
@@ -384,7 +384,7 @@ describe('Groups API', () => {
 
     describe('listing groups', () => {
       it('lists existing groups', async () => {
-        const res = await testServer.query({
+        const res = await testServer.executeOperation({
           query: gql`
             query listGroups {
               listGroups {
@@ -438,7 +438,7 @@ describe('Groups API', () => {
         ])(
           'search for groups with type %s should yield %s',
           async (groupTypes, expectedGroupNames) => {
-            const res = await testServer.query({
+            const res = await testServer.executeOperation({
               query: gql`
                 query listGroupsByType($groupType: [GroupType!]) {
                   listGroups(groupType: $groupType) {
@@ -468,7 +468,7 @@ describe('Groups API', () => {
         ])(
           'search for groups with captain %s should yield %s',
           async (captainName, expectedGroupNames) => {
-            const res = await testServer.query({
+            const res = await testServer.executeOperation({
               query: gql`
                 query listGroupsByCaptain($captainId: Int!) {
                   listGroups(captainId: $captainId) {
@@ -505,7 +505,7 @@ describe('Groups API', () => {
         ])(
           `combining types %s and captain %s should yield %s`,
           async (groupTypes, captainName, expectedGroupNames) => {
-            const res = await testServer.query({
+            const res = await testServer.executeOperation({
               query: gql`
                 query listGroupsByCaptainAndType(
                   $groupType: [GroupType!]
