@@ -11,9 +11,12 @@ query Pallet($id: Int!) {
       offerPalletId
       status
       containerType
+      containerCount
       category
       description
+      itemCount
       dangerousGoods
+      containerWeightGrams
     }
   }
 }
