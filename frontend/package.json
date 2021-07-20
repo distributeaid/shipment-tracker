@@ -27,8 +27,8 @@
     "typescript": "4.3.5"
   },
   "devDependencies": {
-    "@babel/core": "7.14.6",
-    "@babel/preset-env": "7.14.7",
+    "@babel/core": "7.14.8",
+    "@babel/preset-env": "7.14.8",
     "@babel/preset-typescript": "7.14.5",
     "@types/react-transition-group": "4.4.1",
     "autoprefixer": "10.3.1",
