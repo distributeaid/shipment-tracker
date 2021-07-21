@@ -20,7 +20,7 @@ type Props = {
 
 const PalletContentSummary: FunctionComponent<Props> = ({ lineItems }) => {
   if (lineItems.length === 0) {
-    return <div>This pallet is empty</div>
+    return <p className="text-gray-600">This pallet is empty</p>
   }
 
   const totalWeightInKilos = gramsToKilos(

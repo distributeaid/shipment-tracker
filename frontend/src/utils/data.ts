@@ -1,5 +1,5 @@
 import _uniq from 'lodash/uniq'
-import { LineItemContainerType, PalletQuery } from '../types/api-types'
+import { LineItem, LineItemContainerType } from '../types/api-types'
 
 /**
  * Strips empty, undefined, and null fields from an object. This method is
@@ -26,14 +26,23 @@ export function setEmptyFieldsToUndefined<T>(data: T) {
   return data
 }
 
-export function validatePalletContents(pallet: PalletQuery['pallet']) {
-  const numLineItems = pallet.lineItems.length
-  const allContainerTypes = _uniq(
-    pallet.lineItems.map((item) => item.containerType),
-  )
+type PartialLineItem = Pick<LineItem, 'containerType' | 'containerCount'>
+
+/**
+ * Validates the line items on a pallet by looking at the containerType and
+ * containerCount of each line item
+ *
+ * If the contents are invalid, an `error` string will be returned.
+ */
+export function validatePalletContents(lineItems: PartialLineItem[]): {
+  error?: string
+  valid: boolean
+} {
+  const numLineItems = lineItems.length
+  const allContainerTypes = _uniq(lineItems.map((item) => item.containerType))
 
   // Count the containers by type
-  const containerCounts = pallet.lineItems.reduce(
+  const containerCounts = lineItems.reduce(
     (accum, item) => {
       accum[item.containerType] += item.containerCount ?? 1
       return accum

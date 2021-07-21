@@ -7,7 +7,7 @@ type Props = {
 }
 
 const PalletContentValidator: FunctionComponent<Props> = ({ pallet }) => {
-  const { valid, error } = validatePalletContents(pallet)
+  const { valid, error } = validatePalletContents(pallet.lineItems)
 
   if (!valid) {
     return (
