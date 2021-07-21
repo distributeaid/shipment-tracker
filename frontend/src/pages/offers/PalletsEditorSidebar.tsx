@@ -2,7 +2,9 @@ import cx from 'classnames'
 import { FunctionComponent } from 'react'
 import Button from '../../components/Button'
 import ChevronIcon from '../../components/icons/ChevronIcon'
+import WarningIcon from '../../components/icons/WarningIcon'
 import { OfferQuery, PalletQuery } from '../../types/api-types'
+import { validatePalletContents } from '../../utils/data'
 
 type Props = {
   pallets: OfferQuery['offer']['pallets'] | undefined
@@ -67,6 +69,14 @@ const PalletsEditorSidebar: FunctionComponent<Props> = ({
                     }
                   />
                   Pallet {index + 1}
+                  {validatePalletContents(pallet.lineItems).valid == false && (
+                    <span
+                      className="inline-block ml-auto"
+                      title="The contents of this pallet are invalid"
+                    >
+                      <WarningIcon className="text-red-700 w-5 h-5" />
+                    </span>
+                  )}
                 </div>
                 {selectedPalletId === pallet.id && (
                   <div className="flex flex-col pb-4 pr-4 pl-8">
