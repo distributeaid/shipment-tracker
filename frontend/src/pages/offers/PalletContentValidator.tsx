@@ -1,13 +1,13 @@
 import { FunctionComponent } from 'react'
-import { PalletQuery } from '../../types/api-types'
+import { LineItem } from '../../types/api-types'
 import { validatePalletContents } from '../../utils/data'
 
 type Props = {
-  pallet: PalletQuery['pallet']
+  lineItems: Pick<LineItem, 'containerType' | 'containerCount'>[]
 }
 
-const PalletContentValidator: FunctionComponent<Props> = ({ pallet }) => {
-  const { valid, error } = validatePalletContents(pallet.lineItems)
+const PalletContentValidator: FunctionComponent<Props> = ({ lineItems }) => {
+  const { valid, error } = validatePalletContents(lineItems)
 
   if (!valid) {
     return (

@@ -69,7 +69,7 @@ const PalletsEditorSidebar: FunctionComponent<Props> = ({
                     }
                   />
                   Pallet {index + 1}
-                  {validatePalletContents(pallet.lineItems).valid == false && (
+                  {validatePalletContents(pallet.lineItems).valid === false && (
                     <span
                       className="inline-block ml-auto"
                       title="The contents of this pallet are invalid"

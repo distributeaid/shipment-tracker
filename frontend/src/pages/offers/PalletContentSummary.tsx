@@ -6,13 +6,9 @@ type Props = {
   lineItems: Pick<
     LineItem,
     | 'id'
-    | 'offerPalletId'
-    | 'status'
     | 'containerType'
-    | 'category'
     | 'description'
     | 'itemCount'
-    | 'dangerousGoods'
     | 'containerCount'
     | 'containerWeightGrams'
   >[]

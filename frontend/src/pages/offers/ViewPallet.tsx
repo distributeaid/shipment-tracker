@@ -76,7 +76,7 @@ const ViewPallet: FunctionComponent<Props> = ({
             {formatPalletType(pallet.palletType)}
           </ReadOnlyField>
           <h3 className="mt-6 mb-2 text-lg">Contents</h3>
-          <PalletContentValidator pallet={pallet} />
+          <PalletContentValidator lineItems={pallet.lineItems} />
           <PalletContentSummary lineItems={pallet.lineItems} />
           <div className="my-6 text-gray-700 bg-gray-50 rounded p-4">
             <p className="mb-2">
