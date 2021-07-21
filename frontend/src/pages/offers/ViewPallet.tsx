@@ -7,6 +7,7 @@ import useModalState from '../../hooks/useModalState'
 import { useDestroyPalletMutation, usePalletQuery } from '../../types/api-types'
 import { formatPalletType } from '../../utils/format'
 import PalletContentSummary from './PalletContentSummary'
+import PalletContentValidator from './PalletContentValidator'
 
 interface Props {
   palletId: number
@@ -26,7 +27,7 @@ const ViewPallet: FunctionComponent<Props> = ({
   })
 
   useEffect(
-    function fetchLineItem() {
+    function fetchLineItems() {
       refetch({ id: palletId })
     },
     [palletId, refetch],
@@ -53,7 +54,7 @@ const ViewPallet: FunctionComponent<Props> = ({
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-gray-700 text-lg flex items-center">
-          Pallet {palletId} {palletIsLoading && <Spinner className="ml-2" />}
+          Pallet {palletIsLoading && <Spinner className="ml-2" />}
         </h2>
         <div className="space-x-4">
           <Button onClick={showDeleteConfirmation}>Delete pallet</Button>
@@ -74,6 +75,9 @@ const ViewPallet: FunctionComponent<Props> = ({
           <ReadOnlyField label="Type">
             {formatPalletType(pallet.palletType)}
           </ReadOnlyField>
+          <h3 className="mt-6 mb-2 text-lg">Contents</h3>
+          <PalletContentValidator pallet={pallet} />
+          <PalletContentSummary lineItems={pallet.lineItems} />
           <div className="my-6 text-gray-700 bg-gray-50 rounded p-4">
             <p className="mb-2">
               If you're using bulk bags or boxes, please note the following
@@ -88,8 +92,6 @@ const ViewPallet: FunctionComponent<Props> = ({
               </li>
             </ul>
           </div>
-          <h4 className="mt-6 mb-2 text-lg">Contents</h4>
-          <PalletContentSummary lineItems={pallet.lineItems} />
         </div>
       )}
     </div>
