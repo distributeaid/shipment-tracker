@@ -1,7 +1,4 @@
-import cx from 'classnames'
 import { FunctionComponent, useState } from 'react'
-import Button from '../../components/Button'
-import ChevronIcon from '../../components/icons/ChevronIcon'
 import useModalState from '../../hooks/useModalState'
 import {
   OfferDocument,
@@ -15,6 +12,7 @@ import {
 } from '../../types/api-types'
 import CreatePalletModal from './CreatePalletModal'
 import LineItemForm from './LineItemForm'
+import PalletsEditorSidebar from './PalletsEditorSidebar'
 import ViewLineItem from './ViewLineItem'
 import ViewPallet from './ViewPallet'
 interface Props {
@@ -71,7 +69,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
     })
   }
 
-  const [createModalIsVisible, showCreateModal, hideCreateModal] =
+  const [createModalIsVisible, showCreatePalletModal, hideCreateModal] =
     useModalState()
 
   const [addPallet, { loading: mutationIsLoading, error: mutationError }] =
@@ -120,85 +118,23 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
     setSelectedLineItemId(undefined)
   }
 
+  const selectLineItem = (lineItemId: number) => {
+    setSelectedLineItemId(lineItemId)
+  }
+
   return (
     <>
-      <div className="w-80 flex-shrink-0 h-full">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <span className="text-lg text-gray-700">Pallets</span>
-          <Button disabled={mutationIsLoading} onClick={showCreateModal}>
-            Add a pallet
-          </Button>
-        </div>
-        <ul className="divide-y divide-gray-100">
-          {pallets.map((pallet, index) => (
-            <li
-              key={pallet.id}
-              className="bg-white"
-              data-qa={`pallet-${pallet.id}`}
-              onClick={() => selectPallet(pallet.id)}
-            >
-              <div className="bg-white">
-                <div
-                  className={cx(
-                    'p-4 flex items-center text-gray-800 cursor-pointer border-l-4 border-transparent',
-                    {
-                      'hover:bg-gray-100':
-                        pallet.id !== selectedPalletId ||
-                        selectedLineItemId != null,
-                      'border-navy-600 font-semibold':
-                        pallet.id === selectedPalletId,
-                      'bg-navy-100':
-                        pallet.id === selectedPalletId &&
-                        selectedLineItemId == null,
-                    },
-                  )}
-                >
-                  <ChevronIcon
-                    className="w-5 h-5 mr-4 text-gray-500"
-                    direction={
-                      pallet.id === selectedPalletId ? 'down' : 'right'
-                    }
-                  />
-                  Pallet {index + 1}
-                </div>
-                {selectedPalletId === pallet.id && (
-                  <div className="flex flex-col pb-4 pr-4 pl-8">
-                    {selectedPalletData.data?.pallet.lineItems.map((item) => (
-                      <button
-                        type="button"
-                        className={cx(
-                          'px-4 py-2 text-left border-l-4 border-transparent',
-                          {
-                            'hover:bg-gray-100': item.id !== selectedLineItemId,
-                            'border-navy-500 bg-navy-100 text-navy-700':
-                              item.id === selectedLineItemId,
-                          },
-                        )}
-                        key={item.id}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setSelectedLineItemId(item.id)
-                        }}
-                      >
-                        {item.description || `Item ${item.id}`}
-                      </button>
-                    ))}
-                    <Button
-                      className="mt-4"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        addLineItem(pallet.id)
-                      }}
-                    >
-                      Add an item
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <PalletsEditorSidebar
+        pallets={pallets}
+        selectedPalletId={selectedPalletId}
+        selectedLineItemId={selectedLineItemId}
+        isLoading={mutationIsLoading}
+        createPallet={showCreatePalletModal}
+        selectPallet={selectPallet}
+        addLineItem={addLineItem}
+        selectLineItemId={selectLineItem}
+        selectedPalletData={selectedPalletData.data}
+      />
       <div className="flex-grow border-l border-gray-100">
         {mutationError && (
           <div className="p-4 m-4 rounded bg-red-50 mb-6 text-red-800">

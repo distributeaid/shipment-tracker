@@ -1,4 +1,5 @@
 import { ErrorMessage } from '@hookform/error-message'
+import cx from 'classnames'
 import _get from 'lodash/get'
 import { nanoid } from 'nanoid'
 import {
@@ -99,7 +100,7 @@ const TextField: FunctionComponent<Props> = ({
   }
 
   return (
-    <div className="w-full">
+    <div className={cx('w-full', { hidden: otherProps.hidden })}>
       <Label htmlFor={fieldId} required={otherProps.required}>
         {label}
       </Label>

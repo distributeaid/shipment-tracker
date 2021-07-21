@@ -18,8 +18,8 @@ query AllGroups($captainId: Int, $groupType: [GroupType!]) {
   }
 }
 
-query AllGroupsMinimal {
-  listGroups {
+query AllGroupsMinimal($captainId: Int, $groupType: [GroupType!]) {
+  listGroups(captainId: $captainId, groupType: $groupType) {
     id
     name
     groupType

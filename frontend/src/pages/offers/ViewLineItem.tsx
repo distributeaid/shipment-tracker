@@ -148,21 +148,20 @@ const ViewLineItem: FunctionComponent<Props> = ({
             <ReadOnlyField label="Description">
               {data.lineItem.description || 'No description provided'}
             </ReadOnlyField>
-            <div className="md:flex md:space-x-8">
-              <ReadOnlyField label="Container">
-                {data.lineItem.containerCount || 1}{' '}
-                {formatContainerType(
-                  data.lineItem.containerType,
-                  data.lineItem.containerCount !== 1,
-                ).toLowerCase()}
-              </ReadOnlyField>
-              <ReadOnlyField label="Number of items">
-                {data.lineItem.itemCount || 0}
-              </ReadOnlyField>
-            </div>
             <ReadOnlyField label="Category">
               {formatLineItemCategory(data.lineItem.category)}
             </ReadOnlyField>
+            <div className="md:flex md:space-x-8">
+              <ReadOnlyField label="Total number of items">
+                {data.lineItem.itemCount || 0}
+              </ReadOnlyField>
+              <ReadOnlyField label="Storage">
+                {formatContainerType(
+                  data.lineItem.containerType,
+                  data.lineItem.containerCount || 0,
+                )}
+              </ReadOnlyField>
+            </div>
           </fieldset>
           <fieldset className="space-y-4 mt-12">
             <legend className="font-semibold text-gray-700 ">

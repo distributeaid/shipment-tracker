@@ -92,27 +92,6 @@ const ViewPallet: FunctionComponent<Props> = ({
               </li>
             </ul>
           </div>
-          <p className="text-lg mb-2">Add items to this pallet</p>
-          <div className="divide-y">
-            <div className="py-2 flex justify-between items-center">
-              <p>Full pallet</p>
-              <Button>Add items</Button>
-            </div>
-            <div className="py-2 flex justify-between items-center">
-              <div>
-                <p>Bulk bag</p>
-                <p className="text-sm text-gray-700">1 per pallet max</p>
-              </div>
-              <Button>Add bulk bag</Button>
-            </div>
-            <div className="py-2 flex justify-between items-center">
-              <div>
-                <p>Boxes</p>
-                <p className="text-sm text-gray-700">36 per pallet max</p>
-              </div>
-              <Button>Add boxes</Button>
-            </div>
-          </div>
         </div>
       )}
     </div>
