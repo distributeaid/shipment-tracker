@@ -74,24 +74,22 @@ const ViewPallet: FunctionComponent<Props> = ({
           <ReadOnlyField label="Type">
             {formatPalletType(pallet.palletType)}
           </ReadOnlyField>
-          <h4 className="mt-6 text-lg">Contents</h4>
-          <PalletContentSummary lineItems={pallet.lineItems} />
-          <div className="my-6 text-gray-700">
+          <div className="my-6 text-gray-700 bg-gray-50 rounded p-4">
             <p className="mb-2">
               If you're using bulk bags or boxes, please note the following
               restrictions:
             </p>
             <ul className="list-disc list-inside">
-              <li>
-                a pallet can contain <strong>at most</strong> 1 bulk bag
-              </li>
+              <li>a pallet can contain at most 1 bulk bag</li>
               <li>a pallet can contain a maximum of 36 boxes</li>
               <li>
-                if a pallet contains a bulk bag, it can contain a maximum of 18
-                boxes
+                if a pallet contains a bulk bag, it can also contain a maximum
+                of 18 boxes
               </li>
             </ul>
           </div>
+          <h4 className="mt-6 mb-2 text-lg">Contents</h4>
+          <PalletContentSummary lineItems={pallet.lineItems} />
         </div>
       )}
     </div>
