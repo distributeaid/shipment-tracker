@@ -68,7 +68,10 @@ export default class LineItem extends Model<
   @Column
   public offerPalletId!: number
 
-  @BelongsTo(() => Pallet, 'offerPalletId')
+  @BelongsTo(() => Pallet, {
+    foreignKey: 'offerPalletId',
+    onDelete: 'CASCADE',
+  })
   public offerPallet!: Pallet
 
   @Column(DataType.STRING)
