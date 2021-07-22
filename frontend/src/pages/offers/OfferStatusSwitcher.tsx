@@ -2,7 +2,9 @@ import { FunctionComponent, useContext } from 'react'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
+import ConfirmationModal from '../../components/modal/ConfirmationModal'
 import { UserProfileContext } from '../../components/UserProfileContext'
+import useModalState from '../../hooks/useModalState'
 import { OfferStatus } from '../../types/api-types'
 
 interface Props {
@@ -24,11 +26,39 @@ const OfferStatusSwitcher: FunctionComponent<Props> = ({
   const userProfile = useContext(UserProfileContext)
   const userIsAdmin = userProfile.profile?.isAdmin
 
+  const [isSubmissionModalOpen, showSubmissionModal, hideSubmissionModal] =
+    useModalState()
+
+  const moveOfferToProposed = () => {
+    updateStatus(OfferStatus.Proposed)
+    hideSubmissionModal()
+  }
+
   if (currentOfferStatus === OfferStatus.Draft) {
     return (
-      <Button onClick={() => updateStatus(OfferStatus.Proposed)}>
-        Ready for review
-      </Button>
+      <>
+        <Button variant="primary" onClick={showSubmissionModal}>
+          Submit offer
+        </Button>
+        <ConfirmationModal
+          isOpen={isSubmissionModalOpen}
+          confirmLabel="Submit offer"
+          onCancel={hideSubmissionModal}
+          onConfirm={moveOfferToProposed}
+          title="Confirm offer submission"
+          modalWidth="30rem"
+        >
+          <>
+            <p className="mb-2 text-gray-700">
+              When you submit an offer, someone at Distribute Aid will review it
+              and contact your organization for coordination.
+            </p>
+            <p className="text-gray-700">
+              You won't be able to make changes to your offer after submission.
+            </p>
+          </>
+        </ConfirmationModal>
+      </>
     )
   }
 
@@ -49,20 +79,25 @@ const OfferStatusSwitcher: FunctionComponent<Props> = ({
 
   if (currentOfferStatus === OfferStatus.Proposed) {
     return (
-      <Button onClick={() => updateStatus(OfferStatus.BeingReviewed)}>
-        Start review
-      </Button>
+      <div className="flex flex-col space-y-2">
+        <Button onClick={() => updateStatus(OfferStatus.BeingReviewed)}>
+          Start review
+        </Button>
+        <Button onClick={() => updateStatus(OfferStatus.Draft)}>
+          Move back to Draft
+        </Button>
+      </div>
     )
   }
 
   if (currentOfferStatus === OfferStatus.BeingReviewed) {
     return (
       <div className="flex flex-col space-y-2">
-        <Button onClick={() => updateStatus(OfferStatus.Rejected)}>
-          Reject offer
-        </Button>
         <Button onClick={() => updateStatus(OfferStatus.Accepted)}>
           Approve offer
+        </Button>
+        <Button onClick={() => updateStatus(OfferStatus.Rejected)}>
+          Reject offer
         </Button>
       </div>
     )

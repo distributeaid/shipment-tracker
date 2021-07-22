@@ -13,6 +13,7 @@ import {
   useShipmentQuery,
   useUpdateOfferMutation,
 } from '../../types/api-types'
+import { setEmptyFieldsToUndefined } from '../../utils/data'
 import { formatShipmentName } from '../../utils/format'
 import { shipmentViewOffersRoute } from '../../utils/routes'
 import { stripIdAndTypename } from '../../utils/types'
@@ -46,7 +47,9 @@ const ViewOfferPage: FunctionComponent = () => {
     const updatedOffer: OfferUpdateInput = {
       id: offer.offer.id,
       status: newStatus,
-      contact: stripIdAndTypename(offer.offer.contact),
+      contact: stripIdAndTypename(
+        setEmptyFieldsToUndefined(offer.offer.contact),
+      ),
       photoUris: offer.offer.photoUris,
     }
 
