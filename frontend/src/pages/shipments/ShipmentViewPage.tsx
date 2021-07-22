@@ -6,7 +6,7 @@ import TabLink from '../../components/tabs/TabLink'
 import TabList from '../../components/tabs/TabList'
 import { UserProfileContext } from '../../components/UserProfileContext'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
-import { useShipmentQuery } from '../../types/api-types'
+import { ShipmentStatus, useShipmentQuery } from '../../types/api-types'
 import { formatShipmentName } from '../../utils/format'
 import ROUTES, {
   shipmentEditRoute,
@@ -61,7 +61,10 @@ const ShipmentViewPage: FunctionComponent = () => {
               <ShipmentDetails shipmentId={shipmentId} />
             </Route>
             <Route path={shipmentViewOffersRoute(shipmentId)}>
-              <ShipmentOffers shipmentId={shipmentId} />
+              <ShipmentOffers
+                shipmentId={shipmentId}
+                allowNewOffers={shipmentData?.status === ShipmentStatus.Open}
+              />
             </Route>
           </Switch>
         </main>
