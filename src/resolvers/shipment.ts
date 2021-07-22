@@ -1,9 +1,11 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
-import { isEqual } from 'lodash'
+import { isEqual, xor } from 'lodash'
 import Group from '../models/group'
 import Shipment, { ShipmentAttributes } from '../models/shipment'
 import ShipmentExport from '../models/shipment_export'
+import ShipmentReceivingHub from '../models/shipment_receiving_hub'
+import ShipmentSendingHub from '../models/shipment_sending_hub'
 import {
   MutationResolvers,
   QueryResolvers,
@@ -20,11 +22,25 @@ import {
 } from './input-validation/types'
 import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
 
+const arraysOverlap = (a: unknown[], b: unknown[]): boolean =>
+  xor(a, b).length === 0
+
 const SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS: Readonly<ShipmentStatus[]> = [
   ShipmentStatus.Announced,
   ShipmentStatus.Open,
   ShipmentStatus.Staging,
 ] as const
+
+const include = [
+  {
+    model: Group,
+    as: 'sendingHubs',
+  },
+  {
+    model: Group,
+    as: 'receivingHubs',
+  },
+]
 
 // Shipment query resolvers
 
@@ -69,6 +85,7 @@ const listShipments: QueryResolvers['listShipments'] = async (
       where: {
         status,
       },
+      include,
     })
   }
 
@@ -77,9 +94,12 @@ const listShipments: QueryResolvers['listShipments'] = async (
       where: {
         status: SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS,
       },
+      include,
     })
 
-  return Shipment.findAll()
+  return Shipment.findAll({
+    include,
+  })
 }
 
 // - get shipment
@@ -90,7 +110,9 @@ const shipment: QueryResolvers['shipment'] = async (_, { id }, context) => {
     throw new UserInputError('Get shipment input invalid', valid.errors)
   }
 
-  const shipment = await Shipment.findByPk(valid.value.id)
+  const shipment = await Shipment.findByPk(valid.value.id, {
+    include,
+  })
 
   if (!shipment) {
     throw new ApolloError(`No shipment exists with ID "${valid.value.id}"`)
@@ -117,8 +139,8 @@ const addShipmentInput = Type.Object(
     shippingRoute: Type.Enum(ShippingRoute),
     labelYear: CurrentYearOrGreater(),
     labelMonth: MonthIndexStartingAt1,
-    sendingHubId: ID,
-    receivingHubId: ID,
+    sendingHubs: Type.Array(ID, { minItems: 1 }),
+    receivingHubs: Type.Array(ID, { minItems: 1 }),
     status: Type.Enum(ShipmentStatus),
     pricing: Pricing,
   },
@@ -137,21 +159,49 @@ const addShipment: MutationResolvers['addShipment'] = async (
     throw new UserInputError('Add shipment input invalid', valid.errors)
   }
 
+  if (arraysOverlap(valid.value.receivingHubs, valid.value.sendingHubs)) {
+    throw new UserInputError(
+      'Add shipment input invalid: sending and receiving hubs must be different',
+      {
+        sendingHubs: valid.value.sendingHubs,
+        receivingHubs: valid.value.receivingHubs,
+      },
+    )
+  }
+
   if (!context.auth.isAdmin) {
     throw new ForbiddenError('addShipment forbidden to non-admin users')
   }
 
-  const sendingHubPromise = Group.findByPk(valid.value.sendingHubId)
-  const receivingHubPromise = Group.findByPk(valid.value.receivingHubId)
+  const sendingHubPromise = Group.findAll({
+    where: {
+      id: valid.value.sendingHubs,
+    },
+  })
+  const receivingHubPromise = Group.findAll({
+    where: {
+      id: valid.value.receivingHubs,
+    },
+  })
 
-  const sendingHub = await sendingHubPromise
-  if (!sendingHub) {
-    throw new ApolloError('Sending hub not found')
+  const sendingHubs = await sendingHubPromise
+  if (sendingHubs.length !== valid.value.sendingHubs.length) {
+    const foundHubs = sendingHubs.map(({ id }) => id)
+    throw new ApolloError(
+      `Could not find sending hubs: ${valid.value.receivingHubs.filter(
+        (id) => !foundHubs.includes(id),
+      )}`,
+    )
   }
 
-  const receivingHub = await receivingHubPromise
-  if (!receivingHub) {
-    throw new ApolloError('Receiving hub not found')
+  const receivingHubs = await receivingHubPromise
+  if (receivingHubs.length !== valid.value.receivingHubs.length) {
+    const foundHubs = receivingHubs.map(({ id }) => id)
+    throw new ApolloError(
+      `Could not find receiving hubs: ${valid.value.receivingHubs.filter(
+        (id) => !foundHubs.includes(id),
+      )}`,
+    )
   }
 
   const shipmentDate = new Date(
@@ -164,16 +214,37 @@ const addShipment: MutationResolvers['addShipment'] = async (
     )
   }
 
-  return Shipment.create({
+  const shipment = await Shipment.create({
     shippingRoute: valid.value.shippingRoute,
     labelYear: valid.value.labelYear,
     labelMonth: valid.value.labelMonth,
-    sendingHubId: valid.value.sendingHubId,
-    receivingHubId: valid.value.receivingHubId,
+    sendingHubs: sendingHubs,
+    receivingHubs: receivingHubs,
     status: valid.value.status,
     statusChangeTime: new Date(),
     pricing: valid.value.pricing,
   })
+  await Promise.all([
+    Promise.all(
+      sendingHubs.map((hub) =>
+        ShipmentSendingHub.create({
+          hubId: hub.id,
+          shipmentId: shipment.id,
+        }),
+      ),
+    ),
+    Promise.all(
+      receivingHubs.map((hub) =>
+        ShipmentReceivingHub.create({
+          hubId: hub.id,
+          shipmentId: shipment.id,
+        }),
+      ),
+    ),
+  ])
+  return Shipment.findByPk(shipment.id, {
+    include,
+  }) as Promise<Shipment>
 }
 
 // - update shipment
@@ -184,8 +255,8 @@ const updateShipmentInput = Type.Object(
     input: Type.Object(
       {
         status: Type.Optional(Type.Enum(ShipmentStatus)),
-        sendingHubId: Type.Optional(ID),
-        receivingHubId: Type.Optional(ID),
+        sendingHubs: Type.Optional(Type.Array(ID, { minItems: 1 })),
+        receivingHubs: Type.Optional(Type.Array(ID, { minItems: 1 })),
         labelYear: Type.Optional(CurrentYearOrGreater()),
         labelMonth: Type.Optional(MonthIndexStartingAt1),
         shippingRoute: Type.Optional(Type.Enum(ShippingRoute)),
@@ -213,7 +284,7 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     throw new ForbiddenError('updateShipment forbidden to non-admin users')
   }
 
-  const shipment = await Shipment.findByPk(valid.value.id)
+  const shipment = await Shipment.findByPk(valid.value.id, { include })
 
   if (shipment === null) {
     throw new ApolloError(`No shipment exists with ID "${valid.value.id}"`)
@@ -221,8 +292,8 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
 
   const {
     status,
-    receivingHubId,
-    sendingHubId,
+    receivingHubs: receivingHubsUpdate,
+    sendingHubs: sendingHubsUpdate,
     labelMonth,
     labelYear,
     shippingRoute,
@@ -236,24 +307,53 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     updateAttributes.statusChangeTime = new Date()
   }
 
-  if (receivingHubId !== undefined) {
-    const receivingHub = await Group.findByPk(receivingHubId)
-    if (receivingHub === null) {
+  if (receivingHubsUpdate !== undefined) {
+    const loadedReceivingHubs = await Group.findAll({
+      where: { id: receivingHubsUpdate },
+    })
+
+    if (loadedReceivingHubs.length !== receivingHubsUpdate.length) {
+      const foundHubs = loadedReceivingHubs.map(({ id }) => id)
       throw new ApolloError(
-        `No receiving group exists with ID "${receivingHubId}"`,
+        `Could not find receiving hubs: ${receivingHubsUpdate
+          .filter((id) => !foundHubs.includes(id))
+          .join(', ')}`,
+      )
+    }
+    updateAttributes.receivingHubs = loadedReceivingHubs
+  }
+
+  if (sendingHubsUpdate) {
+    const loadedSendingHubs = await Group.findAll({
+      where: { id: sendingHubsUpdate },
+    })
+
+    if (loadedSendingHubs.length !== sendingHubsUpdate.length) {
+      const foundHubs = loadedSendingHubs.map(({ id }) => id)
+      throw new ApolloError(
+        `Could not find sending hubs: ${sendingHubsUpdate
+          .filter((id) => !foundHubs.includes(id))
+          .join(', ')}`,
       )
     }
 
-    updateAttributes.receivingHubId = receivingHubId
+    updateAttributes.sendingHubs = loadedSendingHubs
   }
 
-  if (sendingHubId) {
-    const sendingHub = await Group.findByPk(sendingHubId)
-    if (sendingHub === null) {
-      throw new ApolloError(`No sending group exists with ID "${sendingHubId}"`)
-    }
-
-    updateAttributes.sendingHubId = sendingHubId
+  const newSendingHubs = (
+    updateAttributes.sendingHubs ?? shipment.sendingHubs
+  ).map(({ id }) => id)
+  const newReceivingHubs = (
+    updateAttributes.receivingHubs ?? shipment.receivingHubs
+  ).map(({ id }) => id)
+  if (arraysOverlap(newSendingHubs, newReceivingHubs)) {
+    throw new UserInputError(
+      'Update shipment input invalid: Sending and receiving hubs must be different',
+      {
+        sendingHubs: newSendingHubs,
+        receivingHubs: newReceivingHubs,
+      },
+    )
   }
 
   if (labelMonth !== undefined) {
@@ -282,32 +382,101 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     updateAttributes.pricing = pricing
   }
 
-  return shipment.update(updateAttributes)
+  // Did sending hubs change?
+  if (updateAttributes.sendingHubs !== undefined) {
+    // Find IDs of sending hubs to delete
+    const oldSendingHubIds = shipment.sendingHubs.map(({ id }) => id)
+    const sendingHubsToDelete = oldSendingHubIds.filter(
+      (id) => !sendingHubsUpdate?.includes(id) ?? false,
+    )
+    // Find IDs of sending hubs to add
+    const sendingHubsToAdd =
+      sendingHubsUpdate?.filter((id) => !oldSendingHubIds.includes(id)) ?? []
+    // Execute
+    await Promise.all([
+      ShipmentSendingHub.destroy({
+        where: {
+          shipmentId: shipment.id,
+          hubId: sendingHubsToDelete,
+        },
+      }),
+      Promise.all(
+        sendingHubsToAdd.map((hubId) =>
+          ShipmentSendingHub.create({
+            shipmentId: shipment.id,
+            hubId,
+          }),
+        ),
+      ),
+    ])
+  }
+
+  // Did receiving hubs change?
+  if (updateAttributes.receivingHubs !== undefined) {
+    // Find IDs of receiving hubs to delete
+    const oldReceivingHubIds = shipment.receivingHubs.map(({ id }) => id)
+    const receivingHubsToDelete = oldReceivingHubIds.filter(
+      (id) => !receivingHubsUpdate?.includes(id) ?? false,
+    )
+    // Find IDs of receiving hubs to add
+    const receivingHubsToAdd =
+      receivingHubsUpdate?.filter((id) => !oldReceivingHubIds.includes(id)) ??
+      []
+    // Execute
+    await Promise.all([
+      ShipmentReceivingHub.destroy({
+        where: {
+          shipmentId: shipment.id,
+          hubId: receivingHubsToDelete,
+        },
+      }),
+      Promise.all(
+        receivingHubsToAdd.map((hubId) =>
+          ShipmentReceivingHub.create({
+            shipmentId: shipment.id,
+            hubId,
+          }),
+        ),
+      ),
+    ])
+  }
+
+  await shipment.update(updateAttributes)
+
+  return Shipment.findByPk(shipment.id, {
+    include,
+  }) as Promise<Shipment>
 }
 
 // Shipment custom resolvers
-const sendingHub: ShipmentResolvers['sendingHub'] = async (parent) => {
-  const sendingHub = await Group.findByPk(parent.sendingHubId)
+const sendingHubs: ShipmentResolvers['sendingHubs'] = async (parent) => {
+  const ids = parent.sendingHubs.map(({ id }) => id)
+  const sendingHubs = await Group.findAll({
+    where: {
+      id: ids,
+    },
+  })
 
-  if (!sendingHub) {
-    throw new ApolloError(
-      `No sending group exists with ID "${parent.sendingHubId}"`,
-    )
+  if (!sendingHubs) {
+    throw new ApolloError(`No sending groups exists with IDs "${ids}"`)
   }
 
-  return sendingHub
+  return sendingHubs
 }
 
-const receivingHub: ShipmentResolvers['receivingHub'] = async (parent) => {
-  const receivingHub = await Group.findByPk(parent.receivingHubId)
+const receivingHubs: ShipmentResolvers['receivingHubs'] = async (parent) => {
+  const ids = parent.receivingHubs.map(({ id }) => id)
+  const receivingHubs = await Group.findAll({
+    where: {
+      id: ids,
+    },
+  })
 
-  if (!receivingHub) {
-    throw new ApolloError(
-      `No receiving group exists with ID "${parent.receivingHubId}"`,
-    )
+  if (!receivingHubs) {
+    throw new ApolloError(`No receiving group exists with IDs "${ids}"`)
   }
 
-  return receivingHub
+  return receivingHubs
 }
 
 const shipmentExports: ShipmentResolvers['exports'] = async (
@@ -331,7 +500,7 @@ export {
   shipment,
   addShipment,
   updateShipment,
-  sendingHub,
-  receivingHub,
+  sendingHubs,
+  receivingHubs,
   shipmentExports,
 }

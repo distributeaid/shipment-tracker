@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const sendingHubId = await queryInterface.sequelize.query(
+    const sendingHubs = await queryInterface.sequelize.query(
       'SELECT id FROM "Groups" WHERE "Groups"."groupType" = ? LIMIT 1',
       {
         replacements: ['SENDING_GROUP'],
@@ -25,7 +25,7 @@ module.exports = {
         labelMonth: 3,
         offerSubmissionDeadline: new Date(),
         status: 'ANNOUNCED',
-        sendingHubId: sendingHubId[0].id,
+        sendingHubs: sendingHubs[0].id,
         receivingHubId: receivingHubId[0].id,
         statusChangeTime: new Date(),
         createdAt: new Date(),

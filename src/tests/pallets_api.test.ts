@@ -61,8 +61,8 @@ describe('Pallets API', () => {
       shippingRoute: ShippingRoute.UkToCs,
       labelYear: 2020,
       labelMonth: 1,
-      sendingHubId: group.id,
-      receivingHubId: group.id,
+      sendingHubs: [group],
+      receivingHubs: [group],
       status: ShipmentStatus.Open,
     })
 

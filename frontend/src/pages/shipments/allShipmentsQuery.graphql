@@ -6,11 +6,11 @@ query AllShipments($status: [ShipmentStatus!]) {
     labelMonth
     offerSubmissionDeadline
     status
-    sendingHub {
+    sendingHubs {
       id
       name
     }
-    receivingHub {
+    receivingHubs {
       id
       name
     }

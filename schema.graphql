@@ -64,8 +64,8 @@ input ShipmentUpdateInput {
   shippingRoute: ShippingRoute
   labelYear: Int
   labelMonth: Int
-  sendingHubId: Int
-  receivingHubId: Int
+  sendingHubs: [Int!]
+  receivingHubs: [Int!]
   status: ShipmentStatus
   pricing: ShipmentPricingInput
 }
@@ -113,8 +113,8 @@ input ShipmentCreateInput {
   shippingRoute: ShippingRoute!
   labelYear: Int!
   labelMonth: Int!
-  sendingHubId: Int!
-  receivingHubId: Int!
+  sendingHubs: [Int!]!
+  receivingHubs: [Int!]!
   status: ShipmentStatus!
   pricing: ShipmentPricingInput
 }
@@ -153,10 +153,8 @@ type Shipment {
   labelMonth: Int!
   offerSubmissionDeadline: Date
   status: ShipmentStatus!
-  sendingHubId: Int!
-  sendingHub: Group!
-  receivingHubId: Int!
-  receivingHub: Group!
+  sendingHubs: [Group!]!
+  receivingHubs: [Group!]!
   pricing: ShipmentPricing
 
   # Exports are forbidden to non-admins

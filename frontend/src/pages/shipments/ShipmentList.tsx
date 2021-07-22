@@ -18,6 +18,7 @@ import {
 } from '../../types/api-types'
 import {
   formatLabelMonth,
+  formatListOfHubs,
   formatShipmentName,
   formatShipmentStatus,
   formatShippingRouteName,
@@ -35,12 +36,12 @@ const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
     accessor: (row) => formatShippingRouteName(row.shippingRoute),
   },
   {
-    Header: 'Sending hub',
-    accessor: (row) => row.sendingHub.name,
+    Header: 'Sending hubs',
+    accessor: (row) => formatListOfHubs(row.sendingHubs),
   },
   {
-    Header: 'Receiving hub',
-    accessor: (row) => row.receivingHub.name,
+    Header: 'Receiving hubs',
+    accessor: (row) => formatListOfHubs(row.receivingHubs),
   },
   {
     Header: 'Date',

@@ -1,9 +1,8 @@
 import {
-  BelongsTo,
+  BelongsToMany,
   Column,
   CreatedAt,
   DataType,
-  ForeignKey,
   HasMany,
   Model,
   Table,
@@ -17,6 +16,8 @@ import {
 } from '../server-internal-types'
 import Group from './group'
 import Offer from './offer'
+import ShipmentReceivingHub from './shipment_receiving_hub'
+import ShipmentSendingHub from './shipment_sending_hub'
 
 export interface ShipmentAttributes {
   id: number
@@ -25,8 +26,8 @@ export interface ShipmentAttributes {
   labelMonth: number
   offerSubmissionDeadline?: Date | null
   status: ShipmentStatus
-  sendingHubId: number
-  receivingHubId: number
+  sendingHubs: Group[]
+  receivingHubs: Group[]
   statusChangeTime: Date
   pricing: ShipmentPricing
 }
@@ -61,19 +62,11 @@ export default class Shipment extends Model<
   @Column(DataType.STRING)
   public status!: ShipmentStatus
 
-  @ForeignKey(() => Group)
-  @Column
-  public sendingHubId!: number
+  @BelongsToMany(() => Group, () => ShipmentSendingHub)
+  public sendingHubs!: Group[]
 
-  @BelongsTo(() => Group, 'sendingHubId')
-  public sendingHub!: Group
-
-  @ForeignKey(() => Group)
-  @Column
-  public receivingHubId!: number
-
-  @BelongsTo(() => Group, 'receivingHubId')
-  public receivingHub!: Group
+  @BelongsToMany(() => Group, () => ShipmentReceivingHub)
+  public receivingHubs!: Group[]
 
   @Column
   public statusChangeTime!: Date

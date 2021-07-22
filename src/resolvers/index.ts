@@ -21,8 +21,8 @@ import {
 import {
   addShipment,
   listShipments,
-  receivingHub,
-  sendingHub,
+  receivingHubs,
+  sendingHubs,
   shipment,
   shipmentExports,
   updateShipment,
@@ -66,8 +66,8 @@ const resolvers: Resolvers = {
 
   // Custom Resolvers
   Shipment: {
-    sendingHub,
-    receivingHub,
+    sendingHubs,
+    receivingHubs,
     exports: shipmentExports,
   },
 

@@ -27,7 +27,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING,
       },
-      sendingHubId: {
+      sendingHubs: {
         type: Sequelize.INTEGER,
         references: { model: 'Groups', key: 'id' },
       },
