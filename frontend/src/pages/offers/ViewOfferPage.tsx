@@ -14,7 +14,7 @@ import {
   useUpdateOfferMutation,
 } from '../../types/api-types'
 import { setEmptyFieldsToUndefined } from '../../utils/data'
-import { formatShipmentName } from '../../utils/format'
+import { formatListOfHubs, formatShipmentName } from '../../utils/format'
 import { shipmentViewOffersRoute } from '../../utils/routes'
 import { stripIdAndTypename } from '../../utils/types'
 import OfferStatusSwitcher from './OfferStatusSwitcher'
@@ -93,8 +93,8 @@ const ViewOfferPage: FunctionComponent = () => {
                       {formatShipmentName(shipment.shipment)}
                     </p>
                     <p className="text-gray-600 text-sm">
-                      {shipment.shipment.sendingHub.name} →{' '}
-                      {shipment.shipment.receivingHub.name}
+                      {formatListOfHubs(shipment.shipment.sendingHubs)} →{' '}
+                      {formatListOfHubs(shipment.shipment.receivingHubs)}
                     </p>
                   </>
                 )}

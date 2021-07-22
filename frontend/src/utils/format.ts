@@ -178,3 +178,6 @@ export function groupToSelectOption(
 ): SelectOption {
   return { value: group.id, label: group.name }
 }
+
+export const formatListOfHubs = (hubs: { name: string }[]): string =>
+  hubs.map(({ name }) => name).join(',')

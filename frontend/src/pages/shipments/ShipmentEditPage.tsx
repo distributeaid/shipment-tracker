@@ -19,16 +19,12 @@ const ShipmentEditPage: FunctionComponent = () => {
   const [error, setError] = useState<string>()
   const { showConfirmation, triggerConfirmation } = useSaveConfirmation()
 
-  const {
-    data: originalShipmentData,
-    loading: queryIsLoading,
-  } = useShipmentQuery({ variables: { id: parseInt(shipmentId, 10) } })
+  const { data: originalShipmentData, loading: queryIsLoading } =
+    useShipmentQuery({ variables: { id: parseInt(shipmentId, 10) } })
 
   // Set up the mutation to update the shipment
-  const [
-    updateShipmentMutation,
-    { loading: mutationIsLoading },
-  ] = useUpdateShipmentMutation()
+  const [updateShipmentMutation, { loading: mutationIsLoading }] =
+    useUpdateShipmentMutation()
 
   const onSubmit = (input: ShipmentUpdateInput) => {
     setError(undefined)
@@ -37,8 +33,8 @@ const ShipmentEditPage: FunctionComponent = () => {
       'shippingRoute',
       'labelYear',
       'labelMonth',
-      'sendingHubId',
-      'receivingHubId',
+      'sendingHubs',
+      'receivingHubs',
       'status',
       'pricing',
     ])

@@ -5,9 +5,7 @@ fragment AllShipmentFields on Shipment {
   labelMonth
   offerSubmissionDeadline
   status
-  receivingHubId
-  sendingHubId
-  receivingHub {
+  receivingHubs {
     id
     name
     primaryLocation {
@@ -15,7 +13,7 @@ fragment AllShipmentFields on Shipment {
       countryCode
     }
   }
-  sendingHub {
+  sendingHubs {
     id
     name
     primaryLocation {

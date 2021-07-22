@@ -1,4 +1,5 @@
 import _range from 'lodash/range'
+import _xor from 'lodash/xor'
 import { FunctionComponent, ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
@@ -15,6 +16,9 @@ import {
   useAllGroupsMinimalQuery,
 } from '../../types/api-types'
 import { groupToSelectOption } from '../../utils/format'
+
+const arraysOverlap = (a: unknown[], b: unknown[]): boolean =>
+  _xor(a, b).length === 0
 
 interface Props {
   /**
@@ -83,28 +87,33 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
   useEffect(
     function resetFormValues() {
       if (props.defaultValues) {
-        reset(props.defaultValues.shipment)
+        reset({
+          ...props.defaultValues.shipment,
+          sendingHubs: props.defaultValues.shipment.sendingHubs.map(
+            ({ id }) => id,
+          ),
+          receivingHubs: props.defaultValues.shipment.receivingHubs.map(
+            ({ id }) => id,
+          ),
+        })
         setIsExistingShipment(props.defaultValues.shipment.id != null)
       }
     },
     [props.defaultValues, reset],
   )
 
-  const [sendingHubId, receivingHubId] = watch([
-    'sendingHubId',
-    'receivingHubId',
-  ])
+  const [sendingHubs, receivingHubs] = watch(['sendingHubs', 'receivingHubs'])
 
   useEffect(
     function updateHubValidationErrors() {
-      // The sendingHubId and receivingHubId fields depend on each other for
+      // The sendingHubs and receivingHubs fields depend on each other for
       // validation. Therefore, if one of them is updated, we clear the errors
       // for both of them
-      if (sendingHubId !== receivingHubId) {
-        clearErrors(['sendingHubId', 'receivingHubId'])
+      if (!arraysOverlap(sendingHubs, receivingHubs)) {
+        clearErrors(['sendingHubs', 'receivingHubs'])
       }
     },
-    [sendingHubId, receivingHubId, clearErrors],
+    [sendingHubs, receivingHubs, clearErrors],
   )
 
   const validateShipmentDate = () => {
@@ -117,9 +126,9 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
   }
 
   const validateHubSelection = () => {
-    const sendingHub = getValues('sendingHubId')
-    const receivingHub = getValues('receivingHubId')
-    if (sendingHub === receivingHub) {
+    const sendingHubs = getValues('sendingHubs')
+    const receivingHubs = getValues('receivingHubs')
+    if (arraysOverlap(sendingHubs, receivingHubs)) {
       return 'The sending and receiving hubs must be different'
     }
 
@@ -175,7 +184,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
       </div>
       <SelectField
         label="Sending hub"
-        name="sendingHubId"
+        name="sendingHubs"
         options={hubs}
         castAsNumber
         register={register}

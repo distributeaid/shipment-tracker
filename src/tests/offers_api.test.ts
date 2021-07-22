@@ -66,8 +66,8 @@ describe('Offers API', () => {
       shippingRoute: ShippingRoute.UkToGr,
       labelYear: 2020,
       labelMonth: 1,
-      sendingHubId: captainsGroup.id,
-      receivingHubId: group2.id,
+      sendingHubs: [captainsGroup.id],
+      receivingHubs: [group2.id],
       status: ShipmentStatus.Open,
     })
   })
@@ -127,8 +127,8 @@ describe('Offers API', () => {
             shippingRoute: ShippingRoute.UkToGr,
             labelYear: 2020,
             labelMonth: 1,
-            sendingHubId: captainsGroup.id,
-            receivingHubId: group2.id,
+            sendingHubs: [captainsGroup.id],
+            receivingHubs: [group2.id],
             status: shipmentStatus,
           })
 
@@ -391,8 +391,8 @@ describe('Offers API', () => {
         labelYear: 2021,
         labelMonth: 1,
         shippingRoute: ShippingRoute.UkToFr,
-        sendingHubId: captainsGroup.id,
-        receivingHubId: captainsGroup.id,
+        sendingHubs: [captainsGroup.id],
+        receivingHubs: [captainsGroup.id],
         status: ShipmentStatus.Open,
       })
 

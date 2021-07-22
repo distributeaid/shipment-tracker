@@ -15,7 +15,7 @@ import {
   useShipmentQuery,
 } from '../../types/api-types'
 import { setEmptyFieldsToUndefined } from '../../utils/data'
-import { formatShipmentName } from '../../utils/format'
+import { formatListOfHubs, formatShipmentName } from '../../utils/format'
 import { shipmentViewRoute } from '../../utils/routes'
 
 interface Props {
@@ -183,8 +183,8 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
           <>
             <p className="">{formatShipmentName(targetShipment.shipment)}</p>
             <p className="text-gray-500 text-sm">
-              {targetShipment.shipment.sendingHub.name} →{' '}
-              {targetShipment.shipment.receivingHub.name}
+              {formatListOfHubs(targetShipment.shipment.sendingHubs)} →{' '}
+              {formatListOfHubs(targetShipment.shipment.receivingHubs)}
             </p>
           </>
         )}
