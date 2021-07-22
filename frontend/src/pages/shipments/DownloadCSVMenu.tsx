@@ -19,10 +19,8 @@ const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
   const { getAccessTokenSilently } = useAuth0()
   const [modalIsVisible, showModal, hideModal] = useModalState()
 
-  const [
-    exportShipment,
-    { loading: exportIsProcessing },
-  ] = useExportShipmentToCsvMutation()
+  const [exportShipment, { loading: exportIsProcessing }] =
+    useExportShipmentToCsvMutation()
 
   const exportToCSV = async () => {
     const shipmentExport = await exportShipment({
@@ -68,7 +66,11 @@ const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
   )
 
   if (!shipment.exports || shipment.exports.length === 0) {
-    return <Button disabled={exportIsProcessing}>Export to CSV</Button>
+    return (
+      <Button disabled={exportIsProcessing} onClick={exportToCSV}>
+        Export to CSV
+      </Button>
+    )
   }
 
   return (
