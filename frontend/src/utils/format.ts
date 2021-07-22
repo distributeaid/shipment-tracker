@@ -129,14 +129,13 @@ export function formatShipmentStatus(shipmentStatus: ShipmentStatus) {
 
 export function formatContainerType(
   type: LineItemContainerType,
-  pluralize?: boolean,
+  count: number,
 ) {
   return {
-    [LineItemContainerType.Box]: pluralize ? 'Boxes' : 'Box',
-    [LineItemContainerType.BulkBag]: pluralize ? 'Bulk bags' : 'Bulk bag',
-    [LineItemContainerType.FullPallet]: pluralize
-      ? 'Full pallets'
-      : 'Full pallet',
+    [LineItemContainerType.Box]: count === 1 ? '1 box' : `${count} boxes`,
+    [LineItemContainerType.BulkBag]:
+      count === 1 ? '1 bulk bag' : `${count} bulk bags`,
+    [LineItemContainerType.FullPallet]: 'The full pallet',
     [LineItemContainerType.Unset]: 'Not set',
   }[type]
 }

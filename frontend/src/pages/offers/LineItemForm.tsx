@@ -10,7 +10,6 @@ import Spinner from '../../components/Spinner'
 import {
   DANGEROUS_GOODS_LIST,
   LINE_ITEM_CATEGORY_OPTIONS,
-  LINE_ITEM_CONTAINER_OPTIONS,
   PALLET_CONFIGS,
 } from '../../data/constants'
 import {
@@ -26,7 +25,6 @@ import {
 } from '../../types/api-types'
 import { setEmptyFieldsToUndefined } from '../../utils/data'
 import {
-  getContainerCountLabel,
   gramsToKilos,
   groupToSelectOption,
   kilosToGrams,
@@ -63,15 +61,14 @@ const LineItemForm: FunctionComponent<Props> = ({
   })
 
   const [receivingGroups, setReceivingGroups] = useState<SelectOption[]>([])
-  const { data: groups, loading: groupsAreLoading } = useAllGroupsMinimalQuery()
+  const { data: groups, loading: groupsAreLoading } = useAllGroupsMinimalQuery({
+    variables: { groupType: GroupType.ReceivingGroup },
+  })
+
   useEffect(
     function organizeGroups() {
       if (groups && groups.listGroups) {
-        setReceivingGroups(
-          groups.listGroups
-            .filter((group) => group.groupType === GroupType.ReceivingGroup)
-            .map(groupToSelectOption),
-        )
+        setReceivingGroups(groups.listGroups.map(groupToSelectOption))
       }
     },
     [groups],
@@ -244,16 +241,22 @@ const LineItemForm: FunctionComponent<Props> = ({
     // The backend doesn't want null values for optional fields
     updatedLineItem = setEmptyFieldsToUndefined(updatedLineItem)
 
+    // There can only be 1 bulk bag or "pallet" by pallet
+    if (
+      [
+        LineItemContainerType.BulkBag,
+        LineItemContainerType.FullPallet,
+      ].includes(updatedLineItem.containerType)
+    ) {
+      updatedLineItem.containerCount = 1
+    }
+
     updateLineItem({
       variables: { id: lineItemId, input: updatedLineItem },
     }).then(() => {
       onEditingComplete()
     })
   })
-
-  const containerCountLabel = getContainerCountLabel(
-    watchContainerType || LineItemContainerType.Unset,
-  )
 
   if (!groupsAreLoading && receivingGroups.length === 0) {
     return (
@@ -294,8 +297,8 @@ const LineItemForm: FunctionComponent<Props> = ({
       ) : (
         <PlaceholderField className="mb-6 max-w-md" />
       )}
-      <fieldset className="space-y-4">
-        <legend className="font-semibold text-gray-700 ">Contents</legend>
+      <fieldset className="space-y-4 mb-6">
+        <legend className="font-semibold text-gray-700">Contents</legend>
         <TextField
           label="Description"
           name="description"
@@ -305,42 +308,6 @@ const LineItemForm: FunctionComponent<Props> = ({
           errors={errors}
           helpText="Pallets with comprehensive descriptions are more likely to get picked up."
         />
-        <div className="md:flex md:space-x-4">
-          <SelectField
-            label="Container type"
-            name="containerType"
-            options={LINE_ITEM_CONTAINER_OPTIONS}
-            register={register}
-            required
-            registerOptions={{
-              validate: {
-                notUnset: (value: LineItemContainerType) =>
-                  value !== LineItemContainerType.Unset ||
-                  'Please select a container type',
-              },
-            }}
-            errors={errors}
-          />
-          <TextField
-            label={containerCountLabel}
-            name="containerCount"
-            type="number"
-            min={1}
-            required
-            register={register}
-            errors={errors}
-            disabled={watchContainerType === LineItemContainerType.FullPallet}
-          />
-          <TextField
-            label="Number of items"
-            name="itemCount"
-            type="number"
-            required
-            min={1}
-            register={register}
-            errors={errors}
-          />
-        </div>
         <SelectField
           label="Category"
           name="category"
@@ -354,6 +321,68 @@ const LineItemForm: FunctionComponent<Props> = ({
           }}
           required
           errors={errors}
+        />
+        <TextField
+          label="Total number of items"
+          name="itemCount"
+          type="number"
+          required
+          className="max-w-xs"
+          helpText="For example: 100 pairs of socks, or 300 tampons"
+          min={1}
+          register={register}
+          errors={errors}
+        />
+      </fieldset>
+      <fieldset>
+        <legend className="font-semibold text-gray-700 mb-2">
+          Pallet layout
+        </legend>
+        <p className="text-gray-700 mb-2">
+          How are the items laid out on the pallet?
+        </p>
+        {errors['containerType'] && (
+          <InlineError>Please make a selection</InlineError>
+        )}
+        <div className="space-y-1 mb-4">
+          <label className="block">
+            <input
+              type="radio"
+              value={LineItemContainerType.FullPallet}
+              {...register('containerType', { required: true })}
+            />
+            <span className="ml-2">they fill the entire pallet</span>
+          </label>
+          <label className="block">
+            <input
+              type="radio"
+              value={LineItemContainerType.BulkBag}
+              {...register('containerType', { required: true })}
+            />
+            <span className="ml-2">in one bulk bag</span>
+          </label>
+          <label className="block">
+            <input
+              type="radio"
+              value={LineItemContainerType.Box}
+              {...register('containerType', { required: true })}
+            />
+            <span className="ml-2">in boxes</span>
+          </label>
+        </div>
+        <TextField
+          label="Amount of boxes"
+          name="containerCount"
+          type="number"
+          min={1}
+          max={36}
+          required
+          helpText="1 pallet can contain between 1–36 boxes"
+          register={register}
+          errors={errors}
+          className="max-w-xs"
+          disabled={watchContainerType !== LineItemContainerType.Box}
+          hidden={watchContainerType !== LineItemContainerType.Box}
         />
       </fieldset>
       <fieldset className="space-y-4 mt-12">

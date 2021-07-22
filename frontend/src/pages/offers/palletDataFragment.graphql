@@ -6,6 +6,8 @@ fragment PalletDataFragment on Pallet {
     id
     status
     category
+    containerCount
+    containerType
   }
   paymentStatus
 }
