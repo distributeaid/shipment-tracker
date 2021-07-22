@@ -261,6 +261,7 @@ describe('Pallets API', () => {
 
   describe('destroyPallet', () => {
     let palletA: Pallet, palletB: Pallet
+    let lineItem: LineItem
 
     const DESTROY_PALLET = gql`
       mutation ($id: Int!) {
@@ -287,6 +288,19 @@ describe('Pallets API', () => {
         paymentStatus: PaymentStatus.Uninitiated,
         paymentStatusChangeTime: new Date(),
       })
+
+      lineItem = await LineItem.create({
+        status: LineItemStatus.Proposed,
+        affirmLiability: true,
+        category: LineItemCategory.Clothing,
+        containerType: LineItemContainerType.Box,
+        dangerousGoods: [],
+        itemCount: 10,
+        offerPalletId: palletA.id,
+        photoUris: [],
+        statusChangeTime: new Date(),
+        tosAccepted: true,
+      })
     })
 
     it('destroys the pallet', async () => {
@@ -298,6 +312,8 @@ describe('Pallets API', () => {
       expect(res.errors).toBeUndefined()
       expect(await Pallet.findByPk(palletA.id)).toBeNull()
       expect(res.data?.destroyPallet?.pallets?.[0].id).toEqual(palletB.id)
+
+      expect(await LineItem.findByPk(lineItem.id)).toBeNull()
     })
   })
 })
