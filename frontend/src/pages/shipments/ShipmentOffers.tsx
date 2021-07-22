@@ -14,9 +14,13 @@ import { offerCreateRoute, offerViewRoute } from '../../utils/routes'
 
 interface Props {
   shipmentId: number
+  allowNewOffers?: boolean
 }
 
-const ShipmentOffers: FunctionComponent<Props> = ({ shipmentId }) => {
+const ShipmentOffers: FunctionComponent<Props> = ({
+  shipmentId,
+  allowNewOffers,
+}) => {
   // Get the list of offers for this shipment
   const { data } = useOffersForShipmentQuery({
     variables: { shipmentId },
@@ -69,19 +73,23 @@ const ShipmentOffers: FunctionComponent<Props> = ({ shipmentId }) => {
     return columns
   }, [groups, data, shipmentId])
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({ columns: COLUMNS, data: offers }, useSortBy)
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable({ columns: COLUMNS, data: offers }, useSortBy)
 
   return (
     <div>
       <div className="p-4 md:p-6 flex items-center justify-between">
         <h2 className="text-lg text-gray-700">Offers</h2>
-        <ButtonLink to={offerCreateRoute(shipmentId)}>Create offer</ButtonLink>
+        {allowNewOffers && (
+          <ButtonLink to={offerCreateRoute(shipmentId)}>
+            Create offer
+          </ButtonLink>
+        )}
+        {!allowNewOffers && (
+          <p className="text-gray-600">
+            Offers can only be created on Open shipments
+          </p>
+        )}
       </div>
       <div className="overflow-x-auto pb-8">
         <table className="w-full whitespace-nowrap" {...getTableProps()}>

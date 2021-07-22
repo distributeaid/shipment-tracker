@@ -1,6 +1,7 @@
 import _pick from 'lodash/pick'
 import { FunctionComponent, useContext, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import SelectField from '../../components/forms/SelectField'
@@ -15,6 +16,7 @@ import {
 } from '../../types/api-types'
 import { setEmptyFieldsToUndefined } from '../../utils/data'
 import { formatShipmentName } from '../../utils/format'
+import { shipmentViewRoute } from '../../utils/routes'
 
 interface Props {
   /**
@@ -82,9 +84,14 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
       if (groups?.listGroups) {
         // When the sendingGroupId changes, we pre-fill the contact info
         const sendingGroupId = watchSendingGroupId || profile?.groupId
-        const matchingGroup = groups.listGroups.find(
+        let matchingGroup = groups.listGroups.find(
           (group) => group.id === sendingGroupId,
         )
+
+        // Special case for admins when only 1 sending group exists
+        if (matchingGroup == null && groups.listGroups.length === 1) {
+          matchingGroup = groups.listGroups[0]
+        }
 
         if (matchingGroup != null) {
           reset({
@@ -132,6 +139,26 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
     )
   }
 
+  if (groups.listGroups.length === 0) {
+    return (
+      <div className="space-y-2">
+        <h2 className="text-lg">Cannot create offer</h2>
+        <p className="text-gray-700">
+          There are no sending groups available, so an offer cannot be created.
+          This should never happen! Please contact an administrator for help.
+        </p>
+        <p>
+          <Link
+            className="text-navy-800 hover:underline"
+            to={shipmentViewRoute(props.shipmentId)}
+          >
+            Go back to the shipment
+          </Link>
+        </p>
+      </div>
+    )
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
       {groups.listGroups.length > 1 ? (
@@ -164,7 +191,7 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
       </ReadOnlyField>
       <fieldset className="space-y-6">
         <legend>Primary contact</legend>
-        {groups.listGroups.length > 0 && (
+        {groups.listGroups.length > 1 && (
           <p className="text-gray-600">
             When you select a sending group, we will prefill the contact
             information below.
@@ -200,9 +227,6 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
           register={register}
           errors={errors}
         />
-      </fieldset>
-      <fieldset>
-        <legend>Photos (WIP)</legend>
       </fieldset>
       <Button
         variant="primary"

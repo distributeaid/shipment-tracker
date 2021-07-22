@@ -63,7 +63,7 @@ const LineItemForm: FunctionComponent<Props> = ({
   })
 
   const [receivingGroups, setReceivingGroups] = useState<SelectOption[]>([])
-  const { data: groups } = useAllGroupsMinimalQuery()
+  const { data: groups, loading: groupsAreLoading } = useAllGroupsMinimalQuery()
   useEffect(
     function organizeGroups() {
       if (groups && groups.listGroups) {
@@ -254,6 +254,18 @@ const LineItemForm: FunctionComponent<Props> = ({
   const containerCountLabel = getContainerCountLabel(
     watchContainerType || LineItemContainerType.Unset,
   )
+
+  if (!groupsAreLoading && receivingGroups.length === 0) {
+    return (
+      <div>
+        <h2 className="text-lg mb-2">Unable to add items</h2>
+        <p className="text-gray-600">
+          There are no receiving groups in the system. This should never happen,
+          please contact an administrator.
+        </p>
+      </div>
+    )
+  }
 
   return (
     <form onSubmit={submitForm} className="pb-12">

@@ -6,6 +6,7 @@ import Badge from '../../components/Badge'
 import ButtonLink from '../../components/ButtonLink'
 import DropdownMenu from '../../components/DropdownMenu'
 import CheckboxField from '../../components/forms/CheckboxField'
+import Spinner from '../../components/Spinner'
 import TableHeader from '../../components/table/TableHeader'
 import { UserProfileContext } from '../../components/UserProfileContext'
 import { SHIPMENT_STATUS_OPTIONS } from '../../data/constants'
@@ -80,8 +81,10 @@ const ShipmentList: FunctionComponent = () => {
   const [shipmentStatuses, setShipmentStatuses] = useState(
     profile?.isAdmin
       ? [
+          ShipmentStatus.Draft,
           ShipmentStatus.Open,
           ShipmentStatus.Staging,
+          ShipmentStatus.AidMatching,
           ShipmentStatus.Announced,
           ShipmentStatus.InProgress,
         ]
@@ -89,7 +92,7 @@ const ShipmentList: FunctionComponent = () => {
   )
 
   // This query runs every time the shipment status list is updated
-  const { data, error } = useAllShipmentsQuery({
+  const { data, error, loading } = useAllShipmentsQuery({
     variables: { status: shipmentStatuses },
   })
 
@@ -185,6 +188,16 @@ const ShipmentList: FunctionComponent = () => {
               })}
             </tbody>
           </table>
+          {loading && (
+            <div className="h-36 flex items-center justify-center">
+              <Spinner />
+            </div>
+          )}
+          {!loading && shipments.length === 0 && (
+            <div className="bg-gray-50 text-gray-600 py-8 px-4 text-center">
+              There are no shipments to display
+            </div>
+          )}
         </main>
       </div>
     </LayoutWithNav>
