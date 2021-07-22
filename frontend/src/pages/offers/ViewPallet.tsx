@@ -67,8 +67,13 @@ const ViewPallet: FunctionComponent<Props> = ({
         onConfirm={confirmDeletePallet}
         title={`Confirm deleting pallet #${palletId}`}
       >
-        Are you certain you want to delete this pallet? This action is
-        irreversible.
+        <>
+          <p className="mb-2">
+            Are you certain you want to delete this pallet? This will also
+            delete all the items stored on it.
+          </p>
+          <p>This action is irreversible.</p>
+        </>
       </ConfirmationModal>
       {pallet && (
         <div>

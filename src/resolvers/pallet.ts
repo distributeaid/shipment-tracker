@@ -166,6 +166,18 @@ const destroyPallet: MutationResolvers['destroyPallet'] = async (
 
   authorizeOfferMutation(offer, context)
 
+  // Delete the associated line items
+  const lineItems = await LineItem.findAll({
+    where: {
+      offerPalletId: pallet.id,
+    },
+  })
+
+  const lineItemIds = lineItems.map((lineItem) => lineItem.id)
+  if (lineItemIds.length > 0) {
+    await LineItem.destroy({ where: { id: lineItemIds } })
+  }
+
   await pallet.destroy()
   return offer
 }
