@@ -104,6 +104,15 @@ function check_node_version() {
   fi
 }
 
+function install_homebrew_if_needed() {
+  if ! command_exists brew; then
+    action "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  else
+    ok "Homebrew is already installed"
+  fi
+}
+
 function install_yarn_if_needed() {
   if ! command_exists yarn; then
     action "Installing yarn..."
@@ -158,6 +167,7 @@ echo
 
 check_node_version
 install_yarn_if_needed
+install_homebrew_if_needed
 
 yarn install
 
