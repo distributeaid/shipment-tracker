@@ -1,5 +1,5 @@
+import { Maybe } from '@graphql-tools/utils'
 import { Request, Response } from 'express'
-import { Maybe } from 'graphql-tools'
 import { authenticateRequest } from './authenticateRequest'
 import Group from './models/group'
 import UserAccount from './models/user_account'

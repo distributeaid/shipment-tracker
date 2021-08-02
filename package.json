@@ -26,6 +26,7 @@
   "author": "Distribute Aid",
   "license": "(ISC OR GPL-3.0)",
   "dependencies": {
+    "@graphql-tools/utils": "8.0.1",
     "@sinclair/typebox": "^0.20.0",
     "@types/graphql-depth-limit": "^1.1.2",
     "@types/lodash": "^4.14.170",
@@ -41,7 +42,6 @@
     "graphql-depth-limit": "^1.1.0",
     "graphql-import-node": "^0.0.4",
     "graphql-scalars": "^1.10.0",
-    "graphql-tools": "^7.0.5",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^2.0.3",
     "lodash": "^4.17.21",
