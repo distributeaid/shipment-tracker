@@ -1,9 +1,18 @@
+import { ErrorMessage } from '@hookform/error-message'
 import _range from 'lodash/range'
-import _xor from 'lodash/xor'
-import { FunctionComponent, ReactNode, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import {
+  FormEvent,
+  FunctionComponent,
+  ReactNode,
+  useEffect,
+  useState,
+} from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import Select from 'react-select'
 import Button from '../../components/Button'
-import SelectField, { SelectOption } from '../../components/forms/SelectField'
+import InlineError from '../../components/forms/InlineError'
+import Label from '../../components/forms/Label'
+import SelectField from '../../components/forms/SelectField'
 import {
   MONTH_OPTIONS,
   SHIPMENT_STATUS_OPTIONS,
@@ -15,10 +24,7 @@ import {
   ShipmentQuery,
   useAllGroupsMinimalQuery,
 } from '../../types/api-types'
-import { groupToSelectOption } from '../../utils/format'
-
-const arraysOverlap = (a: unknown[], b: unknown[]): boolean =>
-  _xor(a, b).length === 0
+import { arraysOverlap } from '../../utils/data'
 
 interface Props {
   /**
@@ -52,12 +58,19 @@ const YEAR_OPTIONS = _range(
 
 const DEFAULT_MONTH = (new Date().getMonth() + 2) % 12
 
+type HubSelectOption = {
+  label: string
+  value: number
+}
+
 const ShipmentForm: FunctionComponent<Props> = (props) => {
-  const [hubs, setHubs] = useState<SelectOption[]>([])
+  const [hubs, setHubs] = useState<HubSelectOption[]>([])
   const [isExistingShipment, setIsExistingShipment] = useState(false)
 
   // Load the list of groups
-  const { data: groups, loading: hubListIsLoading } = useAllGroupsMinimalQuery()
+  const { data: groups, loading: hubListIsLoading } = useAllGroupsMinimalQuery({
+    variables: { groupType: GroupType.DaHub },
+  })
 
   // When the groups are loaded, organize them by type so we can present them
   // in the form
@@ -65,9 +78,10 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
     function organizeGroups() {
       if (groups && groups.listGroups) {
         setHubs(
-          groups.listGroups
-            .filter((group) => group.groupType === GroupType.DaHub)
-            .map(groupToSelectOption),
+          groups.listGroups.map((group) => ({
+            label: group.name,
+            value: group.id,
+          })),
         )
       }
     },
@@ -81,8 +95,12 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
     watch,
     clearErrors,
     getValues,
+    control,
+    setError,
     formState: { errors },
   } = useForm<ShipmentCreateInput>()
+
+  const [sendingHubs, receivingHubs] = watch(['sendingHubs', 'receivingHubs'])
 
   useEffect(
     function resetFormValues() {
@@ -102,18 +120,18 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
     [props.defaultValues, reset],
   )
 
-  const [sendingHubs, receivingHubs] = watch(['sendingHubs', 'receivingHubs'])
-
   useEffect(
     function updateHubValidationErrors() {
-      // The sendingHubs and receivingHubs fields depend on each other for
-      // validation. Therefore, if one of them is updated, we clear the errors
-      // for both of them
-      if (!arraysOverlap(sendingHubs, receivingHubs)) {
-        clearErrors(['sendingHubs', 'receivingHubs'])
+      if (errors.receivingHubs || errors.sendingHubs) {
+        // The sendingHubs and receivingHubs fields depend on each other for
+        // validation. Therefore, if one of them is updated, we clear the errors
+        // for both of them
+        if (!arraysOverlap(sendingHubs, receivingHubs)) {
+          clearErrors(['sendingHubs', 'receivingHubs'])
+        }
       }
     },
-    [sendingHubs, receivingHubs, clearErrors],
+    [sendingHubs, receivingHubs, clearErrors, errors],
   )
 
   const validateShipmentDate = () => {
@@ -128,6 +146,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
   const validateHubSelection = () => {
     const sendingHubs = getValues('sendingHubs')
     const receivingHubs = getValues('receivingHubs')
+
     if (arraysOverlap(sendingHubs, receivingHubs)) {
       return 'The sending and receiving hubs must be different'
     }
@@ -135,8 +154,23 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
     return true
   }
 
+  /**
+   * Custom submit function that validates the sending and receiving hubs
+   */
+  const submitForm = (event: FormEvent) => {
+    const areHubsValid = validateHubSelection()
+    if (typeof areHubsValid === 'string') {
+      event.preventDefault()
+      setError('receivingHubs', { message: areHubsValid })
+      setError('sendingHubs', { message: areHubsValid })
+      return false
+    }
+
+    return handleSubmit(props.onSubmit)(event)
+  }
+
   return (
-    <form onSubmit={handleSubmit(props.onSubmit)} className="space-y-6">
+    <form onSubmit={submitForm} className="space-y-6">
       {isExistingShipment && (
         <SelectField
           options={SHIPMENT_STATUS_OPTIONS}
@@ -182,32 +216,47 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
           errors={errors}
         />
       </div>
-      <SelectField
-        label="Sending hub"
-        name="sendingHubs"
-        options={hubs}
-        castAsNumber
-        register={register}
-        registerOptions={{
-          validate: validateHubSelection,
-        }}
-        required
-        disabled={hubListIsLoading}
-        errors={errors}
-      />
-      <SelectField
-        label="Receiving hub"
-        name="receivingHubId"
-        options={hubs}
-        castAsNumber
-        register={register}
-        registerOptions={{
-          validate: validateHubSelection,
-        }}
-        required
-        disabled={hubListIsLoading}
-        errors={errors}
-      />
+      <div>
+        <Label>Sending hubs</Label>
+        <ErrorMessage
+          name="sendingHubs"
+          errors={errors || {}}
+          as={InlineError}
+        />
+        <Controller
+          control={control}
+          name="sendingHubs"
+          render={({ field }) => (
+            <Select
+              onChange={(value) => field.onChange(value.map((c) => c.value))}
+              options={hubs}
+              isMulti
+              value={hubs.filter((hub) => field.value?.includes(hub.value))}
+            />
+          )}
+        />
+      </div>
+      <div>
+        <Label>Receiving hubs</Label>
+        <ErrorMessage
+          name="receivingHubs"
+          errors={errors || {}}
+          as={InlineError}
+        />
+        <Controller
+          control={control}
+          name="receivingHubs"
+          render={({ field }) => (
+            <Select
+              onChange={(value) => field.onChange(value.map((c) => c.value))}
+              options={hubs}
+              isMulti
+              value={hubs.filter((hub) => field.value?.includes(hub.value))}
+            />
+          )}
+        />
+      </div>
+
       <div className="flex items-center">
         <Button variant="primary" type="submit" disabled={props.isLoading}>
           {props.submitButtonLabel}
