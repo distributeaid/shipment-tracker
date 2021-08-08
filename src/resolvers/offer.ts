@@ -1,5 +1,6 @@
 import { Type } from '@sinclair/typebox'
 import { ForbiddenError, UserInputError } from 'apollo-server'
+import { strict as assert } from 'assert'
 import Group from '../models/group'
 import Offer, { OfferAttributes } from '../models/offer'
 import Pallet from '../models/pallet'
@@ -41,6 +42,10 @@ const addOffer: MutationResolvers['addOffer'] = async (
   { input },
   context,
 ) => {
+  assert.ok(
+    typeof context.auth.userAccount.id === 'number',
+    'Current user id should be set',
+  )
   const valid = validateAddOfferInput(input)
   if ('errors' in valid) {
     throw new UserInputError('Add offer arguments invalid', valid.errors)

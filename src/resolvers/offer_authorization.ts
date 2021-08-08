@@ -1,4 +1,5 @@
 import { ApolloError, ForbiddenError } from 'apollo-server-express'
+import { strict as assert } from 'assert'
 import { AuthenticatedContext } from '../apolloServer'
 import Offer from '../models/offer'
 import { OfferStatus, ShipmentStatus } from '../server-internal-types'
@@ -31,6 +32,10 @@ const assertAccountIsCaptainOrAdmin = (
   offer: Offer,
   context: AuthenticatedContext,
 ): void => {
+  assert.ok(
+    typeof context.auth.userAccount.id === 'number',
+    'Current user id should be set',
+  )
   if (
     offer.sendingGroup.captainId !== context.auth.userAccount.id &&
     !context.auth.isAdmin

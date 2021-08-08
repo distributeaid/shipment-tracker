@@ -1,5 +1,6 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
+import { strict as assert } from 'assert'
 import { FindOptions, Op } from 'sequelize'
 import Group, { GroupAttributes } from '../models/group'
 import UserAccount from '../models/user_account'
@@ -93,6 +94,10 @@ const addGroup: MutationResolvers['addGroup'] = async (
   { input },
   context,
 ) => {
+  assert.ok(
+    typeof context.auth.userAccount.id === 'number',
+    'Current user id should be set',
+  )
   const valid = validateAddGroupInput(input)
   if ('errors' in valid) {
     throw new UserInputError('Group arguments invalid', valid.errors)
@@ -144,6 +149,10 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
   { id, input },
   context,
 ) => {
+  assert.ok(
+    typeof context.auth.userAccount.id === 'number',
+    'Current user id should be set',
+  )
   const valid = validateUpdateGroupInput(input)
   if ('errors' in valid) {
     throw new UserInputError('Update group arguments invalid', valid.errors)
