@@ -129,6 +129,7 @@ export const fakeUserAuth: Auth = {
 
 export const authenticateRequest = async (req: Request): Promise<Auth> => {
   if (process.env.AUTH_MODE === 'SKIP') {
+    console.log("using fake admin credentials because AUTH_MODE='SKIP'")
     return fakeAdminAuth
   }
 
