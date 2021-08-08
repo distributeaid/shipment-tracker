@@ -52,39 +52,33 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
         route.
       </p>
       <div className="md:flex items-center">
-        {shipmentData.sendingHubs.map((hub, k) => (
-          <div
-            key={k}
-            className="border border-gray-200 p-4 md:p-6 rounded flex-shrink-0"
-          >
-            <div className="uppercase text-xs text-gray-500">From</div>
-            <div className="text-lg md:text-xl text-gray-800 my-2">
-              {hub.name}
+        <div className="border border-gray-200 p-4 md:p-6 rounded flex-shrink-0 space-y-2">
+          <div className="uppercase text-xs text-gray-500 mb-2">From</div>
+          {shipmentData.sendingHubs.map((hub) => (
+            <div key={hub.id}>
+              <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
+              <div className="text-gray-600">
+                {hub.primaryLocation.townCity},{' '}
+                {formatCountryCodeToName(hub.primaryLocation.countryCode)}
+              </div>
             </div>
-            <div className="text-gray-600">
-              {hub.primaryLocation.townCity},{' '}
-              {formatCountryCodeToName(hub.primaryLocation.countryCode)}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
         <div className="text-2xl text-gray-500 p-2 md:p-4 transform md:-rotate-90 text-center">
           ↓
         </div>
-        {shipmentData.sendingHubs.map((hub, k) => (
-          <div
-            key={k}
-            className="border border-gray-200 p-4 md:p-6 rounded flex-shrink-0"
-          >
-            <div className="uppercase text-xs text-gray-500">To</div>
-            <div className="text-lg md:text-xl text-gray-800 my-2">
-              {hub.name}
+        <div className="border border-gray-200 p-4 md:p-6 rounded flex-shrink-0 space-y-2">
+          <div className="uppercase text-xs text-gray-500 mb-2">To</div>
+          {shipmentData.receivingHubs.map((hub) => (
+            <div key={hub.id}>
+              <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
+              <div className="text-gray-600">
+                {hub.primaryLocation.townCity},{' '}
+                {formatCountryCodeToName(hub.primaryLocation.countryCode)}
+              </div>
             </div>
-            <div className="text-gray-600">
-              {hub.primaryLocation.townCity},{' '}
-              {formatCountryCodeToName(hub.primaryLocation.countryCode)}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )

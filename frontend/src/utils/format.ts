@@ -180,4 +180,4 @@ export function groupToSelectOption(
 }
 
 export const formatListOfHubs = (hubs: { name: string }[]): string =>
-  hubs.map(({ name }) => name).join(',')
+  hubs.map(({ name }) => name).join(', ')

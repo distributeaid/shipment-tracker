@@ -1,12 +1,12 @@
 const {
   setEmptyFieldsToUndefined,
   validatePalletContents,
+  arraysOverlap,
 } = require('../../src/utils/data')
 const {
   LineItemContainerType,
   LineItemCategory,
   LineItemStatus,
-  PalletType,
 } = require('../../src/types/api-types')
 
 test(`setEmptyFieldsToUndefined`, () => {
@@ -19,6 +19,16 @@ test(`setEmptyFieldsToUndefined`, () => {
       e: 'e',
     }),
   ).toEqual({ d: 0, e: 'e' })
+})
+
+test(`arraysOverlap`, () => {
+  expect(arraysOverlap([1], [2])).toBeFalsy()
+  expect(arraysOverlap(['a', 'b'], ['c', 'd'])).toBeFalsy()
+  expect(arraysOverlap([1, 2], [])).toBeFalsy()
+
+  expect(arraysOverlap([1, 2], [2])).toBeTruthy()
+  expect(arraysOverlap([1, 2], [1, 2, 3, 4, 5])).toBeTruthy()
+  expect(arraysOverlap(['a', 'b'], ['b', 'a'])).toBeTruthy()
 })
 
 describe(`validatePalletContents`, () => {

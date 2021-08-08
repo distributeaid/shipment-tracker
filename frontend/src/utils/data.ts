@@ -1,3 +1,4 @@
+import _intersection from 'lodash/intersection'
 import _uniq from 'lodash/uniq'
 import { LineItem, LineItemContainerType } from '../types/api-types'
 
@@ -100,3 +101,6 @@ export function validatePalletContents(lineItems: PartialLineItem[]): {
 
   return { valid: true }
 }
+
+export const arraysOverlap = <T>(a: T[], b: T[]): boolean =>
+  _intersection(a, b).length !== 0
