@@ -29,11 +29,17 @@ app.use(
 )
 app.use(compression())
 
-apolloServer.applyMiddleware({
-  app,
-  path: '/graphql',
-  cors: false, // We use the cors plugin for this
-})
+async function startExpressServer() {
+  await apolloServer.start()
+
+  apolloServer.applyMiddleware({
+    app,
+    path: '/graphql',
+    cors: false, // We use the cors plugin for this
+  })
+}
+
+startExpressServer()
 
 const PUBLIC_DIR = path.join(__dirname, '../frontend/build')
 
