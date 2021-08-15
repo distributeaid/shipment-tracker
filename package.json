@@ -49,8 +49,8 @@
     "pg": "^8.6.0",
     "prettier-plugin-organize-imports": "^2.2.0",
     "reflect-metadata": "^0.1.13",
-    "sequelize": "^6.6.2",
-    "sequelize-typescript": "^2.1.0"
+    "sequelize": "6.6.2",
+    "sequelize-typescript": "2.1.0"
   },
   "devDependencies": {
     "@distributeaid/shared-config": "distributeaid/shared-config",
