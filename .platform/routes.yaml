@@ -1,3 +1,5 @@
-http://app.{default}:
+# https://docs.platform.sh/configuration/routes.html
+
+'http://app.{default}':
   type: upstream
-  upstream: shipment-tracker:http
+  upstream: 'shipment-tracker:http'

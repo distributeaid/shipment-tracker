@@ -39,4 +39,4 @@ relationships:
 
 web:
   commands:
-    start: 'yarn start'
+    start: 'node dist/server.js'
