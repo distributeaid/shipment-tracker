@@ -1,3 +1,5 @@
+# https://docs.platform.sh/configuration/app.html
+
 # The name of this app. Must be unique within a project.
 name: shipment-tracker
 
@@ -18,6 +20,8 @@ mounts:
   'web/uploads':
     source: local
     source_path: uploads
+
+disk: 256
 
 # The relationships of the application with services or other applications.
 #
