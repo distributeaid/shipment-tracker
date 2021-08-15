@@ -11,6 +11,12 @@ name: shipment-tracker
 # to find the supported versions for the 'nodejs' type.
 type: 'nodejs:14'
 
+# The hooks that will be triggered when the package is deployed.
+hooks:
+  # Build hooks can modify the application files on disk but not access any services like databases.
+  build: |
+    npm run build
+
 # The following block defines a single writable directory, 'web/uploads'
 # The 'source' specifies where the writable mount is. The 'local' source
 # indicates that the mount point will point to a local directory on the
