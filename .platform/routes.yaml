@@ -1,0 +1,3 @@
+http://app.{default}:
+  type: upstram
+  upstream: shipment-tracker:http
