@@ -15,11 +15,11 @@ const COMMON_CONFIG: Partial<SequelizeOptions> = {
 }
 
 if (env === 'production') {
-  if (process.env.DATABASE_URL == null) {
-    throw new Error('DATABASE_URL is null!')
+  if (process.env.POSTGRESQL_ADDON_URI == null) {
+    throw new Error('POSTGRESQL_ADDON_URI is null!')
   }
 
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
+  sequelize = new Sequelize(process.env.POSTGRESQL_ADDON_URI, {
     ...COMMON_CONFIG,
     dialectOptions: config.dialectOptions,
   })
