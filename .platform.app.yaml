@@ -15,7 +15,9 @@ type: 'nodejs:14'
 hooks:
   # Build hooks can modify the application files on disk but not access any services like databases.
   build: |
+    yarn
     yarn build
+    yarn run heroku-postbuild
 
 # The following block defines a single writable directory, 'web/uploads'
 # The 'source' specifies where the writable mount is. The 'local' source
