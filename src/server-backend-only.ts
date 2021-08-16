@@ -32,8 +32,8 @@ startExpressServer()
 
 const httpServer = createServer(app)
 
-const port = process.env.PORT || 3000
+const port = parseInt(process.env.PORT ?? '3000', 10)
 
-httpServer.listen({ port }, (): void =>
+httpServer.listen(port, '0.0.0.0', undefined, (): void =>
   console.log(`Listening on port ${port}`),
 )
