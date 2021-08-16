@@ -9,6 +9,7 @@ import {
 } from '../../types/api-types'
 import { setEmptyFieldsToUndefined } from '../../utils/data'
 import { groupViewRoute } from '../../utils/routes'
+import { stripIdAndTypename } from '../../utils/types'
 import GroupForm from './GroupForm'
 
 const GroupEditPage: FunctionComponent = () => {
@@ -31,6 +32,12 @@ const GroupEditPage: FunctionComponent = () => {
       if (input.primaryContact) {
         // The backend doesn't want null values for optional fields
         input.primaryContact = setEmptyFieldsToUndefined(input.primaryContact)
+        input.primaryContact = stripIdAndTypename(input.primaryContact)
+      }
+
+      if (input.primaryLocation) {
+        input.primaryLocation = stripIdAndTypename(input.primaryLocation)
+        delete input.primaryLocation.openLocationCode
       }
 
       await updateGroup({
