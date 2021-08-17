@@ -1,5 +1,13 @@
 # This workflow will do a clean install of node dependencies, build the source
-# code and run tests across different versions of node For more information
+# code and run tests.
+#
+# Once the tests pass, it will create a new release using semantic-release.
+# See https://github.com/semantic-release/semantic-release
+#
+# The release will have attached a compiled version of the source code, so when
+# deploying the code, the only step needed is unzip the archive and run it.
+#
+# For more information about GitHub Actions
 # see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 name: Node.js CI
 
@@ -7,7 +15,7 @@ on:
   push:
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     env:
       # scripts/dev_setup complains if TERM is unset
@@ -54,3 +62,35 @@ jobs:
 
       - name: Run tests
         run: yarn run test-ci
+
+  bundle-server:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Install packages
+        run: yarn install
+
+      - name: Build TypeScript
+        run: yarn run build
+
+      - name: Re-install dependencies (only prod)
+        run: |
+          rm -rf node_modules
+          yarn install --production
+
+      - name: Create bundle artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: server-bundle
+          path: |
+            dist/*
+            node_modules/*
+            package.json
+            yarn.lock
