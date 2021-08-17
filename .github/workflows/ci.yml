@@ -5,7 +5,7 @@
 # See https://github.com/semantic-release/semantic-release
 #
 # The release will have attached a compiled version of the source code, so when
-# deploying the code, the only step needed is unzip the archive and run it.
+# deploying the code, the only two steps needed is unzip the archive, install the production dependencies and run it.
 #
 # For more information about GitHub Actions
 # see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
@@ -74,16 +74,17 @@ jobs:
         with:
           node-version: 16
 
+      # Cache node_modules between builds based on the yarn.lock file's hash.
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
       - name: Install packages
         run: yarn install
 
       - name: Build TypeScript
         run: yarn run build
-
-      - name: Re-install dependencies (only prod)
-        run: |
-          rm -rf node_modules
-          yarn install --production
 
       - name: Create bundle artifact
         uses: actions/upload-artifact@v2
@@ -91,6 +92,5 @@ jobs:
           name: server-bundle
           path: |
             dist/*
-            node_modules/*
             package.json
             yarn.lock
