@@ -8,6 +8,9 @@ jobs:
   publish-docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+
       - uses: actions/checkout@v2
 
       - name: Install Node.js
@@ -24,14 +27,11 @@ jobs:
       - name: Install packages
         run: yarn install
 
-      - name: Build TypeScript
+      - name: Compile TypeScript
         run: yarn run build
 
       - name: Build Docker image for backend
         run: docker build . -t ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-backend:latest
-
-      - name: Login to Docker Hub
-        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Publish docker image
         run: |
