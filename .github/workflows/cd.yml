@@ -31,15 +31,13 @@ jobs:
         run: yarn run build
 
       - name: Build Docker image for backend
-        run: |
-          docker build . -t ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-backend:latest
+        run: docker build . -t ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-backend:latest
 
       - name: Build Docker image for db migrations
-        run: |
-          docker build . -t ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-db-migrate:latest -f Dockerfile.db-migrate
+        run: docker build . -t ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-db-migrate:latest -f Dockerfile.db-migrate
 
-      - name: Publish docker image
-        run: |
-          docker images
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-backend:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-db-migrate:latest
+      - run: docker images
+
+      - run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-backend:latest
+
+      - run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-db-migrate:latest
