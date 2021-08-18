@@ -1,4 +1,5 @@
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript'
+import { URL } from 'url'
 
 // DB_ENV is used soley to set the database config to "ci" for running
 // tests on CI. This is because DB connection config is different between
@@ -19,6 +20,12 @@ if (env === 'production') {
   if (process.env.DATABASE_URL == null) {
     throw new Error('DATABASE_URL is null!')
   }
+
+  const url = new URL(process.env.DATABASE_URL ?? '')
+  console.debug({
+    host: url.host,
+    database: url.pathname,
+  })
 
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     ...COMMON_CONFIG,
