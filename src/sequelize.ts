@@ -6,7 +6,7 @@ import { URL } from 'url'
 // CI and local test envs. See db/config.json
 const env = process.env.DB_ENV || process.env.NODE_ENV || 'development'
 const config = require(__dirname + '/../db/config.json')[env]
-console.debug(`sequlize config loaded`, config)
+console.debug(`sequelize config loaded`, config)
 
 export let sequelize: Sequelize
 
