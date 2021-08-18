@@ -4,9 +4,6 @@
 # Once the tests pass, it will create a new release using semantic-release.
 # See https://github.com/semantic-release/semantic-release
 #
-# The release will have attached a compiled version of the source code, so when
-# deploying the code, the only two steps needed is unzip the archive, install the production dependencies and run it.
-#
 # For more information about GitHub Actions
 # see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 name: Node.js CI
@@ -62,35 +59,3 @@ jobs:
 
       - name: Run tests
         run: yarn run test-ci
-
-  bundle-server:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Install Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
-
-      # Cache node_modules between builds based on the yarn.lock file's hash.
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Install packages
-        run: yarn install
-
-      - name: Build TypeScript
-        run: yarn run build
-
-      - name: Create bundle artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: server-bundle
-          path: |
-            dist/*
-            package.json
-            yarn.lock
