@@ -23,3 +23,4 @@ jobs:
         with:
           api_token: ${{ secrets.CODESEE_ARCH_DIAG_API_TOKEN }}
           github_ref: ${{ github.ref }}
+          support_typescript: true
