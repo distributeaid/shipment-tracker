@@ -36,8 +36,29 @@ jobs:
       - name: Build Docker image for db migrations
         run: docker build . -t ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-db-migrate:latest -f Dockerfile.db-migrate
 
+      - name: Build web application
+        working-directory: frontend
+        env:
+          NODE_ENV: production
+          REACT_APP_AUTH0_CLIENT_ID: pJ2WuwZMCVruid05NaRmZCjXw1RxvuXt
+          REACT_APP_AUTH0_DOMAIN: shipment-tracker-e2e.eu.auth0.com
+          REACT_APP_AUTH0_AUDIENCE: http://da-shipping-tracker-dev
+          REACT_APP_CLIENT_URL: https://shipment-tracker.sloppy.zone/
+          REACT_APP_GRAPHQL_URL: https://shipment-tracker-backend.sloppy.zone/graphql
+          REACT_APP_SERVER_URL: https://shipment-tracker-backend.sloppy.zone/
+        run: |
+          yarn install
+          yarn run build:styles
+          yarn run build
+
+      - name: Build docker image for web app
+        working-directory: frontend
+        run: docker build . -t ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-webapp:latest
+
       - run: docker images
 
       - run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-backend:latest
 
       - run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-db-migrate:latest
+
+      - run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/shipment-tracker-webapp:latest
