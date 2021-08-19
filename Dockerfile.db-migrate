@@ -5,6 +5,6 @@ WORKDIR /usr/src/app
 COPY package.json ./
 COPY yarn.lock ./
 RUN yarn add sequelize-cli
-COPY db ./db
+COPY db ./
 
 CMD [ "npx", "sequelize-cli", "db:migrate" ]
