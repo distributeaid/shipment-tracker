@@ -24,7 +24,7 @@ if (env === 'production') {
   const url = new URL(process.env.DATABASE_URL ?? '')
   console.debug({
     host: url.host,
-    database: url.pathname,
+    database: url.pathname.substr(1),
   })
 
   sequelize = new Sequelize(process.env.DATABASE_URL, {
