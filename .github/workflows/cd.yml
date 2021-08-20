@@ -40,9 +40,9 @@ jobs:
         working-directory: frontend
         env:
           NODE_ENV: production
-          REACT_APP_AUTH0_CLIENT_ID: pJ2WuwZMCVruid05NaRmZCjXw1RxvuXt
-          REACT_APP_AUTH0_DOMAIN: shipment-tracker-e2e.eu.auth0.com
-          REACT_APP_AUTH0_AUDIENCE: http://da-shipping-tracker-dev
+          REACT_APP_AUTH0_CLIENT_ID: SXj30zPqiIV2Sz1rOQi26QQOGfwON0ST
+          REACT_APP_AUTH0_DOMAIN: distributeaid.eu.auth0.com
+          REACT_APP_AUTH0_AUDIENCE: https://distributeaid.org/shipment-tracker
           REACT_APP_CLIENT_URL: https://shipment-tracker.sloppy.zone/
           REACT_APP_GRAPHQL_URL: https://shipment-tracker-backend.sloppy.zone/graphql
           REACT_APP_SERVER_URL: https://shipment-tracker-backend.sloppy.zone/
