@@ -4,6 +4,9 @@ import cors from 'cors'
 import express from 'express'
 import { createServer } from 'http'
 import path from 'path'
+import passport from 'passport'
+import cookieParser from 'cookie-parser'
+import { json } from 'body-parser'
 
 // Note: the order of these imports matters!
 import './loadEnv'
@@ -12,14 +15,23 @@ import './loadEnv'
 import './sequelize'
 
 import apolloServer from './apolloServer'
-import findOrCreateProfile from './findOrCreateProfile'
+import getProfile from './getProfile'
 import getAllFilesSync from './getAllFilesSync'
 import sendShipmentExportCsv from './sendShipmentExportCsv'
+import { cookieAuthStrategy } from './authenticateRequest'
+import registerUser from './registerUser'
+import login from './login'
 
 const app = express()
+app.use(cookieParser(process.env.COOKIE_SECRET ?? 'cookie-secret'))
+app.use(json())
+const cookieAuth = passport.authenticate('cookie', { session: false })
+passport.use(cookieAuthStrategy)
 
-app.get('/profile', findOrCreateProfile)
-app.get('/shipment-exports/:id', sendShipmentExportCsv)
+app.get('/me', cookieAuth, getProfile)
+app.get('/login', login())
+app.get('/user', registerUser)
+app.get('/shipment-exports/:id', cookieAuth, sendShipmentExportCsv)
 
 app.use(
   cors({

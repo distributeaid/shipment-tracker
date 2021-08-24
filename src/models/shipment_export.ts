@@ -56,6 +56,7 @@ export default class ShipmentExport extends Model {
       createdBy: {
         id: this.userAccountId,
         isAdmin: true,
+        username: this.userAccount.username,
       },
       createdAt: this.createdAt,
     }

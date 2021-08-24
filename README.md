@@ -73,7 +73,6 @@ See [the README in the `frontend` directory](/frontend/README.md) for instructio
 
 - [Database Migrations](./docs/migrations.md)
 - [Graphql Codegen](./docs/codegen.md)
-- [Auth0 configuration](./docs/auth0.md)
 
 ### Type definitions
 

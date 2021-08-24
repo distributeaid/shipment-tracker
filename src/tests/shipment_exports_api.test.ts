@@ -38,7 +38,9 @@ describe('ShipmentExports API', () => {
     await sequelize.sync({ force: true })
 
     captain = await UserAccount.create({
-      auth0Id: 'captain-id',
+      username: 'captain-id',
+      passwordHash: '',
+      token: '',
     })
 
     const serverWithContext = await makeAdminTestServerWithServices()

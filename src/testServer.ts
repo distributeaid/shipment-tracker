@@ -30,7 +30,9 @@ export const makeTestServer = async (
 ): Promise<ApolloServer> => {
   if (overrides.context == null) {
     const userAccount = await UserAccount.create({
-      auth0Id: 'user-auth0-id',
+      username: 'user-id',
+      passwordHash: '',
+      token: '',
     })
 
     overrides.context = () => ({
@@ -52,7 +54,9 @@ export const makeAdminTestServerWithServices = async (
   overrides: Partial<ApolloServerExpressConfig> = {},
 ) => {
   const userAccount = await UserAccount.create({
-    auth0Id: 'admin-auth0-id',
+    username: 'admin-auth0-id',
+    passwordHash: '',
+    token: '',
   })
 
   const fakeGenrateCsv = makeFakeGenerateCsvFn()
