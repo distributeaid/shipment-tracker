@@ -10,7 +10,7 @@ import {
   ShipmentCreateInput,
 } from '../../server-internal-types'
 
-let fakeAuth0Id = 1
+let fakeusername = 1
 
 async function createGroup(
   input: GroupCreateInput,
@@ -18,7 +18,9 @@ async function createGroup(
 ): Promise<Group> {
   if (!captainId) {
     const groupCaptain = await UserAccount.create({
-      auth0Id: `fake-auth-id-${fakeAuth0Id++}`,
+      username: `fake-auth-id-${fakeusername++}`,
+      passwordHash: '',
+      token: '',
     })
     captainId = groupCaptain.id
   }

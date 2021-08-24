@@ -1,10 +1,10 @@
 import { ForbiddenError } from 'apollo-server'
 import { Request, Response } from 'express'
-import { authenticateRequest } from './authenticateRequest'
+import { AuthContext } from './authenticateRequest'
 import ShipmentExport from './models/shipment_export'
 
 const sendShipmentExportCsv = async (req: Request, res: Response) => {
-  const auth = await authenticateRequest(req)
+  const auth = req.user as AuthContext
 
   if (!auth.isAdmin) {
     throw new ForbiddenError('Only admins are allowed to export shipments')

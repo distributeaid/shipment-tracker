@@ -6,7 +6,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert('UserAccounts', [
       {
-        auth0Id: 'seeded-account-id',
+        username: 'seeded-account-id',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
