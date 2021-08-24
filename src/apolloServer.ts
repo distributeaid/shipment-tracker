@@ -4,7 +4,7 @@ import {
   AuthenticationError,
 } from 'apollo-server-express'
 import depthLimit from 'graphql-depth-limit'
-import { AuthenticatedAuth, authenticateRequest } from './authenticateRequest'
+import { AuthContext, authenticateWithToken } from './authenticateRequest'
 import generateCsv, { CsvRow } from './generateCsv'
 import resolvers from './resolvers'
 import typeDefs from './typeDefs'
@@ -14,7 +14,7 @@ export type Services = {
 }
 
 export type AuthenticatedContext = {
-  auth: AuthenticatedAuth
+  auth: AuthContext
   services: Services
 }
 
@@ -23,15 +23,13 @@ export const serverConfig: ApolloServerExpressConfig = {
   resolvers,
   validationRules: [depthLimit(7)],
   async context({ req }): Promise<AuthenticatedContext> {
-    const auth = await authenticateRequest(req)
+    const auth = await authenticateWithToken(req.signedCookies.token)
 
-    if (auth.userAccount == null) {
-      throw new AuthenticationError(
-        `No user account found for profile ${auth.claims.sub}`,
-      )
+    if (!('userAccount' in auth)) {
+      throw new AuthenticationError(auth.message)
     }
 
-    return { auth: auth as AuthenticatedAuth, services: { generateCsv } }
+    return { auth: auth as AuthContext, services: { generateCsv } }
   },
 }
 

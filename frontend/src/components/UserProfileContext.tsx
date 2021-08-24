@@ -16,7 +16,7 @@ interface UserProfileData {
 }
 
 const fetchProfile = (token: string) => {
-  return fetch('/profile', {
+  return fetch('/me', {
     headers: { Authorization: `Bearer ${token}` },
   })
 }

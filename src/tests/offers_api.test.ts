@@ -34,7 +34,9 @@ describe('Offers API', () => {
     await Shipment.truncate({ cascade: true, force: true })
 
     captain = await UserAccount.create({
-      auth0Id: 'captain-id',
+      username: 'captain-id',
+      passwordHash: '',
+      token: '',
     })
 
     captainTestServer = await makeTestServer({

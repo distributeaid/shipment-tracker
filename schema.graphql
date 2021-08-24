@@ -198,6 +198,7 @@ type UserProfile {
   id: Int!
   isAdmin: Boolean!
   groupId: Int
+  username: String!
 }
 
 enum OfferStatus {

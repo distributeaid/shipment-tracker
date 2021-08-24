@@ -37,7 +37,9 @@ describe('LineItems API', () => {
     await sequelize.sync({ force: true })
 
     captain = await UserAccount.create({
-      auth0Id: 'captain-id',
+      username: 'captain-id',
+      passwordHash: '',
+      token: '',
     })
 
     captainTestServer = await makeTestServer({

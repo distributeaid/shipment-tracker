@@ -41,10 +41,14 @@ describe('Groups API', () => {
 
       // Create test servers
       captain = await UserAccount.create({
-        auth0Id: 'captain-id',
+        username: 'captain-id',
+        passwordHash: '',
+        token: '',
       })
       newCaptain = await UserAccount.create({
-        auth0Id: 'new-captain-id',
+        username: 'new-captain-id',
+        passwordHash: '',
+        token: '',
       })
       testServer = await makeTestServer({
         context: () => ({ auth: { ...fakeUserAuth, userAccount: captain } }),
@@ -274,11 +278,19 @@ describe('Groups API', () => {
      */
     beforeAll(async () => {
       captain1 = await UserAccount.create({
-        auth0Id: captain1Name,
+        username: captain1Name,
+        passwordHash: '',
+        token: '',
       })
-      captain2 = await UserAccount.create({ auth0Id: captain2Name })
+      captain2 = await UserAccount.create({
+        username: captain2Name,
+        passwordHash: '',
+        token: '',
+      })
       daCaptain = await UserAccount.create({
-        auth0Id: daCaptainName,
+        username: daCaptainName,
+        passwordHash: '',
+        token: '',
       })
       sendingGroup1 = await Group.create({
         name: sendingGroup1Name,
@@ -481,7 +493,7 @@ describe('Groups API', () => {
               variables: {
                 captainId: (
                   await UserAccount.findOne({
-                    where: { auth0Id: captainName },
+                    where: { username: captainName },
                   })
                 )?.id,
               },
@@ -521,7 +533,7 @@ describe('Groups API', () => {
               variables: {
                 captainId: (
                   await UserAccount.findOne({
-                    where: { auth0Id: captainName },
+                    where: { username: captainName },
                   })
                 )?.id,
                 groupType: groupTypes,
@@ -535,7 +547,7 @@ describe('Groups API', () => {
                 })
               )
                 .filter(({ name }) => expectedGroupNames.includes(name))
-                .filter(({ captain }) => captain.auth0Id === captainName)
+                .filter(({ captain }) => captain.username === captainName)
                 .map(toGroupData),
             )
           },
