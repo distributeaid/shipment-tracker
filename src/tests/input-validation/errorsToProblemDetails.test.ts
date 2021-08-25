@@ -1,11 +1,8 @@
 import { Type } from '@sinclair/typebox'
 import { ErrorObject } from 'ajv'
-import { errorsToProblemDetails } from '../../resolvers/input-validation/errorsToProblemDetails'
-import {
-  NonEmptyShortString,
-  URI,
-} from '../../resolvers/input-validation/types'
-import { validateWithJSONSchema } from '../../resolvers/input-validation/validateWithJSONSchema'
+import { errorsToProblemDetails } from '../../input-validation/errorsToProblemDetails'
+import { NonEmptyShortString, URI } from '../../input-validation/types'
+import { validateWithJSONSchema } from '../../input-validation/validateWithJSONSchema'
 
 describe('errorsToProblemDetails() should turn validation errors into Problem Details for HTTP APIs (RFC7807)', () => {
   it('should format an unknown property in the top-level object', () => {

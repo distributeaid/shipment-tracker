@@ -20,7 +20,7 @@ async function createGroup(
     const groupCaptain = await UserAccount.create({
       username: `fake-auth-id-${fakeusername++}`,
       passwordHash: '',
-      token: '',
+      name: 'Captain',
     })
     captainId = groupCaptain.id
   }

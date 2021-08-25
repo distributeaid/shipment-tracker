@@ -33,11 +33,11 @@ const assertAccountIsCaptainOrAdmin = (
   context: AuthenticatedContext,
 ): void => {
   assert.ok(
-    typeof context.auth.userAccount.id === 'number',
+    typeof context.auth.userId === 'number',
     'Current user id should be set',
   )
   if (
-    offer.sendingGroup.captainId !== context.auth.userAccount.id &&
+    offer.sendingGroup.captainId !== context.auth.userId &&
     !context.auth.isAdmin
   ) {
     throw new ForbiddenError('Forbidden to access this offer')

@@ -4,7 +4,11 @@ import {
   AuthenticationError,
 } from 'apollo-server-express'
 import depthLimit from 'graphql-depth-limit'
-import { AuthContext, authenticateWithToken } from './authenticateRequest'
+import {
+  AuthContext,
+  authCookieName,
+  decodeAuthCookie,
+} from './authenticateRequest'
 import generateCsv, { CsvRow } from './generateCsv'
 import resolvers from './resolvers'
 import typeDefs from './typeDefs'
@@ -23,13 +27,14 @@ export const serverConfig: ApolloServerExpressConfig = {
   resolvers,
   validationRules: [depthLimit(7)],
   async context({ req }): Promise<AuthenticatedContext> {
-    const auth = await authenticateWithToken(req.signedCookies.token)
-
-    if (!('userAccount' in auth)) {
-      throw new AuthenticationError(auth.message)
+    try {
+      return {
+        auth: decodeAuthCookie(req.signedCookies[authCookieName]),
+        services: { generateCsv },
+      }
+    } catch (err) {
+      throw new AuthenticationError((err as Error).message)
     }
-
-    return { auth: auth as AuthContext, services: { generateCsv } }
   },
 }
 

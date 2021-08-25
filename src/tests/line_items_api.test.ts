@@ -1,6 +1,6 @@
 import { ApolloServer } from 'apollo-server-express'
 import gql from 'graphql-tag'
-import { fakeUserAuth } from '../authenticateRequest'
+import { userToAuthContext } from '../authenticateRequest'
 import Group from '../models/group'
 import LineItem from '../models/line_item'
 import Offer from '../models/offer'
@@ -37,13 +37,13 @@ describe('LineItems API', () => {
     await sequelize.sync({ force: true })
 
     captain = await UserAccount.create({
-      username: 'captain-id',
+      username: 'captain',
       passwordHash: '',
-      token: '',
+      name: 'Captain',
     })
 
     captainTestServer = await makeTestServer({
-      context: () => ({ auth: { ...fakeUserAuth, userAccount: captain } }),
+      context: () => ({ auth: userToAuthContext(captain) }),
     })
     adminTestServer = await makeAdminTestServer()
     otherUserTestServer = await makeTestServer()
