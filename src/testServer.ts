@@ -1,7 +1,7 @@
 import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
 import { merge } from 'lodash'
 import { serverConfig, Services } from './apolloServer'
-import { fakeAdminAuth, fakeUserAuth } from './authenticateRequest'
+import { userToAuthContext } from './authenticateRequest'
 import { CsvRow } from './generateCsv'
 import UserAccount from './models/user_account'
 
@@ -29,14 +29,15 @@ export const makeTestServer = async (
   overrides: Partial<ApolloServerExpressConfig> = {},
 ): Promise<ApolloServer> => {
   if (overrides.context == null) {
-    const userAccount = await UserAccount.create({
-      username: 'user-id',
+    const user = await UserAccount.create({
+      isAdmin: false,
+      name: 'User',
+      username: 'user',
       passwordHash: '',
-      token: '',
     })
 
     overrides.context = () => ({
-      auth: { ...fakeUserAuth, userAccount },
+      auth: userToAuthContext(user),
       services: {
         generateCsv: makeFakeGenerateCsvFn().generateCsv,
       },
@@ -53,21 +54,22 @@ export const makeAdminTestServer = async (
 export const makeAdminTestServerWithServices = async (
   overrides: Partial<ApolloServerExpressConfig> = {},
 ) => {
-  const userAccount = await UserAccount.create({
-    username: 'admin-auth0-id',
-    passwordHash: '',
-    token: '',
-  })
-
   const fakeGenrateCsv = makeFakeGenerateCsvFn()
 
   const services = {
     ...fakeGenrateCsv,
   }
 
+  const admin = await UserAccount.create({
+    isAdmin: true,
+    name: 'Admin',
+    username: 'admin',
+    passwordHash: '',
+  })
+
   const testServer = await makeTestServer({
     context: () => ({
-      auth: { ...fakeAdminAuth, userAccount },
+      auth: userToAuthContext(admin),
       services,
     }),
     ...overrides,

@@ -7,8 +7,8 @@ import {
   TwoLetterCountryCode,
   URI,
   ValueOrUnset,
-} from '../../resolvers/input-validation/types'
-import { validateWithJSONSchema } from '../../resolvers/input-validation/validateWithJSONSchema'
+} from '../../input-validation/types'
+import { validateWithJSONSchema } from '../../input-validation/validateWithJSONSchema'
 
 describe('input validation types', () => {
   describe('validate country code input', () => {

@@ -55,8 +55,8 @@ export default class ShipmentExport extends Model {
       downloadPath: `/shipment-exports/${this.id}`,
       createdBy: {
         id: this.userAccountId,
-        isAdmin: true,
-        username: this.userAccount.username,
+        isAdmin: this.userAccount.isAdmin,
+        name: this.userAccount.name,
       },
       createdAt: this.createdAt,
     }

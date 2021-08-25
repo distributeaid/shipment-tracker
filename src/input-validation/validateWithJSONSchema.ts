@@ -16,9 +16,7 @@ ajv.addKeyword('modifier')
 
 export const validateWithJSONSchema = <T extends TObject<TProperties>>(
   schema: T,
-): ((
-  value: Record<string, any>,
-) =>
+): ((value: Record<string, any>) =>
   | {
       errors: ErrorObject[]
     }

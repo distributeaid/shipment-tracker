@@ -5,7 +5,10 @@ import Offer from '../models/offer'
 import Pallet from '../models/pallet'
 import Shipment from '../models/shipment'
 import ShipmentExport from '../models/shipment_export'
+import UserAccount from '../models/user_account'
 import { MutationResolvers, QueryResolvers } from '../server-internal-types'
+
+const include = [UserAccount]
 
 const exportShipment: MutationResolvers['exportShipment'] = async (
   _,
@@ -59,10 +62,14 @@ const exportShipment: MutationResolvers['exportShipment'] = async (
   const exportRecord = await ShipmentExport.create({
     contentsCsv: csv,
     shipmentId,
-    userAccountId: auth.userAccount.id,
+    userAccountId: auth.userId,
   })
 
-  return exportRecord.toWireFormat()
+  return (
+    (await ShipmentExport.findByPk(exportRecord.id, {
+      include,
+    })) as ShipmentExport
+  ).toWireFormat()
 }
 
 export const HEADER_ROW = [
@@ -119,9 +126,9 @@ const listShipmentExports: QueryResolvers['listShipmentExports'] = async (
     throw new ForbiddenError('Must be admin')
   }
 
-  return (
-    await ShipmentExport.findAll({ where: { shipmentId } })
-  ).map((shipmentExport: ShipmentExport) => shipmentExport.toWireFormat())
+  return (await ShipmentExport.findAll({ where: { shipmentId }, include })).map(
+    (shipmentExport: ShipmentExport) => shipmentExport.toWireFormat(),
+  )
 }
 
 export { exportShipment, listShipmentExports }

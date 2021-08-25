@@ -1,6 +1,10 @@
 import { Type } from '@sinclair/typebox'
 import { ForbiddenError, UserInputError } from 'apollo-server'
 import { strict as assert } from 'assert'
+import { Contact } from '../input-validation/Contact'
+import { validateIdInput } from '../input-validation/idInputSchema'
+import { ID, URI } from '../input-validation/types'
+import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
 import Group from '../models/group'
 import Offer, { OfferAttributes } from '../models/offer'
 import Pallet from '../models/pallet'
@@ -12,10 +16,6 @@ import {
   QueryResolvers,
   ShipmentStatus,
 } from '../server-internal-types'
-import { Contact } from './input-validation/Contact'
-import { validateIdInput } from './input-validation/idInputSchema'
-import { ID, URI } from './input-validation/types'
-import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
 import {
   authorizeOfferMutation,
   authorizeOfferQuery,
@@ -43,7 +43,7 @@ const addOffer: MutationResolvers['addOffer'] = async (
   context,
 ) => {
   assert.ok(
-    typeof context.auth.userAccount.id === 'number',
+    typeof context.auth.userId === 'number',
     'Current user id should be set',
   )
   const valid = validateAddOfferInput(input)
@@ -62,11 +62,11 @@ const addOffer: MutationResolvers['addOffer'] = async (
 
   const sendingGroup = await sendingGroupPromise
   if (
-    sendingGroup?.captainId !== context.auth.userAccount.id &&
+    sendingGroup?.captainId !== context.auth.userId &&
     !context.auth.isAdmin
   ) {
     throw new ForbiddenError(
-      `User ${context.auth.userAccount.id} not permitted to create offer for group ${valid.value.sendingGroupId}`,
+      `User ${context.auth.userId} not permitted to create offer for group ${valid.value.sendingGroupId}`,
     )
   }
 
@@ -188,7 +188,7 @@ const listOffers: QueryResolvers['listOffers'] = async (
   }
 
   const groupsPromise = Group.findAll({
-    where: { captainId: context.auth.userAccount.id },
+    where: { captainId: context.auth.userId },
   })
   const shipment = await Shipment.findByPk(shipmentId)
 

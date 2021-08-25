@@ -1,5 +1,8 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, UserInputError } from 'apollo-server'
+import { validateIdInput } from '../input-validation/idInputSchema'
+import { ID } from '../input-validation/types'
+import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
 import LineItem from '../models/line_item'
 import Offer from '../models/offer'
 import Pallet, { PalletAttributes } from '../models/pallet'
@@ -11,9 +14,6 @@ import {
   QueryResolvers,
 } from '../server-internal-types'
 import getPalletWithParentAssociations from './getPalletWithParentAssociations'
-import { validateIdInput } from './input-validation/idInputSchema'
-import { ID } from './input-validation/types'
-import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
 import {
   authorizeOfferMutation,
   authorizeOfferQuery,
