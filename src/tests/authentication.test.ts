@@ -1,5 +1,4 @@
 // tslint:disable:ordered-imports
-import { randomWords } from '@nordicsemiconductor/random-words'
 import express, { Express } from 'express'
 import { createServer, Server } from 'http'
 import passport from 'passport'
@@ -12,6 +11,7 @@ import { json } from 'body-parser'
 import registerUser from '../routes/register'
 import login from '../routes/login'
 import renewCookie from '../routes/me/cookie'
+import { v4 } from 'uuid'
 
 jest.setTimeout(15 * 1000)
 
@@ -19,9 +19,6 @@ const cookieAuth = passport.authenticate('cookie', { session: false })
 passport.use(cookieAuthStrategy)
 
 const tokenCookieRx = new RegExp(`${authCookieName}=([^;]+);`, 'i')
-
-const generateUsername = async () =>
-  (await randomWords({ numWords: 3 })).join('-')
 
 describe('User account API', () => {
   let app: Express
@@ -31,7 +28,7 @@ describe('User account API', () => {
   let password: string
   let authCookie: string
   beforeAll(async () => {
-    username = await generateUsername()
+    username = v4()
     password = 'y{uugBmw"9,?=L_'
     app = express()
     app.use(cookieParser(process.env.COOKIE_SECRET ?? 'cookie-secret'))
