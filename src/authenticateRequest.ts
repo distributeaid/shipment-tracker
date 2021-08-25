@@ -1,54 +1,79 @@
+import * as crypto from 'crypto'
+import { CookieOptions } from 'express'
 import { Strategy as CookieStrategy } from 'passport-cookie'
 import UserAccount from './models/user_account'
 
-const fakeAccount = UserAccount.build({
-  username: '',
-  token: '',
-  passwordHash: '',
-})
+type AuthCookiePayload = {
+  /** user ID */
+  i: number
+  /** user is admin */
+  a: boolean
+  /** user hash */
+  c: string
+}
 
 export type AuthContext = {
-  userAccount: UserAccount
+  userId: number
   isAdmin: boolean
+  userHash: string
 }
 
-export type ErrorInfo = {
-  message: string
-}
+export const userHash = (user: UserAccount): string =>
+  crypto
+    .createHash('sha1')
+    .update(`${user.id}:${user.username}:${user.passwordHash}`)
+    .digest('hex')
 
-export const fakeAdminAuth: AuthContext = {
-  userAccount: fakeAccount,
-  isAdmin: true,
-}
-
-export const fakeUserAuth: AuthContext = {
-  userAccount: fakeAccount,
-  isAdmin: false,
-}
-
-export const authenticateWithToken = async (
-  token: string,
-): Promise<AuthContext | ErrorInfo> => {
-  try {
-    const userAccount = await UserAccount.findOne({
-      where: { token },
-    })
-    if (userAccount === null) return { message: 'User not found for token.' }
-    return { userAccount, isAdmin: false }
-  } catch (err) {
-    return { message: (err as Error).message }
-  }
-}
-
-export const authTokenCookieName = 'token'
+export const authCookieName = 'auth'
 export const cookieAuthStrategy = new CookieStrategy(
   {
-    cookieName: authTokenCookieName,
+    cookieName: authCookieName,
     signed: true,
   },
-  async (token: string, done: any) => {
-    const res = await authenticateWithToken(token)
-    if ('userAccount' in res) return done(null, res)
-    return done(null, false, res)
+  async (value: string, done: any) => {
+    try {
+      return done(null, decodeAuthCookie(value))
+    } catch (error) {
+      return done(
+        null,
+        false,
+        new Error(
+          `Failed to decode cookie payload: ${(error as Error).message}!`,
+        ),
+      )
+    }
   },
 )
+
+export const authCookie = (
+  user: UserAccount,
+  lifetimeInMinutes: number = 30,
+): [string, string, CookieOptions] => [
+  authCookieName,
+  JSON.stringify({
+    i: user.id,
+    a: false,
+    c: userHash(user),
+  }),
+  {
+    signed: true,
+    secure: true,
+    httpOnly: true,
+    expires: new Date(Date.now() + lifetimeInMinutes * 60 * 1000),
+  },
+]
+
+export const userToAuthContext = (user: UserAccount): AuthContext => ({
+  isAdmin: user.isAdmin,
+  userId: user.id,
+  userHash: userHash(user),
+})
+
+export const decodeAuthCookie = (value: string): AuthContext => {
+  const {
+    i: userId,
+    a: isAdmin,
+    c: userHash,
+  } = JSON.parse(value) as AuthCookiePayload
+  return { userId, isAdmin, userHash }
+}

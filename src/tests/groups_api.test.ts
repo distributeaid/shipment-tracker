@@ -1,7 +1,7 @@
 import { ApolloServer } from 'apollo-server-express'
 import gql from 'graphql-tag'
 import { omit } from 'lodash'
-import { fakeUserAuth } from '../authenticateRequest'
+import { userToAuthContext } from '../authenticateRequest'
 import Group, { GroupAttributes } from '../models/group'
 import UserAccount from '../models/user_account'
 import { sequelize } from '../sequelize'
@@ -41,17 +41,17 @@ describe('Groups API', () => {
 
       // Create test servers
       captain = await UserAccount.create({
-        username: 'captain-id',
+        username: 'captain',
         passwordHash: '',
-        token: '',
+        name: 'Captain A',
       })
       newCaptain = await UserAccount.create({
-        username: 'new-captain-id',
+        username: 'new-captain',
         passwordHash: '',
-        token: '',
+        name: 'New Captain',
       })
       testServer = await makeTestServer({
-        context: () => ({ auth: { ...fakeUserAuth, userAccount: captain } }),
+        context: () => ({ auth: userToAuthContext(captain) }),
       })
       adminTestServer = await makeAdminTestServer()
     })
@@ -279,18 +279,18 @@ describe('Groups API', () => {
     beforeAll(async () => {
       captain1 = await UserAccount.create({
         username: captain1Name,
+        name: captain1Name,
         passwordHash: '',
-        token: '',
       })
       captain2 = await UserAccount.create({
         username: captain2Name,
+        name: captain2Name,
         passwordHash: '',
-        token: '',
       })
       daCaptain = await UserAccount.create({
         username: daCaptainName,
+        name: daCaptainName,
         passwordHash: '',
-        token: '',
       })
       sendingGroup1 = await Group.create({
         name: sendingGroup1Name,
@@ -323,7 +323,7 @@ describe('Groups API', () => {
         ...commonGroupData,
       })
       testServer = await makeTestServer({
-        context: () => ({ auth: { ...fakeUserAuth, userAccount: captain1 } }),
+        context: () => ({ auth: userToAuthContext(captain1) }),
       })
     })
 

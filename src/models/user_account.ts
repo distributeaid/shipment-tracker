@@ -1,6 +1,8 @@
+import { Maybe } from 'graphql/jsutils/Maybe'
 import {
   Column,
   CreatedAt,
+  Default,
   Model,
   Table,
   Unique,
@@ -8,12 +10,14 @@ import {
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
 import { UserProfile } from '../server-internal-types'
+import Group from './group'
 
 export interface UserAccountAttributes {
   id: number
   username: string
   passwordHash: string
-  token: string
+  isAdmin?: boolean
+  name: string
 }
 
 export interface UserAccountCreationAttributes
@@ -36,7 +40,11 @@ export default class UserAccount extends Model<
   public passwordHash!: string
 
   @Column
-  public token!: string
+  public name!: string
+
+  @Default(false)
+  @Column
+  public isAdmin!: boolean
 
   @CreatedAt
   @Column
@@ -46,12 +54,23 @@ export default class UserAccount extends Model<
   @Column
   public readonly updatedAt!: Date
 
-  public asProfile(groupId?: number, isAdmin = false): UserProfile {
+  public async asPublicProfile(): Promise<UserProfile> {
+    let groupForUser: Maybe<Group>
+    if (!this.isAdmin) {
+      // Note: this assumes that there is only 1 captain per group, where in
+      // reality there are no restrictions on the number of groups with the same
+      // captain. For now, we've agreed that this is okay, but we probably need
+      // to solidify some restrictions later on.
+      // See https://github.com/distributeaid/shipment-tracker/issues/133
+      groupForUser = await Group.findOne({
+        where: { captainId: this.id },
+      })
+    }
     return {
       id: this.id,
-      username: this.username,
-      isAdmin,
-      groupId,
+      isAdmin: this.isAdmin,
+      name: this.name,
+      group: groupForUser,
     }
   }
 }

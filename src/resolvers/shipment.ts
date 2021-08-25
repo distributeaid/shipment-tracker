@@ -1,11 +1,20 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { isEqual, xor } from 'lodash'
+import { validateIdInput } from '../input-validation/idInputSchema'
+import {
+  CurrentYearOrGreater,
+  ID,
+  MonthIndexStartingAt1,
+  Pricing,
+} from '../input-validation/types'
+import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
 import Group from '../models/group'
 import Shipment, { ShipmentAttributes } from '../models/shipment'
 import ShipmentExport from '../models/shipment_export'
 import ShipmentReceivingHub from '../models/shipment_receiving_hub'
 import ShipmentSendingHub from '../models/shipment_sending_hub'
+import UserAccount from '../models/user_account'
 import {
   MutationResolvers,
   QueryResolvers,
@@ -13,14 +22,6 @@ import {
   ShipmentStatus,
   ShippingRoute,
 } from '../server-internal-types'
-import { validateIdInput } from './input-validation/idInputSchema'
-import {
-  CurrentYearOrGreater,
-  ID,
-  MonthIndexStartingAt1,
-  Pricing,
-} from './input-validation/types'
-import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
 
 const arraysOverlap = (a: unknown[], b: unknown[]): boolean =>
   xor(a, b).length === 0
@@ -482,7 +483,7 @@ const receivingHubs: ShipmentResolvers['receivingHubs'] = async (parent) => {
 const shipmentExports: ShipmentResolvers['exports'] = async (
   parent,
   _,
-  { auth: isAdmin },
+  { auth: { isAdmin } },
 ) => {
   if (!isAdmin) {
     throw new ForbiddenError('Must be admin to query shipment exports')
@@ -490,6 +491,7 @@ const shipmentExports: ShipmentResolvers['exports'] = async (
 
   return ShipmentExport.findAll({
     where: { shipmentId: parent.id },
+    include: [UserAccount],
   }).then((shipmentExports) =>
     shipmentExports.map((shipmentExport) => shipmentExport.toWireFormat()),
   )

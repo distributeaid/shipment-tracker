@@ -15,22 +15,28 @@ import './loadEnv'
 import './sequelize'
 
 import apolloServer from './apolloServer'
-import getProfile from './getProfile'
+import getProfile from './routes/me'
 import getAllFilesSync from './getAllFilesSync'
 import sendShipmentExportCsv from './sendShipmentExportCsv'
 import { cookieAuthStrategy } from './authenticateRequest'
-import registerUser from './registerUser'
-import login from './login'
+import registerUser from './routes/register'
+import login from './routes/login'
+import { v4 } from 'uuid'
+import renewCookie from './routes/me/cookie'
 
 const app = express()
-app.use(cookieParser(process.env.COOKIE_SECRET ?? 'cookie-secret'))
+/**
+ * @see ./docs/authentication.md
+ */
+app.use(cookieParser(process.env.COOKIE_SECRET ?? v4()))
 app.use(json())
 const cookieAuth = passport.authenticate('cookie', { session: false })
 passport.use(cookieAuthStrategy)
 
 app.get('/me', cookieAuth, getProfile)
+app.get('/me/cookie', cookieAuth, renewCookie())
 app.get('/login', login())
-app.get('/user', registerUser)
+app.get('/register', registerUser())
 app.get('/shipment-exports/:id', cookieAuth, sendShipmentExportCsv)
 
 app.use(

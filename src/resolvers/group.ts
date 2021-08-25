@@ -2,6 +2,16 @@ import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { strict as assert } from 'assert'
 import { FindOptions, Op } from 'sequelize'
+import { Contact } from '../input-validation/Contact'
+import { validateIdInput } from '../input-validation/idInputSchema'
+import { Location } from '../input-validation/Location'
+import {
+  ID,
+  NonEmptyShortString,
+  OptionalValueOrUnset,
+  URI,
+} from '../input-validation/types'
+import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
 import Group, { GroupAttributes } from '../models/group'
 import UserAccount from '../models/user_account'
 import {
@@ -9,16 +19,6 @@ import {
   MutationResolvers,
   QueryResolvers,
 } from '../server-internal-types'
-import { Contact } from './input-validation/Contact'
-import { validateIdInput } from './input-validation/idInputSchema'
-import { Location } from './input-validation/Location'
-import {
-  ID,
-  NonEmptyShortString,
-  OptionalValueOrUnset,
-  URI,
-} from './input-validation/types'
-import { validateWithJSONSchema } from './input-validation/validateWithJSONSchema'
 
 // Group query resolvers
 
@@ -95,7 +95,7 @@ const addGroup: MutationResolvers['addGroup'] = async (
   context,
 ) => {
   assert.ok(
-    typeof context.auth.userAccount.id === 'number',
+    typeof context.auth.userId === 'number',
     'Current user id should be set',
   )
   const valid = validateAddGroupInput(input)
@@ -114,7 +114,7 @@ const addGroup: MutationResolvers['addGroup'] = async (
   // Non-admins are only allowed to create a single group
   if (!context.auth.isAdmin) {
     const numGroupsForUser = await Group.count({
-      where: { captainId: context.auth.userAccount.id },
+      where: { captainId: context.auth.userId },
     })
 
     if (numGroupsForUser > 0) {
@@ -124,7 +124,7 @@ const addGroup: MutationResolvers['addGroup'] = async (
 
   return Group.create({
     ...valid.value,
-    captainId: context.auth.userAccount.id,
+    captainId: context.auth.userId,
   })
 }
 
@@ -150,7 +150,7 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
   context,
 ) => {
   assert.ok(
-    typeof context.auth.userAccount.id === 'number',
+    typeof context.auth.userId === 'number',
     'Current user id should be set',
   )
   const valid = validateUpdateGroupInput(input)
@@ -164,10 +164,7 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
     throw new UserInputError(`Group ${id} does not exist`)
   }
 
-  if (
-    group.captainId !== context.auth.userAccount.id &&
-    !context.auth.isAdmin
-  ) {
+  if (group.captainId !== context.auth.userId && !context.auth.isAdmin) {
     throw new ForbiddenError('Not permitted to update group')
   }
 
