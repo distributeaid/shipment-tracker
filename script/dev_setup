@@ -34,6 +34,10 @@ function _colorized() {
     -e "s/@u/$(tput sgr 0 1)/g"
 }
 
+function is_freebsd() {
+  [[ "$_current_os" == "FreeBSD" ]]
+}
+
 function is_macos() {
   [[ "$_current_os" == "Darwin" ]]
 }
@@ -104,6 +108,15 @@ function check_node_version() {
   fi
 }
 
+function install_freebsd_packages_if_needed() {
+  if is_freebsd; then
+    action "Installing FreeBSD packages..."
+    sudo pkg install -yr FreeBSD www/yarn-node14 shells/bash databases/postgresql14-server databases/postgresql14-client
+    sudo yarn global add npx
+    ok "FreeBSD packages installed"
+  fi
+}
+
 function install_homebrew_if_needed() {
   if ! command_exists brew; then
     action "Installing Homebrew..."
@@ -165,9 +178,10 @@ function copy_env_file() {
 colorized "@b@yellow[[Setting up dev environment]]"
 echo
 
+is_freebsd && install_freebsd_packages_if_needed
 check_node_version
 install_yarn_if_needed
-install_homebrew_if_needed
+is_macos && install_homebrew_if_needed
 
 yarn install
 
