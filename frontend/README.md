@@ -7,7 +7,7 @@ This is a React and Typescript application bootstrapped using [Create React App]
 1. **Install the dependencies CLI**
 
    ```shell
-   yarn install
+   yarn install --frozen-lockfile
 
    ```
 
@@ -29,7 +29,7 @@ You'll usually want access to our data when running the frontend. Here's how to 
 2. **Install the dependencies:**
 
    ```shell
-   yarn install
+   yarn install --frozen-lockfile
 
    ```
 

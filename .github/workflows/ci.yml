@@ -44,7 +44,7 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install packages
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: Run dev_setup
         run: script/dev_setup
