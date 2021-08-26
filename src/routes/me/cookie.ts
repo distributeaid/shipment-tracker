@@ -1,12 +1,16 @@
 import { Request, Response } from 'express'
-import { AuthContext, authCookie, userHash } from '../../authenticateRequest'
+import {
+  AuthContext,
+  authCookie,
+  expireAuthCookie,
+  userHash,
+} from '../../authenticateRequest'
 import UserAccount from '../../models/user_account'
 
-const renewCookie =
+export const renewCookie =
   (penaltySeconds = 10) =>
   async (request: Request, response: Response) => {
     const authContext = request.user as AuthContext
-    console.log(authContext)
     const user = await UserAccount.findByPk(authContext.userId)
     if (user === null) {
       // Penalize
@@ -25,4 +29,8 @@ const renewCookie =
       .end()
   }
 
-export default renewCookie
+export const deleteCookie = (_: Request, response: Response) =>
+  response
+    .status(204)
+    .cookie(...expireAuthCookie())
+    .end()

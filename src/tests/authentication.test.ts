@@ -10,7 +10,7 @@ import cookieParser from 'cookie-parser'
 import { json } from 'body-parser'
 import registerUser from '../routes/register'
 import login from '../routes/login'
-import renewCookie from '../routes/me/cookie'
+import { renewCookie, deleteCookie } from '../routes/me/cookie'
 import { v4 } from 'uuid'
 
 jest.setTimeout(15 * 1000)
@@ -19,6 +19,26 @@ const cookieAuth = passport.authenticate('cookie', { session: false })
 passport.use(cookieAuthStrategy)
 
 const tokenCookieRx = new RegExp(`${authCookieName}=([^;]+);`, 'i')
+
+const parseCookie = (cookie: string) =>
+  cookie
+    .split('; ')
+    .map((s) => s.split('=', 2))
+    .reduce(
+      (c, [k, v], i) =>
+        i === 0
+          ? {
+              [decodeURIComponent(k)]: v ? decodeURIComponent(v) : true,
+            }
+          : {
+              ...c,
+              options: {
+                ...c.options,
+                [decodeURIComponent(k)]: v ? decodeURIComponent(v) : true,
+              },
+            },
+      {} as Record<string, any>,
+    )
 
 describe('User account API', () => {
   let app: Express
@@ -37,6 +57,7 @@ describe('User account API', () => {
     app.post('/register', registerUser(1))
     app.post('/login', login(0))
     app.get('/me/cookie', cookieAuth, renewCookie(0))
+    app.delete('/me/cookie', cookieAuth, deleteCookie)
     httpServer = createServer(app)
     await new Promise<void>((resolve) =>
       httpServer.listen(8888, '127.0.0.1', undefined, resolve),
@@ -60,25 +81,7 @@ describe('User account API', () => {
         .expect(202)
         .expect('set-cookie', tokenCookieRx)
 
-      const cookieInfo = (res.header['set-cookie'][0] as string)
-        .split('; ')
-        .map((s) => s.split('=', 2))
-        .reduce(
-          (c, [k, v], i) =>
-            i === 0
-              ? {
-                  [decodeURIComponent(k)]: v ? decodeURIComponent(v) : true,
-                }
-              : {
-                  ...c,
-                  options: {
-                    ...c.options,
-                    [decodeURIComponent(k)]: v ? decodeURIComponent(v) : true,
-                  },
-                },
-          {} as Record<string, any>,
-        )
-
+      const cookieInfo = parseCookie(res.header['set-cookie'][0] as string)
       expect(cookieInfo[authCookieName]).toBeDefined()
       expect(cookieInfo.options).toMatchObject({ Path: '/', HttpOnly: true })
       const expiresIn =
@@ -115,6 +118,18 @@ describe('User account API', () => {
           .get('/me/cookie')
           .set('Cookie', [`${authCookieName}=${authCookie}`])
           .expect(204))
+      it('should delete a cookie', async () => {
+        const res = await r
+          .delete('/me/cookie')
+          .set('Cookie', [`${authCookieName}=${authCookie}`])
+          .expect(204)
+        const cookieInfo = parseCookie(res.header['set-cookie'][0] as string)
+        expect(cookieInfo[authCookieName]).toBeDefined()
+        expect(cookieInfo.options).toMatchObject({ Path: '/', HttpOnly: true })
+        const expiresIn =
+          new Date(cookieInfo.options.Expires).getTime() - Date.now()
+        expect(expiresIn).toBeLessThan(0) // Expires is in the past
+      })
     })
   })
   describe('/login', () => {

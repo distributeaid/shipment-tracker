@@ -1,4 +1,3 @@
-import { useAuth0 } from '@auth0/auth0-react'
 import { FunctionComponent } from 'react'
 
 interface Props {
@@ -6,10 +5,15 @@ interface Props {
 }
 
 const LogInButton: FunctionComponent<Props> = ({ className }) => {
-  const { loginWithRedirect } = useAuth0()
-
   return (
-    <button className={className} type="button" onClick={loginWithRedirect}>
+    <button
+      className={className}
+      type="button"
+      onClick={() => {
+        // FIXME: Implement logout
+        console.debug('Not implemented')
+      }}
+    >
       Log in
     </button>
   )

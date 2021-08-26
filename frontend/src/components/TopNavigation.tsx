@@ -1,6 +1,6 @@
-import { useAuth0 } from '@auth0/auth0-react'
 import { FunctionComponent, ReactNode, useContext } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 import ROUTES from '../utils/routes'
 import Badge from './Badge'
 import DistributeAidLogo from './branding/DistributeAidLogo'
@@ -47,7 +47,7 @@ interface Props {
  * branding and a dropdown-menu with some account information.
  */
 const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
-  const { user, logout } = useAuth0()
+  const { logout } = useAuth()
   const { profile } = useContext(UserProfileContext)
 
   const userIsAdmin = profile?.isAdmin
@@ -66,7 +66,7 @@ const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
           </Link>
         </div>
         <DesktopNavigation navLinks={filteredNavLinks} />
-        {!hideControls && user && (
+        {!hideControls && profile && (
           <div className="flex items-center text-white">
             <DropdownMenu
               buttonVariant="primary"
@@ -75,10 +75,9 @@ const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
             >
               <DropdownMenu.Text>
                 <div>
-                  {user.name}
+                  {profile.name}
                   {userIsAdmin && <Badge className="ml-4">Admin</Badge>}
                 </div>
-                <div className="text-sm text-gray-500">{user.email}</div>
               </DropdownMenu.Text>
               <DropdownMenu.Divider />
               <DropdownMenu.Button onClick={() => logout()}>
