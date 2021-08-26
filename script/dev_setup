@@ -147,7 +147,19 @@ function install_postgresql() {
 function start_postgresql() {
   action "Starting postgresql server..."
 
-  if is_macos; then
+  if is_freebsd; then
+    sudo sysrc postgresql_enable=yes
+    # FreeBSD initialises PG prior to starting DB
+    sudo test -s /var/db/postgres/data14/PG_VERSION \
+        || sudo service postgresql initdb
+    # listen on all ports, trust everybody
+    IP=$(ifconfig lo1 inet | awk '$1 == "inet" { print $2 }')
+    sudo sed -i '' -E -e "s/127.0.0.1/$IP/" -e "s/replication/$USER/" \
+        /var/db/postgres/data14/pg_hba.conf
+    # start PG if not already running
+    test -S /tmp/.s.PGSQL.5432 \
+        || sudo service postgresql start
+elif is_macos; then
     brew services start postgresql
   elif is_linux; then
     sudo service postgresql start
