@@ -63,6 +63,18 @@ export const authCookie = (
   },
 ]
 
+// Sends an expired cookie to the client so it will be removed
+export const expireAuthCookie = (): [string, string, CookieOptions] => [
+  authCookieName,
+  '',
+  {
+    signed: true,
+    secure: true,
+    httpOnly: true,
+    expires: new Date(Date.now() - 60 * 1000),
+  },
+]
+
 export const userToAuthContext = (user: UserAccount): AuthContext => ({
   isAdmin: user.isAdmin,
   userId: user.id,
