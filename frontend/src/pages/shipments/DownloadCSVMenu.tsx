@@ -1,4 +1,3 @@
-import { useAuth0 } from '@auth0/auth0-react'
 import format from 'date-fns/format'
 import { FunctionComponent, useMemo } from 'react'
 import Button from '../../components/Button'
@@ -16,7 +15,6 @@ interface Props {
 const SERVER_URL = process.env.REACT_APP_SERVER_URL
 
 const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
-  const { getAccessTokenSilently } = useAuth0()
   const [modalIsVisible, showModal, hideModal] = useModalState()
 
   const [exportShipment, { loading: exportIsProcessing }] =
@@ -36,10 +34,7 @@ const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
   }
 
   const downloadShipment = async (downloadPath: string) => {
-    const accessToken = await getAccessTokenSilently()
-
     const downloadUrl = new URL(downloadPath, SERVER_URL)
-    downloadUrl.searchParams.append('authorization', `Bearer ${accessToken}`)
     window.open(downloadUrl.href)
   }
 

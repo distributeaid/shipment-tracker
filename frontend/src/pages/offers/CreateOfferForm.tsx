@@ -109,7 +109,7 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
         }
       }
     },
-    [watchSendingGroupId, groups, reset],
+    [watchSendingGroupId, groups, reset, profile],
   )
 
   const onSubmitForm = (input: OfferCreateInput) => {

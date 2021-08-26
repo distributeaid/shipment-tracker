@@ -1,9 +1,11 @@
-import { useAuth0 } from '@auth0/auth0-react'
 import { createContext, FunctionComponent, useEffect, useState } from 'react'
+
+const SERVER_URL = process.env.REACT_APP_SERVER_URL
 
 export interface UserProfile {
   id: number
   isAdmin: boolean
+  name: string
   groupId?: number
 }
 
@@ -15,18 +17,11 @@ interface UserProfileData {
   refetch: () => void
 }
 
-const fetchProfile = (token: string) => {
-  return fetch('/me', {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-}
-
 const UserProfileContext = createContext<UserProfileData>({
   refetch: () => {},
 })
 
 const UserProfileProvider: FunctionComponent = ({ children }) => {
-  const { getAccessTokenSilently } = useAuth0()
   const [tokenWasFetched, setTokenWasFetched] = useState(false)
   const [profile, setProfile] = useState<UserProfile>()
 
@@ -36,8 +31,7 @@ const UserProfileProvider: FunctionComponent = ({ children }) => {
     // We fetch the token again in case the client-side cookie has expired but
     // the remote session hasn't
     if (!tokenWasFetched) {
-      getAccessTokenSilently()
-        .then(fetchProfile)
+      fetch(`${SERVER_URL}/me`)
         .then((response) => response.json())
         .catch(() => {
           // The user is not logged in
@@ -49,7 +43,7 @@ const UserProfileProvider: FunctionComponent = ({ children }) => {
           setTokenWasFetched(true)
         })
     }
-  }, [tokenWasFetched, getAccessTokenSilently])
+  }, [tokenWasFetched])
 
   return (
     <UserProfileContext.Provider value={{ profile, refetch }}>
