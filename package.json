@@ -19,7 +19,7 @@
     "migrate-db": "npx sequelize-cli db:migrate"
   },
   "engines": {
-    "node": ">=14.0.0",
+    "node": ">=16.0.0",
     "yarn": ">= 1.22.5"
   },
   "keywords": [],

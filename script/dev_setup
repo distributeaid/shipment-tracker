@@ -2,7 +2,7 @@
 
 set -eu
 
-REQUIRED_NODE_VERSION=v14
+REQUIRED_NODE_VERSION=v16
 
 _current_os=$(uname)
 

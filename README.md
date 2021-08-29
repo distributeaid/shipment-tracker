@@ -46,7 +46,7 @@ If the pull request does not require additional changes, the reviewer should mer
 
 ## Dev setup
 
-Install node.js v14:
+Install node.js v16:
 
 - Install with [nodenv](https://github.com/nodenv/nodenv)
 - or [nvm](https://github.com/nvm-sh/nvm)
