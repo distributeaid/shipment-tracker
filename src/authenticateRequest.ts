@@ -48,7 +48,7 @@ type AuthResult = {
 const validateJwt = async (token: string): Promise<AuthResult> => {
   return new Promise((resolve, reject) => {
     if (!token.startsWith('Bearer ')) {
-      return reject({ error: 'Auth token is malformed' })
+      return reject(new Error('Auth token is malformed'))
     }
 
     const bearerToken = token.split(' ')[1]
@@ -143,7 +143,7 @@ export const authenticateRequest = async (req: Request): Promise<Auth> => {
   try {
     authResult = await validateJwt(token)
   } catch (e) {
-    throw new AuthenticationError(e)
+    throw new AuthenticationError((e as Error).message)
   }
 
   if (authResult.error != null) {
