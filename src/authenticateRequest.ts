@@ -21,7 +21,7 @@ export type AuthContext = {
 export const userHash = (user: UserAccount): string =>
   crypto
     .createHash('sha1')
-    .update(`${user.id}:${user.username}:${user.passwordHash}`)
+    .update(`${user.id}:${user.email}:${user.passwordHash}`)
     .digest('hex')
 
 export const authCookieName = 'auth'

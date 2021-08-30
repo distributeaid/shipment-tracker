@@ -7,9 +7,9 @@ import { trimAll } from '../input-validation/trimAll'
 import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
 import UserAccount from '../models/user_account'
 
-export const usernameInput = Type.String({
-  pattern: '^[a-z0-9._-]{1,255}$',
-  title: 'Username',
+export const emailInput = Type.String({
+  format: 'email',
+  title: 'Email',
 })
 
 export const passwordInput = Type.String({
@@ -19,7 +19,7 @@ export const passwordInput = Type.String({
 
 const registerUserInput = Type.Object(
   {
-    username: usernameInput,
+    email: emailInput,
     name: Type.String({ minLength: 1, maxLength: 255 }),
     password: passwordInput,
   },
@@ -43,7 +43,7 @@ const registerUser =
 
     const user = await UserAccount.create({
       passwordHash: bcrypt.hashSync(valid.value.password, saltRounds),
-      username: valid.value.username,
+      email: valid.value.email,
       name: valid.value.name,
     })
 

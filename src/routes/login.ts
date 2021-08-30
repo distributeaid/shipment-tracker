@@ -6,11 +6,11 @@ import { authCookie } from '../authenticateRequest'
 import { trimAll } from '../input-validation/trimAll'
 import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
 import UserAccount from '../models/user_account'
-import { passwordInput, usernameInput } from './register'
+import { emailInput, passwordInput } from './register'
 
 const loginInput = Type.Object(
   {
-    username: usernameInput,
+    email: emailInput,
     password: passwordInput,
   },
   { additionalProperties: false },
@@ -31,7 +31,7 @@ const login =
 
     const user = await UserAccount.findOne({
       where: {
-        username: valid.value.username,
+        email: valid.value.email,
       },
     })
     if (user === null) {

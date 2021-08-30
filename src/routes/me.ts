@@ -8,7 +8,7 @@ const getProfile = async (request: Request, response: Response) => {
   if (user === null) return response.send(404).end()
   return response
     .json({
-      username: user.username,
+      email: user.email,
       ...(await user.asPublicProfile()),
     })
     .end()
