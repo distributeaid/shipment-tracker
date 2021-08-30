@@ -32,7 +32,7 @@ export const makeTestServer = async (
     const user = await UserAccount.create({
       isAdmin: false,
       name: 'User',
-      username: 'user',
+      email: 'user@example.com',
       passwordHash: '',
     })
 
@@ -63,7 +63,7 @@ export const makeAdminTestServerWithServices = async (
   const admin = await UserAccount.create({
     isAdmin: true,
     name: 'Admin',
-    username: 'admin',
+    email: 'admin@example.com',
     passwordHash: '',
   })
 

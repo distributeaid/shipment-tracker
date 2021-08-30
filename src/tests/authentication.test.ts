@@ -44,11 +44,11 @@ describe('User account API', () => {
   let app: Express
   let httpServer: Server
   let r: SuperTest<Test>
-  let username: string
+  let email: string
   let password: string
   let authCookie: string
   beforeAll(async () => {
-    username = v4()
+    email = `${v4()}@example.com`
     password = 'y{uugBmw"9,?=L_'
     app = express()
     app.use(cookieParser(process.env.COOKIE_SECRET ?? 'cookie-secret'))
@@ -74,7 +74,7 @@ describe('User account API', () => {
         .set('Accept', 'application/json')
         .set('Content-type', 'application/json; charset=utf-8')
         .send({
-          username,
+          email,
           password,
           name: 'Alex',
         })
@@ -102,7 +102,7 @@ describe('User account API', () => {
         .expect(200)
       expect(res.body).toMatchObject({
         id: /[0-9]+/,
-        username,
+        email,
         isAdmin: false,
       })
     })
@@ -137,7 +137,7 @@ describe('User account API', () => {
       r
         .post('/login')
         .send({
-          username,
+          email,
           password,
         })
         .expect(204)
@@ -146,7 +146,7 @@ describe('User account API', () => {
       r
         .post('/login')
         .send({
-          username,
+          email,
           password: "Y<N-'#sQ2/RCrN_c",
         })
         .expect(401))
@@ -154,7 +154,7 @@ describe('User account API', () => {
       r
         .post('/login')
         .send({
-          username: 'foo',
+          email: 'foo@example.com',
           password: "Y<N-'#sQ2/RCrN_c",
         })
         .expect(401))

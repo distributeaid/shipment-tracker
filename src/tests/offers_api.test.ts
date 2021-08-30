@@ -34,7 +34,7 @@ describe('Offers API', () => {
     await Shipment.truncate({ cascade: true, force: true })
 
     captain = await UserAccount.create({
-      username: 'captain',
+      email: 'captain@example.com',
       passwordHash: '',
       name: 'Captain',
     })

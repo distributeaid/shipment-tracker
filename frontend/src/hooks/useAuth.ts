@@ -9,17 +9,20 @@ export const useAuth = () => {
     isLoading,
     isAuthenticated,
     logout: () => {
-      // FIXME: clear cookies and reload
+      // Delete cookies (since the auth cookie is httpOnly we cannot access
+      // it using JavaScript, e.g. cookie.delete() will not work).
+      // Therefore we ask the server to send us an invalid cookie.
       fetch(`${SERVER_URL}/me/cookie`, { method: 'DELETE' }).then(() => {
         setIsAuthenticated(false)
+        // Reload the page (no need to handle logout in the app)
         document.location.reload()
       })
     },
-    login: ({ username, password }: { username: string; password: string }) => {
+    login: ({ email, password }: { email: string; password: string }) => {
       setIsLoading(true)
       fetch(`${SERVER_URL}/me/login`, {
         method: 'POST',
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       })
         .then(() => {
           setIsAuthenticated(true)

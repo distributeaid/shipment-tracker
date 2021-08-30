@@ -14,7 +14,7 @@ import Group from './group'
 
 export interface UserAccountAttributes {
   id: number
-  username: string
+  email: string
   passwordHash: string
   isAdmin?: boolean
   name: string
@@ -34,7 +34,7 @@ export default class UserAccount extends Model<
 
   @Unique
   @Column
-  public username!: string
+  public email!: string
 
   @Column
   public passwordHash!: string
