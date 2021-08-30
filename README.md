@@ -10,7 +10,7 @@ Key documents:
 
 - [Project requirements document with user stories and proposed GraphQL schema](https://www.notion.so/distributeaid/Technical-requirements-c2fd190e0a8d4f708119c6944fa654dd)
 
-- [Map of the codebase](https://app.codesee.io/maps/b7367890-0129-11ec-a91a-57f039601939)
+- [Map of the codebase](https://app.codesee.io/maps/public/b7367890-0129-11ec-a91a-57f039601939)
 
 ## Deployments
 
