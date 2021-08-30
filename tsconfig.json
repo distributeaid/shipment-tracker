@@ -2,7 +2,7 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": "./",
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "lib": ["esnext"],
@@ -11,5 +11,5 @@
     "strict": true,
     "target": "ES6"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "db/migrations/**/*"]
 }

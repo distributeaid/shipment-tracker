@@ -79,6 +79,36 @@ describe('User account API', () => {
           name: 'Alex',
         })
         .expect(202)
+    })
+    /**
+     * In case someone tries to register with the same email,
+     * we also return a 202 (accepted), although silently we will
+     * register an account.
+     *
+     * This is to not allow an attacker to figure out which email
+     * addresses are used in the system.
+     */
+    it('should not allow to register with the same email twice', () =>
+      r
+        .post('/register')
+        .set('Accept', 'application/json')
+        .set('Content-type', 'application/json; charset=utf-8')
+        .send({
+          email,
+          password: 'R";%A:6mUVRst[Qq',
+          name: 'Alex 2',
+        })
+        .expect(202))
+  })
+  describe('/login', () => {
+    it('should return a token on login', async () => {
+      const res = await r
+        .post('/login')
+        .send({
+          email,
+          password,
+        })
+        .expect(204)
         .expect('set-cookie', tokenCookieRx)
 
       const cookieInfo = parseCookie(res.header['set-cookie'][0] as string)
@@ -91,6 +121,22 @@ describe('User account API', () => {
 
       authCookie = tokenCookieRx.exec(res.header['set-cookie'])?.[1] as string
     })
+    it('should fail with invalid password', () =>
+      r
+        .post('/login')
+        .send({
+          email,
+          password: "Y<N-'#sQ2/RCrN_c",
+        })
+        .expect(401))
+    it('should fail with user not found', () =>
+      r
+        .post('/login')
+        .send({
+          email: 'foo@example.com',
+          password: "Y<N-'#sQ2/RCrN_c",
+        })
+        .expect(401))
   })
   describe('/me', () => {
     it('should return the user account of the current user', async () => {
@@ -132,31 +178,31 @@ describe('User account API', () => {
       })
     })
   })
-  describe('/login', () => {
-    it('should return a token on login', () =>
+  describe.skip('/reset-password', () => {
+    it('should change a users password if they know the current password', () =>
       r
-        .post('/login')
+        .post('/reset-password')
+        .set('Accept', 'application/json')
+        .set('Content-type', 'application/json; charset=utf-8')
+        .set('Cookie', [`${authCookieName}=${authCookie}`])
         .send({
           email,
-          password,
+          currentPassword: password,
+          newPassword: 'H`2h?)Z<F-Z.3gYT',
         })
-        .expect(204)
+        .expect(202)
         .expect('set-cookie', tokenCookieRx))
-    it('should fail with invalid password', () =>
+    it('should not change a users password if they do not know the current password', () =>
       r
-        .post('/login')
+        .post('/reset-password')
+        .set('Accept', 'application/json')
+        .set('Content-type', 'application/json; charset=utf-8')
+        .set('Cookie', [`${authCookieName}=${authCookie}`])
         .send({
           email,
-          password: "Y<N-'#sQ2/RCrN_c",
+          currentPassword: `some password`,
+          newPassword: 'H`2h?)Z<F-Z.3gYT',
         })
-        .expect(401))
-    it('should fail with user not found', () =>
-      r
-        .post('/login')
-        .send({
-          email: 'foo@example.com',
-          password: "Y<N-'#sQ2/RCrN_c",
-        })
-        .expect(401))
+        .expect(400))
   })
 })
