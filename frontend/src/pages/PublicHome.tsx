@@ -5,18 +5,18 @@ import { useAuth } from '../hooks/useAuth'
 
 const SERVER_URL = process.env.REACT_APP_SERVER_URL
 
+const emailRegEx = /.+@.+\..+/
+const passwordRegEx =
+  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+
 const PublicHomePage: FunctionComponent = () => {
   const { login } = useAuth()
   const [showRegisterForm, setShowRegisterForm] = useState(false)
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [password2, setPassword2] = useState('')
 
-  const loginFormValid =
-    username.length > 0 &&
-    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(
-      password,
-    )
+  const loginFormValid = emailRegEx.test(email) && passwordRegEx.test(password)
 
   const registerFormValid = loginFormValid && password === password2
 
@@ -36,11 +36,11 @@ const PublicHomePage: FunctionComponent = () => {
           {showLoginForm && (
             <form>
               <TextField
-                label="username"
-                type="text"
-                name="username"
-                value={username}
-                onChange={({ target: { value } }) => setUsername(value)}
+                label="email"
+                type="email"
+                name="email"
+                value={email}
+                onChange={({ target: { value } }) => setEmail(value)}
               />
               <TextField
                 label="password"
@@ -52,7 +52,7 @@ const PublicHomePage: FunctionComponent = () => {
               <button
                 className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
                 type="button"
-                onClick={() => login({ username, password })}
+                onClick={() => login({ email, password })}
                 disabled={!loginFormValid}
               >
                 Log in
@@ -69,11 +69,11 @@ const PublicHomePage: FunctionComponent = () => {
           {showRegisterForm && (
             <form>
               <TextField
-                label="username"
-                type="text"
-                name="username"
-                value={username}
-                onChange={({ target: { value } }) => setUsername(value)}
+                label="email"
+                type="email"
+                name="email"
+                value={email}
+                onChange={({ target: { value } }) => setEmail(value)}
               />
               <TextField
                 label="password"
@@ -97,7 +97,7 @@ const PublicHomePage: FunctionComponent = () => {
                 onClick={() => {
                   fetch(`${SERVER_URL}/register`, {
                     method: 'POST',
-                    body: JSON.stringify({ username, password }),
+                    body: JSON.stringify({ email, password }),
                   })
                 }}
                 disabled={!registerFormValid}

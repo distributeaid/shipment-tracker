@@ -37,7 +37,7 @@ describe('LineItems API', () => {
     await sequelize.sync({ force: true })
 
     captain = await UserAccount.create({
-      username: 'captain',
+      email: 'captain@example.com',
       passwordHash: '',
       name: 'Captain',
     })

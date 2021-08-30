@@ -41,12 +41,12 @@ describe('Groups API', () => {
 
       // Create test servers
       captain = await UserAccount.create({
-        username: 'captain',
+        email: 'captain@example.com',
         passwordHash: '',
         name: 'Captain A',
       })
       newCaptain = await UserAccount.create({
-        username: 'new-captain',
+        email: 'new-captain@example.com',
         passwordHash: '',
         name: 'New Captain',
       })
@@ -278,17 +278,17 @@ describe('Groups API', () => {
      */
     beforeAll(async () => {
       captain1 = await UserAccount.create({
-        username: captain1Name,
+        email: `${captain1Name}@example.com`,
         name: captain1Name,
         passwordHash: '',
       })
       captain2 = await UserAccount.create({
-        username: captain2Name,
+        email: `${captain2Name}@example.com`,
         name: captain2Name,
         passwordHash: '',
       })
       daCaptain = await UserAccount.create({
-        username: daCaptainName,
+        email: `${daCaptainName}@example.com`,
         name: daCaptainName,
         passwordHash: '',
       })
@@ -493,7 +493,7 @@ describe('Groups API', () => {
               variables: {
                 captainId: (
                   await UserAccount.findOne({
-                    where: { username: captainName },
+                    where: { email: `${captainName}@example.com` },
                   })
                 )?.id,
               },
@@ -533,7 +533,7 @@ describe('Groups API', () => {
               variables: {
                 captainId: (
                   await UserAccount.findOne({
-                    where: { username: captainName },
+                    where: { email: `${captainName}@example.com` },
                   })
                 )?.id,
                 groupType: groupTypes,
@@ -547,7 +547,10 @@ describe('Groups API', () => {
                 })
               )
                 .filter(({ name }) => expectedGroupNames.includes(name))
-                .filter(({ captain }) => captain.username === captainName)
+                .filter(
+                  ({ captain }) =>
+                    captain.email === `${captainName}@example.com`,
+                )
                 .map(toGroupData),
             )
           },
