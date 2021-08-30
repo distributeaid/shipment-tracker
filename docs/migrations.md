@@ -31,79 +31,10 @@ npx sequelize-cli db:migrate:undo:all
 
 ## Creating migrations
 
-To create a new migration skeleton run:
+> **Fun fact:** Sequelize has no support for generating migrations from models.
 
-```sh
-npx sequelize-cli migration:create --name <migration-name>
-```
-
-this will generate a dated file under `db/migrations` with a sequelize migration skeleton inside, which will look something like:
-
-```javascript
-'use strict'
-
-module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    /**
-     * Add altering commands here.
-     *
-     * Example:
-     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
-     */
-  },
-
-  down: async (queryInterface, Sequelize) => {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
-  },
-}
-```
-
-Alternatively, if you are adding a new table you can use a command similar the following in order to fill in all of the data types for the new table in the migration file:
-
-```sh
-npx sequelize-cli model:generate --name User --attributes name:string,age:number
-```
-
-The above command would generate the following migration file:
-
-```javascript
-'use strict'
-module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Users', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
-      name: {
-        type: Sequelize.STRING,
-      },
-      age: {
-        type: Sequelize.NUMBER,
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-    })
-  },
-  down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Users')
-  },
-}
-```
-
-It will also generate a model file under the `src/models` directory, which you will want to delete and replace with a TypeScript file defining your new model.
+Create a new TypeScript file following the naming schema in [db/migrations](../db/migrations).
 
 You can find more information about sequelize migration files [here](https://sequelize.org/master/manual/migrations.html#migration-skeleton).
+
+Once you have finished writing your migration, run `npx tsc` to compile the JavaScript version of the migration.

@@ -2,7 +2,6 @@ import { Type } from '@sinclair/typebox'
 import { UserInputError } from 'apollo-server-express'
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
-import { authCookie } from '../authenticateRequest'
 import { trimAll } from '../input-validation/trimAll'
 import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
 import UserAccount from '../models/user_account'
@@ -41,16 +40,30 @@ const registerUser =
         .end()
     }
 
-    const user = await UserAccount.create({
-      passwordHash: bcrypt.hashSync(valid.value.password, saltRounds),
-      email: valid.value.email,
-      name: valid.value.name,
-    })
+    try {
+      const user = await UserAccount.create({
+        passwordHash: bcrypt.hashSync(valid.value.password, saltRounds),
+        email: valid.value.email,
+        name: valid.value.name,
+      })
+    } catch (error) {
+      if ((error as Error).name === 'SequelizeUniqueConstraintError') {
+        /**
+         * In case someone tries to register with the same email,
+         * we also return a 202 (accepted), although silently we will
+         * register an account.
+         *
+         * This is to not allow an attacker to figure out which email
+         * addresses are used in the system.
+         **/
+        console.debug(
+          `User already registered with email: ${valid.value.email}`,
+        )
+        return response.status(202).end()
+      }
+    }
 
-    return response
-      .status(202)
-      .cookie(...authCookie(user))
-      .end()
+    return response.status(202).end()
   }
 
 export default registerUser
