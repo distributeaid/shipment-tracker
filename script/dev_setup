@@ -169,7 +169,7 @@ check_node_version
 install_yarn_if_needed
 install_homebrew_if_needed
 
-yarn install
+yarn install --frozen-lockfile
 
 # Install postgres
 if [[ -z "${CI:-}" ]]; then
@@ -186,7 +186,7 @@ copy_env_file
 
 # Build frontend
 yarn run codegen
-pushd frontend && yarn install && yarn run build:styles && yarn build && popd
+pushd frontend && yarn install --frozen-lockfile && yarn run build:styles && yarn build && popd
 
 echo
 colorized "@blue@b[[✓ All done!]]"

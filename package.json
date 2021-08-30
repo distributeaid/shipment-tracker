@@ -12,7 +12,7 @@
     "build": "yarn --silent run clean && graphql-codegen && tsc",
     "codegen": "graphql-codegen",
     "codegen:watch": "graphql-codegen --watch",
-    "heroku-postbuild": "yarn build && npx sequelize-cli db:migrate && cd frontend && yarn install && yarn build:styles && yarn build",
+    "heroku-postbuild": "yarn build && npx sequelize-cli db:migrate && cd frontend && yarn install --frozen-lockfile && yarn build:styles && yarn build",
     "test": "jest --detectOpenHandles --runInBand",
     "test-ci": "DB_ENV=ci jest --detectOpenHandles --runInBand",
     "prepare": "husky install",
