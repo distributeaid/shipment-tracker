@@ -11,11 +11,9 @@ export const renewCookie = async (request: Request, response: Response) => {
   const authContext = request.user as AuthContext
   const user = await UserAccount.findByPk(authContext.userId)
   if (user === null) {
-    // Penalize
     return response.status(401).end()
   }
   if (userHash(user) !== authContext.userHash) {
-    // Penalize
     return response.status(401).end()
   }
   // Generate new token

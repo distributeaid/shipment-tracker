@@ -2,13 +2,13 @@ import { Type } from '@sinclair/typebox'
 import { UserInputError } from 'apollo-server-express'
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
-import { AuthContext, authCookie } from '../authenticateRequest'
-import { trimAll } from '../input-validation/trimAll'
-import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
-import UserAccount from '../models/user_account'
-import { passwordInput } from './register'
+import { AuthContext, authCookie } from '../../authenticateRequest'
+import { trimAll } from '../../input-validation/trimAll'
+import { validateWithJSONSchema } from '../../input-validation/validateWithJSONSchema'
+import UserAccount from '../../models/user_account'
+import { passwordInput } from '../register'
 
-const resetPasswordInput = Type.Object(
+const changePasswordInput = Type.Object(
   {
     currentPassword: passwordInput,
     newPassword: passwordInput,
@@ -16,16 +16,16 @@ const resetPasswordInput = Type.Object(
   { additionalProperties: false },
 )
 
-const validateResetPasswordInput = validateWithJSONSchema(resetPasswordInput)
+const validateChangePasswordInput = validateWithJSONSchema(changePasswordInput)
 
-const resetPassword =
+const changePassword =
   (saltRounds = 10) =>
   async (request: Request, response: Response) => {
-    const valid = validateResetPasswordInput(trimAll(request.body))
+    const valid = validateChangePasswordInput(trimAll(request.body))
     if ('errors' in valid) {
       return response
         .status(400)
-        .json(new UserInputError('Password reset input invalid', valid.errors))
+        .json(new UserInputError('Password change input invalid', valid.errors))
         .end()
     }
 
@@ -52,4 +52,4 @@ const resetPassword =
       .end()
   }
 
-export default resetPassword
+export default changePassword
