@@ -35,10 +35,10 @@ const cookieAuth = passport.authenticate('cookie', { session: false })
 passport.use(cookieAuthStrategy)
 
 app.get('/me', cookieAuth, getProfile)
-app.get('/me/cookie', cookieAuth, renewCookie())
+app.get('/me/cookie', cookieAuth, renewCookie)
 app.delete('/me/cookie', cookieAuth, deleteCookie)
 app.delete('/reset-password', cookieAuth, resetPassword())
-app.get('/login', login())
+app.get('/login', login)
 app.get('/register', registerUser())
 app.get('/shipment-exports/:id', cookieAuth, sendShipmentExportCsv)
 
