@@ -23,6 +23,7 @@ import registerUser from './routes/register'
 import login from './routes/login'
 import { v4 } from 'uuid'
 import { renewCookie, deleteCookie } from './routes/me/cookie'
+import resetPassword from './routes/reset-password'
 
 const app = express()
 /**
@@ -36,6 +37,7 @@ passport.use(cookieAuthStrategy)
 app.get('/me', cookieAuth, getProfile)
 app.get('/me/cookie', cookieAuth, renewCookie())
 app.delete('/me/cookie', cookieAuth, deleteCookie)
+app.delete('/reset-password', cookieAuth, resetPassword())
 app.get('/login', login())
 app.get('/register', registerUser())
 app.get('/shipment-exports/:id', cookieAuth, sendShipmentExportCsv)

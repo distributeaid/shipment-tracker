@@ -12,6 +12,7 @@ import registerUser from '../routes/register'
 import login from '../routes/login'
 import { renewCookie, deleteCookie } from '../routes/me/cookie'
 import { v4 } from 'uuid'
+import resetPassword from '../routes/reset-password'
 
 jest.setTimeout(15 * 1000)
 
@@ -55,6 +56,7 @@ describe('User account API', () => {
     app.use(json())
     app.get('/me', cookieAuth, getProfile)
     app.post('/register', registerUser(1))
+    app.post('/reset-password', cookieAuth, resetPassword(1))
     app.post('/login', login(0))
     app.get('/me/cookie', cookieAuth, renewCookie(0))
     app.delete('/me/cookie', cookieAuth, deleteCookie)
@@ -178,7 +180,8 @@ describe('User account API', () => {
       })
     })
   })
-  describe.skip('/reset-password', () => {
+  describe('/reset-password', () => {
+    const newPassword = 'H`2h?)Z<F-Z.3gYT'
     it('should change a users password if they know the current password', () =>
       r
         .post('/reset-password')
@@ -186,12 +189,19 @@ describe('User account API', () => {
         .set('Content-type', 'application/json; charset=utf-8')
         .set('Cookie', [`${authCookieName}=${authCookie}`])
         .send({
-          email,
           currentPassword: password,
-          newPassword: 'H`2h?)Z<F-Z.3gYT',
+          newPassword,
         })
-        .expect(202)
+        .expect(204)
         .expect('set-cookie', tokenCookieRx))
+    test('log-in with new password', () =>
+      r
+        .post('/login')
+        .send({
+          email,
+          password: newPassword,
+        })
+        .expect(204))
     it('should not change a users password if they do not know the current password', () =>
       r
         .post('/reset-password')
@@ -199,7 +209,6 @@ describe('User account API', () => {
         .set('Content-type', 'application/json; charset=utf-8')
         .set('Cookie', [`${authCookieName}=${authCookie}`])
         .send({
-          email,
           currentPassword: `some password`,
           newPassword: 'H`2h?)Z<F-Z.3gYT',
         })
