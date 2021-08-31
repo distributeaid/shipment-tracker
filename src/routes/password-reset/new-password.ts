@@ -34,7 +34,7 @@ const setNewPasswordUsingToken =
 
     const token = await PasswordResetToken.findOne({
       where: {
-        email: valid.value.email,
+        email: valid.value.email.toLowerCase(),
         token: valid.value.code,
       },
       order: [['createdAt', 'DESC']],
@@ -48,7 +48,7 @@ const setNewPasswordUsingToken =
 
     const user = await UserAccount.findOne({
       where: {
-        email: valid.value.email,
+        email: valid.value.email.toLowerCase(),
       },
     })
     if (user === null) {

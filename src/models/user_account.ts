@@ -1,5 +1,6 @@
 import { Maybe } from 'graphql/jsutils/Maybe'
 import {
+  BeforeCreate,
   Column,
   CreatedAt,
   Default,
@@ -35,6 +36,11 @@ export default class UserAccount extends Model<
   @Unique
   @Column
   public email!: string
+
+  @BeforeCreate
+  static lowerCaseEmail(instance: UserAccount) {
+    instance.email = instance.email.toLowerCase()
+  }
 
   @Column
   public passwordHash!: string

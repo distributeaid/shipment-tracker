@@ -1,4 +1,5 @@
 import {
+  BeforeCreate,
   Column,
   CreatedAt,
   Model,
@@ -32,6 +33,11 @@ export default class PasswordResetToken extends Model<
   @Unique
   @Column
   public email!: string
+
+  @BeforeCreate
+  static lowerCaseEmail(instance: PasswordResetToken) {
+    instance.email = instance.email.toLowerCase()
+  }
 
   @Column
   public token!: string
