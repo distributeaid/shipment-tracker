@@ -57,8 +57,8 @@ describe('User account API', () => {
     app.get('/me', cookieAuth, getProfile)
     app.post('/register', registerUser(1))
     app.post('/reset-password', cookieAuth, resetPassword(1))
-    app.post('/login', login(0))
-    app.get('/me/cookie', cookieAuth, renewCookie(0))
+    app.post('/login', login)
+    app.get('/me/cookie', cookieAuth, renewCookie)
     app.delete('/me/cookie', cookieAuth, deleteCookie)
     httpServer = createServer(app)
     await new Promise<void>((resolve) =>
