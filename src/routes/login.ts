@@ -33,11 +33,9 @@ const login = async (request: Request, response: Response) => {
     },
   })
   if (user === null) {
-    // Penalize
     return response.status(401).end()
   }
   if (!bcrypt.compareSync(valid.value.password, user.passwordHash)) {
-    // Penalize
     return response.status(401).end()
   }
   // Generate new token

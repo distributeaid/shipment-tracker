@@ -23,7 +23,9 @@ import registerUser from './routes/register'
 import login from './routes/login'
 import { v4 } from 'uuid'
 import { renewCookie, deleteCookie } from './routes/me/cookie'
-import resetPassword from './routes/reset-password'
+import changePassword from './routes/me/change-password'
+import passwordResetToken from './routes/password-reset/token'
+import setNewPasswordUsingToken from './routes/password-reset/new-password'
 
 const app = express()
 /**
@@ -34,12 +36,15 @@ app.use(json())
 const cookieAuth = passport.authenticate('cookie', { session: false })
 passport.use(cookieAuthStrategy)
 
+app.get('/register', registerUser())
+app.get('/login', login)
+app.post('/password-reset/token', passwordResetToken)
+app.post('/password-reset/new-password', setNewPasswordUsingToken())
 app.get('/me', cookieAuth, getProfile)
 app.get('/me/cookie', cookieAuth, renewCookie)
 app.delete('/me/cookie', cookieAuth, deleteCookie)
-app.delete('/reset-password', cookieAuth, resetPassword())
-app.get('/login', login)
-app.get('/register', registerUser())
+app.delete('/me/reset-password', cookieAuth, changePassword())
+
 app.get('/shipment-exports/:id', cookieAuth, sendShipmentExportCsv)
 
 app.use(
