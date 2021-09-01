@@ -44,16 +44,16 @@ const parseCookie = (cookie: string) =>
       {} as Record<string, any>,
     )
 
+const email = `${v4()}@example.com`
+const password = 'y{uugBmw"9,?=L_'
+
 describe('User account API', () => {
   let app: Express
   let httpServer: Server
   let r: SuperTest<Test>
-  let email: string
-  let password: string
+
   let authCookie: string
   beforeAll(async () => {
-    email = `${v4()}@example.com`
-    password = 'y{uugBmw"9,?=L_'
     app = express()
     app.use(cookieParser(process.env.COOKIE_SECRET ?? 'cookie-secret'))
     app.use(json())
@@ -94,7 +94,12 @@ describe('User account API', () => {
      * This is to not allow an attacker to figure out which email
      * addresses are used in the system.
      */
-    it('should not allow to register with the same email twice', () =>
+    it.each([
+      [email],
+      [
+        email.toUpperCase(), // emails are case-insensitive
+      ],
+    ])('should not allow to register with the same email (%s) twice', (email) =>
       r
         .post('/register')
         .set('Content-type', 'application/json; charset=utf-8')
@@ -103,7 +108,8 @@ describe('User account API', () => {
           password: 'R";%A:6mUVRst[Qq',
           name: 'Alex 2',
         })
-        .expect(202))
+        .expect(202),
+    )
   })
   describe('/login', () => {
     it('should return a token on login', async () => {
