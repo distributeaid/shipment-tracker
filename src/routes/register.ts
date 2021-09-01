@@ -1,6 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { UserInputError } from 'apollo-server-express'
 import bcrypt from 'bcrypt'
+import EventEmitter from 'events'
 import { Request, Response } from 'express'
 import { generateDigits } from '../generateDigits'
 import { trimAll } from '../input-validation/trimAll'
@@ -30,7 +31,7 @@ const registerUserInput = Type.Object(
 const validateRegisterUserInput = validateWithJSONSchema(registerUserInput)
 
 const registerUser =
-  (saltRounds = 10) =>
+  (omnibus: EventEmitter, saltRounds = 10) =>
   async (request: Request, response: Response) => {
     const valid = validateRegisterUserInput(trimAll(request.body))
     if ('errors' in valid) {
@@ -49,10 +50,11 @@ const registerUser =
         name: valid.value.name,
       })
       // Generate new token
-      await VerificationToken.create({
+      const token = await VerificationToken.create({
         userAccountId: user.id,
         token: generateDigits(6),
       })
+      omnibus.emit('user_registered', user, token)
     } catch (error) {
       if ((error as Error).name === 'SequelizeUniqueConstraintError') {
         return response.status(409).end()

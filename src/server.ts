@@ -27,6 +27,10 @@ import changePassword from './routes/me/password'
 import sendVerificationTokenByEmail from './routes/password/token'
 import setNewPasswordUsingTokenAndEmail from './routes/password/new'
 import confirmRegistrationByEmail from './routes/register/confirm'
+import EventEmitter from 'events'
+import { consoleMailer } from './mailer/console'
+
+const omnibus = new EventEmitter()
 
 const app = express()
 /**
@@ -37,7 +41,7 @@ app.use(json())
 const cookieAuth = passport.authenticate('cookie', { session: false })
 passport.use(cookieAuthStrategy)
 
-app.get('/register', registerUser())
+app.get('/register', registerUser(omnibus))
 app.get('/register/confirm', confirmRegistrationByEmail)
 app.get('/login', login)
 app.post('/password/token', sendVerificationTokenByEmail)
@@ -92,3 +96,6 @@ httpServer.listen({ port }, (): void =>
     `\n🚀      GraphQL is now running on http://localhost:${port}/graphql`,
   ),
 )
+
+// Dummy emailing
+consoleMailer(omnibus)
