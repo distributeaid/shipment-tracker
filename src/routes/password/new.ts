@@ -4,8 +4,8 @@ import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import { trimAll } from '../../input-validation/trimAll'
 import { validateWithJSONSchema } from '../../input-validation/validateWithJSONSchema'
-import PasswordResetToken from '../../models/password_reset_token'
 import UserAccount from '../../models/user_account'
+import VerificationToken from '../../models/verification_token'
 import { emailInput, passwordInput } from '../register'
 
 const newPasswordUsingTokenInput = Type.Object(
@@ -21,7 +21,7 @@ const validatePasswordResetInput = validateWithJSONSchema(
   newPasswordUsingTokenInput,
 )
 
-const setNewPasswordUsingToken =
+const setNewPasswordUsingTokenAndEmail =
   (saltRounds = 10) =>
   async (request: Request, response: Response) => {
     const valid = validatePasswordResetInput(trimAll(request.body))
@@ -32,24 +32,17 @@ const setNewPasswordUsingToken =
         .end()
     }
 
-    const token = await PasswordResetToken.findOne({
-      where: {
-        email: valid.value.email.toLowerCase(),
-        token: valid.value.code,
-      },
-      order: [['createdAt', 'DESC']],
-    })
-    if (
-      token === null ||
-      token.createdAt.getTime() < Date.now() - 15 * 60 * 60 * 1000 // Tokens expire after 15 minutes
-    ) {
-      return response.status(400).end()
-    }
-
     const user = await UserAccount.findOneByEmail(valid.value.email)
     if (user === null) {
-      return response.status(400).end()
+      return response.status(404).end()
     }
+
+    const token = await VerificationToken.findByUserAccountAndToken(
+      user,
+      valid.value.code,
+    )
+    if (token === undefined) return response.status(401).end()
+
     // Update the password
     await user.update({
       passwordHash: bcrypt.hashSync(valid.value.newPassword, saltRounds),
@@ -57,4 +50,4 @@ const setNewPasswordUsingToken =
     response.status(202).end()
   }
 
-export default setNewPasswordUsingToken
+export default setNewPasswordUsingTokenAndEmail

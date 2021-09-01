@@ -9,13 +9,15 @@ import getProfile from '../routes/me'
 import cookieParser from 'cookie-parser'
 import { json } from 'body-parser'
 import registerUser from '../routes/register'
+import confirmRegistration from '../routes/register/confirm'
 import login from '../routes/login'
 import { renewCookie, deleteCookie } from '../routes/me/cookie'
 import { v4 } from 'uuid'
-import resetPassword from '../routes/me/change-password'
-import passwordResetToken from '../routes/password-reset/token'
-import PasswordResetToken from '../models/password_reset_token'
-import setNewPasswordUsingToken from '../routes/password-reset/new-password'
+import resetPassword from '../routes/me/password'
+import sendVerificationTokenByEmail from '../routes/password/token'
+import VerificationToken from '../models/verification_token'
+import setNewPasswordUsingTokenAndEmail from '../routes/password/new'
+import UserAccount from '../models/user_account'
 
 jest.setTimeout(15 * 1000)
 
@@ -58,11 +60,12 @@ describe('User account API', () => {
     app.use(cookieParser(process.env.COOKIE_SECRET ?? 'cookie-secret'))
     app.use(json())
     app.post('/register', registerUser(1))
+    app.post('/register/confirm', confirmRegistration)
     app.post('/login', login)
-    app.post('/password-reset/token', passwordResetToken)
-    app.post('/password-reset/new-password', setNewPasswordUsingToken(1))
+    app.post('/password/token', sendVerificationTokenByEmail)
+    app.post('/password/new', setNewPasswordUsingTokenAndEmail(1))
     app.get('/me', cookieAuth, getProfile)
-    app.post('/me/change-password', cookieAuth, resetPassword(1))
+    app.post('/me/password', cookieAuth, resetPassword(1))
     app.get('/me/cookie', cookieAuth, renewCookie)
     app.delete('/me/cookie', cookieAuth, deleteCookie)
     httpServer = createServer(app)
@@ -86,14 +89,6 @@ describe('User account API', () => {
         })
         .expect(202)
     })
-    /**
-     * In case someone tries to register with the same email,
-     * we also return a 202 (accepted), although silently we will
-     * register an account.
-     *
-     * This is to not allow an attacker to figure out which email
-     * addresses are used in the system.
-     */
     it.each([
       [email],
       [
@@ -108,8 +103,35 @@ describe('User account API', () => {
           password: 'R";%A:6mUVRst[Qq',
           name: 'Alex 2',
         })
-        .expect(202),
+        .expect(409),
     )
+    describe('/register/confirm', () => {
+      test('new accounts should not be able to log in', () =>
+        r
+          .post('/login')
+          .send({
+            email,
+            password,
+          })
+          .expect(403))
+      it('should confirm a user account with a token and an email', async () => {
+        // Get token for email
+        const token = await VerificationToken.findOne({
+          where: {
+            userAccountId: (await UserAccount.findOneByEmail(email))?.id,
+          },
+        })
+        expect(token).not.toBeUndefined()
+        return r
+          .post('/register/confirm')
+          .set('Content-type', 'application/json; charset=utf-8')
+          .send({
+            email,
+            code: token?.token,
+          })
+          .expect(202)
+      })
+    })
   })
   describe('/login', () => {
     it('should return a token on login', async () => {
@@ -169,7 +191,7 @@ describe('User account API', () => {
         .set('Cookie', [`${authCookieName}=foo`])
         .send()
         .expect(401))
-    describe('/cookie', () => {
+    describe('/me/cookie', () => {
       it('should send a new cookie', () =>
         r
           .get('/me/cookie')
@@ -188,88 +210,92 @@ describe('User account API', () => {
         expect(expiresIn).toBeLessThan(0) // Expires is in the past
       })
     })
-  })
-  describe('/me/change-password', () => {
-    const newPassword = 'H`2h?)Z<F-Z.3gYT'
-    describe('as a logged-in user', () => {
-      it('should change a users password if they know the current password', () =>
-        r
-          .post('/me/change-password')
-          .set('Content-type', 'application/json; charset=utf-8')
-          .set('Cookie', [`${authCookieName}=${authCookie}`])
-          .send({
-            currentPassword: password,
-            newPassword,
-          })
-          .expect(204)
-          .expect('set-cookie', tokenCookieRx))
-      test('log-in with new password', () =>
-        r
-          .post('/login')
-          .send({
-            email,
-            password: newPassword,
-          })
-          .expect(204))
-      it('should not change a users password if they do not know the current password', () =>
-        r
-          .post('/me/change-password')
-          .set('Content-type', 'application/json; charset=utf-8')
-          .set('Cookie', [`${authCookieName}=${authCookie}`])
-          .send({
-            currentPassword: `some password`,
-            newPassword: 'H`2h?)Z<F-Z.3gYT',
-          })
-          .expect(400))
-    })
-    describe('using an email token', () => {
-      let code: string
-      const newPasswordWithToken = "8>5_TZ?'hH9xd}Z7:"
-      it('should create a password reset token', async () => {
-        await r
-          .post('/password-reset/token')
-          .set('Content-type', 'application/json; charset=utf-8')
-          .send({
-            email,
-          })
-          .expect(202)
-
-        // Get token for email
-        const token = await PasswordResetToken.findOne({ where: { email } })
-        expect(token).not.toBeUndefined()
-        code = token!.token
+    describe('/me/password', () => {
+      const newPassword = 'H`2h?)Z<F-Z.3gYT'
+      describe('as a logged-in user', () => {
+        it('should change a users password if they know the current password', () =>
+          r
+            .post('/me/password')
+            .set('Content-type', 'application/json; charset=utf-8')
+            .set('Cookie', [`${authCookieName}=${authCookie}`])
+            .send({
+              currentPassword: password,
+              newPassword,
+            })
+            .expect(204)
+            .expect('set-cookie', tokenCookieRx))
+        test('log-in with new password', () =>
+          r
+            .post('/login')
+            .send({
+              email,
+              password: newPassword,
+            })
+            .expect(204))
+        it('should not change a users password if they do not know the current password', () =>
+          r
+            .post('/me/password')
+            .set('Content-type', 'application/json; charset=utf-8')
+            .set('Cookie', [`${authCookieName}=${authCookie}`])
+            .send({
+              currentPassword: `some password`,
+              newPassword: 'H`2h?)Z<F-Z.3gYT',
+            })
+            .expect(400))
       })
-      it('should reset the password using the token', () =>
-        r
-          .post('/password-reset/new-password')
-          .set('Content-type', 'application/json; charset=utf-8')
-          .send({
-            email,
-            newPassword: newPasswordWithToken,
-            code,
-          })
-          .expect(202))
-      it('should not change a users password if they do not know the current password', async () => {
-        expect(code).not.toEqual('000000') // Could fail sometimes, we use this as a test case here
-        return r
-          .post('/password-reset/new-password')
-          .set('Content-type', 'application/json; charset=utf-8')
-          .send({
-            email,
-            newPassword: newPasswordWithToken,
-            code: '000000',
-          })
-          .expect(400)
-      })
+      describe('using an email token', () => {
+        let code: string
+        const newPasswordWithToken = "8>5_TZ?'hH9xd}Z7:"
+        it('should create a password reset token', async () => {
+          await r
+            .post('/password/token')
+            .set('Content-type', 'application/json; charset=utf-8')
+            .send({
+              email,
+            })
+            .expect(202)
 
-      test('log-in with new password', () =>
-        r
-          .post('/login')
-          .send({
-            email,
-            password: newPasswordWithToken,
+          // Get token for email
+          const token = await VerificationToken.findOne({
+            where: {
+              userAccountId: (await UserAccount.findOneByEmail(email))?.id,
+            },
           })
-          .expect(204))
+          expect(token).not.toBeUndefined()
+          code = token!.token
+        })
+        it('should reset the password using the token', () =>
+          r
+            .post('/password/new')
+            .set('Content-type', 'application/json; charset=utf-8')
+            .send({
+              email,
+              newPassword: newPasswordWithToken,
+              code,
+            })
+            .expect(202))
+        it('should not change a users password if they do not know the current password', async () => {
+          expect(code).not.toEqual('000000') // Could fail sometimes, we use this as a test case here
+          return r
+            .post('/password/new')
+            .set('Content-type', 'application/json; charset=utf-8')
+            .send({
+              email,
+              newPassword: newPasswordWithToken,
+              code: '000000',
+            })
+            .expect(401)
+        })
+
+        test('log-in with new password', () =>
+          r
+            .post('/login')
+            .send({
+              email,
+              password: newPasswordWithToken,
+            })
+            .expect(204))
+      })
     })
   })
 })

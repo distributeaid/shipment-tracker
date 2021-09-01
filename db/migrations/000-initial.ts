@@ -61,19 +61,25 @@ export const up = async (queryInterface: QueryInterface) => {
       allowNull: false,
       defaultValue: false,
     },
+    isConfirmed: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     ...autoTimestampFields,
   })
   await queryInterface.addIndex(`UserAccounts`, ['email'], {
     unique: true,
   })
-  // PasswordResetToken
-  await queryInterface.createTable(`PasswordResetTokens`, {
+  // VerificationToken
+  await queryInterface.createTable(`VerificationTokens`, {
     id,
-    email: {
-      type: DataTypes.STRING,
+    userAccountId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      validate: {
-        isEmail: true,
+      references: {
+        model: `UserAccounts`,
+        key: 'id',
       },
     },
     token: {
@@ -85,9 +91,13 @@ export const up = async (queryInterface: QueryInterface) => {
     },
     ...autoTimestampFields,
   })
-  await queryInterface.addIndex(`PasswordResetTokens`, ['email', 'token'], {
-    unique: false,
-  })
+  await queryInterface.addIndex(
+    `VerificationTokens`,
+    ['userAccountId', 'token'],
+    {
+      unique: false,
+    },
+  )
   // Group
   await queryInterface.createTable(`Groups`, {
     id,
