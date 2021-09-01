@@ -18,6 +18,8 @@ import sendVerificationTokenByEmail from '../routes/password/token'
 import VerificationToken from '../models/verification_token'
 import setNewPasswordUsingTokenAndEmail from '../routes/password/new'
 import UserAccount from '../models/user_account'
+import EventEmitter from 'events'
+import { consoleMailer } from '../mailer/console'
 
 jest.setTimeout(15 * 1000)
 
@@ -48,6 +50,7 @@ const parseCookie = (cookie: string) =>
 
 const email = `${v4()}@example.com`
 const password = 'y{uugBmw"9,?=L_'
+const omnibus = new EventEmitter()
 
 describe('User account API', () => {
   let app: Express
@@ -59,7 +62,7 @@ describe('User account API', () => {
     app = express()
     app.use(cookieParser(process.env.COOKIE_SECRET ?? 'cookie-secret'))
     app.use(json())
-    app.post('/register', registerUser(1))
+    app.post('/register', registerUser(omnibus, 1))
     app.post('/register/confirm', confirmRegistration)
     app.post('/login', login)
     app.post('/password/token', sendVerificationTokenByEmail)
