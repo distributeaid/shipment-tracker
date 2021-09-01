@@ -52,6 +52,10 @@ export default class UserAccount extends Model<
   @Column
   public isAdmin!: boolean
 
+  @Default(false)
+  @Column
+  public isConfirmed!: boolean
+
   @CreatedAt
   @Column
   public readonly createdAt!: Date

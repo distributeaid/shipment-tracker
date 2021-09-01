@@ -31,6 +31,9 @@ const login = async (request: Request, response: Response) => {
   if (user === null) {
     return response.status(401).end()
   }
+  if (!user.isConfirmed) {
+    return response.status(403).end()
+  }
   if (!bcrypt.compareSync(valid.value.password, user.passwordHash)) {
     return response.status(401).end()
   }
