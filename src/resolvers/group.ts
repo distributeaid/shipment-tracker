@@ -20,6 +20,8 @@ import {
   QueryResolvers,
 } from '../server-internal-types'
 
+const include = [UserAccount]
+
 // Group query resolvers
 
 const listGroupsInput = Type.Object(
@@ -38,7 +40,9 @@ const listGroups: QueryResolvers['listGroups'] = async (_, input) => {
     throw new UserInputError('List groups arguments invalid', valid.errors)
   }
 
-  const query = {} as FindOptions<Group['_attributes']>
+  const query = {
+    include,
+  } as FindOptions<Group['_attributes']>
 
   const { groupType, captainId } = valid.value
 
@@ -65,7 +69,7 @@ const group: QueryResolvers['group'] = async (_, { id }) => {
     throw new UserInputError('Group arguments invalid', valid.errors)
   }
 
-  const group = await Group.findByPk(valid.value.id)
+  const group = await Group.findByPk(valid.value.id, { include })
   if (!group) {
     throw new ApolloError(`No group exists with ID ${valid.value.id}`)
   }

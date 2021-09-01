@@ -27,11 +27,7 @@ const login = async (request: Request, response: Response) => {
       .end()
   }
 
-  const user = await UserAccount.findOne({
-    where: {
-      email: valid.value.email.toLowerCase(),
-    },
-  })
+  const user = await UserAccount.findOneByEmail(valid.value.email)
   if (user === null) {
     return response.status(401).end()
   }
