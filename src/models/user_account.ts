@@ -79,4 +79,12 @@ export default class UserAccount extends Model<
       group: groupForUser,
     }
   }
+
+  public static findOneByEmail(email: string) {
+    return UserAccount.findOne({
+      where: {
+        email: email.toLowerCase(),
+      },
+    })
+  }
 }

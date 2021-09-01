@@ -492,9 +492,7 @@ describe('Groups API', () => {
               `,
               variables: {
                 captainId: (
-                  await UserAccount.findOne({
-                    where: { email: `${captainName}@example.com` },
-                  })
+                  await UserAccount.findOneByEmail(`${captainName}@example.com`)
                 )?.id,
               },
             })
@@ -532,9 +530,7 @@ describe('Groups API', () => {
               `,
               variables: {
                 captainId: (
-                  await UserAccount.findOne({
-                    where: { email: `${captainName}@example.com` },
-                  })
+                  await UserAccount.findOneByEmail(`${captainName}@example.com`)
                 )?.id,
                 groupType: groupTypes,
               },
@@ -549,7 +545,8 @@ describe('Groups API', () => {
                 .filter(({ name }) => expectedGroupNames.includes(name))
                 .filter(
                   ({ captain }) =>
-                    captain.email === `${captainName}@example.com`,
+                    captain.email ===
+                    `${captainName.toLowerCase()}@example.com`,
                 )
                 .map(toGroupData),
             )

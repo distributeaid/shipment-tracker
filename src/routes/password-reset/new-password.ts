@@ -46,11 +46,7 @@ const setNewPasswordUsingToken =
       return response.status(400).end()
     }
 
-    const user = await UserAccount.findOne({
-      where: {
-        email: valid.value.email.toLowerCase(),
-      },
-    })
+    const user = await UserAccount.findOneByEmail(valid.value.email)
     if (user === null) {
       return response.status(400).end()
     }
