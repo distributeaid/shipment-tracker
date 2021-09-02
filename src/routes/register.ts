@@ -55,13 +55,14 @@ const registerUser =
         token: generateDigits(6),
       })
       omnibus.emit('user_registered', user, token)
+      return response.status(202).end()
     } catch (error) {
       if ((error as Error).name === 'SequelizeUniqueConstraintError') {
         return response.status(409).end()
       }
+      console.error(error)
+      return response.status(500).end()
     }
-
-    return response.status(202).end()
   }
 
 export default registerUser

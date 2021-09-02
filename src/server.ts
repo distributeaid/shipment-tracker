@@ -29,6 +29,7 @@ import setNewPasswordUsingTokenAndEmail from './routes/password/new'
 import confirmRegistrationByEmail from './routes/register/confirm'
 import EventEmitter from 'events'
 import { consoleMailer } from './mailer/console'
+import { canSendEmails, smtpMailer } from './mailer/smtp'
 
 const omnibus = new EventEmitter()
 
@@ -41,24 +42,25 @@ app.use(json())
 const cookieAuth = passport.authenticate('cookie', { session: false })
 passport.use(cookieAuthStrategy)
 
-app.get('/register', registerUser(omnibus))
-app.get('/register/confirm', confirmRegistrationByEmail)
-app.get('/login', login)
-app.post('/password/token', sendVerificationTokenByEmail)
-app.post('/password/new', setNewPasswordUsingTokenAndEmail())
-app.get('/me', cookieAuth, getProfile)
-app.get('/me/cookie', cookieAuth, renewCookie)
-app.delete('/me/cookie', cookieAuth, deleteCookie)
-app.delete('/me/reset-password', cookieAuth, changePassword())
-
-app.get('/shipment-exports/:id', cookieAuth, sendShipmentExportCsv)
-
 app.use(
   cors({
     origin: process.env.CLIENT_URL || 'http://localhost:8080',
     credentials: true,
   }),
 )
+
+app.post('/register', registerUser(omnibus))
+app.post('/register/confirm', confirmRegistrationByEmail)
+app.post('/login', login)
+app.post('/password/token', sendVerificationTokenByEmail)
+app.post('/password/new', setNewPasswordUsingTokenAndEmail())
+app.get('/me', cookieAuth, getProfile)
+app.post('/me/cookie', cookieAuth, renewCookie)
+app.delete('/me/cookie', cookieAuth, deleteCookie)
+app.delete('/me/reset-password', cookieAuth, changePassword())
+
+app.get('/shipment-exports/:id', cookieAuth, sendShipmentExportCsv)
+
 app.use(compression())
 
 async function startExpressServer() {
@@ -97,5 +99,8 @@ httpServer.listen({ port }, (): void =>
   ),
 )
 
-// Dummy emailing
-consoleMailer(omnibus)
+if (canSendEmails()) {
+  smtpMailer(omnibus)
+} else {
+  consoleMailer(omnibus)
+}
