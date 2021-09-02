@@ -10,7 +10,7 @@ import { emailInput } from '../register'
 const confirmRegistrationByEmailInput = Type.Object(
   {
     email: emailInput,
-    code: Type.String({ pattern: '^[0-9]{6}$' }),
+    token: Type.String({ pattern: '^[0-9]{6}$', title: 'verification token' }),
   },
   { additionalProperties: false },
 )
@@ -39,7 +39,7 @@ const confirmRegistrationByEmail = async (
   }
   const token = await VerificationToken.findByUserAccountAndToken(
     user,
-    valid.value.code,
+    valid.value.token,
   )
   if (token === undefined) return response.status(401).end()
 

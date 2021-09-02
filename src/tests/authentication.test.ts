@@ -130,7 +130,7 @@ describe('User account API', () => {
           .set('Content-type', 'application/json; charset=utf-8')
           .send({
             email,
-            code: token?.token,
+            token: token?.token,
           })
           .expect(202)
       })
@@ -247,7 +247,7 @@ describe('User account API', () => {
             .expect(400))
       })
       describe('using an email token', () => {
-        let code: string
+        let token: string
         const newPasswordWithToken = "8>5_TZ?'hH9xd}Z7:"
         it('should create a password reset token', async () => {
           await r
@@ -259,13 +259,13 @@ describe('User account API', () => {
             .expect(202)
 
           // Get token for email
-          const token = await VerificationToken.findOne({
+          const t = await VerificationToken.findOne({
             where: {
               userAccountId: (await UserAccount.findOneByEmail(email))?.id,
             },
           })
-          expect(token).not.toBeUndefined()
-          code = token!.token
+          expect(t).not.toBeUndefined()
+          token = t!.token
         })
         it('should reset the password using the token', () =>
           r
@@ -274,18 +274,18 @@ describe('User account API', () => {
             .send({
               email,
               newPassword: newPasswordWithToken,
-              code,
+              token,
             })
             .expect(202))
         it('should not change a users password if they do not know the current password', async () => {
-          expect(code).not.toEqual('000000') // Could fail sometimes, we use this as a test case here
+          expect(token).not.toEqual('000000') // Could fail sometimes, we use this as a test case here
           return r
             .post('/password/new')
             .set('Content-type', 'application/json; charset=utf-8')
             .send({
               email,
               newPassword: newPasswordWithToken,
-              code: '000000',
+              token: '000000',
             })
             .expect(401)
         })
