@@ -3,6 +3,7 @@ import PrivateRoute from './components/PrivateRoute'
 import { UserProfileProvider } from './components/UserProfileContext'
 import { useAuth } from './hooks/useAuth'
 import AdminPage from './pages/AdminPage'
+import ConfirmEmailWithTokenPage from './pages/ConfirmEmailWithTokenPage'
 import ApolloDemoPage from './pages/demo/ApolloDemo'
 import GroupCreatePage from './pages/groups/GroupCreatePage'
 import GroupEditPage from './pages/groups/GroupEditPage'
@@ -42,6 +43,9 @@ const AppRoot = () => {
           )}
           <Route path={ROUTES.HOME} exact>
             {isAuthenticated ? <HomePage /> : <PublicHomePage />}
+          </Route>
+          <Route path={ROUTES.CONFIRM_EMAIL_WITH_TOKEN} exact>
+            <ConfirmEmailWithTokenPage />
           </Route>
           <PrivateRoute path={ROUTES.ADMIN_ROOT} exact>
             <AdminPage />
