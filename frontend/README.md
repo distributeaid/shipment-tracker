@@ -36,7 +36,7 @@ You'll usually want access to our data when running the frontend. Here's how to 
 3. **Launch the server:**
 
    ```shell
-   yarn dev
+   yarn start
 
    ```
 
