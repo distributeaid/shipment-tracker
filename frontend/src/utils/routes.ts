@@ -17,6 +17,7 @@ const ROUTES = {
   SHIPMENT_EDIT: '/shipment/:shipmentId/edit',
   KITCHEN_SINK: '/kitchen-sink',
   FORM_DEMO: '/form-demo',
+  CONFIRM_EMAIL_WITH_TOKEN: '/register/confirm',
 }
 
 export function groupViewRoute(groupId: number | string) {
