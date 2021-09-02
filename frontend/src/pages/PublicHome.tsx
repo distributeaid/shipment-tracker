@@ -1,24 +1,21 @@
 import { FunctionComponent, useState } from 'react'
+import { Redirect } from 'react-router-dom'
 import DistributeAidWordmark from '../components/branding/DistributeAidWordmark'
 import TextField from '../components/forms/TextField'
-import { useAuth } from '../hooks/useAuth'
-
-const SERVER_URL = process.env.REACT_APP_SERVER_URL
-
-const emailRegEx = /.+@.+\..+/
-const passwordRegEx =
-  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+import { emailRegEx, passwordRegEx, useAuth } from '../hooks/useAuth'
 
 const PublicHomePage: FunctionComponent = () => {
-  const { login } = useAuth()
+  const { login, register, isRegistered } = useAuth()
   const [showRegisterForm, setShowRegisterForm] = useState(false)
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [password2, setPassword2] = useState('')
 
   const loginFormValid = emailRegEx.test(email) && passwordRegEx.test(password)
 
-  const registerFormValid = loginFormValid && password === password2
+  const registerFormValid =
+    loginFormValid && password === password2 && name.trim().length > 0
 
   const showLoginForm = !showRegisterForm
   return (
@@ -39,6 +36,7 @@ const PublicHomePage: FunctionComponent = () => {
                 label="email"
                 type="email"
                 name="email"
+                autoComplete="email"
                 value={email}
                 onChange={({ target: { value } }) => setEmail(value)}
               />
@@ -46,6 +44,7 @@ const PublicHomePage: FunctionComponent = () => {
                 label="password"
                 type="password"
                 name="password"
+                autoComplete="password"
                 value={password}
                 onChange={({ target: { value } }) => setPassword(value)}
               />
@@ -66,27 +65,38 @@ const PublicHomePage: FunctionComponent = () => {
               </button>
             </form>
           )}
-          {showRegisterForm && (
+          {showRegisterForm && !isRegistered && (
             <form>
               <TextField
-                label="email"
+                label="Your name"
+                type="text"
+                name="name"
+                autoComplete="name"
+                value={name}
+                onChange={({ target: { value } }) => setName(value)}
+              />
+              <TextField
+                label="Your email"
                 type="email"
                 name="email"
+                autoComplete="email"
                 value={email}
                 onChange={({ target: { value } }) => setEmail(value)}
               />
               <TextField
-                label="password"
+                label="Pick a good password"
                 type="password"
                 name="password"
+                autoComplete="new-password"
                 minLength={8}
                 value={password}
                 onChange={({ target: { value } }) => setPassword(value)}
               />
               <TextField
-                label="password (repeat)"
+                label="Repeat your password"
                 type="password"
                 name="password2"
+                autoComplete="new-password"
                 minLength={8}
                 value={password2}
                 onChange={({ target: { value } }) => setPassword2(value)}
@@ -95,10 +105,7 @@ const PublicHomePage: FunctionComponent = () => {
                 className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
                 type="button"
                 onClick={() => {
-                  fetch(`${SERVER_URL}/register`, {
-                    method: 'POST',
-                    body: JSON.stringify({ email, password }),
-                  })
+                  register({ name, email, password })
                 }}
                 disabled={!registerFormValid}
               >
@@ -112,6 +119,14 @@ const PublicHomePage: FunctionComponent = () => {
                 Log in
               </button>
             </form>
+          )}
+          {isRegistered && (
+            <Redirect
+              to={{
+                pathname: '/register/confirm',
+                state: { email },
+              }}
+            />
           )}
         </div>
       </div>

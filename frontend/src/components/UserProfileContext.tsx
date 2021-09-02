@@ -31,7 +31,9 @@ const UserProfileProvider: FunctionComponent = ({ children }) => {
     // We fetch the token again in case the client-side cookie has expired but
     // the remote session hasn't
     if (!tokenWasFetched) {
-      fetch(`${SERVER_URL}/me`)
+      fetch(`${SERVER_URL}/me`, {
+        credentials: 'include',
+      })
         .then((response) => response.json())
         .catch(() => {
           // The user is not logged in
