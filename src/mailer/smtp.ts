@@ -41,7 +41,7 @@ export const smtpMailer = (omnibus: EventEmitter): void => {
     console.error(`[email] Sending of emails DISABLED!`)
     return
   }
-  console.debug(`[email] Sending of emails ENABLED!`)
+  console.debug(`[email] Sending of emails ENABLED via ${host}!`)
   omnibus.on(
     'user_registered',
     async (user: UserAccount, token: VerificationToken) => {
