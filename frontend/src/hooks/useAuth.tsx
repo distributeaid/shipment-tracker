@@ -1,4 +1,29 @@
-import { useState } from 'react'
+import { createContext, useContext, useState } from 'react'
+import { PropsWithChildren } from 'react-router/node_modules/@types/react'
+
+type AuthInfo = {
+  isLoading: boolean
+  isAuthenticated: boolean
+  isRegistered: boolean
+  isConfirmed: boolean
+  logout: () => void
+  login: (_: { email: string; password: string }) => void
+  register: (_: { name: string; email: string; password: string }) => void
+  confirm: (_: { email: string; token: string }) => void
+}
+
+export const AuthContext = createContext<AuthInfo>({
+  isLoading: false,
+  isAuthenticated: false,
+  isRegistered: false,
+  isConfirmed: false,
+  logout: () => undefined,
+  login: () => undefined,
+  register: () => undefined,
+  confirm: () => undefined,
+})
+
+export const useAuth = () => useContext(AuthContext)
 
 const SERVER_URL = process.env.REACT_APP_SERVER_URL
 
@@ -11,12 +36,13 @@ export const emailRegEx = /.+@.+\..+/
 export const passwordRegEx =
   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
 
-export const useAuth = () => {
+export const AuthProvider = ({ children }: PropsWithChildren<unknown>) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isConfirmed, setIsConfirmed] = useState(false)
-  return {
+
+  const auth: AuthInfo = {
     isLoading,
     isAuthenticated,
     isRegistered,
@@ -34,7 +60,7 @@ export const useAuth = () => {
         document.location.reload()
       })
     },
-    login: ({ email, password }: { email: string; password: string }) => {
+    login: ({ email, password }) => {
       setIsLoading(true)
       fetch(`${SERVER_URL}/login`, {
         method: 'POST',
@@ -45,22 +71,13 @@ export const useAuth = () => {
         .then(() => {
           setIsAuthenticated(true)
           setIsLoading(false)
-          console.log('authenticated')
         })
         .catch((err) => {
           console.error(err)
           setIsLoading(false)
         })
     },
-    register: ({
-      name,
-      email,
-      password,
-    }: {
-      name: string
-      email: string
-      password: string
-    }) => {
+    register: ({ name, email, password }) => {
       setIsLoading(true)
       fetch(`${SERVER_URL}/register`, {
         method: 'POST',
@@ -77,7 +94,7 @@ export const useAuth = () => {
           setIsLoading(false)
         })
     },
-    confirm: ({ email, token }: { email: string; token: string }) => {
+    confirm: ({ email, token }) => {
       setIsLoading(true)
       fetch(`${SERVER_URL}/register/confirm`, {
         method: 'POST',
@@ -95,4 +112,6 @@ export const useAuth = () => {
         })
     },
   }
+
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
 }
