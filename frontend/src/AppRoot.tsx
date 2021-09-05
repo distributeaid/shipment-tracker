@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import PrivateRoute from './components/PrivateRoute'
 import { UserProfileProvider } from './components/UserProfileContext'
-import { useAuth } from './hooks/useAuth'
+import { AuthProvider, useAuth } from './hooks/useAuth'
 import AdminPage from './pages/AdminPage'
 import ConfirmEmailWithTokenPage from './pages/ConfirmEmailWithTokenPage'
 import ApolloDemoPage from './pages/demo/ApolloDemo'
@@ -24,7 +24,7 @@ import ROUTES from './utils/routes'
 
 const isDev = process.env.NODE_ENV === 'development'
 
-const AppRoot = () => {
+const App = () => {
   const { isLoading, isAuthenticated } = useAuth()
 
   return (
@@ -89,6 +89,14 @@ const AppRoot = () => {
         </Switch>
       </Router>
     </UserProfileProvider>
+  )
+}
+
+const AppRoot = () => {
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   )
 }
 
