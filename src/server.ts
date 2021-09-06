@@ -29,7 +29,7 @@ import setNewPasswordUsingTokenAndEmail from './routes/password/new'
 import confirmRegistrationByEmail from './routes/register/confirm'
 import EventEmitter from 'events'
 import { consoleMailer } from './mailer/console'
-import { canSendEmails, smtpMailer } from './mailer/smtp'
+import { appMailer, transportFromConfig } from './mailer/nodemailer'
 
 const omnibus = new EventEmitter()
 
@@ -99,8 +99,11 @@ httpServer.listen({ port }, (): void =>
   ),
 )
 
-if (canSendEmails()) {
-  smtpMailer(omnibus)
+// Configure email sending
+const emailDebug = (...args: any) => console.debug('[email]', ...args)
+const maybeTransportConfig = transportFromConfig(emailDebug)
+if (maybeTransportConfig !== undefined) {
+  appMailer(omnibus, maybeTransportConfig, emailDebug)
 } else {
-  consoleMailer(omnibus)
+  consoleMailer(omnibus, emailDebug)
 }
