@@ -1,7 +1,9 @@
 import { FunctionComponent, useState } from 'react'
 import { Redirect } from 'react-router-dom'
 import DistributeAidWordmark from '../components/branding/DistributeAidWordmark'
+import { CaptchaSolved } from '../components/CaptchaSolved'
 import TextField from '../components/forms/TextField'
+import FriendlyCaptcha from '../components/FriendlyCaptcha'
 import { emailRegEx, passwordRegEx, useAuth } from '../hooks/useAuth'
 
 const PublicHomePage: FunctionComponent = () => {
@@ -11,8 +13,10 @@ const PublicHomePage: FunctionComponent = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [password2, setPassword2] = useState('')
+  const [captcha, setCaptcha] = useState('')
 
-  const loginFormValid = emailRegEx.test(email) && passwordRegEx.test(password)
+  const loginFormValid =
+    emailRegEx.test(email) && passwordRegEx.test(password) && captcha.length > 0
 
   const registerFormValid =
     loginFormValid && password === password2 && name.trim().length > 0
@@ -48,10 +52,17 @@ const PublicHomePage: FunctionComponent = () => {
                 value={password}
                 onChange={({ target: { value } }) => setPassword(value)}
               />
+              {captcha.length === 0 && (
+                <FriendlyCaptcha
+                  onSolution={(captcha) => setCaptcha(captcha)}
+                />
+              )}
+              {/* We use this element to display so the CAPTCHA solving does not get reset, because this component will re-render when we call setCaptcha() */}
+              {captcha.length !== 0 && <CaptchaSolved />}
               <button
                 className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
                 type="button"
-                onClick={() => login({ email, password })}
+                onClick={() => login({ email, password, captcha })}
                 disabled={!loginFormValid}
               >
                 Log in
@@ -101,11 +112,18 @@ const PublicHomePage: FunctionComponent = () => {
                 value={password2}
                 onChange={({ target: { value } }) => setPassword2(value)}
               />
+              {captcha.length === 0 && (
+                <FriendlyCaptcha
+                  onSolution={(captcha) => setCaptcha(captcha)}
+                />
+              )}
+              {/* We use this element to display so the CAPTCHA solving does not get reset, because this component will re-render when we call setCaptcha() */}
+              {captcha.length !== 0 && <CaptchaSolved />}
               <button
                 className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
                 type="button"
                 onClick={() => {
-                  register({ name, email, password })
+                  register({ name, email, password, captcha })
                 }}
                 disabled={!registerFormValid}
               >

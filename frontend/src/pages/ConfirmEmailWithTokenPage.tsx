@@ -1,15 +1,19 @@
 import { FunctionComponent, useState } from 'react'
 import { Redirect } from 'react-router-dom'
 import DistributeAidWordmark from '../components/branding/DistributeAidWordmark'
+import { CaptchaSolved } from '../components/CaptchaSolved'
 import TextField from '../components/forms/TextField'
+import FriendlyCaptcha from '../components/FriendlyCaptcha'
 import { emailRegEx, tokenRegex, useAuth } from '../hooks/useAuth'
 
 const ConfirmEmailWithTokenPage: FunctionComponent = () => {
   const { confirm, isConfirmed } = useAuth()
   const [email, setEmail] = useState('')
   const [token, setToken] = useState('')
+  const [captcha, setCaptcha] = useState('')
 
-  const formValid = emailRegEx.test(email) && tokenRegex.test(token)
+  const formValid =
+    emailRegEx.test(email) && tokenRegex.test(token) && captcha.length > 0
 
   return (
     <main className="flex h-screen justify-center bg-navy-900 p-4">
@@ -40,11 +44,16 @@ const ConfirmEmailWithTokenPage: FunctionComponent = () => {
               pattern="^[0-9]{6}"
               onChange={({ target: { value } }) => setToken(value)}
             />
+            {captcha.length === 0 && (
+              <FriendlyCaptcha onSolution={(captcha) => setCaptcha(captcha)} />
+            )}
+            {/* We use this element to display so the CAPTCHA solving does not get reset, because this component will re-render when we call setCaptcha() */}
+            {captcha.length !== 0 && <CaptchaSolved />}
             <button
               className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
               type="button"
               onClick={() => {
-                confirm({ email, token })
+                confirm({ email, token, captcha })
               }}
               disabled={!formValid}
             >
