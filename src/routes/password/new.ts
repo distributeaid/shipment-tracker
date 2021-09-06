@@ -12,7 +12,7 @@ const newPasswordUsingTokenInput = Type.Object(
   {
     email: emailInput,
     newPassword: passwordInput,
-    code: Type.String({ pattern: '^[0-9]{6}$' }),
+    token: Type.String({ pattern: '^[0-9]{6}$' }),
   },
   { additionalProperties: false },
 )
@@ -39,7 +39,7 @@ const setNewPasswordUsingTokenAndEmail =
 
     const token = await VerificationToken.findByUserAccountAndToken(
       user,
-      valid.value.code,
+      valid.value.token,
     )
     if (token === undefined) return response.status(401).end()
 
