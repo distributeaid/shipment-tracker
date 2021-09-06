@@ -7,9 +7,14 @@ type AuthInfo = {
   isRegistered: boolean
   isConfirmed: boolean
   logout: () => void
-  login: (_: { email: string; password: string }) => void
-  register: (_: { name: string; email: string; password: string }) => void
-  confirm: (_: { email: string; token: string }) => void
+  login: (_: { email: string; password: string; captcha: string }) => void
+  register: (_: {
+    name: string
+    email: string
+    password: string
+    captcha: string
+  }) => void
+  confirm: (_: { email: string; token: string; captcha: string }) => void
 }
 
 export const AuthContext = createContext<AuthInfo>({
@@ -60,12 +65,14 @@ export const AuthProvider = ({ children }: PropsWithChildren<unknown>) => {
         document.location.reload()
       })
     },
-    login: ({ email, password }) => {
+    login: ({ email, password, captcha }) => {
       setIsLoading(true)
       fetch(`${SERVER_URL}/login`, {
         method: 'POST',
-        credentials: 'include',
-        headers,
+        headers: {
+          ...headers,
+          'x-friendly-captcha': captcha,
+        },
         body: JSON.stringify({ email, password }),
       })
         .then(() => {
@@ -77,12 +84,14 @@ export const AuthProvider = ({ children }: PropsWithChildren<unknown>) => {
           setIsLoading(false)
         })
     },
-    register: ({ name, email, password }) => {
+    register: ({ name, email, password, captcha }) => {
       setIsLoading(true)
       fetch(`${SERVER_URL}/register`, {
         method: 'POST',
-        credentials: 'include',
-        headers,
+        headers: {
+          ...headers,
+          'x-friendly-captcha': captcha,
+        },
         body: JSON.stringify({ email, password, name }),
       })
         .then(() => {
@@ -94,12 +103,14 @@ export const AuthProvider = ({ children }: PropsWithChildren<unknown>) => {
           setIsLoading(false)
         })
     },
-    confirm: ({ email, token }) => {
+    confirm: ({ email, token, captcha }) => {
       setIsLoading(true)
       fetch(`${SERVER_URL}/register/confirm`, {
         method: 'POST',
-        credentials: 'include',
-        headers,
+        headers: {
+          ...headers,
+          'x-friendly-captcha': captcha,
+        },
         body: JSON.stringify({ email, token }),
       })
         .then(() => {
