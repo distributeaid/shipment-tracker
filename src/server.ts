@@ -1,7 +1,7 @@
 // tslint:disable:ordered-imports
 import compression from 'compression'
 import cors from 'cors'
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import { createServer } from 'http'
 import path from 'path'
 import passport from 'passport'
@@ -50,8 +50,14 @@ app.use(
   }),
 )
 
-const friendlyCaptchApiKey = process.env.FRIENDLYCAPTCHA_API_KEY as string
-const checkCaptcha = captchaCheck(friendlyCaptchApiKey)
+let checkCaptcha = (_: Request, __: Response, next: NextFunction) => next()
+const friendlyCaptchApiKey = process.env.FRIENDLYCAPTCHA_API_KEY
+if (friendlyCaptchApiKey === undefined) {
+  console.warn(`[CAPTCHA] Middleware DISABLED!`)
+} else {
+  console.debug(`[CAPTCHA] Middleware enabled!`)
+  checkCaptcha = captchaCheck(friendlyCaptchApiKey)
+}
 
 app.post('/register', checkCaptcha, registerUser(omnibus))
 app.post('/register/confirm', checkCaptcha, confirmRegistrationByEmail)
