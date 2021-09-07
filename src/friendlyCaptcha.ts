@@ -2,12 +2,15 @@ import { NextFunction, Request, Response } from 'express'
 import { request } from 'https'
 
 /**
- * Implements the friendlyCaptch verification.
+ * Implements the friendlyCaptch verification as an express middleware.
  *
  * @see https://docs.friendlycaptcha.com/#/verification_api
  */
 export const captchaCheck =
-  (secret: string) =>
+  (
+    secret: string,
+    endpoint = new URL('https://api.friendlycaptcha.com/api/v1/siteverify'),
+  ) =>
   (req: Request, expressResponse: Response, next: NextFunction) => {
     if ((req.headers['x-friendly-captcha']?.length ?? 0) <= 0)
       return expressResponse
@@ -15,8 +18,9 @@ export const captchaCheck =
         .send('Missing CAPTCHA in x-friendly-captcha header')
     const r = request(
       {
-        host: 'api.friendlycaptcha.com',
-        path: '/api/v1/siteverify',
+        host: endpoint.host,
+        path: endpoint.pathname,
+        protocol: endpoint.protocol,
         method: 'POST',
         port: 443,
         headers: {
@@ -28,7 +32,7 @@ export const captchaCheck =
         res.on('data', (d) => data.push(d))
         res.on('end', () => {
           const { success, errors } = JSON.parse(Buffer.concat(data).toString())
-          if (success === true) next()
+          if (success === true) return next()
           return expressResponse.status(401).send(JSON.stringify(errors))
         })
       },
