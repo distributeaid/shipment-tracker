@@ -1,5 +1,4 @@
-import { createContext, useContext, useState } from 'react'
-import { PropsWithChildren } from 'react-router/node_modules/@types/react'
+import { createContext, PropsWithChildren, useContext, useState } from 'react'
 
 type AuthInfo = {
   isLoading: boolean
