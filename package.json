@@ -1,8 +1,7 @@
 {
-  "name": "distribute-aid",
-  "version": "1.0.0",
-  "description": "We distribute aid.",
-  "main": "index.js",
+  "name": "@distributeaid/shipment-tracker-backend",
+  "version": "0.0.0-development",
+  "description": "Backend for organizing aid shipments.",
   "scripts": {
     "predev": "yarn codegen",
     "dev:server": "ts-node-dev --no-notify --respawn --transpile-only src/server",
@@ -23,8 +22,8 @@
     "yarn": ">= 1.22.5"
   },
   "keywords": [],
-  "author": "Distribute Aid",
-  "license": "(ISC OR GPL-3.0)",
+  "author": "Distribute Aid | https://distributeaid.org/",
+  "license": "AGPL-3.0-only",
   "dependencies": {
     "@graphql-tools/utils": "8.2.2",
     "@sinclair/typebox": "0.20.5",
