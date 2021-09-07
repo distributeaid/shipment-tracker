@@ -4,6 +4,7 @@ import { apolloClient } from './apolloClient'
 import PrivateRoute from './components/PrivateRoute'
 import { UserProfileProvider } from './components/UserProfileContext'
 import { AuthProvider, useAuth } from './hooks/useAuth'
+import { FriendlyCaptchaProvider } from './hooks/useFriendlyCaptcha'
 import AdminPage from './pages/AdminPage'
 import ConfirmEmailWithTokenPage from './pages/ConfirmEmailWithTokenPage'
 import ApolloDemoPage from './pages/demo/ApolloDemo'
@@ -32,65 +33,67 @@ const App = () => {
   return (
     <ApolloProvider client={apolloClient}>
       <UserProfileProvider>
-        <Router>
-          <Switch>
-            {isDev && (
-              <Route path={ROUTES.KITCHEN_SINK}>
-                <KitchenSink />
+        <FriendlyCaptchaProvider>
+          <Router>
+            <Switch>
+              {isDev && (
+                <Route path={ROUTES.KITCHEN_SINK}>
+                  <KitchenSink />
+                </Route>
+              )}
+              {isLoading && (
+                <Route>
+                  <LoadingPage />
+                </Route>
+              )}
+              <Route path={ROUTES.HOME} exact>
+                {isAuthenticated ? <HomePage /> : <PublicHomePage />}
               </Route>
-            )}
-            {isLoading && (
-              <Route>
-                <LoadingPage />
+              <Route path={ROUTES.CONFIRM_EMAIL_WITH_TOKEN} exact>
+                <ConfirmEmailWithTokenPage />
               </Route>
-            )}
-            <Route path={ROUTES.HOME} exact>
-              {isAuthenticated ? <HomePage /> : <PublicHomePage />}
-            </Route>
-            <Route path={ROUTES.CONFIRM_EMAIL_WITH_TOKEN} exact>
-              <ConfirmEmailWithTokenPage />
-            </Route>
-            <PrivateRoute path={ROUTES.ADMIN_ROOT} exact>
-              <AdminPage />
-            </PrivateRoute>
-            <Route path={ROUTES.APOLLO_DEMO}>
-              <ApolloDemoPage />
-            </Route>
-            <PrivateRoute path={ROUTES.GROUP_LIST}>
-              <GroupList />
-            </PrivateRoute>
-            <PrivateRoute path={ROUTES.GROUP_CREATE}>
-              <GroupCreatePage />
-            </PrivateRoute>
-            <PrivateRoute path={ROUTES.GROUP_EDIT}>
-              <GroupEditPage />
-            </PrivateRoute>
-            <PrivateRoute path={ROUTES.GROUP_VIEW}>
-              <GroupViewPage />
-            </PrivateRoute>
-            <PrivateRoute path={ROUTES.SHIPMENT_OFFER_CREATE}>
-              <CreateOfferPage />
-            </PrivateRoute>
-            <PrivateRoute path={ROUTES.SHIPMENT_OFFER_VIEW}>
-              <ViewOfferPage />
-            </PrivateRoute>
-            <PrivateRoute path={ROUTES.SHIPMENT_LIST}>
-              <ShipmentList />
-            </PrivateRoute>
-            <PrivateRoute path={ROUTES.SHIPMENT_CREATE}>
-              <ShipmentCreatePage />
-            </PrivateRoute>
-            <PrivateRoute path={ROUTES.SHIPMENT_EDIT}>
-              <ShipmentEditPage />
-            </PrivateRoute>
-            <PrivateRoute path={ROUTES.SHIPMENT_VIEW}>
-              <ShipmentViewPage />
-            </PrivateRoute>
-            <PrivateRoute path="*">
-              <NotFoundPage />
-            </PrivateRoute>
-          </Switch>
-        </Router>
+              <PrivateRoute path={ROUTES.ADMIN_ROOT} exact>
+                <AdminPage />
+              </PrivateRoute>
+              <Route path={ROUTES.APOLLO_DEMO}>
+                <ApolloDemoPage />
+              </Route>
+              <PrivateRoute path={ROUTES.GROUP_LIST}>
+                <GroupList />
+              </PrivateRoute>
+              <PrivateRoute path={ROUTES.GROUP_CREATE}>
+                <GroupCreatePage />
+              </PrivateRoute>
+              <PrivateRoute path={ROUTES.GROUP_EDIT}>
+                <GroupEditPage />
+              </PrivateRoute>
+              <PrivateRoute path={ROUTES.GROUP_VIEW}>
+                <GroupViewPage />
+              </PrivateRoute>
+              <PrivateRoute path={ROUTES.SHIPMENT_OFFER_CREATE}>
+                <CreateOfferPage />
+              </PrivateRoute>
+              <PrivateRoute path={ROUTES.SHIPMENT_OFFER_VIEW}>
+                <ViewOfferPage />
+              </PrivateRoute>
+              <PrivateRoute path={ROUTES.SHIPMENT_LIST}>
+                <ShipmentList />
+              </PrivateRoute>
+              <PrivateRoute path={ROUTES.SHIPMENT_CREATE}>
+                <ShipmentCreatePage />
+              </PrivateRoute>
+              <PrivateRoute path={ROUTES.SHIPMENT_EDIT}>
+                <ShipmentEditPage />
+              </PrivateRoute>
+              <PrivateRoute path={ROUTES.SHIPMENT_VIEW}>
+                <ShipmentViewPage />
+              </PrivateRoute>
+              <PrivateRoute path="*">
+                <NotFoundPage />
+              </PrivateRoute>
+            </Switch>
+          </Router>
+        </FriendlyCaptchaProvider>
       </UserProfileProvider>
     </ApolloProvider>
   )
