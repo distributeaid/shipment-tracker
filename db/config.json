@@ -29,5 +29,15 @@
         "rejectUnauthorized": false
       }
     }
+  },
+  "clevercloud": {
+    "use_env_variable": "POSTGRESQL_ADDON_URI",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   }
 }
