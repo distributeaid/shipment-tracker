@@ -3,7 +3,6 @@ import { Redirect } from 'react-router-dom'
 import DistributeAidWordmark from '../components/branding/DistributeAidWordmark'
 import TextField from '../components/forms/TextField'
 import { emailRegEx, passwordRegEx, useAuth } from '../hooks/useAuth'
-import { useFriendlyCaptcha } from '../hooks/useFriendlyCaptcha'
 
 const PublicHomePage: FunctionComponent = () => {
   const { login, register, isRegistered } = useAuth()
@@ -13,12 +12,8 @@ const PublicHomePage: FunctionComponent = () => {
   const [password, setPassword] = useState('')
   const [password2, setPassword2] = useState('')
   const container = useRef<HTMLDivElement>(null)
-  const { element: CAPTCHA, solution: captchaSolution } = useFriendlyCaptcha()
 
-  const loginFormValid =
-    emailRegEx.test(email) &&
-    passwordRegEx.test(password) &&
-    captchaSolution !== undefined
+  const loginFormValid = emailRegEx.test(email) && passwordRegEx.test(password)
 
   const registerFormValid =
     loginFormValid && password === password2 && name.trim().length > 0
@@ -58,9 +53,7 @@ const PublicHomePage: FunctionComponent = () => {
               <button
                 className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
                 type="button"
-                onClick={() =>
-                  login({ email, password, captcha: captchaSolution as string })
-                }
+                onClick={() => login({ email, password })}
                 disabled={!loginFormValid}
               >
                 Log in
@@ -72,7 +65,6 @@ const PublicHomePage: FunctionComponent = () => {
               >
                 Register
               </button>
-              {CAPTCHA}
             </form>
           )}
           {showRegisterForm && !isRegistered && (
@@ -120,7 +112,6 @@ const PublicHomePage: FunctionComponent = () => {
                     name,
                     email,
                     password,
-                    captcha: captchaSolution as string,
                   })
                 }}
                 disabled={!registerFormValid}
@@ -134,7 +125,6 @@ const PublicHomePage: FunctionComponent = () => {
               >
                 Log in
               </button>
-              {CAPTCHA}
             </form>
           )}
           {isRegistered && (
