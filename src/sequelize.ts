@@ -5,7 +5,10 @@ import { Sequelize, SequelizeOptions } from 'sequelize-typescript'
 // tests on CI. This is because DB connection config is different between
 // CI and local test envs. See db/config.json
 const env = process.env.DB_ENV || process.env.NODE_ENV || 'development'
-const config = require(path.join(process.cwd(), 'db', 'config.json'))[env]
+console.debug(`sequelize env`, env)
+const sequelizeConfig = path.join(process.cwd(), 'db', 'config.json')
+console.debug(`sequelize config`, sequelizeConfig)
+const config = require(sequelizeConfig)[env]
 console.debug(`sequelize config loaded`, config)
 
 export let sequelize: Sequelize
@@ -16,12 +19,16 @@ const COMMON_CONFIG: Partial<SequelizeOptions> = {
   protocol: 'postgres',
 }
 
-if (env === 'production') {
-  if (process.env.DATABASE_URL == null) {
-    throw new Error('DATABASE_URL is null!')
+if (config.use_env_variable !== undefined) {
+  console.debug(`sequelize env variable`, config.use_env_variable)
+  const connectionUrl = process.env[config.use_env_variable] as
+    | string
+    | undefined
+  if (connectionUrl === undefined || connectionUrl.length === 0) {
+    throw new Error('connectionUrl is not defined!')
   }
 
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
+  sequelize = new Sequelize(connectionUrl, {
     ...COMMON_CONFIG,
     dialectOptions: config.dialectOptions,
   })
