@@ -30,7 +30,6 @@ import confirmRegistrationByEmail from './routes/register/confirm'
 import EventEmitter from 'events'
 import { consoleMailer } from './mailer/console'
 import { appMailer, transportFromConfig } from './mailer/nodemailer'
-import { captchaCheck } from './friendlyCaptcha'
 
 const omnibus = new EventEmitter()
 
@@ -50,19 +49,10 @@ app.use(
   }),
 )
 
-let checkCaptcha = (_: Request, __: Response, next: NextFunction) => next()
-const friendlyCaptchApiKey = process.env.FRIENDLYCAPTCHA_API_KEY
-if (friendlyCaptchApiKey === undefined) {
-  console.warn(`[CAPTCHA] Middleware DISABLED!`)
-} else {
-  console.debug(`[CAPTCHA] Middleware enabled!`)
-  checkCaptcha = captchaCheck(friendlyCaptchApiKey)
-}
-
-app.post('/register', checkCaptcha, registerUser(omnibus))
-app.post('/register/confirm', checkCaptcha, confirmRegistrationByEmail)
-app.post('/login', checkCaptcha, login)
-app.post('/password/token', checkCaptcha, sendVerificationTokenByEmail)
+app.post('/register', registerUser(omnibus))
+app.post('/register/confirm', confirmRegistrationByEmail)
+app.post('/login', login)
+app.post('/password/token', sendVerificationTokenByEmail)
 app.post('/password/new', setNewPasswordUsingTokenAndEmail())
 app.get('/me', cookieAuth, getProfile)
 app.post('/me/cookie', cookieAuth, renewCookie)

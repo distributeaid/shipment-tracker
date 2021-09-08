@@ -6,14 +6,9 @@ type AuthInfo = {
   isRegistered: boolean
   isConfirmed: boolean
   logout: () => void
-  login: (_: { email: string; password: string; captcha: string }) => void
-  register: (_: {
-    name: string
-    email: string
-    password: string
-    captcha: string
-  }) => void
-  confirm: (_: { email: string; token: string; captcha: string }) => void
+  login: (_: { email: string; password: string }) => void
+  register: (_: { name: string; email: string; password: string }) => void
+  confirm: (_: { email: string; token: string }) => void
 }
 
 export const AuthContext = createContext<AuthInfo>({
@@ -64,13 +59,12 @@ export const AuthProvider = ({ children }: PropsWithChildren<unknown>) => {
         document.location.reload()
       })
     },
-    login: ({ email, password, captcha }) => {
+    login: ({ email, password }) => {
       setIsLoading(true)
       fetch(`${SERVER_URL}/login`, {
         method: 'POST',
         headers: {
           ...headers,
-          'x-friendly-captcha': captcha,
         },
         body: JSON.stringify({ email, password }),
       })
@@ -83,13 +77,12 @@ export const AuthProvider = ({ children }: PropsWithChildren<unknown>) => {
           setIsLoading(false)
         })
     },
-    register: ({ name, email, password, captcha }) => {
+    register: ({ name, email, password }) => {
       setIsLoading(true)
       fetch(`${SERVER_URL}/register`, {
         method: 'POST',
         headers: {
           ...headers,
-          'x-friendly-captcha': captcha,
         },
         body: JSON.stringify({ email, password, name }),
       })
@@ -102,13 +95,12 @@ export const AuthProvider = ({ children }: PropsWithChildren<unknown>) => {
           setIsLoading(false)
         })
     },
-    confirm: ({ email, token, captcha }) => {
+    confirm: ({ email, token }) => {
       setIsLoading(true)
       fetch(`${SERVER_URL}/register/confirm`, {
         method: 'POST',
         headers: {
           ...headers,
-          'x-friendly-captcha': captcha,
         },
         body: JSON.stringify({ email, token }),
       })

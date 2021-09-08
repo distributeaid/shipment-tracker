@@ -3,18 +3,13 @@ import { Redirect } from 'react-router-dom'
 import DistributeAidWordmark from '../components/branding/DistributeAidWordmark'
 import TextField from '../components/forms/TextField'
 import { emailRegEx, tokenRegex, useAuth } from '../hooks/useAuth'
-import { useFriendlyCaptcha } from '../hooks/useFriendlyCaptcha'
 
 const ConfirmEmailWithTokenPage: FunctionComponent = () => {
   const { confirm, isConfirmed } = useAuth()
   const [email, setEmail] = useState('')
   const [token, setToken] = useState('')
-  const { element: CAPTCHA, solution: captchaSolution } = useFriendlyCaptcha()
 
-  const formValid =
-    emailRegEx.test(email) &&
-    tokenRegex.test(token) &&
-    captchaSolution !== undefined
+  const formValid = emailRegEx.test(email) && tokenRegex.test(token)
 
   return (
     <main className="flex h-screen justify-center bg-navy-900 p-4">
@@ -49,13 +44,12 @@ const ConfirmEmailWithTokenPage: FunctionComponent = () => {
               className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
               type="button"
               onClick={() => {
-                confirm({ email, token, captcha: captchaSolution as string })
+                confirm({ email, token })
               }}
               disabled={!formValid}
             >
               Verify
             </button>
-            {CAPTCHA}
           </form>
           {isConfirmed && (
             <Redirect
