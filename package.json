@@ -20,7 +20,7 @@
     "prod:build": "yarn build && cd frontend && yarn install && yarn build:styles && yarn build"
   },
   "engines": {
-    "node": ">=14.0.0",
+    "node": ">=16.0.0",
     "yarn": ">= 1.22.5"
   },
   "keywords": [],
