@@ -9,4 +9,9 @@ curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip
 unzip rclone-current-linux-amd64.zip
 cd rclone-*-linux-amd64
 
+echo "Uploading site to bucket $CELLAR_BUCKET ..."
+
 ./rclone sync ../frontend/build mys3:$CELLAR_BUCKET --progress --s3-acl=public-read
+
+echo "Done. Site should be available on https://$CELLAR_BUCKET.$CELLAR_ADDON_HOST now."
+echo "Configured Origin: $ORIGIN"
