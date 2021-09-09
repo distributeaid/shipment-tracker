@@ -1,6 +1,6 @@
 import { createContext, FunctionComponent, useEffect, useState } from 'react'
 
-const SERVER_URL = process.env.REACT_APP_SERVER_URL
+const SERVER_URL = process.env.REACT_APP_SERVER_URL?.replace(/\/$/, '')
 
 export interface UserProfile {
   id: number
