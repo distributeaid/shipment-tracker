@@ -14,13 +14,14 @@ import EventEmitter from 'events'
 import { backend } from './feat/backend'
 import { startExpressServer } from './feat/express'
 import { setUp as setUpEmails } from './feat/emails'
+import { URL } from 'url'
 
 const omnibus = new EventEmitter()
 
 const app = backend({
   omnibus,
   cookieSecret: process.env.COOKIE_SECRET ?? v4(),
-  origin: process.env.CLIENT_URL || 'http://localhost:8080',
+  origin: new URL(process.env.CLIENT_URL || 'http://localhost:8080'),
 })
 
 startExpressServer(app)

@@ -12,6 +12,7 @@ import EventEmitter from 'events'
 import { backend } from './feat/backend'
 import { startExpressServer } from './feat/express'
 import { setUp as setUpEmails } from './feat/emails'
+import { URL } from 'url'
 
 const omnibus = new EventEmitter()
 
@@ -21,9 +22,15 @@ if (cookieSecret === undefined || cookieSecret.length === 0) {
   cookieSecret = v4()
 }
 
-const origin = process.env.ORIGIN
-if (origin === undefined || !/^http/.test(origin)) {
-  console.error(`Must set ORIGIN!`)
+let origin: URL
+try {
+  origin = new URL(process.env.ORIGIN ?? '')
+} catch (err) {
+  console.error(
+    `Must set ORIGIN, current value is not a URL: "${process.env.ORIGIN}": ${
+      (err as Error).message
+    }!`,
+  )
   process.exit(1)
 }
 

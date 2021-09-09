@@ -5,6 +5,7 @@ import cors from 'cors'
 import EventEmitter from 'events'
 import express, { Express } from 'express'
 import passport from 'passport'
+import { URL } from 'url'
 import { cookieAuthStrategy } from '../../authenticateRequest'
 import login from '../../routes/login'
 import getProfile from '../../routes/me'
@@ -22,7 +23,7 @@ export const backend = ({
   origin,
 }: {
   omnibus: EventEmitter
-  origin: string
+  origin: URL
   cookieSecret: string
 }): Express => {
   const app = express()
@@ -36,7 +37,7 @@ export const backend = ({
 
   app.use(
     cors({
-      origin,
+      origin: `${origin.protocol}//${origin.host}`,
       credentials: true,
     }),
   )
