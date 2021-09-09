@@ -32,8 +32,7 @@ const headers = {
 
 export const tokenRegex = /^[0-9]{6}$/
 export const emailRegEx = /.+@.+\..+/
-export const passwordRegEx =
-  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+export const passwordRegEx = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/
 
 export const AuthProvider = ({ children }: PropsWithChildren<unknown>) => {
   const [isLoading, setIsLoading] = useState(false)

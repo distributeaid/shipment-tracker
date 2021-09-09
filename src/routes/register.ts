@@ -15,7 +15,7 @@ export const emailInput = Type.String({
 })
 
 export const passwordInput = Type.String({
-  pattern: '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$',
+  pattern: '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$',
   title: 'Password',
 })
 
