@@ -21,7 +21,7 @@ const mergeByReplacement: { merge: FieldMergeFunction } = {
 
 export const apolloClient = new ApolloClient({
   link: new HttpLink({
-    uri: process.env.REACT_APP_GRAPHQL_URL,
+    uri: `${process.env.REACT_APP_SERVER_URL?.replace(/\/$/, '')}/graphql`,
     credentials: 'include',
   }),
   cache: new InMemoryCache({

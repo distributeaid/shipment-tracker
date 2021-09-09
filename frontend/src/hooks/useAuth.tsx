@@ -24,7 +24,7 @@ export const AuthContext = createContext<AuthInfo>({
 
 export const useAuth = () => useContext(AuthContext)
 
-const SERVER_URL = process.env.REACT_APP_SERVER_URL
+const SERVER_URL = process.env.REACT_APP_SERVER_URL?.replace(/\/$/, '')
 
 const headers = {
   'content-type': 'application/json; charset=utf-8',

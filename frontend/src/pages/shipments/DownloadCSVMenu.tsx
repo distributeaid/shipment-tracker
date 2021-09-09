@@ -12,7 +12,7 @@ interface Props {
   shipment: ShipmentQuery['shipment']
 }
 
-const SERVER_URL = process.env.REACT_APP_SERVER_URL
+const SERVER_URL = process.env.REACT_APP_SERVER_URL?.replace(/\/$/, '')
 
 const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
   const [modalIsVisible, showModal, hideModal] = useModalState()
