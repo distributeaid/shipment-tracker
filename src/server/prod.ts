@@ -15,6 +15,9 @@ import { setUp as setUpEmails } from './feat/emails'
 import { URL } from 'url'
 import { addVersion } from './addVersion'
 
+const version = process.env.COMMIT_ID ?? '0.0.0-development'
+console.debug(`Launching version ${version}`)
+
 const omnibus = new EventEmitter()
 
 let cookieSecret = process.env.COOKIE_SECRET
@@ -41,7 +44,7 @@ const app = backend({
   origin,
 })
 
-app.use(addVersion(process.env.COMMIT_ID ?? '0.0.0-development'))
+app.use(addVersion(version))
 
 startExpressServer(app)
 
