@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-cd ..
-pwd
+set -x
+set -e
 
 export RCLONE_CONFIG_MYS3_ACCESS_KEY_ID=$CELLAR_ADDON_KEY_ID
 export RCLONE_CONFIG_MYS3_SECRET_ACCESS_KEY=$CELLAR_ADDON_KEY_SECRET
@@ -21,5 +21,4 @@ echo "Uploading site to bucket $CELLAR_BUCKET ..."
 
 ./rclone sync ./frontend/build mys3:$CELLAR_BUCKET --progress --s3-acl=public-read
 
-echo "Done. Site should be available on https://$CELLAR_BUCKET.$CELLAR_ADDON_HOST now."
-echo "Configured Origin: $ORIGIN"
+echo "Done. Site should be available on $ORIGIN now."
