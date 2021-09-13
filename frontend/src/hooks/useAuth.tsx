@@ -108,6 +108,7 @@ export const AuthProvider = ({ children }: PropsWithChildren<unknown>) => {
       setIsLoading(true)
       fetch(`${SERVER_URL}/login`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           ...headers,
         },
