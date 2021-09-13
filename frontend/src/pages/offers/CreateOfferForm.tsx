@@ -1,5 +1,5 @@
 import _pick from 'lodash/pick'
-import { FunctionComponent, useContext, useEffect } from 'react'
+import { FunctionComponent, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import Button from '../../components/Button'
@@ -7,7 +7,7 @@ import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
 import Spinner from '../../components/Spinner'
-import { UserProfileContext } from '../../components/UserProfileContext'
+import { useAuth } from '../../hooks/useAuth'
 import {
   GroupType,
   OfferCreateInput,
@@ -49,7 +49,7 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
     },
   )
 
-  const { profile } = useContext(UserProfileContext)
+  const { me: profile } = useAuth()
 
   const [getGroups, { loading: isLoadingGroups, data: groups }] =
     useAllGroupsLazyQuery()

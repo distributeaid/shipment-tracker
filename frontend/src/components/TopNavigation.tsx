@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, useContext } from 'react'
+import { FunctionComponent, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import ROUTES from '../utils/routes'
@@ -10,7 +10,6 @@ import TruckIcon from './icons/TruckIcon'
 import UserIcon from './icons/UserIcon'
 import DesktopNavigation from './navigation/DesktopNavigation'
 import MobileNavigation from './navigation/MobileNavigation'
-import { UserProfileContext } from './UserProfileContext'
 
 export interface NavLinkItem {
   path: string
@@ -47,8 +46,7 @@ interface Props {
  * branding and a dropdown-menu with some account information.
  */
 const TopNavigation: FunctionComponent<Props> = ({ hideControls }) => {
-  const { logout } = useAuth()
-  const { profile } = useContext(UserProfileContext)
+  const { logout, me: profile } = useAuth()
 
   const userIsAdmin = profile?.isAdmin
 

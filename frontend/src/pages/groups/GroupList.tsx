@@ -1,10 +1,10 @@
 import cx from 'classnames'
-import { FunctionComponent, useContext, useMemo } from 'react'
+import { FunctionComponent, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Column, useSortBy, useTable } from 'react-table'
 import ButtonLink from '../../components/ButtonLink'
 import TableHeader from '../../components/table/TableHeader'
-import { UserProfileContext } from '../../components/UserProfileContext'
+import { useAuth } from '../../hooks/useAuth'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { AllGroupsQuery, useAllGroupsQuery } from '../../types/api-types'
 import { formatGroupType } from '../../utils/format'
@@ -35,7 +35,7 @@ const COLUMNS: Column<AllGroupsQuery['listGroups'][0]>[] = [
  * Display a list of all the groups in the database
  */
 const GroupList: FunctionComponent = () => {
-  const { profile } = useContext(UserProfileContext)
+  const { me: profile } = useAuth()
   const groupLeaderHasCreatedGroup = profile?.groupId != null
 
   const { data } = useAllGroupsQuery()
@@ -43,13 +43,8 @@ const GroupList: FunctionComponent = () => {
   // We must memoize the data for react-table to function properly
   const groups = useMemo(() => data?.listGroups || [], [data])
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({ columns: COLUMNS, data: groups }, useSortBy)
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable({ columns: COLUMNS, data: groups }, useSortBy)
 
   return (
     <LayoutWithNav>

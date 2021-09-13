@@ -1,9 +1,9 @@
-import { FunctionComponent, useContext } from 'react'
+import { FunctionComponent } from 'react'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import ConfirmationModal from '../../components/modal/ConfirmationModal'
-import { UserProfileContext } from '../../components/UserProfileContext'
+import { useAuth } from '../../hooks/useAuth'
 import useModalState from '../../hooks/useModalState'
 import { OfferStatus } from '../../types/api-types'
 
@@ -23,8 +23,8 @@ const OfferStatusSwitcher: FunctionComponent<Props> = ({
   currentOfferStatus,
   updateStatus,
 }) => {
-  const userProfile = useContext(UserProfileContext)
-  const userIsAdmin = userProfile.profile?.isAdmin
+  const { me: profile } = useAuth()
+  const userIsAdmin = profile?.isAdmin
 
   const [isSubmissionModalOpen, showSubmissionModal, hideSubmissionModal] =
     useModalState()

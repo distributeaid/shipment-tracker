@@ -1,10 +1,10 @@
-import { FunctionComponent, ReactNode, useContext, useEffect } from 'react'
+import { FunctionComponent, ReactNode, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
-import { UserProfileContext } from '../../components/UserProfileContext'
 import { COUNTRY_CODE_OPTIONS, GROUP_TYPE_OPTIONS } from '../../data/constants'
+import { useAuth } from '../../hooks/useAuth'
 import { GroupCreateInput, GroupQuery, GroupType } from '../../types/api-types'
 import { stripIdAndTypename } from '../../utils/types'
 
@@ -32,7 +32,7 @@ interface Props {
  * This component encapsulates a form for creating and editing groups.
  */
 const GroupForm: FunctionComponent<Props> = (props) => {
-  const { profile } = useContext(UserProfileContext)
+  const { me: profile } = useAuth()
 
   const {
     register,
