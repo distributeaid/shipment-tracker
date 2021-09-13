@@ -16,15 +16,18 @@ import sendVerificationTokenByEmail from '../../routes/password/token'
 import registerUser from '../../routes/register'
 import confirmRegistrationByEmail from '../../routes/register/confirm'
 import sendShipmentExportCsv from '../../sendShipmentExportCsv'
+import { addVersion } from '../addVersion'
 
 export const backend = ({
   omnibus,
   cookieSecret,
   origin,
+  version,
 }: {
   omnibus: EventEmitter
   origin: URL
   cookieSecret: string
+  version: string
 }): Express => {
   const app = express()
   /**
@@ -41,6 +44,8 @@ export const backend = ({
       credentials: true,
     }),
   )
+
+  app.use(addVersion(version))
 
   app.post('/register', registerUser(omnibus))
   app.post('/register/confirm', confirmRegistrationByEmail)
