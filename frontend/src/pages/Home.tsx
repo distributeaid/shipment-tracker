@@ -1,11 +1,10 @@
-import { useContext } from 'react'
-import { UserProfileContext } from '../components/UserProfileContext'
+import { useAuth } from '../hooks/useAuth'
 import LayoutWithNav from '../layouts/LayoutWithNav'
 import AdminHomePage from './home/AdminHomePage'
 import GroupLeaderHomePage from './home/GroupLeaderHomePage'
 
 const HomePage = () => {
-  const { profile } = useContext(UserProfileContext)
+  const { me: profile } = useAuth()
 
   const userIsGroupLeader = profile?.isAdmin === false
   const userIsAdmin = profile?.isAdmin

@@ -1,14 +1,14 @@
-import { FunctionComponent, useContext } from 'react'
+import { FunctionComponent } from 'react'
 import ButtonLink from '../../components/ButtonLink'
 import CheckIcon from '../../components/icons/CheckIcon'
 import CogIcon from '../../components/icons/CogIcon'
 import TruckIcon from '../../components/icons/TruckIcon'
 import InternalLink from '../../components/InternalLink'
-import { UserProfileContext } from '../../components/UserProfileContext'
+import { useAuth } from '../../hooks/useAuth'
 import ROUTES, { groupViewRoute } from '../../utils/routes'
 
 const GroupLeaderHomePage: FunctionComponent = () => {
-  const { profile } = useContext(UserProfileContext)
+  const { me: profile } = useAuth()
 
   const groupLeaderHasCreatedGroup = profile?.groupId != null
 

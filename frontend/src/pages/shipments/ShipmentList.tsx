@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { FunctionComponent, useContext, useMemo, useState } from 'react'
+import { FunctionComponent, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Column, useSortBy, useTable } from 'react-table'
 import Badge from '../../components/Badge'
@@ -8,8 +8,8 @@ import DropdownMenu from '../../components/DropdownMenu'
 import CheckboxField from '../../components/forms/CheckboxField'
 import Spinner from '../../components/Spinner'
 import TableHeader from '../../components/table/TableHeader'
-import { UserProfileContext } from '../../components/UserProfileContext'
 import { SHIPMENT_STATUS_OPTIONS } from '../../data/constants'
+import { useAuth } from '../../hooks/useAuth'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
   AllShipmentsQuery,
@@ -77,7 +77,7 @@ const getShipmentStatusOptions = (isAdmin = false) => {
 }
 
 const ShipmentList: FunctionComponent = () => {
-  const { profile } = useContext(UserProfileContext)
+  const { me: profile } = useAuth()
 
   const [shipmentStatuses, setShipmentStatuses] = useState(
     profile?.isAdmin

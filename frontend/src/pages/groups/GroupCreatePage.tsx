@@ -1,6 +1,6 @@
-import { FunctionComponent, useContext } from 'react'
+import { FunctionComponent } from 'react'
 import { useHistory } from 'react-router-dom'
-import { UserProfileContext } from '../../components/UserProfileContext'
+import { useAuth } from '../../hooks/useAuth'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
   AllGroupsDocument,
@@ -12,8 +12,7 @@ import { groupViewRoute } from '../../utils/routes'
 import GroupForm from './GroupForm'
 
 const GroupCreatePage: FunctionComponent = () => {
-  const { refetch: refreshUserGroupAssociation } =
-    useContext(UserProfileContext)
+  const { refreshMe } = useAuth()
   const history = useHistory()
 
   const [addGroup, { loading: mutationIsLoading, error: mutationError }] =
@@ -34,7 +33,7 @@ const GroupCreatePage: FunctionComponent = () => {
       // Because we cache the association between a group captain and their
       // group, we need to refresh that association when they create their first
       // group.
-      refreshUserGroupAssociation()
+      refreshMe()
 
       if (data) {
         const newGroupId = data.addGroup.id

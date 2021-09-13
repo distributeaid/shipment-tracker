@@ -1,10 +1,10 @@
-import { FunctionComponent, useContext } from 'react'
+import { FunctionComponent } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
 import ButtonLink from '../../components/ButtonLink'
 import InternalLink from '../../components/InternalLink'
 import TabLink from '../../components/tabs/TabLink'
 import TabList from '../../components/tabs/TabList'
-import { UserProfileContext } from '../../components/UserProfileContext'
+import { useAuth } from '../../hooks/useAuth'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { ShipmentStatus, useShipmentQuery } from '../../types/api-types'
 import { formatShipmentName } from '../../utils/format'
@@ -18,7 +18,7 @@ import ShipmentDetails from './ShipmentDetails'
 import ShipmentOffers from './ShipmentOffers'
 
 const ShipmentViewPage: FunctionComponent = () => {
-  const { profile } = useContext(UserProfileContext)
+  const { me: profile } = useAuth()
   const params = useParams<{ shipmentId: string }>()
   const shipmentId = parseInt(params.shipmentId, 10)
 

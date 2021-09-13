@@ -1,7 +1,10 @@
 import { generatePath } from 'react-router-dom'
 
-const ROUTES = {
+export const ROUTES = {
   HOME: '/',
+  REGISTER: '/register',
+  SEND_VERIFICATION_TOKEN_BY_EMAIL: '/lost-password',
+  SET_NEW_PASSWORD_USING_EMAIL_AND_TOKEN: '/password',
   ADMIN_ROOT: '/admin',
   APOLLO_DEMO: '/apollo-demo',
   GROUP_LIST: '/groups',
