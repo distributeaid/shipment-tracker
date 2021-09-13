@@ -60,6 +60,7 @@ export const authCookie = (
     secure: true,
     httpOnly: true,
     expires: new Date(Date.now() + lifetimeInMinutes * 60 * 1000),
+    sameSite: 'none',
   },
 ]
 
@@ -72,6 +73,7 @@ export const expireAuthCookie = (): [string, string, CookieOptions] => [
     secure: true,
     httpOnly: true,
     expires: new Date(Date.now() - 60 * 1000),
+    sameSite: 'none',
   },
 ]
 
