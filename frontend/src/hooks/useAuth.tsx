@@ -59,7 +59,10 @@ export const tokenRegex = /^[0-9]{6}$/
 export const emailRegEx = /.+@.+\..+/
 export const passwordRegEx = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/
 
-export const AuthProvider = ({ children }: PropsWithChildren<unknown>) => {
+export const AuthProvider = ({
+  children,
+  logoutUrl,
+}: PropsWithChildren<{ logoutUrl?: URL }>) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
@@ -100,8 +103,10 @@ export const AuthProvider = ({ children }: PropsWithChildren<unknown>) => {
       }).then(() => {
         setIsAuthenticated(false)
         setMe(undefined)
-        // Reload the page (no need to handle logout in the app)
-        document.location.reload()
+        const current = new URL(document.location.href)
+        document.location.href = (
+          logoutUrl ?? new URL(`${current.protocol}://${current.host}`)
+        ).toString()
       })
     },
     login: ({ email, password }) => {
