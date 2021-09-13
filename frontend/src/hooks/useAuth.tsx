@@ -105,7 +105,7 @@ export const AuthProvider = ({
         setMe(undefined)
         const current = new URL(document.location.href)
         document.location.href = (
-          logoutUrl ?? new URL(`${current.protocol}://${current.host}`)
+          logoutUrl ?? new URL(`${current.protocol}//${current.host}`)
         ).toString()
       })
     },
