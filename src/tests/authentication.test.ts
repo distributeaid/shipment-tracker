@@ -149,7 +149,11 @@ describe('User account API', () => {
 
       const cookieInfo = parseCookie(res.header['set-cookie'][0] as string)
       expect(cookieInfo[authCookieName]).toBeDefined()
-      expect(cookieInfo.options).toMatchObject({ Path: '/', HttpOnly: true })
+      expect(cookieInfo.options).toMatchObject({
+        Path: '/',
+        HttpOnly: true,
+        sameSite: 'none',
+      })
       const expiresIn =
         new Date(cookieInfo.options.Expires).getTime() - Date.now()
       expect(expiresIn).toBeLessThan(30 * 60 * 1000)
@@ -207,7 +211,11 @@ describe('User account API', () => {
           .expect(204)
         const cookieInfo = parseCookie(res.header['set-cookie'][0] as string)
         expect(cookieInfo[authCookieName]).toBeDefined()
-        expect(cookieInfo.options).toMatchObject({ Path: '/', HttpOnly: true })
+        expect(cookieInfo.options).toMatchObject({
+          Path: '/',
+          HttpOnly: true,
+          sameSite: 'none',
+        })
         const expiresIn =
           new Date(cookieInfo.options.Expires).getTime() - Date.now()
         expect(expiresIn).toBeLessThan(0) // Expires is in the past
