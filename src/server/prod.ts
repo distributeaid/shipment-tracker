@@ -13,7 +13,6 @@ import { backend } from './feat/backend'
 import { startExpressServer } from './feat/express'
 import { setUp as setUpEmails } from './feat/emails'
 import { URL } from 'url'
-import { addVersion } from './addVersion'
 
 const version = process.env.COMMIT_ID ?? '0.0.0-development'
 console.debug(`Launching version ${version}`)
@@ -42,9 +41,8 @@ const app = backend({
   omnibus,
   cookieSecret,
   origin,
+  version,
 })
-
-app.use(addVersion(version))
 
 startExpressServer(app)
 

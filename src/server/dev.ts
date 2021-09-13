@@ -22,15 +22,16 @@ const app = backend({
   omnibus,
   cookieSecret: process.env.COOKIE_SECRET ?? v4(),
   origin: new URL(process.env.CLIENT_URL || 'http://localhost:8080'),
+  version: 'development',
 })
 
 startExpressServer(app)
 
-const PUBLIC_DIR = path.join(__dirname, '../frontend/build')
+const PUBLIC_DIR = path.join(process.cwd(), 'frontend', 'build')
 
 // Serve static assets for the frontend
 getAllFilesSync(PUBLIC_DIR).forEach((file: string) => {
-  app.get(file, (req, res) => {
+  app.get(file, (_, res) => {
     res.sendFile(path.join(PUBLIC_DIR, file))
   })
 })
