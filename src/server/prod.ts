@@ -13,6 +13,7 @@ import { backend } from './feat/backend'
 import { startExpressServer } from './feat/express'
 import { setUp as setUpEmails } from './feat/emails'
 import { URL } from 'url'
+import { addVersion } from './addVersion'
 
 const omnibus = new EventEmitter()
 
@@ -39,6 +40,8 @@ const app = backend({
   cookieSecret,
   origin,
 })
+
+app.use(addVersion(process.env.COMMIT_ID ?? '0.0.0-development'))
 
 startExpressServer(app)
 
