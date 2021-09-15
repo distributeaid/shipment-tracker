@@ -1,20 +1,13 @@
-// tslint:disable:ordered-imports
-// Note: the order of these imports matters ...
-import '../loadEnv'
-
-// Initialize the models
-import '../sequelize'
-
-// ... but not for these
+import EventEmitter from 'events'
 import { createServer } from 'http'
 import path from 'path'
-import getAllFilesSync from '../getAllFilesSync'
-import { v4 } from 'uuid'
-import EventEmitter from 'events'
-import { backend } from './feat/backend'
-import { startExpressServer } from './feat/express'
-import { setUp as setUpEmails } from './feat/emails'
 import { URL } from 'url'
+import { v4 } from 'uuid'
+import getAllFilesSync from '../getAllFilesSync'
+import '../sequelize'
+import { backend } from './feat/backend'
+import { setUp as setUpEmails } from './feat/emails'
+import { startExpressServer } from './feat/express'
 
 const omnibus = new EventEmitter()
 

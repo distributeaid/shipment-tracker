@@ -147,16 +147,6 @@ function initialize_db() {
   echo
 }
 
-function copy_env_file() {
-  if [ ! -f ".env" ]; then
-    action "Copying .env.example to .env"
-    cp -r .env.example .env
-    echo "  Please edit .env to taste."
-  else
-    ok ".env file already exists"
-  fi
-}
-
 ###########################
 # The actual setup
 ###########################
@@ -181,8 +171,6 @@ if [[ -z "${CI:-}" ]]; then
 else
   ok "Running on CI, skipping Postgres setup"
 fi
-
-copy_env_file
 
 # Build frontend
 yarn run codegen

@@ -1,5 +1,7 @@
+# See https://direnv.net/ about how to use this file.
+
 # The URL of the web app, used to restrict CORS requests
-CLIENT_URL="http://localhost:8080"
+# CLIENT_URL="http://localhost:8080"
 
 # Fill in to enable email sending
 # SMTP_FROM=user@example.com
