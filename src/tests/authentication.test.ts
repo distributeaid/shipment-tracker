@@ -149,7 +149,7 @@ describe('User account API', () => {
       expect(cookieInfo.options).toMatchObject({
         Path: '/',
         HttpOnly: true,
-        sameSite: 'none',
+        SameSite: 'None',
       })
       const expiresIn =
         new Date(cookieInfo.options.Expires).getTime() - Date.now()
@@ -211,7 +211,7 @@ describe('User account API', () => {
         expect(cookieInfo.options).toMatchObject({
           Path: '/',
           HttpOnly: true,
-          sameSite: 'none',
+          SameSite: 'None',
         })
         const expiresIn =
           new Date(cookieInfo.options.Expires).getTime() - Date.now()
