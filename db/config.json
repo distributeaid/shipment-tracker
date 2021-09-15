@@ -14,8 +14,8 @@
     "dialect": "postgres"
   },
   "test": {
-    "username": "distributeaid",
-    "password": null,
+    "username": "distributeaid_test",
+    "password": "distributeaid_test",
     "database": "distributeaid_test",
     "host": "127.0.0.1",
     "dialect": "postgres"
