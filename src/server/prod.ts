@@ -1,18 +1,11 @@
-// tslint:disable:ordered-imports
-// Note: the order of these imports matters ...
-import '../loadEnv'
-
-// Initialize the models
-import '../sequelize'
-
-// ... but not for these
-import { createServer } from 'http'
-import { v4 } from 'uuid'
 import EventEmitter from 'events'
-import { backend } from './feat/backend'
-import { startExpressServer } from './feat/express'
-import { setUp as setUpEmails } from './feat/emails'
+import { createServer } from 'http'
 import { URL } from 'url'
+import { v4 } from 'uuid'
+import '../sequelize'
+import { backend } from './feat/backend'
+import { setUp as setUpEmails } from './feat/emails'
+import { startExpressServer } from './feat/express'
 
 const version = process.env.COMMIT_ID ?? '0.0.0-development'
 console.debug(`Launching version ${version}`)
