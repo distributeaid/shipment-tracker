@@ -46,6 +46,22 @@ If the pull request does not require additional changes, the reviewer should mer
 
 ## Dev setup
 
+### Using a DevContainer
+
+We provide a pre-configured environment which is configured so you are ready to run the test suite. After your DevContainer has been bootstrapped, you can run the tests by opening a Terminal in VS Code in the browser (Select **View** -> **Terminal**, or press Ctrl+`), and then run the command:
+
+    npm test
+
+#### Using the DevContainer with GitHub CodeSpaces in your browser
+
+You can launch a dedicated environment for directly from GitHub using Codespaces: select the green **Code** dropdown and then **New codespace**. [Learn more about Codespaces](https://github.com/features/codespaces).
+
+#### Using the Devcontainer with Visual Studio Code locally
+
+You can launch a dedicated environment after cloning the project in [Visual Studio Code](https://code.visualstudio.com/): follow the [installation instructions](https://code.visualstudio.com/docs/remote/containers) (you need the [Remote Development Extension pack](https://aka.ms/vscode-remote/download/extension), then select the green **Remote** icon and then **Reopen in Container**. [Learn more about Remove development in Containers](https://code.visualstudio.com/docs/remote/containers-tutorial).
+
+### Using your local machine
+
 Install node.js v16:
 
 - Install with [nodenv](https://github.com/nodenv/nodenv)
