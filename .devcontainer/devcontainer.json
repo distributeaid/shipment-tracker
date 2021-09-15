@@ -3,15 +3,12 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
-  "settings": {
-    "terminal.integrated.shell.linux": "/bin/zsh"
-  },
   "extensions": [
     "esbenp.prettier-vscode",
     "jpoissonnier.vscode-styled-components",
     "graphql.vscode-graphql"
   ],
   "forwardPorts": [3000],
-  "postCreateCommand": "script/dev_setup && yarn dev",
+  "postCreateCommand": "sudo /etc/init.d/postgresql start && yarn run build && npx sequelize-cli --env=test db:migrate",
   "remoteUser": "node"
 }

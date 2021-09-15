@@ -9,3 +9,9 @@ RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo 
 # Add role for user node
 RUN /etc/init.d/postgresql start \
     && sudo -u postgres createuser -s node
+
+# Add role and db for user distributeaid_test
+RUN /etc/init.d/postgresql start \
+    && sudo -u postgres createuser -s distributeaid_test \
+    && sudo -u postgres psql -c "ALTER USER distributeaid_test PASSWORD 'distributeaid_test';" \
+    && sudo -u postgres createdb distributeaid_test
