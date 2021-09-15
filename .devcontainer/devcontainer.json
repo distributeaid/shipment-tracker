@@ -9,6 +9,6 @@
     "graphql.vscode-graphql"
   ],
   "forwardPorts": [3000],
-  "postCreateCommand": "sudo /etc/init.d/postgresql start && yarn run build && npx sequelize-cli --env=test db:migrate",
+  "postCreateCommand": "sudo /etc/init.d/postgresql start && yarn install && yarn run build && npx sequelize-cli --env=test db:migrate",
   "remoteUser": "node"
 }
