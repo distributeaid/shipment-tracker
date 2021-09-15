@@ -48,9 +48,22 @@ If the pull request does not require additional changes, the reviewer should mer
 
 ### Using a DevContainer
 
-We provide a pre-configured environment which is configured so you are ready to run the test suite. After your DevContainer has been bootstrapped, you can run the tests by opening a Terminal in VS Code in the browser (Select **View** -> **Terminal**, or press Ctrl+`), and then run the command:
+We provide a pre-configured environment which is configured so you are ready to run the test suite and the development server.
+
+After your DevContainer has been bootstrapped, you can run the tests by opening a Terminal in VS Code in the browser (Select **View** -> **Terminal**, or press Ctrl+`), and then run the command:
 
     npm test
+
+You can also run the development server and the frontend. Open a new terminal and start the development server:
+
+    yarn dev
+
+Then, open a second terminal, navigate to the `./frontend` directory and run:
+
+    yarn install --frozen-lockfile
+    yarn start
+
+You can click on the printed URLs to open them in a browser.
 
 #### Using the DevContainer with GitHub CodeSpaces in your browser
 
