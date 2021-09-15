@@ -11,10 +11,12 @@ import { startExpressServer } from './feat/express'
 
 const omnibus = new EventEmitter()
 
+const origin = new URL(process.env.ORIGIN || 'http://localhost:8080')
+
 const app = backend({
   omnibus,
   cookieSecret: process.env.COOKIE_SECRET ?? v4(),
-  origin: new URL(process.env.CLIENT_URL || 'http://localhost:8080'),
+  origin,
   version: 'development',
 })
 
@@ -36,11 +38,12 @@ app.get('*', (req, res) => {
 
 const httpServer = createServer(app)
 const port = parseInt(process.env.PORT ?? '3000', 10)
-httpServer.listen({ port }, (): void =>
+httpServer.listen({ port }, (): void => {
   console.log(
     `\n🚀      GraphQL is now running on http://localhost:${port}/graphql`,
-  ),
-)
+  )
+  console.log(`🚀      Origin is ${origin}`)
+})
 
 // Configure email sending
 setUpEmails(omnibus)

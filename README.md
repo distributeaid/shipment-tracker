@@ -50,6 +50,20 @@ If the pull request does not require additional changes, the reviewer should mer
 
 We provide a pre-configured environment which is configured so you are ready to run the test suite and the development server.
 
+#### Using the DevContainer with GitHub CodeSpaces in your browser
+
+You can launch a dedicated environment for directly from GitHub using Codespaces: select the green **Code** dropdown and then **New codespace**. [Learn more about Codespaces](https://github.com/features/codespaces).
+
+After your DevContainer has been bootstrapped, you can run the tests by opening a Terminal in VS Code in the browser (Select **View** -> **Terminal**, or press Ctrl+`), and then run the command:
+
+    npm test
+
+Because of limitiations with the networking (specifically setting up the neccessary hostnames for proper CORS), running the development server in codespaces is not yet possible.
+
+#### Using the Devcontainer with Visual Studio Code locally
+
+You can launch a dedicated environment after cloning the project in [Visual Studio Code](https://code.visualstudio.com/): follow the [installation instructions](https://code.visualstudio.com/docs/remote/containers) (you need the [Remote Development Extension pack](https://aka.ms/vscode-remote/download/extension), then select the green **Remote** icon and then **Reopen in Container**. [Learn more about Remove development in Containers](https://code.visualstudio.com/docs/remote/containers-tutorial).
+
 After your DevContainer has been bootstrapped, you can run the tests by opening a Terminal in VS Code in the browser (Select **View** -> **Terminal**, or press Ctrl+`), and then run the command:
 
     npm test
@@ -64,14 +78,6 @@ Then, open a second terminal, navigate to the `./frontend` directory and run:
     yarn start
 
 You can click on the printed URLs to open them in a browser.
-
-#### Using the DevContainer with GitHub CodeSpaces in your browser
-
-You can launch a dedicated environment for directly from GitHub using Codespaces: select the green **Code** dropdown and then **New codespace**. [Learn more about Codespaces](https://github.com/features/codespaces).
-
-#### Using the Devcontainer with Visual Studio Code locally
-
-You can launch a dedicated environment after cloning the project in [Visual Studio Code](https://code.visualstudio.com/): follow the [installation instructions](https://code.visualstudio.com/docs/remote/containers) (you need the [Remote Development Extension pack](https://aka.ms/vscode-remote/download/extension), then select the green **Remote** icon and then **Reopen in Container**. [Learn more about Remove development in Containers](https://code.visualstudio.com/docs/remote/containers-tutorial).
 
 ### Using your local machine
 

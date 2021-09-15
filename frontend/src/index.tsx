@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom'
 import App from './AppRoot'
 import './stylesheets/index.output.css'
 
+console.log('endpoint', process.env.REACT_APP_SERVER_URL)
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
