@@ -21,3 +21,8 @@ RUN /etc/init.d/postgresql start \
     && sudo -u postgres createuser -s distributeaid \
     && sudo -u postgres psql -c "ALTER USER distributeaid PASSWORD 'distributeaid';" \
     && sudo -u postgres createdb distributeaid_dev
+
+# Install direnv
+RUN apt-get -y install direnv \
+    && echo 'eval "$(direnv hook bash)"' >> /home/node/.bashrc \
+    && echo 'eval "$(direnv hook zsh)"' >> /home/node/.zshrc
