@@ -11,8 +11,8 @@ const pass = process.env.SMTP_PASSWORD
 const fromEmail = process.env.SMTP_FROM
 
 const canSendEmails =
-  [host, port, secure, user, pass, fromEmail].find((v) => v === undefined) ===
-  undefined
+  [host, port, secure, user, pass, fromEmail].filter((v) => v === undefined)
+    .length === 0
 
 export const transportFromConfig = (
   debug?: (...args: any[]) => void,
