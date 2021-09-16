@@ -3,6 +3,7 @@ import { UserInputError } from 'apollo-server-express'
 import bcrypt from 'bcrypt'
 import EventEmitter from 'events'
 import { Request, Response } from 'express'
+import { events } from '../events'
 import { generateDigits } from '../generateDigits'
 import { trimAll } from '../input-validation/trimAll'
 import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
@@ -54,7 +55,7 @@ const registerUser =
         userAccountId: user.id,
         token: generateDigits(6),
       })
-      omnibus.emit('user_registered', user, token)
+      omnibus.emit(events.user_registered, user, token)
       return response.status(202).end()
     } catch (error) {
       if ((error as Error).name === 'SequelizeUniqueConstraintError') {

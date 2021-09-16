@@ -1,5 +1,6 @@
 import EventEmitter from 'events'
 import nodemailer, { Transporter } from 'nodemailer'
+import { events } from '../events'
 import UserAccount from '../models/user_account'
 import VerificationToken from '../models/verification_token'
 
@@ -59,17 +60,19 @@ export const appMailer = (
   }: { transport: Transporter<unknown>; fromEmail: string },
   debug?: (...args: any[]) => void,
 ): void => {
-  omnibus.on(
-    'user_registered',
-    async (user: UserAccount, token: VerificationToken) => {
-      debug?.(`> ${user.email}: confirmation token ${token.token}`)
-      try {
-        await transport.sendMail(verificationEmail(user, token, fromEmail))
-        debug?.('> message sent')
-      } catch (error) {
-        console.error(`Failed to sent email: ${(error as Error).message}`)
-        console.error(error)
-      }
-    },
-  )
+  const sendEmailVerificationToken = async (
+    user: UserAccount,
+    token: VerificationToken,
+  ) => {
+    debug?.(`> ${user.email}: confirmation token ${token.token}`)
+    try {
+      await transport.sendMail(verificationEmail(user, token, fromEmail))
+      debug?.('> message sent')
+    } catch (error) {
+      console.error(`Failed to sent email: ${(error as Error).message}`)
+      console.error(error)
+    }
+  }
+  omnibus.on(events.user_registered, sendEmailVerificationToken)
+  omnibus.on(events.user_password_reset_requested, sendEmailVerificationToken)
 }

@@ -62,7 +62,7 @@ describe('User account API', () => {
     app.post('/register', registerUser(omnibus, 1))
     app.post('/register/confirm', confirmRegistration)
     app.post('/login', login)
-    app.post('/password/token', sendVerificationTokenByEmail)
+    app.post('/password/token', sendVerificationTokenByEmail(omnibus))
     app.post('/password/new', setNewPasswordUsingTokenAndEmail(1))
     app.get('/me', cookieAuth, getProfile)
     app.post('/me/password', cookieAuth, resetPassword(1))

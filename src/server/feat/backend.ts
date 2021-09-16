@@ -50,7 +50,7 @@ export const backend = ({
   app.post('/register', registerUser(omnibus))
   app.post('/register/confirm', confirmRegistrationByEmail)
   app.post('/login', login)
-  app.post('/password/token', sendVerificationTokenByEmail)
+  app.post('/password/token', sendVerificationTokenByEmail(omnibus))
   app.post('/password/new', setNewPasswordUsingTokenAndEmail())
   app.get('/me', cookieAuth, getProfile)
   app.post('/me/cookie', cookieAuth, renewCookie)
