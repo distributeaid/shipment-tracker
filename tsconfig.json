@@ -11,5 +11,5 @@
     "strict": true,
     "target": "ES6"
   },
-  "include": ["src/**/*", "db/migrations/**/*"]
+  "include": ["src/**/*", "cli/**/*", "db/migrations/**/*"]
 }

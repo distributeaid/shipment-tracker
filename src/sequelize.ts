@@ -44,6 +44,7 @@ if (config.use_env_variable !== undefined) {
   sequelize = new Sequelize(connectionUrl, {
     ...COMMON_CONFIG,
     dialectOptions: config.dialectOptions,
+    logging: debug,
   })
 } else {
   sequelize = new Sequelize({
