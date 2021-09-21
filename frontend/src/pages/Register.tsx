@@ -1,14 +1,15 @@
 import { FunctionComponent, useState } from 'react'
 import { Redirect } from 'react-router-dom'
+import Error from '../components/alert/Error'
 import DistributeAidWordmark from '../components/branding/DistributeAidWordmark'
-import FormNavigation from '../components/forms/FormNavigation'
+import FormFooter from '../components/forms/FormFooter'
 import TextField from '../components/forms/TextField'
 import InternalLink from '../components/InternalLink'
-import { emailRegEx, passwordRegEx, useAuth } from '../hooks/useAuth'
+import { AuthError, emailRegEx, passwordRegEx, useAuth } from '../hooks/useAuth'
 import ROUTES from '../utils/routes'
 
 const RegisterPage: FunctionComponent = () => {
-  const { register, isRegistered } = useAuth()
+  const { register, isRegistered, error: authError } = useAuth()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -28,7 +29,12 @@ const RegisterPage: FunctionComponent = () => {
         </div>
         <div className="bg-white rounded p-6">
           <h1 className="text-2xl mb-4 text-center">Register</h1>
-          <form>
+          <p>Please provide your details in order to register a new account.</p>
+          <p className="mt-2">
+            If you already have an account, you can{' '}
+            <InternalLink to={ROUTES.HOME}>log in here</InternalLink>.
+          </p>
+          <form className="mt-4">
             <TextField
               label="Your name"
               type="text"
@@ -63,31 +69,34 @@ const RegisterPage: FunctionComponent = () => {
               value={password2}
               onChange={({ target: { value } }) => setPassword2(value)}
             />
-            <button
-              className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
-              type="button"
-              onClick={() => {
-                register({
-                  name,
-                  email,
-                  password,
-                })
-              }}
-              disabled={!isFormValid}
-            >
-              Register
-            </button>
-            <FormNavigation>
-              <InternalLink to={ROUTES.HOME}>Login</InternalLink>
-              <InternalLink to={ROUTES.SET_NEW_PASSWORD_USING_EMAIL_AND_TOKEN}>
-                Set new password
-              </InternalLink>
-            </FormNavigation>
+            <FormFooter>
+              <button
+                className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
+                type="button"
+                onClick={() => {
+                  register({
+                    name,
+                    email,
+                    password,
+                  })
+                }}
+                disabled={!isFormValid}
+              >
+                Register
+              </button>
+              {authError?.type === AuthError.REGISTER_FAILED && (
+                <Error className="mt-2">
+                  Sorry, registration failed: {authError.httpStatusCode}{' '}
+                  {authError?.info}.
+                </Error>
+              )}
+            </FormFooter>
           </form>
+
           {isRegistered && (
             <Redirect
               to={{
-                pathname: '/register/confirm',
+                pathname: ROUTES.CONFIRM_EMAIL_WITH_TOKEN,
                 state: { email },
               }}
             />

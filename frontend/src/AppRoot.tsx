@@ -12,7 +12,6 @@ import GroupList from './pages/groups/GroupList'
 import GroupViewPage from './pages/groups/GroupViewPage'
 import HomePage from './pages/Home'
 import KitchenSink from './pages/KitchenSink'
-import LoadingPage from './pages/LoadingPage'
 import LoginPage from './pages/Login'
 import RequestTokenPage from './pages/lost-password/RequestToken'
 import SetNewPasswordPage from './pages/lost-password/SetNewPassword'
@@ -29,7 +28,7 @@ import ROUTES from './utils/routes'
 const isDev = process.env.NODE_ENV === 'development'
 
 const App = () => {
-  const { isLoading, isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth()
 
   return (
     <ApolloProvider client={apolloClient}>
@@ -40,16 +39,11 @@ const App = () => {
               <KitchenSink />
             </Route>
           )}
-          {isLoading && (
-            <Route>
-              <LoadingPage />
-            </Route>
-          )}
           <Route path={ROUTES.HOME} exact>
             {isAuthenticated ? <HomePage /> : <LoginPage />}
           </Route>
           {!isAuthenticated && (
-            <>
+            <Switch>
               <Route path={ROUTES.REGISTER} exact>
                 <RegisterPage />
               </Route>
@@ -59,11 +53,11 @@ const App = () => {
               <Route path={ROUTES.SET_NEW_PASSWORD_USING_EMAIL_AND_TOKEN} exact>
                 <SetNewPasswordPage />
               </Route>
-            </>
+              <Route path={ROUTES.CONFIRM_EMAIL_WITH_TOKEN} exact>
+                <ConfirmEmailWithTokenPage />
+              </Route>
+            </Switch>
           )}
-          <Route path={ROUTES.CONFIRM_EMAIL_WITH_TOKEN} exact>
-            <ConfirmEmailWithTokenPage />
-          </Route>
           <PrivateRoute path={ROUTES.ADMIN_ROOT} exact>
             <AdminPage />
           </PrivateRoute>

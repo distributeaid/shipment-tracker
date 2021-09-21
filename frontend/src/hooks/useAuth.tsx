@@ -14,6 +14,20 @@ export type UserProfile = {
   groupId?: number
 }
 
+export enum AuthError {
+  LOGIN_FAILED,
+  REGISTER_FAILED,
+  SEND_VERIFICATION_TOKEN_BY_EMAIL_FAILED,
+  SET_NEW_PASSWORD_USING_TOKEN_AND_EMAIL_FAILED,
+  CONFIRM_FAILED,
+}
+
+type ErrorInfo = {
+  type: AuthError
+  info: string
+  httpStatusCode: number
+}
+
 type AuthInfo = {
   isLoading: boolean
   isAuthenticated: boolean
@@ -22,6 +36,7 @@ type AuthInfo = {
   me?: UserProfile
   logout: () => void
   login: (_: { email: string; password: string }) => void
+  error?: ErrorInfo
   register: (_: { name: string; email: string; password: string }) => void
   sendVerificationTokenByEmail: (_: { email: string }) => void
   setNewPasswordUsingTokenAndEmail: (_: {
@@ -40,6 +55,7 @@ export const AuthContext = createContext<AuthInfo>({
   isConfirmed: false,
   logout: () => undefined,
   login: () => undefined,
+  error: undefined,
   sendVerificationTokenByEmail: () => undefined,
   setNewPasswordUsingTokenAndEmail: () => undefined,
   register: () => undefined,
@@ -67,6 +83,7 @@ export const AuthProvider = ({
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isConfirmed, setIsConfirmed] = useState(false)
+  const [error, setError] = useState<ErrorInfo>()
   const [me, setMe] = useState<UserProfile>()
 
   const fetchMe = useCallback(
@@ -100,7 +117,8 @@ export const AuthProvider = ({
       fetch(`${SERVER_URL}/me/cookie`, {
         method: 'DELETE',
         credentials: 'include',
-      }).then(() => {
+      }).then(({ ok }) => {
+        if (!ok) throw new Error(`Failed to logout!`)
         setIsAuthenticated(false)
         setMe(undefined)
         const current = new URL(document.location.href)
@@ -111,6 +129,7 @@ export const AuthProvider = ({
     },
     login: ({ email, password }) => {
       setIsLoading(true)
+      setError(undefined)
       fetch(`${SERVER_URL}/login`, {
         method: 'POST',
         credentials: 'include',
@@ -119,8 +138,14 @@ export const AuthProvider = ({
         },
         body: JSON.stringify({ email, password }),
       })
-        .then(() => {
-          setIsAuthenticated(true)
+        .then(({ ok, statusText, status: httpStatusCode }) => {
+          setIsAuthenticated(ok)
+          if (!ok)
+            setError({
+              type: AuthError.LOGIN_FAILED,
+              info: statusText,
+              httpStatusCode,
+            })
           setIsLoading(false)
         })
         .catch((err) => {
@@ -128,8 +153,10 @@ export const AuthProvider = ({
           setIsLoading(false)
         })
     },
+    error,
     register: ({ name, email, password }) => {
       setIsLoading(true)
+      setError(undefined)
       fetch(`${SERVER_URL}/register`, {
         method: 'POST',
         headers: {
@@ -137,9 +164,15 @@ export const AuthProvider = ({
         },
         body: JSON.stringify({ email, password, name }),
       })
-        .then(() => {
+        .then(({ ok, statusText, status: httpStatusCode }) => {
           setIsLoading(false)
-          setIsRegistered(true)
+          setIsRegistered(ok)
+          if (!ok)
+            setError({
+              type: AuthError.REGISTER_FAILED,
+              info: statusText,
+              httpStatusCode,
+            })
         })
         .catch((err) => {
           console.error(err)
@@ -148,6 +181,7 @@ export const AuthProvider = ({
     },
     sendVerificationTokenByEmail: ({ email }) => {
       setIsLoading(true)
+      setError(undefined)
       fetch(`${SERVER_URL}/password/token`, {
         method: 'POST',
         headers: {
@@ -155,8 +189,14 @@ export const AuthProvider = ({
         },
         body: JSON.stringify({ email }),
       })
-        .then(() => {
+        .then(({ ok, statusText, status: httpStatusCode }) => {
           setIsLoading(false)
+          if (!ok)
+            setError({
+              type: AuthError.SEND_VERIFICATION_TOKEN_BY_EMAIL_FAILED,
+              info: statusText,
+              httpStatusCode,
+            })
         })
         .catch((err) => {
           console.error(err)
@@ -165,6 +205,7 @@ export const AuthProvider = ({
     },
     setNewPasswordUsingTokenAndEmail: ({ email, password, token }) => {
       setIsLoading(true)
+      setError(undefined)
       fetch(`${SERVER_URL}/password/new`, {
         method: 'POST',
         headers: {
@@ -172,8 +213,14 @@ export const AuthProvider = ({
         },
         body: JSON.stringify({ email, password, token }),
       })
-        .then(() => {
+        .then(({ ok, statusText, status: httpStatusCode }) => {
           setIsLoading(false)
+          if (!ok)
+            setError({
+              type: AuthError.SET_NEW_PASSWORD_USING_TOKEN_AND_EMAIL_FAILED,
+              info: statusText,
+              httpStatusCode,
+            })
         })
         .catch((err) => {
           console.error(err)
@@ -182,6 +229,7 @@ export const AuthProvider = ({
     },
     confirm: ({ email, token }) => {
       setIsLoading(true)
+      setError(undefined)
       fetch(`${SERVER_URL}/register/confirm`, {
         method: 'POST',
         headers: {
@@ -189,9 +237,15 @@ export const AuthProvider = ({
         },
         body: JSON.stringify({ email, token }),
       })
-        .then(() => {
+        .then(({ ok, statusText, status: httpStatusCode }) => {
           setIsLoading(false)
-          setIsConfirmed(true)
+          setIsConfirmed(ok)
+          if (!ok)
+            setError({
+              type: AuthError.CONFIRM_FAILED,
+              info: statusText,
+              httpStatusCode,
+            })
         })
         .catch((err) => {
           console.error(err)

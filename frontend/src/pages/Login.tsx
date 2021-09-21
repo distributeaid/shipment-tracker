@@ -1,13 +1,17 @@
 import { FunctionComponent, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import Error from '../components/alert/Error'
+import Success from '../components/alert/Success'
 import DistributeAidWordmark from '../components/branding/DistributeAidWordmark'
-import FormNavigation from '../components/forms/FormNavigation'
+import FormFooter from '../components/forms/FormFooter'
 import TextField from '../components/forms/TextField'
 import InternalLink from '../components/InternalLink'
-import { emailRegEx, passwordRegEx, useAuth } from '../hooks/useAuth'
+import { AuthError, emailRegEx, passwordRegEx, useAuth } from '../hooks/useAuth'
 import ROUTES from '../utils/routes'
 
 const LoginPage: FunctionComponent = () => {
-  const { login } = useAuth()
+  const { state } = useLocation<{ email_confirmation_success?: boolean }>()
+  const { login, isLoading, error: authError } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -21,11 +25,21 @@ const LoginPage: FunctionComponent = () => {
         </div>
         <div className="bg-white rounded p-6">
           <h1 className="text-2xl mb-4 text-center">Shipment Tracker</h1>
-          <p className="mb-6">
+          {state?.email_confirmation_success && (
+            <Success className="mb-2">
+              <p>Email confirmation successfull.</p>
+              <p>You can now log in!</p>
+            </Success>
+          )}
+          <p>
             Welcome to Distribute Aid's shipment tracker! Please log in to
             continue.
           </p>
-          <form>
+          <p className="mt-2">
+            If you don't have an account, you can{' '}
+            <InternalLink to={ROUTES.REGISTER}>register here</InternalLink>.
+          </p>
+          <form className="mt-4">
             <TextField
               label="email"
               type="email"
@@ -33,6 +47,7 @@ const LoginPage: FunctionComponent = () => {
               autoComplete="email"
               value={email}
               onChange={({ target: { value } }) => setEmail(value)}
+              disabled={isLoading}
             />
             <TextField
               label="password"
@@ -41,21 +56,27 @@ const LoginPage: FunctionComponent = () => {
               autoComplete="password"
               value={password}
               onChange={({ target: { value } }) => setPassword(value)}
+              disabled={isLoading}
             />
-            <button
-              className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
-              type="button"
-              onClick={() => login({ email, password })}
-              disabled={!isFormValid}
-            >
-              Log in
-            </button>
-            <FormNavigation>
-              <InternalLink to={ROUTES.REGISTER}>Register</InternalLink>
+            <p>
+              Lost your password?{' '}
               <InternalLink to={ROUTES.SEND_VERIFICATION_TOKEN_BY_EMAIL}>
-                Lost password
+                Reset it here.
               </InternalLink>
-            </FormNavigation>
+            </p>
+            <FormFooter>
+              <button
+                className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
+                type="button"
+                onClick={() => login({ email, password })}
+                disabled={!isFormValid || isLoading}
+              >
+                Log in
+              </button>
+              {authError?.type === AuthError.LOGIN_FAILED && (
+                <Error className="mt-2">Sorry, could not log you in.</Error>
+              )}
+            </FormFooter>
           </form>
         </div>
       </div>

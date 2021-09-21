@@ -1,12 +1,17 @@
 import { FunctionComponent, useState } from 'react'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useLocation } from 'react-router-dom'
+import Error from '../components/alert/Error'
+import Success from '../components/alert/Success'
 import DistributeAidWordmark from '../components/branding/DistributeAidWordmark'
+import FormFooter from '../components/forms/FormFooter'
 import TextField from '../components/forms/TextField'
-import { emailRegEx, tokenRegex, useAuth } from '../hooks/useAuth'
+import { AuthError, emailRegEx, tokenRegex, useAuth } from '../hooks/useAuth'
+import ROUTES from '../utils/routes'
 
 const ConfirmEmailWithTokenPage: FunctionComponent = () => {
-  const { confirm, isConfirmed } = useAuth()
-  const [email, setEmail] = useState('')
+  const { state } = useLocation<{ email?: string }>()
+  const { confirm, isConfirmed, error: authError } = useAuth()
+  const [email, setEmail] = useState(state?.email ?? '')
   const [token, setToken] = useState('')
 
   const formValid = emailRegEx.test(email) && tokenRegex.test(token)
@@ -19,9 +24,17 @@ const ConfirmEmailWithTokenPage: FunctionComponent = () => {
         </div>
         <div className="bg-white rounded p-6">
           <h1 className="text-2xl mb-4 text-center">Shipment Tracker</h1>
-          <p className="mb-6">
-            Welcome to Distribute Aid's shipment tracker! Please log in to
-            continue.
+          {state?.email !== undefined && (
+            <Success>
+              <p>Registration successfull.</p>
+              <p>
+                Please check your inbox for <code>{state?.email}</code>!
+              </p>
+            </Success>
+          )}
+          <p className="mt-4 mb-6">
+            In order to complete your registration, please provide the token you
+            have received by email.
           </p>
           <form>
             <TextField
@@ -40,22 +53,30 @@ const ConfirmEmailWithTokenPage: FunctionComponent = () => {
               pattern="^[0-9]{6}"
               onChange={({ target: { value } }) => setToken(value)}
             />
-            <button
-              className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
-              type="button"
-              onClick={() => {
-                confirm({ email, token })
-              }}
-              disabled={!formValid}
-            >
-              Verify
-            </button>
+            <FormFooter>
+              <button
+                className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
+                type="button"
+                onClick={() => {
+                  confirm({ email, token })
+                }}
+                disabled={!formValid}
+              >
+                Verify
+              </button>
+              {authError?.type === AuthError.CONFIRM_FAILED && (
+                <Error className="mt-2">
+                  Sorry, verification failed: {authError.httpStatusCode}{' '}
+                  {authError?.info}.
+                </Error>
+              )}
+            </FormFooter>
           </form>
           {isConfirmed && (
             <Redirect
               to={{
-                pathname: '/',
-                state: { email },
+                pathname: ROUTES.HOME,
+                state: { email_confirmation_success: true },
               }}
             />
           )}
