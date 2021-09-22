@@ -10,10 +10,16 @@ import { AuthError, emailRegEx, passwordRegEx, useAuth } from '../hooks/useAuth'
 import ROUTES from '../utils/routes'
 
 const LoginPage: FunctionComponent = () => {
-  const { state } = useLocation<{ email_confirmation_success?: boolean }>()
-  const { login, isLoading, error: authError } = useAuth()
-  const [email, setEmail] = useState('')
+  const { state } = useLocation<{
+    email_confirmation_success?: boolean
+    password_change_success?: boolean
+    email?: string
+  }>()
+  const { login } = useAuth()
+  const [email, setEmail] = useState(state?.email ?? '')
   const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<AuthError>()
 
   const isFormValid = emailRegEx.test(email) && passwordRegEx.test(password)
 
@@ -28,6 +34,12 @@ const LoginPage: FunctionComponent = () => {
           {state?.email_confirmation_success && (
             <Success className="mb-2">
               <p>Email confirmation successfull.</p>
+              <p>You can now log in!</p>
+            </Success>
+          )}
+          {state?.password_change_success && (
+            <Success className="mb-2">
+              <p>Password changed successfully.</p>
               <p>You can now log in!</p>
             </Success>
           )}
@@ -68,12 +80,18 @@ const LoginPage: FunctionComponent = () => {
               <button
                 className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
                 type="button"
-                onClick={() => login({ email, password })}
+                onClick={() => {
+                  setIsLoading(true)
+                  setError(undefined)
+                  login({ email, password })
+                    .catch(setError)
+                    .finally(() => setIsLoading(false))
+                }}
                 disabled={!isFormValid || isLoading}
               >
                 Log in
               </button>
-              {authError?.type === AuthError.LOGIN_FAILED && (
+              {error !== undefined && (
                 <Error className="mt-2">Sorry, could not log you in.</Error>
               )}
             </FormFooter>

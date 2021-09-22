@@ -1,14 +1,17 @@
 import { FunctionComponent, useState } from 'react'
+import { Redirect } from 'react-router'
+import Error from '../../components/alert/Error'
 import DistributeAidWordmark from '../../components/branding/DistributeAidWordmark'
-import FormNavigation from '../../components/forms/FormNavigation'
+import FormFooter from '../../components/forms/FormFooter'
 import TextField from '../../components/forms/TextField'
-import InternalLink from '../../components/InternalLink'
-import { emailRegEx, useAuth } from '../../hooks/useAuth'
+import { AuthError, emailRegEx, useAuth } from '../../hooks/useAuth'
 import ROUTES from '../../utils/routes'
 
 const RequestTokenPage: FunctionComponent = () => {
   const { sendVerificationTokenByEmail } = useAuth()
   const [email, setEmail] = useState('')
+  const [error, setError] = useState<AuthError>()
+  const [emailSent, setEmailSent] = useState<boolean>(false)
 
   const isFormValid = emailRegEx.test(email)
 
@@ -19,7 +22,10 @@ const RequestTokenPage: FunctionComponent = () => {
           <DistributeAidWordmark className="block mx-auto mb-6" height="100" />
         </div>
         <div className="bg-white rounded p-6">
-          <h1 className="text-2xl mb-4 text-center">Lost password</h1>
+          <h1 className="text-2xl mb-4 text-center">Reset your password</h1>
+          <p className="mb-2">
+            In order to reset your password, we need to verify your email first.
+          </p>
           <form>
             <TextField
               label="email"
@@ -29,21 +35,32 @@ const RequestTokenPage: FunctionComponent = () => {
               value={email}
               onChange={({ target: { value } }) => setEmail(value)}
             />
-            <button
-              className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
-              type="button"
-              onClick={() => sendVerificationTokenByEmail({ email })}
-              disabled={!isFormValid}
-            >
-              Recover password
-            </button>
-            <FormNavigation>
-              <InternalLink to={ROUTES.HOME}>Login</InternalLink>
-              <InternalLink to={ROUTES.SET_NEW_PASSWORD_USING_EMAIL_AND_TOKEN}>
-                Set new password
-              </InternalLink>
-            </FormNavigation>
+            <FormFooter>
+              <button
+                className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
+                type="button"
+                onClick={() =>
+                  sendVerificationTokenByEmail({ email })
+                    .then(() => setEmailSent(true))
+                    .catch(setError)
+                }
+                disabled={!isFormValid}
+              >
+                Recover password
+              </button>
+              {error !== undefined && (
+                <Error className="mt-2">Oops: {error.message}</Error>
+              )}
+            </FormFooter>
           </form>
+          {emailSent && (
+            <Redirect
+              to={{
+                pathname: ROUTES.SET_NEW_PASSWORD_USING_EMAIL_AND_TOKEN,
+                state: { email },
+              }}
+            />
+          )}
         </div>
       </div>
     </main>

@@ -28,7 +28,7 @@ import ROUTES from './utils/routes'
 const isDev = process.env.NODE_ENV === 'development'
 
 const App = () => {
-  const { isAuthenticated } = useAuth()
+  const { me } = useAuth()
 
   return (
     <ApolloProvider client={apolloClient}>
@@ -40,9 +40,9 @@ const App = () => {
             </Route>
           )}
           <Route path={ROUTES.HOME} exact>
-            {isAuthenticated ? <HomePage /> : <LoginPage />}
+            {me !== undefined ? <HomePage /> : <LoginPage />}
           </Route>
-          {!isAuthenticated && (
+          {me === undefined && (
             <Switch>
               <Route path={ROUTES.REGISTER} exact>
                 <RegisterPage />

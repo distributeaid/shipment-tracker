@@ -10,9 +10,11 @@ import ROUTES from '../utils/routes'
 
 const ConfirmEmailWithTokenPage: FunctionComponent = () => {
   const { state } = useLocation<{ email?: string }>()
-  const { confirm, isConfirmed, error: authError } = useAuth()
+  const { confirm } = useAuth()
   const [email, setEmail] = useState(state?.email ?? '')
   const [token, setToken] = useState('')
+  const [error, setError] = useState<AuthError>()
+  const [isConfirmed, setIsConfirmed] = useState<boolean>(false)
 
   const formValid = emailRegEx.test(email) && tokenRegex.test(token)
 
@@ -59,15 +61,18 @@ const ConfirmEmailWithTokenPage: FunctionComponent = () => {
                 type="button"
                 onClick={() => {
                   confirm({ email, token })
+                    .then(() => {
+                      setIsConfirmed(true)
+                    })
+                    .catch(setError)
                 }}
                 disabled={!formValid}
               >
                 Verify
               </button>
-              {authError?.type === AuthError.CONFIRM_FAILED && (
+              {error !== undefined && (
                 <Error className="mt-2">
-                  Sorry, verification failed: {authError.httpStatusCode}{' '}
-                  {authError?.info}.
+                  Sorry, verification failed: {error.message}
                 </Error>
               )}
             </FormFooter>
@@ -76,7 +81,7 @@ const ConfirmEmailWithTokenPage: FunctionComponent = () => {
             <Redirect
               to={{
                 pathname: ROUTES.HOME,
-                state: { email_confirmation_success: true },
+                state: { email_confirmation_success: true, email },
               }}
             />
           )}

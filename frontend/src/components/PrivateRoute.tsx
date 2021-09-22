@@ -7,14 +7,14 @@ import { useAuth } from '../hooks/useAuth'
  * in, or render the component otherwise.
  */
 const PrivateRoute: FunctionComponent<RouteProps> = (props) => {
-  const { isAuthenticated } = useAuth()
+  const { me } = useAuth()
   const { children, ...rest } = props
 
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        isAuthenticated ? (
+        me !== undefined ? (
           children
         ) : (
           <Redirect

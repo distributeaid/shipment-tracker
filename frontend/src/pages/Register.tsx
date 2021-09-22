@@ -9,11 +9,13 @@ import { AuthError, emailRegEx, passwordRegEx, useAuth } from '../hooks/useAuth'
 import ROUTES from '../utils/routes'
 
 const RegisterPage: FunctionComponent = () => {
-  const { register, isRegistered, error: authError } = useAuth()
+  const { register } = useAuth()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [password2, setPassword2] = useState('')
+  const [error, setError] = useState<AuthError>()
+  const [isRegistered, setIsRegistered] = useState<boolean>(false)
 
   const isFormValid =
     emailRegEx.test(email) &&
@@ -79,15 +81,16 @@ const RegisterPage: FunctionComponent = () => {
                     email,
                     password,
                   })
+                    .then(() => setIsRegistered(true))
+                    .catch(setError)
                 }}
                 disabled={!isFormValid}
               >
                 Register
               </button>
-              {authError?.type === AuthError.REGISTER_FAILED && (
+              {error !== undefined && (
                 <Error className="mt-2">
-                  Sorry, registration failed: {authError.httpStatusCode}{' '}
-                  {authError?.info}.
+                  Sorry, registration failed: {error.message}.
                 </Error>
               )}
             </FormFooter>
