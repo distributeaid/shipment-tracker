@@ -9,6 +9,7 @@ import { v4 } from 'uuid'
 import { authCookieName, cookieAuthStrategy } from '../authenticateRequest'
 import UserAccount from '../models/user_account'
 import VerificationToken from '../models/verification_token'
+import { HTTPStatusCode } from '../rest/response/HttpStatusCode'
 import login from '../routes/login'
 import getProfile from '../routes/me'
 import { deleteCookie, renewCookie } from '../routes/me/cookie'
@@ -87,7 +88,7 @@ describe('User account API', () => {
           password,
           name: 'Alex',
         })
-        .expect(202)
+        .expect(HTTPStatusCode.Accepted)
     })
     it.each([
       [email],
@@ -103,7 +104,10 @@ describe('User account API', () => {
           password: 'R";%A:6mUVRst[Qq',
           name: 'Alex 2',
         })
-        .expect(409),
+        .expect(HTTPStatusCode.Conflict, {
+          title: `User with email ${email} already registered!`,
+          status: HTTPStatusCode.Conflict,
+        }),
     )
     describe('/register/confirm', () => {
       test('new accounts should not be able to log in', () =>
@@ -113,7 +117,10 @@ describe('User account API', () => {
             email,
             password,
           })
-          .expect(403))
+          .expect(HTTPStatusCode.Forbidden, {
+            title: `User with email ${email} is not confirmed!`,
+            status: HTTPStatusCode.Forbidden,
+          }))
       it('should confirm a user account with a token and an email', async () => {
         // Get token for email
         const token = await VerificationToken.findOne({
@@ -129,7 +136,7 @@ describe('User account API', () => {
             email,
             token: token?.token,
           })
-          .expect(202)
+          .expect(HTTPStatusCode.Accepted)
       })
     })
   })
@@ -141,7 +148,7 @@ describe('User account API', () => {
           email,
           password,
         })
-        .expect(204)
+        .expect(HTTPStatusCode.NoContent)
         .expect('set-cookie', tokenCookieRx)
 
       const cookieInfo = parseCookie(res.header['set-cookie'][0] as string)
@@ -165,7 +172,10 @@ describe('User account API', () => {
           email,
           password: "Y<N-'#sQ2/RCrN_c",
         })
-        .expect(401))
+        .expect(HTTPStatusCode.Unauthorized, {
+          title: `Provided password did not match.`,
+          status: HTTPStatusCode.Unauthorized,
+        }))
     it('should fail with user not found', () =>
       r
         .post('/login')
@@ -173,7 +183,10 @@ describe('User account API', () => {
           email: 'foo@example.com',
           password: "Y<N-'#sQ2/RCrN_c",
         })
-        .expect(401))
+        .expect(HTTPStatusCode.NotFound, {
+          title: `User with email foo@example.com not found!`,
+          status: HTTPStatusCode.NotFound,
+        }))
   })
   describe('/me', () => {
     it('should return the user account of the current user', async () => {
@@ -182,7 +195,7 @@ describe('User account API', () => {
         .set('Cookie', [`${authCookieName}=${authCookie}`])
         .set('Accept', 'application/json')
         .send()
-        .expect(200)
+        .expect(HTTPStatusCode.OK)
       expect(res.body).toMatchObject({
         id: /[0-9]+/,
         email,
@@ -194,18 +207,18 @@ describe('User account API', () => {
         .get('/me')
         .set('Cookie', [`${authCookieName}=foo`])
         .send()
-        .expect(401))
+        .expect(HTTPStatusCode.Unauthorized)) // FIXME: set response body in CookieStrategy
     describe('/me/cookie', () => {
       it('should send a new cookie', () =>
         r
           .get('/me/cookie')
           .set('Cookie', [`${authCookieName}=${authCookie}`])
-          .expect(204))
+          .expect(HTTPStatusCode.NoContent))
       it('should delete a cookie', async () => {
         const res = await r
           .delete('/me/cookie')
           .set('Cookie', [`${authCookieName}=${authCookie}`])
-          .expect(204)
+          .expect(HTTPStatusCode.NoContent)
         const cookieInfo = parseCookie(res.header['set-cookie'][0] as string)
         expect(cookieInfo[authCookieName]).toBeDefined()
         expect(cookieInfo.options).toMatchObject({
@@ -230,7 +243,7 @@ describe('User account API', () => {
               currentPassword: password,
               newPassword,
             })
-            .expect(204)
+            .expect(HTTPStatusCode.NoContent)
             .expect('set-cookie', tokenCookieRx))
         test('log-in with new password', () =>
           r
@@ -239,7 +252,7 @@ describe('User account API', () => {
               email,
               password: newPassword,
             })
-            .expect(204))
+            .expect(HTTPStatusCode.NoContent))
         it('should not change a users password if they do not know the current password', () =>
           r
             .post('/me/password')
@@ -249,7 +262,11 @@ describe('User account API', () => {
               currentPassword: `some password`,
               newPassword: 'H`2h?)Z<F-Z.3gYT',
             })
-            .expect(400))
+            .expect(HTTPStatusCode.BadRequest, {
+              title: 'Input validation failed',
+              status: HTTPStatusCode.BadRequest,
+              detail: `The value provided for "/currentPassword" was invalid: it must match pattern "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$".`,
+            }))
       })
       describe('using an email token', () => {
         let token: string
@@ -261,7 +278,7 @@ describe('User account API', () => {
             .send({
               email,
             })
-            .expect(202)
+            .expect(HTTPStatusCode.Accepted)
 
           // Get token for email
           const t = await VerificationToken.findOne({
@@ -281,8 +298,8 @@ describe('User account API', () => {
               newPassword: newPasswordWithToken,
               token,
             })
-            .expect(202))
-        it('should not change a users password if they do not know the current password', async () => {
+            .expect(HTTPStatusCode.OK))
+        it('should not change a users password if they do not know the right token', async () => {
           expect(token).not.toEqual('000000') // Could fail sometimes, we use this as a test case here
           return r
             .post('/password/new')
@@ -292,7 +309,10 @@ describe('User account API', () => {
               newPassword: newPasswordWithToken,
               token: '000000',
             })
-            .expect(401)
+            .expect(HTTPStatusCode.Unauthorized, {
+              title: `User with email ${email} and token 000000 not found!`,
+              status: HTTPStatusCode.Unauthorized,
+            })
         })
 
         test('log-in with new password', () =>
@@ -302,7 +322,7 @@ describe('User account API', () => {
               email,
               password: newPasswordWithToken,
             })
-            .expect(204))
+            .expect(HTTPStatusCode.NoContent))
       })
     })
   })

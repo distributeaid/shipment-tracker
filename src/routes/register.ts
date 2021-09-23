@@ -1,14 +1,17 @@
 import { Type } from '@sinclair/typebox'
-import { UserInputError } from 'apollo-server-express'
 import bcrypt from 'bcrypt'
 import EventEmitter from 'events'
 import { Request, Response } from 'express'
 import { events } from '../events'
 import { generateDigits } from '../generateDigits'
+import { errorsToProblemDetail } from '../input-validation/errorsToProblemDetail'
 import { trimAll } from '../input-validation/trimAll'
 import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
 import UserAccount from '../models/user_account'
 import VerificationToken from '../models/verification_token'
+import { HTTPStatusCode } from '../rest/response/HttpStatusCode'
+import { respondWithProblem } from '../rest/response/problem'
+import { getRequestId } from '../server/addRequestId'
 
 export const emailInput = Type.String({
   format: 'email',
@@ -36,12 +39,7 @@ const registerUser =
   async (request: Request, response: Response) => {
     const valid = validateRegisterUserInput(trimAll(request.body))
     if ('errors' in valid) {
-      return response
-        .status(400)
-        .json(
-          new UserInputError('User registration input invalid', valid.errors),
-        )
-        .end()
+      return respondWithProblem(response, errorsToProblemDetail(valid.errors))
     }
 
     try {
@@ -56,13 +54,20 @@ const registerUser =
         token: generateDigits(6),
       })
       omnibus.emit(events.user_registered, user, token)
-      return response.status(202).end()
+      return response.status(HTTPStatusCode.Accepted).end()
     } catch (error) {
       if ((error as Error).name === 'SequelizeUniqueConstraintError') {
-        return response.status(409).end()
+        return respondWithProblem(response, {
+          title: `User with email ${valid.value.email} already registered!`,
+          status: HTTPStatusCode.Conflict,
+        })
       }
-      console.error(error)
-      return response.status(500).end()
+      console.error(getRequestId(response), error)
+      return respondWithProblem(response, {
+        title: 'An unexpected problem occurred.',
+        status: HTTPStatusCode.InternalError,
+        detail: `Request ID: ${getRequestId(response)}`,
+      })
     }
   }
 

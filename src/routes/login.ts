@@ -1,11 +1,13 @@
 import { Type } from '@sinclair/typebox'
-import { UserInputError } from 'apollo-server-express'
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import { authCookie } from '../authenticateRequest'
+import { errorsToProblemDetail } from '../input-validation/errorsToProblemDetail'
 import { trimAll } from '../input-validation/trimAll'
 import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
 import UserAccount from '../models/user_account'
+import { HTTPStatusCode } from '../rest/response/HttpStatusCode'
+import { respondWithProblem } from '../rest/response/problem'
 import { emailInput, passwordInput } from './register'
 
 const loginInput = Type.Object(
@@ -21,25 +23,31 @@ const validateLoginInput = validateWithJSONSchema(loginInput)
 const login = async (request: Request, response: Response) => {
   const valid = validateLoginInput(trimAll(request.body))
   if ('errors' in valid) {
-    return response
-      .status(400)
-      .json(new UserInputError('Login input invalid', valid.errors))
-      .end()
+    return respondWithProblem(response, errorsToProblemDetail(valid.errors))
   }
 
   const user = await UserAccount.findOneByEmail(valid.value.email)
   if (user === null) {
-    return response.status(401).end()
-  }
-  if (!user.isConfirmed) {
-    return response.status(403).end()
+    return respondWithProblem(response, {
+      title: `User with email ${valid.value.email} not found!`,
+      status: HTTPStatusCode.NotFound,
+    })
   }
   if (!bcrypt.compareSync(valid.value.password, user.passwordHash)) {
-    return response.status(401).end()
+    return respondWithProblem(response, {
+      title: `Provided password did not match.`,
+      status: HTTPStatusCode.Unauthorized,
+    })
+  }
+  if (!user.isConfirmed) {
+    return respondWithProblem(response, {
+      title: `User with email ${valid.value.email} is not confirmed!`,
+      status: HTTPStatusCode.Forbidden,
+    })
   }
   // Generate new token
   response
-    .status(204)
+    .status(HTTPStatusCode.NoContent)
     .cookie(...authCookie(user))
     .end()
 }

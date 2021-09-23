@@ -16,6 +16,7 @@ import sendVerificationTokenByEmail from '../../routes/password/token'
 import registerUser from '../../routes/register'
 import confirmRegistrationByEmail from '../../routes/register/confirm'
 import sendShipmentExportCsv from '../../sendShipmentExportCsv'
+import { addRequestId } from '../addRequestId'
 import { addVersion } from '../addVersion'
 
 export const backend = ({
@@ -46,6 +47,7 @@ export const backend = ({
   )
 
   app.use(addVersion(version))
+  app.use(addRequestId)
 
   app.post('/register', registerUser(omnibus))
   app.post('/register/confirm', confirmRegistrationByEmail)

@@ -1,10 +1,10 @@
 import { Type } from '@sinclair/typebox'
 import { ErrorObject } from 'ajv'
-import { errorsToProblemDetails } from '../../input-validation/errorsToProblemDetails'
+import { errorsToProblemDetail } from '../../input-validation/errorsToProblemDetail'
 import { NonEmptyShortString, URI } from '../../input-validation/types'
 import { validateWithJSONSchema } from '../../input-validation/validateWithJSONSchema'
 
-describe('errorsToProblemDetails() should turn validation errors into Problem Details for HTTP APIs (RFC7807)', () => {
+describe('errorsToProblemDetail() should turn validation errors into Problem Details for HTTP APIs (RFC7807)', () => {
   it('should format an unknown property in the top-level object', () => {
     const valid = validateWithJSONSchema(
       Type.Object({}, { additionalProperties: false }),
@@ -12,21 +12,19 @@ describe('errorsToProblemDetails() should turn validation errors into Problem De
       extraField: 'not allowed',
     })
     expect(
-      errorsToProblemDetails(
+      errorsToProblemDetail(
         (
           valid as {
             errors: ErrorObject[]
           }
         ).errors,
       ),
-    ).toEqual([
-      {
-        title: 'Input validation failed',
-        status: 400,
-        detail:
-          'The provided input JSON contained an unexpected property name "extraField" in the top-level.',
-      },
-    ])
+    ).toEqual({
+      title: 'Input validation failed',
+      status: 400,
+      detail:
+        'The provided input JSON contained an unexpected property name "extraField" in the top-level.',
+    })
   })
 
   it('should format an unknown property int a child object', () => {
@@ -42,21 +40,19 @@ describe('errorsToProblemDetails() should turn validation errors into Problem De
       },
     })
     expect(
-      errorsToProblemDetails(
+      errorsToProblemDetail(
         (
           valid as {
             errors: ErrorObject[]
           }
         ).errors,
       ),
-    ).toEqual([
-      {
-        title: 'Input validation failed',
-        status: 400,
-        detail:
-          'The provided input JSON contained an unexpected property name "extraField" in "/contact/properties".',
-      },
-    ])
+    ).toEqual({
+      title: 'Input validation failed',
+      status: 400,
+      detail:
+        'The provided input JSON contained an unexpected property name "extraField" in "/contact/properties".',
+    })
   })
 
   describe('it should format schema errors', () => {
@@ -67,20 +63,18 @@ describe('errorsToProblemDetails() should turn validation errors into Problem De
         name: 'My long group name, oh YEAH' + '!'.repeat(250),
       })
       expect(
-        errorsToProblemDetails(
+        errorsToProblemDetail(
           (
             valid as {
               errors: ErrorObject[]
             }
           ).errors,
         ),
-      ).toEqual([
-        {
-          title: 'Input validation failed',
-          status: 400,
-          detail: `The value provided for "/name" was invalid: it must NOT have more than 255 characters.`,
-        },
-      ])
+      ).toEqual({
+        title: 'Input validation failed',
+        status: 400,
+        detail: `The value provided for "/name" was invalid: it must NOT have more than 255 characters.`,
+      })
     })
 
     test('Array of URIs', () => {
@@ -90,21 +84,19 @@ describe('errorsToProblemDetails() should turn validation errors into Problem De
         photoUris: ['one', 'www.example.com'],
       })
       expect(
-        errorsToProblemDetails(
+        errorsToProblemDetail(
           (
             valid as {
               errors: ErrorObject[]
             }
           ).errors,
         ),
-      ).toEqual([
-        {
-          title: 'Input validation failed',
-          status: 400,
-          detail:
-            'The value provided for "/photoUris/0" was invalid: it must match format "uri".',
-        },
-      ])
+      ).toEqual({
+        title: 'Input validation failed',
+        status: 400,
+        detail:
+          'The value provided for "/photoUris/0" was invalid: it must match format "uri".',
+      })
     })
   })
 })

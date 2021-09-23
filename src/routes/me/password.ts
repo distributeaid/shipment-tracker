@@ -1,11 +1,13 @@
 import { Type } from '@sinclair/typebox'
-import { UserInputError } from 'apollo-server-express'
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import { AuthContext, authCookie } from '../../authenticateRequest'
+import { errorsToProblemDetail } from '../../input-validation/errorsToProblemDetail'
 import { trimAll } from '../../input-validation/trimAll'
 import { validateWithJSONSchema } from '../../input-validation/validateWithJSONSchema'
 import UserAccount from '../../models/user_account'
+import { HTTPStatusCode } from '../../rest/response/HttpStatusCode'
+import { respondWithProblem } from '../../rest/response/problem'
 import { passwordInput } from '../register'
 
 const changePasswordInput = Type.Object(
@@ -23,22 +25,29 @@ const changePassword =
   async (request: Request, response: Response) => {
     const valid = validateChangePasswordInput(trimAll(request.body))
     if ('errors' in valid) {
-      return response
-        .status(400)
-        .json(new UserInputError('Password change input invalid', valid.errors))
-        .end()
+      return respondWithProblem(response, errorsToProblemDetail(valid.errors))
+    }
+
+    if (valid.value.currentPassword === valid.value.newPassword) {
+      return respondWithProblem(response, {
+        title: `Current and new password cannot be the same.`,
+        status: HTTPStatusCode.BadRequest,
+      })
     }
 
     const authContext = request.user as AuthContext
     const user = await UserAccount.findByPk(authContext.userId)
-    if (user === null) return response.send(404).end()
+    if (user === null)
+      return respondWithProblem(response, {
+        title: `User for token not found!`,
+        status: HTTPStatusCode.NotFound,
+      })
 
     if (!bcrypt.compareSync(valid.value.currentPassword, user.passwordHash)) {
-      return response.status(400).end()
-    }
-
-    if (valid.value.currentPassword === valid.value.newPassword) {
-      return response.status(400).end()
+      return respondWithProblem(response, {
+        title: `Current password did not match.`,
+        status: HTTPStatusCode.Unauthorized,
+      })
     }
 
     const passwordHash = bcrypt.hashSync(valid.value.newPassword, saltRounds)
@@ -48,7 +57,7 @@ const changePassword =
 
     return response
       .cookie(...authCookie(user))
-      .status(204)
+      .status(HTTPStatusCode.NoContent)
       .end()
   }
 

@@ -1,13 +1,15 @@
 import { Type } from '@sinclair/typebox'
-import { UserInputError } from 'apollo-server-express'
 import EventEmitter from 'events'
 import { Request, Response } from 'express'
 import { events } from '../../events'
 import { generateDigits } from '../../generateDigits'
+import { errorsToProblemDetail } from '../../input-validation/errorsToProblemDetail'
 import { trimAll } from '../../input-validation/trimAll'
 import { validateWithJSONSchema } from '../../input-validation/validateWithJSONSchema'
 import UserAccount from '../../models/user_account'
 import VerificationToken from '../../models/verification_token'
+import { HTTPStatusCode } from '../../rest/response/HttpStatusCode'
+import { respondWithProblem } from '../../rest/response/problem'
 import { emailInput } from '../register'
 
 const passwordResetInput = Type.Object(
@@ -23,15 +25,15 @@ const sendVerificationTokenByEmail =
   (omnibus: EventEmitter) => async (request: Request, response: Response) => {
     const valid = validatePasswordResetInput(trimAll(request.body))
     if ('errors' in valid) {
-      return response
-        .status(400)
-        .json(new UserInputError('Password reset input invalid', valid.errors))
-        .end()
+      return respondWithProblem(response, errorsToProblemDetail(valid.errors))
     }
 
     const user = await UserAccount.findOneByEmail(valid.value.email)
     if (user === null) {
-      return response.status(404).end()
+      return respondWithProblem(response, {
+        title: `User with email ${valid.value.email} not found!`,
+        status: HTTPStatusCode.NotFound,
+      })
     }
     // Generate new token
     const token = await VerificationToken.create({
