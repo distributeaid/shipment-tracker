@@ -52,9 +52,9 @@ const GroupForm: FunctionComponent<Props> = (props) => {
   )
 
   const submitForm = handleSubmit((input) => {
-    // Non-admins can only create sending groups
+    // Non-admins can only create regular groups
     if (!profile?.isAdmin) {
-      input.groupType = GroupType.SendingGroup
+      input.groupType = GroupType.Regular
     }
 
     props.onSubmit(input)

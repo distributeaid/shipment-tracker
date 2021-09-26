@@ -1,5 +1,11 @@
 import _pick from 'lodash/pick'
-import { ChangeEvent, FunctionComponent, useEffect, useState } from 'react'
+import {
+  ChangeEvent,
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import InlineError from '../../components/forms/InlineError'
@@ -18,6 +24,7 @@ import {
   LineItemCategory,
   LineItemContainerType,
   LineItemUpdateInput,
+  OfferQuery,
   PalletType,
   useAllGroupsMinimalQuery,
   useLineItemQuery,
@@ -45,12 +52,14 @@ interface Props {
    * values for some form fields.
    */
   palletType: PalletType
+  offer: OfferQuery['offer']
 }
 
 const LineItemForm: FunctionComponent<Props> = ({
   lineItemId,
   onEditingComplete,
   palletType,
+  offer,
 }) => {
   const {
     data,
@@ -62,16 +71,23 @@ const LineItemForm: FunctionComponent<Props> = ({
 
   const [receivingGroups, setReceivingGroups] = useState<SelectOption[]>([])
   const { data: groups, loading: groupsAreLoading } = useAllGroupsMinimalQuery({
-    variables: { groupType: GroupType.ReceivingGroup },
+    variables: { groupType: GroupType.Regular },
   })
+
+  // Groups available for reception are all groups that are not the sending group
+  const availableReceivingGroups = useMemo(
+    () =>
+      groups?.listGroups.filter(({ id }) => offer.sendingGroupId !== id) ?? [],
+    [groups, offer],
+  )
 
   useEffect(
     function organizeGroups() {
-      if (groups && groups.listGroups) {
-        setReceivingGroups(groups.listGroups.map(groupToSelectOption))
+      if (availableReceivingGroups.length) {
+        setReceivingGroups(availableReceivingGroups.map(groupToSelectOption))
       }
     },
-    [groups],
+    [availableReceivingGroups],
   )
 
   /**
