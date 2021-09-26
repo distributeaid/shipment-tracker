@@ -11,6 +11,7 @@ import { makeAdminTestServer, makeTestServer } from '../testServer'
 const purgeDb = async () => sequelize.sync({ force: true })
 
 const commonGroupData = {
+  groupType: GroupType.Regular,
   primaryLocation: { countryCode: 'FR', townCity: 'Calais' },
   primaryContact: { name: 'Contact', email: 'contact@example.com' },
   website: 'http://www.example.com',
@@ -21,13 +22,11 @@ describe('Groups API', () => {
     const group1Name: string = 'group1'
     const group1Params = {
       name: group1Name,
-      groupType: GroupType.SendingGroup,
       ...commonGroupData,
     }
 
     const group2Params = {
       name: 'group2',
-      groupType: GroupType.SendingGroup,
       ...commonGroupData,
     }
 
@@ -141,7 +140,7 @@ describe('Groups API', () => {
       beforeEach(async () => {
         updateParams = {
           name: 'updated-name',
-          groupType: GroupType.ReceivingGroup,
+          groupType: GroupType.DaHub,
           primaryContact: {
             name: 'updated-contact-name',
             email: 'updated@example.com',
@@ -167,9 +166,7 @@ describe('Groups API', () => {
 
         expect(res.errors).toBeUndefined()
         expect(res.data?.updateGroup?.name).toEqual(updateParams.name)
-        expect(res.data?.updateGroup?.groupType).toEqual(
-          GroupType.ReceivingGroup,
-        )
+        expect(res.data?.updateGroup?.groupType).toEqual(GroupType.DaHub)
         expect(res.data?.updateGroup?.primaryContact?.name).toEqual(
           updateParams?.primaryContact?.name,
         )
@@ -294,33 +291,29 @@ describe('Groups API', () => {
       })
       sendingGroup1 = await Group.create({
         name: sendingGroup1Name,
-        groupType: GroupType.SendingGroup,
         captainId: captain1.id,
         ...commonGroupData,
       })
       sendingGroup2 = await Group.create({
         name: sendingGroup2Name,
-        groupType: GroupType.SendingGroup,
         captainId: captain2.id,
         ...commonGroupData,
       })
       receivingGroup1 = await Group.create({
         name: receivingGroup1Name,
-        groupType: GroupType.ReceivingGroup,
         captainId: captain2.id,
         ...commonGroupData,
       })
       receivingGroup2 = await Group.create({
         name: receivingGroup2Name,
-        groupType: GroupType.ReceivingGroup,
         captainId: captain1.id,
         ...commonGroupData,
       })
       daHubGroup = await Group.create({
+        ...commonGroupData,
         name: daHubGroupName,
         groupType: GroupType.DaHub,
         captainId: daCaptain.id,
-        ...commonGroupData,
       })
       testServer = await makeTestServer({
         context: () => ({ auth: userToAuthContext(captain1) }),
@@ -422,14 +415,8 @@ describe('Groups API', () => {
 
       describe('filtering', () => {
         it.each([
-          [[GroupType.SendingGroup], [sendingGroup1Name, sendingGroup2Name]],
           [
-            [GroupType.ReceivingGroup],
-            [receivingGroup1Name, receivingGroup2Name],
-          ],
-          [[GroupType.DaHub], [daHubGroupName]],
-          [
-            [GroupType.SendingGroup, GroupType.ReceivingGroup],
+            [GroupType.Regular],
             [
               sendingGroup1Name,
               sendingGroup2Name,
@@ -437,8 +424,9 @@ describe('Groups API', () => {
               receivingGroup2Name,
             ],
           ],
+          [[GroupType.DaHub], [daHubGroupName]],
           [
-            [GroupType.SendingGroup, GroupType.ReceivingGroup, GroupType.DaHub],
+            [GroupType.Regular, GroupType.DaHub],
             [
               sendingGroup1Name,
               sendingGroup2Name,
@@ -506,9 +494,9 @@ describe('Groups API', () => {
         )
 
         it.each([
-          [[GroupType.SendingGroup], daCaptainName, []],
+          [[GroupType.Regular], daCaptainName, []],
           [
-            [GroupType.SendingGroup, GroupType.ReceivingGroup],
+            [GroupType.Regular],
             captain1Name,
             [sendingGroup1Name, receivingGroup2Name],
           ],

@@ -266,8 +266,8 @@ async function getUpdateGroupIdAttr(
     throw new UserInputError(`Group ${input[attr]} does not exist`)
   }
 
-  if (group.groupType !== GroupType.ReceivingGroup) {
-    throw new UserInputError(`Group ${input[attr]} is not a receiving group`)
+  if (group.groupType !== GroupType.Regular) {
+    throw new UserInputError(`Group ${input[attr]} is not a regular group`)
   }
 
   return input[attr]

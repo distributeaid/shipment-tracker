@@ -189,9 +189,8 @@ input MoneyAmountInput {
 }
 
 enum GroupType {
+  REGULAR
   DA_HUB
-  RECEIVING_GROUP
-  SENDING_GROUP
 }
 
 type UserProfile {

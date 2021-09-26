@@ -120,9 +120,7 @@ export const up = async (queryInterface: QueryInterface) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isIn: [
-          [GroupType.DaHub, GroupType.ReceivingGroup, GroupType.SendingGroup],
-        ],
+        isIn: [[GroupType.Regular, GroupType.DaHub]],
       },
     },
     primaryLocation: {

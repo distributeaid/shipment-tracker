@@ -57,7 +57,7 @@ describe('Offers API', () => {
 
     group2 = await createGroup({
       name: 'group 2',
-      groupType: GroupType.ReceivingGroup,
+      groupType: GroupType.Regular,
       primaryLocation: { countryCode: 'FR', townCity: 'Bordeaux' },
       primaryContact: {
         name: 'Second Contact',

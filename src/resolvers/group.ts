@@ -107,11 +107,8 @@ const addGroup: MutationResolvers['addGroup'] = async (
     throw new UserInputError('Group arguments invalid', valid.errors)
   }
 
-  // Non-admins should only be allowed to create sending groups
-  if (
-    valid.value.groupType !== GroupType.SendingGroup &&
-    !context.auth.isAdmin
-  ) {
+  // Non-admins should only be allowed to create regular groups
+  if (valid.value.groupType !== GroupType.Regular && !context.auth.isAdmin) {
     throw new ForbiddenError(`Non-admins can only create sending groups`)
   }
 
