@@ -39,7 +39,7 @@ describe('Shipments API', () => {
     })
     group2 = await createGroup({
       name: 'group 2',
-      groupType: GroupType.ReceivingGroup,
+      groupType: GroupType.Regular,
       primaryLocation: { countryCode: 'FR', townCity: 'Bordeaux' },
       primaryContact: {
         name: 'Second Contact',
@@ -269,7 +269,7 @@ describe('Shipments API', () => {
       beforeEach(async () => {
         group3 = await createGroup({
           name: 'group 3',
-          groupType: GroupType.ReceivingGroup,
+          groupType: GroupType.Regular,
           primaryLocation: { countryCode: 'DE', townCity: 'Berlin' },
           primaryContact: {
             name: 'Third Contact',
@@ -278,7 +278,7 @@ describe('Shipments API', () => {
         })
         group4 = await createGroup({
           name: 'group 4',
-          groupType: GroupType.ReceivingGroup,
+          groupType: GroupType.Regular,
           primaryLocation: { countryCode: 'SE', townCity: 'Lund' },
           primaryContact: {
             name: 'Fourth Contact',
@@ -287,7 +287,7 @@ describe('Shipments API', () => {
         })
         group5 = await createGroup({
           name: 'group 5',
-          groupType: GroupType.ReceivingGroup,
+          groupType: GroupType.Regular,
           primaryLocation: { countryCode: 'NO', townCity: 'Trondheim' },
           primaryContact: {
             name: 'Fifth Contact',
