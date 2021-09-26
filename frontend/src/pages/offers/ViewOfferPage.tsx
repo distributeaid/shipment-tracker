@@ -115,7 +115,9 @@ const ViewOfferPage: FunctionComponent = () => {
           )}
         </header>
         <main className="flex-grow flex items-stretch">
-          <PalletsEditor offerId={offerId} pallets={offer?.offer.pallets} />
+          {offer?.offer && (
+            <PalletsEditor offer={offer.offer} pallets={offer?.offer.pallets} />
+          )}
         </main>
       </div>
     </LayoutWithNav>

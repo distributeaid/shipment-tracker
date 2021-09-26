@@ -36,8 +36,7 @@ export const MONTH_OPTIONS = MONTHS.map((month, index) => ({
 }))
 
 export const GROUP_TYPE_OPTIONS = [
-  { label: 'Receiving group', value: GroupType.ReceivingGroup },
-  { label: 'Sending group', value: GroupType.SendingGroup },
+  { label: 'Regular group', value: GroupType.Regular },
   { label: 'DA hub', value: GroupType.DaHub },
 ]
 

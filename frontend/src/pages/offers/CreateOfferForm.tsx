@@ -1,5 +1,5 @@
 import _pick from 'lodash/pick'
-import { FunctionComponent, useEffect } from 'react'
+import { FunctionComponent, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import Button from '../../components/Button'
@@ -54,14 +54,26 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
   const [getGroups, { loading: isLoadingGroups, data: groups }] =
     useAllGroupsLazyQuery()
 
+  // Build list of sending groups which are groups not receiving in the shipment.
+  const sendingGroups = useMemo(
+    () =>
+      groups?.listGroups?.filter(
+        ({ id }) =>
+          !targetShipment?.shipment.receivingHubs
+            .map(({ id }) => id)
+            .includes(id),
+      ) ?? [],
+    [groups, targetShipment],
+  )
+
   useEffect(
     function loadGroupsForUser() {
       if (profile?.id != null) {
-        // If the user is an admin, display all the sending groups in a dropdown
+        // If the user is an admin, display all the regular groups in a dropdown
         // Otherwise, display all the groups captained by that user
         getGroups({
           variables: {
-            groupType: [GroupType.SendingGroup],
+            groupType: [GroupType.Regular],
             captainId: profile.isAdmin ? undefined : profile.id,
           },
         })
@@ -81,16 +93,16 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
 
   useEffect(
     function updateContactInformation() {
-      if (groups?.listGroups) {
+      if (sendingGroups.length > 0) {
         // When the sendingGroupId changes, we pre-fill the contact info
         const sendingGroupId = watchSendingGroupId || profile?.groupId
-        let matchingGroup = groups.listGroups.find(
+        let matchingGroup = sendingGroups.find(
           (group) => group.id === sendingGroupId,
         )
 
         // Special case for admins when only 1 sending group exists
-        if (matchingGroup == null && groups.listGroups.length === 1) {
-          matchingGroup = groups.listGroups[0]
+        if (matchingGroup == null && sendingGroups.length === 1) {
+          matchingGroup = sendingGroups[0]
         }
 
         if (matchingGroup != null) {
@@ -109,7 +121,7 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
         }
       }
     },
-    [watchSendingGroupId, groups, reset, profile],
+    [watchSendingGroupId, groups, reset, profile, sendingGroups],
   )
 
   const onSubmitForm = (input: OfferCreateInput) => {
@@ -123,7 +135,7 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
 
     const payload: OfferCreateInput = {
       shipmentId: props.shipmentId,
-      sendingGroupId: input.shipmentId || groups.listGroups[0].id,
+      sendingGroupId: input.sendingGroupId || sendingGroups[0].id,
       contact: setEmptyFieldsToUndefined(input.contact),
       photoUris: input.photoUris || [],
     }
@@ -139,7 +151,7 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
     )
   }
 
-  if (groups.listGroups.length === 0) {
+  if (sendingGroups.length === 0) {
     return (
       <div className="space-y-2">
         <h2 className="text-lg">Cannot create offer</h2>
@@ -161,21 +173,21 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
-      {groups.listGroups.length > 1 ? (
+      {sendingGroups.length > 1 ? (
         <SelectField
           label="Sending group"
           name="sendingGroupId"
           castAsNumber
           register={register}
           required
-          options={groups.listGroups.map((group) => ({
+          options={sendingGroups.map((group) => ({
             label: group.name,
             value: group.id,
           }))}
         />
       ) : (
         <ReadOnlyField label="Sending group">
-          {groups.listGroups[0].name || 'No group'}
+          {sendingGroups[0].name || 'No group'}
         </ReadOnlyField>
       )}
       <ReadOnlyField label="Shipment">
@@ -191,7 +203,7 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
       </ReadOnlyField>
       <fieldset className="space-y-6">
         <legend>Primary contact</legend>
-        {groups.listGroups.length > 1 && (
+        {sendingGroups.length > 1 && (
           <p className="text-gray-600">
             When you select a sending group, we will prefill the contact
             information below.

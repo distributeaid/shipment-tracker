@@ -16,7 +16,7 @@ import PalletsEditorSidebar from './PalletsEditorSidebar'
 import ViewLineItem from './ViewLineItem'
 import ViewPallet from './ViewPallet'
 interface Props {
-  offerId: number
+  offer: OfferQuery['offer']
   pallets?: OfferQuery['offer']['pallets']
 }
 
@@ -24,7 +24,7 @@ interface Props {
  * This is a 2-column UI with a list of pallets on the left and details aobut
  * each line-item on the right.
  */
-const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
+const PalletsEditor: FunctionComponent<Props> = ({ offer, pallets = [] }) => {
   // TODO move this to the URL
   const [selectedPalletId, setSelectedPalletId] = useState<number>()
 
@@ -79,12 +79,12 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
         try {
           const offerData = cache.readQuery<OfferQuery>({
             query: OfferDocument,
-            variables: { id: offerId },
+            variables: { id: offer.id },
           })
 
           cache.writeQuery<OfferQuery>({
             query: OfferDocument,
-            variables: { id: offerId },
+            variables: { id: offer.id },
             data: {
               offer: Object.assign({}, offerData!.offer, {
                 pallets: [...offerData!.offer.pallets, data!.addPallet],
@@ -100,7 +100,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
   const onCreatePallet = (palletType: PalletType) => {
     const newPallet: PalletCreateInput = {
       palletType,
-      offerId,
+      offerId: offer.id,
     }
 
     addPallet({ variables: { input: newPallet } }).then((data) => {
@@ -159,6 +159,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ offerId, pallets = [] }) => {
           <div className="h-full w-full p-8">
             {allowEditingLineItem ? (
               <LineItemForm
+                offer={offer}
                 lineItemId={selectedLineItemId}
                 palletType={
                   selectedPalletData.data?.pallet.palletType ||
