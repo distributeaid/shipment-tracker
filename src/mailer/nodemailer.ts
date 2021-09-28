@@ -4,11 +4,34 @@ import { events } from '../events'
 import UserAccount from '../models/user_account'
 import VerificationToken from '../models/verification_token'
 
+/**
+ * SMTP hostname, e.g. "smtp.net"
+ */
 const host = process.env.SMTP_SERVER
+
+/**
+ * SMTP port, defaults to 587
+ */
 const port = parseInt(process.env.SMTP_PORT ?? '587', 10)
+
+/**
+ * Whether to use a secure connection, defaults to false
+ */
 const secure = (process.env.SMTP_SECURE ?? 'false') === 'true'
+
+/**
+ * SMTP username
+ */
 const user = process.env.SMTP_USER
+
+/**
+ * SMTP password
+ */
 const pass = process.env.SMTP_PASSWORD
+
+/**
+ * The email sender, in the form `"<name>" <email>`, e.g. `"Distribute Aid Shipment Tracker" <no-reply@shipment-tracker.distributeaid.org>`
+ */
 const fromEmail = process.env.SMTP_FROM
 
 const canSendEmails =
