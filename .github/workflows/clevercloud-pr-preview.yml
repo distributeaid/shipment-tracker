@@ -54,7 +54,7 @@ jobs:
         run: echo "::set-output name=exists::false"
 
   preview:
-    if: needs.app.exists == 'false'
+    if: needs.app.outputs.exists == 'false'
     runs-on: ubuntu-latest
     environment: cc-preview
     name: Create preview instance
