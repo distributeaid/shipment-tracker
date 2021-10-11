@@ -47,17 +47,28 @@ jobs:
       - name: Create the application
         run: npx clever create -t node -o ${{ secrets.CLEVER_ORG }} ${{ steps.app-name.outputs.app_name }}
 
-      - name: Configure application
+      - name: Enable dedicated build instance
+        run: npx clever scale --build-flavor M
+
+      - name: Force HTTPs
+        run: npx clever config set force-https true
+
+      - name: Configure Node.js application settings
         run: |
           npx clever env set CC_NODE_DEV_DEPENDENCIES install
           npx clever env set CC_POST_BUILD_HOOK 'yarn run prod:build && ./.clevercloud/publish-frontend-to-cellar.sh'
           npx clever env set CC_RUN_COMMAND 'yarn run prod:server'
-          # FIXME: set DNS for preview
-          npx clever env set CELLAR_BUCKET ${{ steps.app-name.outputs.app_name }}.${{ env.PREVIEW_DOMAIN }}
           npx clever env set DB_ENV clevercloud
           npx clever env set NODE_ENV production
           npx clever env set ORIGIN ${{ steps.preview-url.outputs.url }}
+
+      - name: Configure frontend settings
+        run: |
+          npx clever env set CELLAR_BUCKET ${{ steps.app-name.outputs.app_name }}.${{ env.PREVIEW_DOMAIN }}
           npx clever env set REACT_APP_SERVER_URL https://`npx clever domain | tr -d ' \n'`
+
+      - name: Configure email settings
+        run: |
           npx clever env set SMTP_FROM ${{ secrets.SMTP_FROM }} # e.g. notification@shipment-tracker.distributeaid.dev
           npx clever env set SMTP_USER ${{ secrets.SMTP_USER }}
           npx clever env set SMTP_PASSWORD ${{ secrets.SMTP_PASSWORD }}
