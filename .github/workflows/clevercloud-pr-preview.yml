@@ -1,0 +1,50 @@
+name: PR-preview
+#  This action creates an instance on Clever Cloud for all PRs that have the
+#  "cc-preview" label
+
+on:
+  pull_request:
+    types:
+      - labeled
+
+env:
+  CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+  CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+  CLEVER_ORG: ${{ secrets.CLEVER_ORG }}
+
+jobs:
+  preview:
+    if: ${{ github.event.label.name == 'cc-preview' }}
+    runs-on: ubuntu-latest
+    name: Create preview instance
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install packages
+        run: yarn install --frozen-lockfile
+
+      - name: Set app name
+        id: app-name
+        run: echo "::set-output name=app_name::pr-${{ github.event.pull_request.number }}"
+
+      - name: Create the application
+        run: npx clever create -t node -o ${{ env.CLEVER_ORG }} ${{ steps.app-name.outputs.app_name }}
+
+      - name: Create PostgreSQL addon
+        run: npx clever addon create --link ${{ steps.app-name.outputs.app_name }} postgresql-addon ${{ steps.app-name.outputs.app_name }}-db
+
+      - name: Create Cellar addon
+        run: npx clever addon create --link ${{ steps.app-name.outputs.app_name }} -p S cellar-addon ${{ steps.app-name.outputs.app_name }}-frontend
+
+      - name: Deploy the application
+        run: npx clever deploy

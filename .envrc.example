@@ -10,3 +10,7 @@
 # export SMTP_PASSWORD=secret
 # export SMTP_SECURE=false
 # export SMTP_PORT=587
+
+# Clever Cloud CLI authentication
+# export CLEVER_TOKEN=...
+# export CLEVER_SECRET=...
