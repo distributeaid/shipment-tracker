@@ -20,6 +20,8 @@ jobs:
     name: Create preview instance
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Needed for deploy
 
       - name: Install Node.js
         uses: actions/setup-node@v2
