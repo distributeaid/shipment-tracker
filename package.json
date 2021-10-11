@@ -29,7 +29,7 @@
   "dependencies": {
     "@graphql-tools/utils": "8.2.3",
     "@sinclair/typebox": "0.20.5",
-    "ajv": "8.6.3",
+    "ajv": "8.6.2",
     "ajv-formats": "2.1.1",
     "apollo-server": "3.3.0",
     "apollo-server-express": "3.3.0",
@@ -51,7 +51,7 @@
     "passport-cookie": "1.0.9",
     "pg": "8.7.1",
     "reflect-metadata": "0.1.13",
-    "sequelize": "6.6.5",
+    "sequelize": "6.6.2",
     "sequelize-typescript": "2.1.0",
     "uuid": "8.3.2"
   },
