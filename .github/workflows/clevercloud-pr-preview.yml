@@ -13,11 +13,38 @@ env:
   PREVIEW_DOMAIN: shipment-tracker-preview.distributeaid.dev
 
 jobs:
+  app:
+    if: github.event.label.name == 'cc-preview'
+    environment: cc-preview
+    runs-on: ubuntu-latest
+    name: Create the app name and check of app already exists
+    outputs:
+      name: ${{ needs.name.outputs.name }}
+      exists: ${{ needs.exists-not.outputs.exists }}
+    steps:
+      - name: Set app name
+        id: name
+        run: echo "::set-output name=name::pr-${{ github.event.pull_request.number }}"
+
+      - name: Check if preview exists
+        id: exists
+        continue-on-error: true
+        run: |
+          npx clever status -a ${{ needs.app.outputs.name }}
+          echo "::set-output name=exists::true"
+
+      - name: App does not exist
+        if: steps.exists.exists != true
+        id: exists-not
+        run: echo "::set-output name=exists::false"
+
   preview:
-    if: ${{ github.event.label.name == 'cc-preview' }}
+    if: needs.app.exists == 'false'
     runs-on: ubuntu-latest
     environment: cc-preview
     name: Create preview instance
+    needs:
+      - app
     steps:
       - uses: actions/checkout@v2
         with:
@@ -36,16 +63,12 @@ jobs:
       - name: Install packages
         run: yarn install --frozen-lockfile
 
-      - name: Set app name
-        id: app-name
-        run: echo "::set-output name=app_name::pr-${{ github.event.pull_request.number }}"
-
       - name: Set preview URL
         id: preview-url
-        run: echo "::set-output name=url::https://${{ steps.app-name.outputs.app_name }}.${{ env.PREVIEW_DOMAIN }}/"
+        run: echo "::set-output name=url::https://${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }}/"
 
       - name: Create the application
-        run: npx clever create -t node -o ${{ secrets.CLEVER_ORG }} ${{ steps.app-name.outputs.app_name }}
+        run: npx clever create -t node -o ${{ secrets.CLEVER_ORG }} ${{ needs.app.outputs.name }}
 
       - name: Enable dedicated build instance
         run: npx clever scale --build-flavor M
@@ -64,7 +87,7 @@ jobs:
 
       - name: Configure frontend settings
         run: |
-          npx clever env set CELLAR_BUCKET ${{ steps.app-name.outputs.app_name }}.${{ env.PREVIEW_DOMAIN }}
+          npx clever env set CELLAR_BUCKET ${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }}
           npx clever env set REACT_APP_SERVER_URL https://`npx clever domain | tr -d ' \n'`
 
       - name: Configure email settings
@@ -77,10 +100,10 @@ jobs:
           npx clever env set SMTP_SERVER ${{ secrets.SMTP_SERVER }} # e.g. relay-de.smtp.net
 
       - name: Create PostgreSQL addon
-        run: npx clever addon create --link ${{ steps.app-name.outputs.app_name }} postgresql-addon ${{ steps.app-name.outputs.app_name }}-db
+        run: npx clever addon create --link ${{ needs.app.outputs.name }} postgresql-addon ${{ needs.app.outputs.name }}-db
 
       - name: Create Cellar addon
-        run: npx clever addon create --link ${{ steps.app-name.outputs.app_name }} -p S cellar-addon ${{ steps.app-name.outputs.app_name }}-frontend
+        run: npx clever addon create --link ${{ needs.app.outputs.name }} -p S cellar-addon ${{ needs.app.outputs.name }}-frontend
 
       - name: Deploy the application
         run: npx clever deploy
