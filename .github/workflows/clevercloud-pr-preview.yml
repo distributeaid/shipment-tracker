@@ -45,7 +45,7 @@ jobs:
         id: exists
         continue-on-error: true
         run: |
-          npx clever status -a ${{ steps.name.outputs.name }}
+          npx clever link ${{ steps.name.outputs.name }}
           echo "::set-output name=exists::true"
 
       - name: App does not exist
