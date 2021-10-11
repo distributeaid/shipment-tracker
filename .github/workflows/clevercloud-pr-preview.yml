@@ -10,12 +10,13 @@ on:
 env:
   CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
   CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-  CLEVER_ORG: ${{ secrets.CLEVER_ORG }}
+  PREVIEW_DOMAIN: shipment-tracker-preview.distributeaid.dev
 
 jobs:
   preview:
     if: ${{ github.event.label.name == 'cc-preview' }}
     runs-on: ubuntu-latest
+    environment: cc-preview
     name: Create preview instance
     steps:
       - uses: actions/checkout@v2
@@ -37,8 +38,30 @@ jobs:
         id: app-name
         run: echo "::set-output name=app_name::pr-${{ github.event.pull_request.number }}"
 
+      - name: Set preview URL
+        id: preview-url
+        run: echo "::set-output name=url::https://${{ steps.app-name.outputs.app_name }}.${{ env.PREVIEW_DOMAIN }}/"
+
       - name: Create the application
-        run: npx clever create -t node -o ${{ env.CLEVER_ORG }} ${{ steps.app-name.outputs.app_name }}
+        run: npx clever create -t node -o ${{ secrets.CLEVER_ORG }} ${{ steps.app-name.outputs.app_name }}
+
+      - name: Configure application
+        run: |
+          npx clever env set CC_NODE_DEV_DEPENDENCIES install
+          npx clever env set CC_POST_BUILD_HOOK 'yarn run prod:build && ./.clevercloud/publish-frontend-to-cellar.sh'
+          npx clever env set CC_RUN_COMMAND 'yarn run prod:server'
+          # FIXME: set DNS for preview
+          npx clever env set CELLAR_BUCKET ${{ steps.app-name.outputs.app_name }}.${{ env.PREVIEW_DOMAIN }}
+          npx clever env set DB_ENV clevercloud
+          npx clever env set NODE_ENV production
+          npx clever env set ORIGIN ${{ steps.preview-url.outputs.url }}
+          npx clever env set REACT_APP_SERVER_URL https://`npx clever domain | tr -d ' \n'`
+          npx clever env set SMTP_FROM ${{ secrets.SMTP_FROM }} # e.g. notification@shipment-tracker.distributeaid.dev
+          npx clever env set SMTP_USER ${{ secrets.SMTP_USER }}
+          npx clever env set SMTP_PASSWORD ${{ secrets.SMTP_PASSWORD }}
+          npx clever env set SMTP_PORT ${{ secrets.SMTP_PORT }} # e.g. 587
+          npx clever env set SMTP_SECURE ${{ secrets.SMTP_SECURE }} # e.g. false
+          npx clever env set SMTP_SERVER ${{ secrets.SMTP_SERVER }} # e.g. relay-de.smtp.net
 
       - name: Create PostgreSQL addon
         run: npx clever addon create --link ${{ steps.app-name.outputs.app_name }} postgresql-addon ${{ steps.app-name.outputs.app_name }}-db
@@ -48,3 +71,12 @@ jobs:
 
       - name: Deploy the application
         run: npx clever deploy
+
+      - name: Add comment with preview URL to PR
+        run: |
+          curl \
+            -X POST \
+            $URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            --data '{ "body": "Preview available on ${{ steps.preview-url.outputs.url }}" }'
