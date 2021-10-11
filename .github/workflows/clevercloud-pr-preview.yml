@@ -127,7 +127,7 @@ jobs:
         run: |
           curl \
             -X POST \
-            $URL \
+            ${{ github.event.issue.comments_url }} \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             --data '{ "body": "Preview available on ${{ steps.preview-url.outputs.url }}" }'
