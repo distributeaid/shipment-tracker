@@ -22,6 +22,19 @@ jobs:
       name: ${{ needs.name.outputs.name }}
       exists: ${{ needs.exists-not.outputs.exists }}
     steps:
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install packages
+        run: yarn install --frozen-lockfile
+
       - name: Set app name
         id: name
         run: echo "::set-output name=name::pr-${{ github.event.pull_request.number }}"
