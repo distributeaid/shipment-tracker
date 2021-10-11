@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Create the app name and check of app already exists
     outputs:
-      name: ${{ needs.name.outputs.name }}
-      exists: ${{ needs.exists-not.outputs.exists }}
+      name: ${{ steps.name.outputs.name }}
+      exists: ${{ steps.exists-not.outputs.exists }}
     steps:
       - uses: actions/checkout@v2
 
