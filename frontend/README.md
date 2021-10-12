@@ -50,23 +50,7 @@ You'll usually want access to our data when running the frontend. Here's how to 
 
 We use [Tailwind](https://tailwindcss.com/) for styling.
 
-The setup is unfortunately not straighforward: we had a choice between [ejecting from Create React App (CRA)](https://create-react-app.dev/docs/available-scripts/#npm-run-eject) or adding some overrides, and we chose the latter.
-
-Here are the commands we use to run the app:
-
-```json
-"start": "npm-run-all build:styles --parallel watch:styles start:react",
-"start:react": "react-scripts start",
-"build:styles": "tailwind build src/stylesheets/index.css -o src/stylesheets/index.output.css",
-"watch:styles": "chokidar 'src/**/*.css' --ignore src/stylesheets/index.output.css -c 'npm run build:styles'",
-```
-
-In order of operation:
-
-1. we run `build:styles`, which takes `index.css`, compiles it using Tailwind's CLI, and outputs it in the `index.output.css` file.
-2. we run `watch:styles` and `start:react` in parallel
-   a. `watch:styles` compiles any changes to the CSS files
-   b. `start:react` runs CRA's `react-scripts start` command, which runs the React code
+The setup is unfortunately not straighforward: we use [Create-React-App Config Override (CRACO)](https://github.com/gsoft-inc/craco) with postcss v7 in order to compile styles.
 
 ### Forms and validation
 
