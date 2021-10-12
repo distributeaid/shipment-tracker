@@ -6,7 +6,7 @@ import DistributeAidWordmark from '../components/branding/DistributeAidWordmark'
  */
 const PublicLayout: FunctionComponent = ({ children }) => {
   return (
-    <main className="flex h-screen justify-center bg-navy-900 p-4">
+    <main className="flex h-screen justify-center bg-gradient-to-tr from-navy-700 to-navy-900 p-4">
       <div className="max-w-md w-full mt-20">
         <div className="p-4 text-center">
           <DistributeAidWordmark className="block mx-auto mb-6" height="100" />
