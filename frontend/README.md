@@ -4,20 +4,26 @@ This is a React and Typescript application bootstrapped using [Create React App]
 
 ## Development setup
 
-1. **Install the dependencies CLI**
+1. Make sure you're using Node 16
+
+   ```shell
+   nvm use 16
+   ```
+
+2. **Install the dependencies CLI**
 
    ```shell
    yarn install --frozen-lockfile
 
    ```
 
-2. **Start the app**
+3. **Start the app**
 
    ```shell
    yarn start
    ```
 
-3. **That's it!**
+4. **That's it!**
 
    View the app at http://localhost:8080/
 
