@@ -5,7 +5,7 @@ module.exports = {
     const sendingHubs = await queryInterface.sequelize.query(
       'SELECT id FROM "Groups" WHERE "Groups"."groupType" = ? LIMIT 1',
       {
-        replacements: ['SENDING_GROUP'],
+        replacements: ['REGULAR'],
         type: queryInterface.sequelize.QueryTypes.SELECT,
       },
     )
@@ -13,7 +13,7 @@ module.exports = {
     const receivingHubId = await queryInterface.sequelize.query(
       'SELECT id FROM "Groups" WHERE "Groups"."groupType" = ? LIMIT 1',
       {
-        replacements: ['RECEIVING_GROUP'],
+        replacements: ['REGULAR'],
         type: queryInterface.sequelize.QueryTypes.SELECT,
       },
     )

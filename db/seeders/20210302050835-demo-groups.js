@@ -24,7 +24,7 @@ module.exports = {
       [
         {
           name: 'Stoke-Upon-Trent',
-          groupType: 'SENDING_GROUP',
+          groupType: 'REGULAR',
           createdAt: new Date(),
           updatedAt: new Date(),
           primaryLocation: JSON.stringify({
@@ -38,7 +38,7 @@ module.exports = {
         },
         {
           name: 'Brighton',
-          groupType: 'SENDING_GROUP',
+          groupType: 'REGULAR',
           createdAt: new Date(),
           updatedAt: new Date(),
           primaryLocation: JSON.stringify({
@@ -52,7 +52,7 @@ module.exports = {
         },
         {
           name: 'Calais',
-          groupType: 'RECEIVING_GROUP',
+          groupType: 'REGULAR',
           createdAt: new Date(),
           updatedAt: new Date(),
           primaryLocation: JSON.stringify({
