@@ -28,7 +28,7 @@ const RequestTokenPage: FunctionComponent = () => {
           </p>
           <form className="space-y-6">
             <TextField
-              label="email"
+              label="Email"
               type="email"
               name="email"
               autoComplete="email"
