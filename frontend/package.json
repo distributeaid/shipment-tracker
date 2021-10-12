@@ -40,7 +40,7 @@
     "postcss": "8.3.9"
   },
   "scripts": {
-    "start": "npm-run-all build:styles --parallel watch:styles start:react",
+    "start": "NODE_OPTIONS=--max_old_space_size=4096 npm-run-all build:styles --parallel watch:styles start:react",
     "start:react": "PORT=8080 react-scripts start",
     "build:styles": "tailwind build src/stylesheets/index.css -o src/stylesheets/index.output.css",
     "watch:styles": "chokidar 'src/**/*.css' --ignore src/stylesheets/index.output.css -c 'npm run build:styles'",

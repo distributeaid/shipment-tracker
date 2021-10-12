@@ -16,7 +16,9 @@ Key documents:
 
 ### Staging
 
-The main `saga` branch is deployed automatically to Heroku by CI. Staging can be accessed here: https://shipment-tracker-dev.herokuapp.com
+The main `saga` branch is deployed automatically to CleverCloud by CI. Staging can be accessed here:
+
+https://shipment-tracker-saga.distributeaid.dev/
 
 ## Devopment process
 
@@ -80,6 +82,8 @@ Then, open a second terminal, navigate to the `./frontend` directory and run:
 You can click on the printed URLs to open them in a browser.
 
 ### Using your local machine
+
+⚠️ these instructions are out of date.
 
 Install node.js v16:
 
