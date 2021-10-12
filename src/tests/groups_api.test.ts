@@ -5,7 +5,7 @@ import { userToAuthContext } from '../authenticateRequest'
 import Group, { GroupAttributes } from '../models/group'
 import UserAccount from '../models/user_account'
 import { sequelize } from '../sequelize'
-import { GroupType } from '../server-internal-types'
+import { GroupCreateInput, GroupType } from '../server-internal-types'
 import { makeAdminTestServer, makeTestServer } from '../testServer'
 
 const purgeDb = async () => sequelize.sync({ force: true })
@@ -28,6 +28,12 @@ describe('Groups API', () => {
     const group2Params = {
       name: 'group2',
       ...commonGroupData,
+    }
+
+    const daHub: GroupCreateInput = {
+      ...commonGroupData,
+      name: 'hub1',
+      groupType: GroupType.DaHub,
     }
 
     let testServer: ApolloServer,
@@ -110,6 +116,17 @@ describe('Groups API', () => {
             'Group captains can only create a single group',
           )
         }
+      })
+
+      it('allows admins to create DA hubs', async () => {
+        const res = await adminTestServer.executeOperation({
+          query: ADD_GROUP,
+          variables: daHub,
+        })
+
+        expect(res.errors).toBeUndefined()
+        expect(res?.data?.addGroup?.name).toEqual(daHub.name)
+        expect(res?.data?.addGroup?.id).not.toBeNull()
       })
     })
 
