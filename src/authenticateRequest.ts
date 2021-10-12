@@ -52,7 +52,7 @@ export const authCookie = (
   authCookieName,
   JSON.stringify({
     i: user.id,
-    a: false,
+    a: user.isAdmin,
     c: userHash(user),
   }),
   {

@@ -8,7 +8,7 @@ import { validateWithJSONSchema } from '../../input-validation/validateWithJSONS
 import UserAccount from '../../models/user_account'
 import { HTTPStatusCode } from '../../rest/response/HttpStatusCode'
 import { respondWithProblem } from '../../rest/response/problem'
-import { passwordInput } from '../register'
+import { hashPassword, passwordInput } from '../register'
 
 const changePasswordInput = Type.Object(
   {
@@ -50,7 +50,7 @@ const changePassword =
       })
     }
 
-    const passwordHash = bcrypt.hashSync(valid.value.newPassword, saltRounds)
+    const passwordHash = hashPassword(valid.value.newPassword, saltRounds)
     await user.update({
       passwordHash,
     })

@@ -6,7 +6,11 @@ import { createServer, Server } from 'http'
 import passport from 'passport'
 import request, { SuperTest, Test } from 'supertest'
 import { v4 } from 'uuid'
-import { authCookieName, cookieAuthStrategy } from '../authenticateRequest'
+import {
+  authCookieName,
+  cookieAuthStrategy,
+  decodeAuthCookie,
+} from '../authenticateRequest'
 import UserAccount from '../models/user_account'
 import VerificationToken from '../models/verification_token'
 import { HTTPStatusCode } from '../rest/response/HttpStatusCode'
@@ -16,7 +20,7 @@ import { deleteCookie, renewCookie } from '../routes/me/cookie'
 import resetPassword from '../routes/me/password'
 import setNewPasswordUsingTokenAndEmail from '../routes/password/new'
 import sendVerificationTokenByEmail from '../routes/password/token'
-import registerUser from '../routes/register'
+import registerUser, { hashPassword } from '../routes/register'
 import confirmRegistration from '../routes/register/confirm'
 
 jest.setTimeout(15 * 1000)
@@ -187,6 +191,40 @@ describe('User account API', () => {
           title: `User with email foo@example.com not found!`,
           status: HTTPStatusCode.NotFound,
         }))
+    it('should set the isAdmin flag in the cookie to false for users', () =>
+      expect(
+        decodeAuthCookie(decodeURIComponent(authCookie.split('.')[0]).substr(2))
+          .isAdmin,
+      ).toBeFalse())
+    it('should set the isAdmin flag in the cookie to true for admins', async () => {
+      const adminEmail = `some-admin${v4()}@example.com`
+      await UserAccount.create({
+        email: adminEmail,
+        isAdmin: true,
+        isConfirmed: true,
+        name: 'Some Admin',
+        passwordHash: hashPassword('2DhE.sf!f9Z3u8x', 1),
+      })
+
+      const res = await r
+        .post('/login')
+        .send({
+          email: adminEmail,
+          password: '2DhE.sf!f9Z3u8x',
+        })
+        .expect(HTTPStatusCode.NoContent)
+        .expect('set-cookie', tokenCookieRx)
+
+      expect(
+        decodeAuthCookie(
+          decodeURIComponent(
+            (tokenCookieRx.exec(res.header['set-cookie'])?.[1] as string).split(
+              '.',
+            )[0],
+          ).substr(2),
+        ).isAdmin,
+      ).toBeTrue()
+    })
   })
   describe('/me', () => {
     it('should return the user account of the current user', async () => {

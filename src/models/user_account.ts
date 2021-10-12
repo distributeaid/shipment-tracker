@@ -18,6 +18,7 @@ export interface UserAccountAttributes {
   email: string
   passwordHash: string
   isAdmin?: boolean
+  isConfirmed?: boolean
   name: string
 }
 

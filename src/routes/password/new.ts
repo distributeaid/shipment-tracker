@@ -1,5 +1,4 @@
 import { Type } from '@sinclair/typebox'
-import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import { errorsToProblemDetail } from '../../input-validation/errorsToProblemDetail'
 import { trimAll } from '../../input-validation/trimAll'
@@ -8,7 +7,7 @@ import UserAccount from '../../models/user_account'
 import VerificationToken from '../../models/verification_token'
 import { HTTPStatusCode } from '../../rest/response/HttpStatusCode'
 import { respondWithProblem } from '../../rest/response/problem'
-import { emailInput, passwordInput } from '../register'
+import { emailInput, hashPassword, passwordInput } from '../register'
 
 const newPasswordUsingTokenInput = Type.Object(
   {
@@ -51,7 +50,7 @@ const setNewPasswordUsingTokenAndEmail =
 
     // Update the password
     await user.update({
-      passwordHash: bcrypt.hashSync(valid.value.newPassword, saltRounds),
+      passwordHash: hashPassword(valid.value.newPassword, saltRounds),
     })
     response.status(HTTPStatusCode.OK).end()
   }

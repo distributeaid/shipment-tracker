@@ -23,6 +23,9 @@ export const passwordInput = Type.String({
   title: 'Password',
 })
 
+export const hashPassword = (password: string, saltRounds: number): string =>
+  bcrypt.hashSync(password, saltRounds)
+
 const registerUserInput = Type.Object(
   {
     email: emailInput,
@@ -44,7 +47,7 @@ const registerUser =
 
     try {
       const user = await UserAccount.create({
-        passwordHash: bcrypt.hashSync(valid.value.password, saltRounds),
+        passwordHash: hashPassword(valid.value.password, saltRounds),
         email: valid.value.email,
         name: valid.value.name,
       })
