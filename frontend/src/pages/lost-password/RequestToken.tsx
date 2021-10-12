@@ -3,6 +3,7 @@ import { Redirect } from 'react-router'
 import Error from '../../components/alert/Error'
 import FormFooter from '../../components/forms/FormFooter'
 import TextField from '../../components/forms/TextField'
+import InternalLink from '../../components/InternalLink'
 import { AuthError, emailRegEx, useAuth } from '../../hooks/useAuth'
 import PublicLayout from '../../layouts/PublicLayout'
 import ROUTES from '../../utils/routes'
@@ -47,6 +48,9 @@ const RequestTokenPage: FunctionComponent = () => {
             {error !== undefined && (
               <Error className="mt-2">Oops: {error.message}</Error>
             )}
+            <InternalLink className="block text-center" to={ROUTES.HOME}>
+              Back to Login
+            </InternalLink>
           </FormFooter>
         </form>
         {emailSent && (
