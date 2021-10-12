@@ -50,7 +50,7 @@ const SetNewPasswordPage: FunctionComponent = () => {
             In order to set a new password, please provide the token from the
             email you should have received and a new password.
           </p>
-          <form>
+          <form className="space-y-6 mb-6">
             <TextField
               label="Your email"
               type="email"

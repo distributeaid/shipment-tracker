@@ -26,7 +26,7 @@ const RequestTokenPage: FunctionComponent = () => {
           <p className="mb-2">
             In order to reset your password, we need to verify your email first.
           </p>
-          <form>
+          <form className="space-y-6">
             <TextField
               label="email"
               type="email"

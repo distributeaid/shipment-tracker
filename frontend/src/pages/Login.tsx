@@ -51,10 +51,9 @@ const LoginPage: FunctionComponent = () => {
             If you don't have an account, you can{' '}
             <InternalLink to={ROUTES.REGISTER}>register here</InternalLink>.
           </p>
-          <form className="mt-4">
+          <form className="mt-4 space-y-6">
             <TextField
-              className="mb-6"
-              label="email"
+              label="Email"
               type="email"
               name="email"
               autoComplete="email"
@@ -63,8 +62,7 @@ const LoginPage: FunctionComponent = () => {
               disabled={isLoading}
             />
             <TextField
-              className="mb-6"
-              label="password"
+              label="Password"
               type="password"
               name="password"
               autoComplete="password"

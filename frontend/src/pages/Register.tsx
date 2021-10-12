@@ -36,7 +36,7 @@ const RegisterPage: FunctionComponent = () => {
             If you already have an account, you can{' '}
             <InternalLink to={ROUTES.HOME}>log in here</InternalLink>.
           </p>
-          <form className="mt-4">
+          <form className="mt-4 space-y-6">
             <TextField
               label="Your name"
               type="text"
