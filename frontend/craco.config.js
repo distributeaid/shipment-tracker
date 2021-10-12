@@ -5,4 +5,7 @@ module.exports = {
       plugins: [require('tailwindcss'), require('autoprefixer')],
     },
   },
+  devServer: {
+    port: 8080,
+  },
 }

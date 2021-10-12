@@ -8,7 +8,7 @@
     "jpoissonnier.vscode-styled-components",
     "graphql.vscode-graphql"
   ],
-  "forwardPorts": [3000],
+  "forwardPorts": [3000, 8080],
   "postCreateCommand": "sudo /etc/init.d/postgresql start && yarn install --frozen-lockfile && yarn run build && npx sequelize-cli --env=test db:migrate && npx sequelize-cli --env=development db:migrate",
   "remoteUser": "node"
 }
