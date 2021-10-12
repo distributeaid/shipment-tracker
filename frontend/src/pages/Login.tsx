@@ -53,6 +53,7 @@ const LoginPage: FunctionComponent = () => {
           </p>
           <form className="mt-4">
             <TextField
+              className="mb-6"
               label="email"
               type="email"
               name="email"
@@ -62,6 +63,7 @@ const LoginPage: FunctionComponent = () => {
               disabled={isLoading}
             />
             <TextField
+              className="mb-6"
               label="password"
               type="password"
               name="password"
