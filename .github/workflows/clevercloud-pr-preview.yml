@@ -123,7 +123,7 @@ jobs:
           pip install --upgrade --user 'awscli<2.0.0'
           export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_ID | sed 's/CELLAR_ADDON_KEY_ID/AWS_ACCESS_KEY_ID/' | tr -d '"'`
           export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_SECRET | sed 's/CELLAR_ADDON_KEY_SECRET/AWS_SECRET_ACCESS_KEY/' | tr -d '"'`
-          aws s3api create-bucket --bucket ${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }} --acl public-read --endpoint-url https://cellar-c2.services.clever-cloud.com --debug
+          aws s3api create-bucket --bucket ${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }} --acl public-read --endpoint-url https://cellar-c2.services.clever-cloud.com
 
       - name: Deploy the application
         run: npx clever deploy
