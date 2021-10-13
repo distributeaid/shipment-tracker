@@ -47,7 +47,7 @@ jobs:
           echo "::set-output name=exists::true"
 
       - name: App does not exist
-        if: steps.exists.exists != true
+        if: steps.exists.outputs.exists != true
         id: exists-not
         run: echo "::set-output name=exists::false"
 
