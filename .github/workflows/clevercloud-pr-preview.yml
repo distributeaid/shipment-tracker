@@ -120,7 +120,7 @@ jobs:
 
       - name: Create Cellar bucket
         run: |
-          pip install 'awscli<2.0.0' --upgrade --user.
+          pip install --upgrade --user 'awscli<2.0.0'
           export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_ID | sed 's/CELLAR_ADDON_KEY_ID/AWS_ACCESS_KEY_ID/' | tr -d '"'`
           export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_SECRET | sed 's/CELLAR_ADDON_KEY_SECRET/AWS_SECRET_ACCESS_KEY/' | tr -d '"'`
           echo $AWS_ACCESS_KEY_ID
