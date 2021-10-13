@@ -37,7 +37,7 @@ jobs:
 
       - name: Set app name
         id: name
-        run: echo "::set-output name=name::pr${{ github.event.pull_request.number }}"
+        run: echo "::set-output name=name::shipment-tracker-pr${{ github.event.pull_request.number }}"
 
       - name: Check if preview exists
         id: exists
