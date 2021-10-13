@@ -120,10 +120,8 @@ jobs:
 
       - name: Create Cellar bucket
         run: |
-          export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_ID | tr -d '"'`
-          export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_SECRET | tr -d '"'`
-          aws configure set aws_access_key_id $CELLAR_ADDON_KEY_ID
-          aws configure set aws_secret_access_key $CELLAR_ADDON_KEY_SECRET
+          export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_ID | sed 's/CELLAR_ADDON_KEY_ID/AWS_ACCESS_KEY_ID/' | tr -d '"'`
+          export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_SECRET | sed 's/CELLAR_ADDON_KEY_SECRET/AWS_SECRET_ACCESS_KEY/' | tr -d '"'`
           aws s3api create-bucket --bucket ${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }} --acl public-read --endpoint-url https://cellar-c2.services.clever-cloud.com
 
       - name: Deploy the application
