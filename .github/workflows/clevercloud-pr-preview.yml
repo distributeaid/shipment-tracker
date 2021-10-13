@@ -123,8 +123,6 @@ jobs:
           pip install --upgrade --user 'awscli<2.0.0'
           export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_ID | sed 's/CELLAR_ADDON_KEY_ID/AWS_ACCESS_KEY_ID/' | tr -d '"'`
           export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_SECRET | sed 's/CELLAR_ADDON_KEY_SECRET/AWS_SECRET_ACCESS_KEY/' | tr -d '"'`
-          echo $AWS_ACCESS_KEY_ID
-          echo $AWS_SECRET_ACCESS_KEY
           aws s3api create-bucket --bucket ${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }} --acl public-read --endpoint-url https://cellar-c2.services.clever-cloud.com --debug
 
       - name: Deploy the application
@@ -134,7 +132,7 @@ jobs:
         run: |
           curl \
             -X POST \
-            ${{ github.event.issue.comments_url }} \
+            ${{ github.event.pull_request.comments_url }} \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             --data '{ "body": "Preview available on ${{ steps.preview-url.outputs.url }}" }'
@@ -175,7 +173,7 @@ jobs:
         run: |
           curl \
             -X POST \
-            ${{ github.event.issue.comments_url }} \
+            ${{ github.event.pull_request.comments_url }} \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             --data '{ "body": "Preview updated on ${{ steps.preview-url.outputs.url }}" }'
