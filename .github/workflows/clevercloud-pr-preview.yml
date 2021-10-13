@@ -4,8 +4,6 @@ name: PR-preview
 
 on:
   pull_request:
-    types:
-      - labeled
 
 env:
   CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
@@ -14,7 +12,7 @@ env:
 
 jobs:
   app:
-    if: github.event.label.name == 'cc-preview'
+    if: contains(github.event.pull_request.labels.*.name, 'cc-preview')
     environment: cc-preview
     runs-on: ubuntu-latest
     name: Create the app name and check of app already exists
@@ -39,7 +37,7 @@ jobs:
 
       - name: Set app name
         id: name
-        run: echo "::set-output name=name::pr-${{ github.event.pull_request.number }}"
+        run: echo "::set-output name=name::pr${{ github.event.pull_request.number }}"
 
       - name: Check if preview exists
         id: exists
@@ -53,8 +51,8 @@ jobs:
         id: exists-not
         run: echo "::set-output name=exists::false"
 
-  preview:
-    if: needs.app.outputs.exists == 'false'
+  create:
+    if: contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'false'
     runs-on: ubuntu-latest
     environment: cc-preview
     name: Create preview instance
@@ -120,6 +118,14 @@ jobs:
       - name: Create Cellar addon
         run: npx clever addon create --link ${{ needs.app.outputs.name }} -p S cellar-addon ${{ needs.app.outputs.name }}-frontend
 
+      - name: Create Cellar bucket
+        run: |
+          export `npx clever env -a shipment-tracker | grep CELLAR_ADDON_KEY_ID`
+          export `npx clever env -a shipment-tracker | grep CELLAR_ADDON_KEY_SECRET`
+          aws configure set aws_access_key_id $CELLAR_ADDON_KEY_ID
+          aws configure set aws_secret_access_key $CELLAR_ADDON_KEY_SECRET
+          aws s3api create-bucket --bucket ${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }} --acl public-read --endpoint-url https://cellar-c2.services.clever-cloud.com
+
       - name: Deploy the application
         run: npx clever deploy
 
@@ -131,3 +137,44 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             --data '{ "body": "Preview available on ${{ steps.preview-url.outputs.url }}" }'
+
+  update:
+    if: contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'true'
+    runs-on: ubuntu-latest
+    environment: cc-preview
+    name: Create preview instance
+    needs:
+      - app
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Needed for deploy
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install NPM packages
+        run: yarn install --frozen-lockfile
+
+      - name: Deploy the application
+        run: npx clever deploy
+
+      - name: Set preview URL
+        id: preview-url
+        run: echo "::set-output name=url::https://${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }}/"
+
+      - name: Add comment with preview URL to PR
+        run: |
+          curl \
+            -X POST \
+            ${{ github.event.issue.comments_url }} \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            --data '{ "body": "Preview updated on ${{ steps.preview-url.outputs.url }}" }'
