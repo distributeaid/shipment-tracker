@@ -120,8 +120,8 @@ jobs:
 
       - name: Create Cellar bucket
         run: |
-          export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_ID`
-          export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_SECRET`
+          export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_ID | tr -d '"'`
+          export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_SECRET | tr -d '"'`
           aws configure set aws_access_key_id $CELLAR_ADDON_KEY_ID
           aws configure set aws_secret_access_key $CELLAR_ADDON_KEY_SECRET
           aws s3api create-bucket --bucket ${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }} --acl public-read --endpoint-url https://cellar-c2.services.clever-cloud.com
@@ -142,7 +142,7 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'true'
     runs-on: ubuntu-latest
     environment: cc-preview
-    name: Create preview instance
+    name: Update preview instance
     needs:
       - app
     steps:
