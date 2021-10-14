@@ -155,7 +155,7 @@ jobs:
         with:
           node-version: '16.x'
 
-      - uses: actions/cache@v2steps.name.outputs.name
+      - uses: actions/cache@v2
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
