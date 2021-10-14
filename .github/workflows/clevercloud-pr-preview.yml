@@ -20,6 +20,7 @@ jobs:
       name: ${{ steps.name.outputs.name }}
       exists: ${{ steps.exists-not.outputs.exists }}
       url: ${{ steps.url.outputs.url }}
+      hostname: ${{ steps.hostname.outputs.hostname }}
     steps:
       - uses: actions/checkout@v2
 
@@ -48,13 +49,17 @@ jobs:
           echo "::set-output name=exists::true"
 
       - name: App does not exist
-        if: steps.exists.outputs.exists != true
+        if: steps.exists.outputs.exists != 'true'
         id: exists-not
         run: echo "::set-output name=exists::false"
 
+      - name: Set preview hostname
+        id: hostname
+        run: echo "::set-output name=hostname::pr${{ github.event.pull_request.number }}.${{ env.PREVIEW_DOMAIN }}"
+
       - name: Set preview URL
         id: url
-        run: echo "::set-output name=url::https://pr${{ github.event.pull_request.number }}.${{ env.PREVIEW_DOMAIN }}/"
+        run: echo "::set-output name=url::https://${{ steps.hostname.outputs.hostname }}/"
 
   create:
     if: contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'false'
@@ -101,7 +106,7 @@ jobs:
 
       - name: Configure frontend settings
         run: |
-          npx clever env set CELLAR_BUCKET ${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }}
+          npx clever env set CELLAR_BUCKET ${{ needs.app.outputs.hostname }}
           npx clever env set REACT_APP_SERVER_URL https://`npx clever domain | tr -d ' \n'`
 
       - name: Configure email settings
@@ -124,7 +129,7 @@ jobs:
           pip install --upgrade --user 'awscli<2.0.0'
           export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_ID | sed 's/CELLAR_ADDON_KEY_ID/AWS_ACCESS_KEY_ID/' | tr -d '"'`
           export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_SECRET | sed 's/CELLAR_ADDON_KEY_SECRET/AWS_SECRET_ACCESS_KEY/' | tr -d '"'`
-          aws s3api create-bucket --bucket ${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }} --acl public-read --endpoint-url https://cellar-c2.services.clever-cloud.com
+          aws s3api create-bucket --bucket ${{ needs.app.outputs.hostname }} --acl public-read --endpoint-url https://cellar-c2.services.clever-cloud.com
 
       - name: Deploy the application
         run: npx clever deploy
