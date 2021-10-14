@@ -18,7 +18,7 @@ jobs:
     name: Create the app name and check of app already exists
     outputs:
       name: ${{ steps.name.outputs.name }}
-      exists: ${{ steps.exists-not.outputs.exists }}
+      exists: ${{ steps.exists.outputs.exists }}
       url: ${{ steps.url.outputs.url }}
       hostname: ${{ steps.hostname.outputs.hostname }}
     steps:
@@ -43,15 +43,10 @@ jobs:
 
       - name: Check if preview exists
         id: exists
-        continue-on-error: true
         run: |
-          npx clever link -o ${{ secrets.CLEVER_ORG }} ${{ steps.name.outputs.name }}
-          echo "::set-output name=exists::true"
-
-      - name: App does not exist
-        if: steps.exists.outputs.exists != 'true'
-        id: exists-not
-        run: echo "::set-output name=exists::false"
+          npx clever link -o ${{ secrets.CLEVER_ORG }} ${{ steps.name.outputs.name }} \
+          && echo "::set-output name=exists::true" \
+          || echo "::set-output name=exists::false"
 
       - name: Set preview hostname
         id: hostname
