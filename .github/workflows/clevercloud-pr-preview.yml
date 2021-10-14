@@ -97,7 +97,7 @@ jobs:
           npx clever env set CC_RUN_COMMAND 'yarn run prod:server'
           npx clever env set DB_ENV clevercloud
           npx clever env set NODE_ENV production
-          npx clever env set ORIGIN ${{ needs.app.url.outputs.url }}
+          npx clever env set ORIGIN ${{ needs.app.outputs.url }}
 
       - name: Configure frontend settings
         run: |
@@ -136,7 +136,7 @@ jobs:
             ${{ github.event.pull_request.comments_url }} \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            --data '{ "body": "Preview available on ${{ needs.app.url.outputs.url }}" }'
+            --data '{ "body": "Preview available on ${{ needs.app.outputs.url }}" }'
 
   update:
     if: contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'true'
@@ -155,13 +155,16 @@ jobs:
         with:
           node-version: '16.x'
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v2steps.name.outputs.name
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install NPM packages
         run: yarn install --frozen-lockfile
+
+      - name: Link application
+        run: npx clever link -o ${{ secrets.CLEVER_ORG }} ${{ needs.app.outputs.url }}
 
       - name: Deploy the application
         run: npx clever deploy
@@ -173,4 +176,4 @@ jobs:
             ${{ github.event.pull_request.comments_url }} \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            --data '{ "body": "Preview updated on ${{ needs.app.url.outputs.url }}" }'
+            --data '{ "body": "Preview updated on ${{ needs.app.outputs.url }}" }'
