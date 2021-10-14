@@ -8,7 +8,7 @@ on:
 env:
   CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
   CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-  PREVIEW_DOMAIN: shipment-tracker-preview.distributeaid.dev
+  PREVIEW_DOMAIN: stp.distributeaid.dev
 
 jobs:
   app:
@@ -19,6 +19,7 @@ jobs:
     outputs:
       name: ${{ steps.name.outputs.name }}
       exists: ${{ steps.exists-not.outputs.exists }}
+      url: ${{ steps.url.outputs.url }}
     steps:
       - uses: actions/checkout@v2
 
@@ -51,6 +52,10 @@ jobs:
         id: exists-not
         run: echo "::set-output name=exists::false"
 
+      - name: Set preview URL
+        id: url
+        run: echo "::set-output name=url::https://pr${{ github.event.pull_request.number }}.${{ env.PREVIEW_DOMAIN }}/"
+
   create:
     if: contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'false'
     runs-on: ubuntu-latest
@@ -76,10 +81,6 @@ jobs:
       - name: Install NPM packages
         run: yarn install --frozen-lockfile
 
-      - name: Set preview URL
-        id: preview-url
-        run: echo "::set-output name=url::https://${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }}/"
-
       - name: Create the application
         run: npx clever create -t node -o ${{ secrets.CLEVER_ORG }} ${{ needs.app.outputs.name }}
 
@@ -96,7 +97,7 @@ jobs:
           npx clever env set CC_RUN_COMMAND 'yarn run prod:server'
           npx clever env set DB_ENV clevercloud
           npx clever env set NODE_ENV production
-          npx clever env set ORIGIN ${{ steps.preview-url.outputs.url }}
+          npx clever env set ORIGIN ${{ needs.app.url.outputs.url }}
 
       - name: Configure frontend settings
         run: |
@@ -135,7 +136,7 @@ jobs:
             ${{ github.event.pull_request.comments_url }} \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            --data '{ "body": "Preview available on ${{ steps.preview-url.outputs.url }}" }'
+            --data '{ "body": "Preview available on ${{ needs.app.url.outputs.url }}" }'
 
   update:
     if: contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'true'
@@ -165,10 +166,6 @@ jobs:
       - name: Deploy the application
         run: npx clever deploy
 
-      - name: Set preview URL
-        id: preview-url
-        run: echo "::set-output name=url::https://${{ needs.app.outputs.name }}.${{ env.PREVIEW_DOMAIN }}/"
-
       - name: Add comment with preview URL to PR
         run: |
           curl \
@@ -176,4 +173,4 @@ jobs:
             ${{ github.event.pull_request.comments_url }} \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            --data '{ "body": "Preview updated on ${{ steps.preview-url.outputs.url }}" }'
+            --data '{ "body": "Preview updated on ${{ needs.app.url.outputs.url }}" }'
