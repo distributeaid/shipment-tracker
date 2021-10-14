@@ -164,7 +164,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Link application
-        run: npx clever link -o ${{ secrets.CLEVER_ORG }} ${{ needs.app.outputs.url }}
+        run: npx clever link -o ${{ secrets.CLEVER_ORG }} ${{ needs.app.outputs.name }}
 
       - name: Deploy the application
         run: npx clever deploy
