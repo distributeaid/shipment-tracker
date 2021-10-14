@@ -167,7 +167,7 @@ jobs:
         run: npx clever link -o ${{ secrets.CLEVER_ORG }} ${{ needs.app.outputs.name }}
 
       - name: Deploy the application
-        run: npx clever deploy
+        run: npx clever deploy -f
 
       - name: Add comment with preview URL to PR
         run: |
