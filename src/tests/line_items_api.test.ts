@@ -143,9 +143,9 @@ describe('LineItems API', () => {
       })
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.lineItem?.id).toBeNumber()
+      expect(res?.data?.lineItem?.id).toEqual(expect.any(Number))
       expect(res?.data?.lineItem?.status).toEqual(LineItemStatus.Proposed)
-      expect(res?.data?.lineItem?.affirmLiability).toBeFalse()
+      expect(res?.data?.lineItem?.affirmLiability).toBe(false)
     })
 
     it('returns the line item for admins', async () => {
@@ -155,9 +155,9 @@ describe('LineItems API', () => {
       })
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.lineItem?.id).toBeNumber()
+      expect(res?.data?.lineItem?.id).toEqual(expect.any(Number))
       expect(res?.data?.lineItem?.status).toEqual(LineItemStatus.Proposed)
-      expect(res?.data?.lineItem?.affirmLiability).toBeFalse()
+      expect(res?.data?.lineItem?.affirmLiability).toBe(false)
     })
 
     it('forbids access to other users', async () => {

@@ -170,7 +170,7 @@ describe('Pallets API', () => {
       })) as TypedGraphQLResponse<{ addPallet: Pallet }>
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.addPallet).not.toBeNil()
+      expect(res?.data?.addPallet == null).not.toBe(true)
     })
   })
 

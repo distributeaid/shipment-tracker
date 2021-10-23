@@ -195,7 +195,7 @@ describe('User account API', () => {
       expect(
         decodeAuthCookie(decodeURIComponent(authCookie.split('.')[0]).substr(2))
           .isAdmin,
-      ).toBeFalse())
+      ).toBe(false))
     it('should set the isAdmin flag in the cookie to true for admins', async () => {
       const adminEmail = `some-admin${v4()}@example.com`
       await UserAccount.create({
@@ -223,7 +223,7 @@ describe('User account API', () => {
             )[0],
           ).substr(2),
         ).isAdmin,
-      ).toBeTrue()
+      ).toBe(true)
     })
   })
   describe('/me', () => {

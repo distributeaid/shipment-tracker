@@ -85,7 +85,7 @@ describe('Shipments API', () => {
       })) as TypedGraphQLResponse<{ addShipment: Shipment }>
 
       expect(res.errors).not.toBeUndefined()
-      expect(res.errors).not.toBeEmpty()
+      expect(res.errors).not.toHaveLength(0)
 
       if (res.errors == null || res.errors.length === 0) {
         return
@@ -170,7 +170,7 @@ describe('Shipments API', () => {
       })) as TypedGraphQLResponse<{ updateShipment: Shipment }>
 
       expect(res.errors).not.toBeUndefined()
-      expect(res.errors).not.toBeEmpty()
+      expect(res.errors).not.toHaveLength(0)
       expect(res.errors?.[0]?.message).toBe(
         'updateShipment forbidden to non-admin users',
       )
@@ -189,7 +189,7 @@ describe('Shipments API', () => {
         })) as TypedGraphQLResponse<{ updateShipment: Shipment }>
 
         expect(res.errors).not.toBeUndefined()
-        expect(res.errors).not.toBeEmpty()
+        expect(res.errors).not.toHaveLength(0)
         expect(res.errors?.[0]?.message).toBe(`No shipment exists with ID "43"`)
       })
     })
@@ -207,7 +207,7 @@ describe('Shipments API', () => {
         })) as TypedGraphQLResponse<{ updateShipment: Shipment }>
 
         expect(res.errors).not.toBeUndefined()
-        expect(res.errors).not.toBeEmpty()
+        expect(res.errors).not.toHaveLength(0)
         expect(res.errors?.[0]?.message).toBe('Could not find sending hubs: 43')
       })
     })
@@ -225,7 +225,7 @@ describe('Shipments API', () => {
         })) as TypedGraphQLResponse<{ updateShipment: Shipment }>
 
         expect(res.errors).not.toBeUndefined()
-        expect(res.errors).not.toBeEmpty()
+        expect(res.errors).not.toHaveLength(0)
         expect(res.errors?.[0]?.message).toBe(
           'Could not find receiving hubs: 43',
         )
@@ -325,7 +325,7 @@ describe('Shipments API', () => {
           },
         })
         expect(res.errors).not.toBeUndefined()
-        expect(res.errors).not.toBeEmpty()
+        expect(res.errors).not.toHaveLength(0)
         expect(res.errors?.[0]?.message).toMatch(
           /Sending and receiving hubs must be different/,
         )
@@ -343,7 +343,7 @@ describe('Shipments API', () => {
           },
         })
         expect(res.errors).not.toBeUndefined()
-        expect(res.errors).not.toBeEmpty()
+        expect(res.errors).not.toHaveLength(0)
         expect(res.errors?.[0]?.message).toMatch(
           /Could not find sending hubs: 42, 666/,
         )
@@ -438,25 +438,27 @@ describe('Shipments API', () => {
       }>
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.listShipments).toIncludeSameMembers([
-        {
-          id: shipment1.id,
-          status: shipment1.status,
-          sendingHubs: [
-            {
-              id: group1.id,
-              name: group1.name,
-            },
-          ],
-          receivingHubs: [
-            {
-              id: group2.id,
-              name: group2.name,
-            },
-          ],
-        },
-        // Shipment 2 will be filtered out because of its status
-      ])
+      expect(res?.data?.listShipments).toEqual(
+        expect.arrayContaining([
+          {
+            id: shipment1.id,
+            status: shipment1.status,
+            sendingHubs: [
+              {
+                id: group1.id,
+                name: group1.name,
+              },
+            ],
+            receivingHubs: [
+              {
+                id: group2.id,
+                name: group2.name,
+              },
+            ],
+          },
+          // Shipment 2 will be filtered out because of its status
+        ]),
+      )
     })
 
     it('filters shipments by status', async () => {
@@ -470,24 +472,26 @@ describe('Shipments API', () => {
       }>
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.listShipments).toIncludeSameMembers([
-        {
-          id: shipment1.id,
-          status: shipment1.status,
-          sendingHubs: [
-            {
-              id: group1.id,
-              name: group1.name,
-            },
-          ],
-          receivingHubs: [
-            {
-              id: group2.id,
-              name: group2.name,
-            },
-          ],
-        },
-      ])
+      expect(res?.data?.listShipments).toEqual(
+        expect.arrayContaining([
+          {
+            id: shipment1.id,
+            status: shipment1.status,
+            sendingHubs: [
+              {
+                id: group1.id,
+                name: group1.name,
+              },
+            ],
+            receivingHubs: [
+              {
+                id: group2.id,
+                name: group2.name,
+              },
+            ],
+          },
+        ]),
+      )
     })
 
     test('access denied error if filtering with denied shipment status as non-admin', async () => {
@@ -499,7 +503,7 @@ describe('Shipments API', () => {
       })) as TypedGraphQLResponse<{ listShipments: Shipment[] }>
 
       expect(res.errors).not.toBeUndefined()
-      expect(res.errors).not.toBeEmpty()
+      expect(res.errors).not.toHaveLength(0)
       expect(res.errors?.[0]?.message).toBe(
         `non-admin users are not allowed to view shipments with status ${ShipmentStatus.InProgress}`,
       )
@@ -564,7 +568,7 @@ describe('Shipments API', () => {
         const res = await testServer.executeOperation({ query: SHIPMENT })
 
         expect(res.errors).not.toBeUndefined()
-        expect(res.errors).not.toBeEmpty()
+        expect(res.errors).not.toHaveLength(0)
 
         expect(res.errors?.[0]?.message).toBe(
           'Variable "$id" of required type "Int!" was not provided.',
@@ -596,9 +600,9 @@ describe('Shipments API', () => {
 
           const returnedExport = res.data?.shipment?.exports?.[0]!
 
-          expect(returnedExport).not.toBeNil()
-          expect(returnedExport.id).not.toBeNil()
-          expect(returnedExport.downloadPath).not.toBeNil()
+          expect(returnedExport == null).not.toBe(true)
+          expect(returnedExport.id == null).not.toBe(true)
+          expect(returnedExport.downloadPath == null).not.toBe(true)
         })
       })
 
@@ -610,7 +614,7 @@ describe('Shipments API', () => {
           })) as TypedGraphQLResponse<{ shipment: Shipment }>
 
           expect(res.errors).not.toBeUndefined()
-          expect(res.errors).not.toBeEmpty()
+          expect(res.errors).not.toHaveLength(0)
           expect(res.errors?.[0]?.message).toBe(
             'No shipment exists with ID "17"',
           )
@@ -624,7 +628,7 @@ describe('Shipments API', () => {
       })) as TypedGraphQLResponse<{ shipment: Shipment }>
 
       expect(res.errors).not.toBeUndefined()
-      expect(res.errors).not.toBeEmpty()
+      expect(res.errors).not.toHaveLength(0)
       expect(res.errors?.[0]?.message).toBe(
         'non-admin users are not allowed to view shipments with status IN_PROGRESS',
       )

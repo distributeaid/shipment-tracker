@@ -353,7 +353,7 @@ describe('Groups API', () => {
           const res = await testServer.executeOperation({ query: GROUP })
 
           expect(res.errors).not.toBeUndefined()
-          expect(res.errors).not.toBeEmpty()
+          expect(res.errors).not.toHaveLength(0)
 
           if (!res.errors) {
             return
@@ -386,7 +386,7 @@ describe('Groups API', () => {
             })
 
             expect(res.errors).not.toBeUndefined()
-            expect(res.errors).not.toBeEmpty()
+            expect(res.errors).not.toHaveLength(0)
 
             if (!res.errors) {
               return
@@ -419,14 +419,16 @@ describe('Groups API', () => {
         })
 
         expect(res.errors).toBeUndefined()
-        expect(res?.data?.listGroups).toIncludeSameMembers(
-          [
-            sendingGroup1,
-            receivingGroup1,
-            sendingGroup2,
-            receivingGroup2,
-            daHubGroup,
-          ].map(toGroupData),
+        expect(res?.data?.listGroups).toEqual(
+          expect.arrayContaining(
+            [
+              sendingGroup1,
+              receivingGroup1,
+              sendingGroup2,
+              receivingGroup2,
+              daHubGroup,
+            ].map(toGroupData),
+          ),
         )
       })
 
@@ -470,10 +472,12 @@ describe('Groups API', () => {
               },
             })
             expect(res.errors).toBeUndefined()
-            expect(res?.data?.listGroups).toIncludeSameMembers(
-              (await Group.findAll())
-                .filter(({ name }) => expectedGroupNames.includes(name))
-                .map(toGroupData),
+            expect(res?.data?.listGroups).toEqual(
+              expect.arrayContaining(
+                (await Group.findAll())
+                  .filter(({ name }) => expectedGroupNames.includes(name))
+                  .map(toGroupData),
+              ),
             )
           },
         )
@@ -502,10 +506,12 @@ describe('Groups API', () => {
               },
             })
             expect(res.errors).toBeUndefined()
-            expect(res?.data?.listGroups).toIncludeSameMembers(
-              (await Group.findAll())
-                .filter(({ name }) => expectedGroupNames.includes(name))
-                .map(toGroupData),
+            expect(res?.data?.listGroups).toEqual(
+              expect.arrayContaining(
+                (await Group.findAll())
+                  .filter(({ name }) => expectedGroupNames.includes(name))
+                  .map(toGroupData),
+              ),
             )
           },
         )
@@ -541,19 +547,21 @@ describe('Groups API', () => {
               },
             })
             expect(res.errors).toBeUndefined()
-            expect(res?.data?.listGroups).toIncludeSameMembers(
-              (
-                await Group.findAll({
-                  include: [{ association: 'captain' }],
-                })
-              )
-                .filter(({ name }) => expectedGroupNames.includes(name))
-                .filter(
-                  ({ captain }) =>
-                    captain.email ===
-                    `${captainName.toLowerCase()}@example.com`,
+            expect(res?.data?.listGroups).toEqual(
+              expect.arrayContaining(
+                (
+                  await Group.findAll({
+                    include: [{ association: 'captain' }],
+                  })
                 )
-                .map(toGroupData),
+                  .filter(({ name }) => expectedGroupNames.includes(name))
+                  .filter(
+                    ({ captain }) =>
+                      captain.email ===
+                      `${captainName.toLowerCase()}@example.com`,
+                  )
+                  .map(toGroupData),
+              ),
             )
           },
         )

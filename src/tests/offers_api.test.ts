@@ -107,7 +107,7 @@ describe('Offers API', () => {
         })) as TypedGraphQLResponse<{ addOffer: Offer }>
 
         expect(res.errors).toBeUndefined()
-        expect(res?.data?.addOffer?.id).toBeNumber()
+        expect(res?.data?.addOffer?.id).toEqual(expect.any(Number))
         expect(res?.data?.addOffer?.status).toEqual(OfferStatus.Draft)
         expect(res?.data?.addOffer?.contact?.name).toEqual('Savannah')
         expect(res?.data?.addOffer?.contact?.email).toEqual('test@example.com')
@@ -234,7 +234,7 @@ describe('Offers API', () => {
         })) as TypedGraphQLResponse<{ addOffer: Offer }>
 
         expect(res.errors).toBeUndefined()
-        expect(res?.data?.addOffer?.id).toBeNumber()
+        expect(res?.data?.addOffer?.id).toEqual(expect.any(Number))
       })
     })
 
@@ -345,7 +345,7 @@ describe('Offers API', () => {
       })) as TypedGraphQLResponse<{ updateOffer: Offer }>
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.updateOffer?.id).toBeNumber()
+      expect(res?.data?.updateOffer?.id).toEqual(expect.any(Number))
       expect(res?.data?.updateOffer?.status).toEqual(OfferStatus.Proposed)
       expect(res?.data?.updateOffer?.shipmentId).toEqual(shipment.id)
       expect(res?.data?.updateOffer?.sendingGroupId).toEqual(captainsGroup.id)
@@ -496,7 +496,7 @@ describe('Offers API', () => {
       })
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.offer?.id).toBeNumber()
+      expect(res?.data?.offer?.id).toEqual(expect.any(Number))
       expect(res?.data?.offer?.status).toEqual(OfferStatus.Draft)
       expect(res?.data?.offer?.shipmentId).toEqual(shipment.id)
       expect(res?.data?.offer?.sendingGroupId).toEqual(captainsGroup.id)
@@ -509,7 +509,7 @@ describe('Offers API', () => {
       })
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.offer?.id).toBeNumber()
+      expect(res?.data?.offer?.id).toEqual(expect.any(Number))
       expect(res?.data?.offer?.status).toEqual(OfferStatus.Draft)
       expect(res?.data?.offer?.shipmentId).toEqual(shipment.id)
       expect(res?.data?.offer?.sendingGroupId).toEqual(captainsGroup.id)
