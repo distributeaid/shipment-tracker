@@ -24,5 +24,8 @@ yarn-error.log*
 
 /.log
 
+# Clever cloud link information
+.clever.json
+
 # Auto-generated types
 src/server-internal-types.ts
