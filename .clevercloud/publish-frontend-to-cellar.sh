@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -x
+[ "$DEBUG" == 'true' ] && set -x
 set -e
 
 cd frontend
