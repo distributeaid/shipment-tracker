@@ -4,6 +4,8 @@ on:
       - saga
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - 'frontend/**'
 
 name: CodeSee Map
 
