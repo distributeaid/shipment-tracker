@@ -87,8 +87,8 @@ jobs:
       - name: Install NPM packages
         run: yarn install --frozen-lockfile
 
-      - name: Compile TypeScript
-        run: npx tsc
+      - name: Build TypeScript
+        run: yarn run build
 
       - name: Create the application
         run: npx clever create -t node -o ${{ secrets.CLEVER_ORG }} ${{ needs.app.outputs.name }}
@@ -177,8 +177,8 @@ jobs:
       - name: Install NPM packages
         run: yarn install --frozen-lockfile
 
-      - name: Compile TypeScript
-        run: npx tsc
+      - name: Build TypeScript
+        run: yarn run build
 
       - name: Link application
         run: npx clever link -o ${{ secrets.CLEVER_ORG }} ${{ needs.app.outputs.name }}
