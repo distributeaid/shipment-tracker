@@ -18,7 +18,7 @@ env:
 
 jobs:
   app:
-    if: contains(github.event.pull_request.labels.*.name, 'cc-preview')
+    if: contains(github.event.pull_request.labels.*.name, 'cc-preview') || github.event_name == 'workflow_dispatch'
     environment: cc-preview
     runs-on: ubuntu-latest
     name: Create the app name and check of app already exists
@@ -150,7 +150,7 @@ jobs:
             --data '{ "body": "Preview available on ${{ needs.app.outputs.url }}" }'
 
   update:
-    if: github.event.action != 'closed' && contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'true'
+    if: github.event.action != 'closed' && contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: cc-preview
     name: Update preview instance
