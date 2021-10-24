@@ -64,6 +64,7 @@ describe('User account API', () => {
     app = express()
     app.use(cookieParser(process.env.COOKIE_SECRET ?? 'cookie-secret'))
     app.use(json())
+    app.use(passport.initialize())
     app.post('/register', registerUser(omnibus, 1))
     app.post('/register/confirm', confirmRegistration)
     app.post('/login', login)
