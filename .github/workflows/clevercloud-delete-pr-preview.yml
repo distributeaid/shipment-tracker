@@ -1,0 +1,91 @@
+name: PR-preview
+#  This action deletes an instance on Clever Cloud for all PRs that have the
+#  "cc-preview" label when they are closed
+
+on:
+  pull_request:
+    types: [closed]
+
+env:
+  CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+  CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+
+jobs:
+  app:
+    if: contains(github.event.pull_request.labels.*.name, 'cc-preview')
+    environment: cc-preview
+    runs-on: ubuntu-latest
+    name: Create the app name and check of app exists
+    outputs:
+      name: ${{ steps.name.outputs.name }}
+      exists: ${{ steps.exists.outputs.exists }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install NPM packages
+        run: yarn install --frozen-lockfile
+
+      - name: Set app name
+        id: name
+        run: echo "::set-output name=name::shipment-tracker-pr${{ github.event.pull_request.number }}"
+
+      - name: Check if preview exists
+        id: exists
+        run: |
+          npx clever link -o ${{ secrets.CLEVER_ORG }} ${{ steps.name.outputs.name }} \
+          && echo "::set-output name=exists::true" \
+          || echo "::set-output name=exists::false"
+
+  delete:
+    if: contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'true'
+    runs-on: ubuntu-latest
+    environment: cc-preview
+    name: Delete preview instance
+    needs:
+      - app
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install NPM packages
+        run: yarn install --frozen-lockfile
+
+      - name: Link application
+        run: npx clever link -o ${{ secrets.CLEVER_ORG }} ${{ needs.app.outputs.name }}
+
+      - name: Delete application
+        run: npx clever delete -a ${{ needs.app.outputs.name }}
+
+      - name: Delete PostgreSQL addon
+        run: npx clever addon delete postgresql-addon ${{ needs.app.outputs.name }}-db
+
+      - name: Delete Cellar addon
+        run: npx clever addon delete cellar-addon ${{ needs.app.outputs.name }}-frontend
+
+      - name: Add comment with preview URL to PR
+        run: |
+          curl \
+            -X POST \
+            ${{ github.event.pull_request.comments_url }} \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            --data '{ "body": "Preview instance deleted" }'
