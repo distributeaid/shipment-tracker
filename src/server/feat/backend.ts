@@ -36,6 +36,7 @@ export const backend = ({
    */
   app.use(cookieParser(cookieSecret))
   app.use(json())
+  app.use(passport.initialize())
   const cookieAuth = passport.authenticate('cookie', { session: false })
   passport.use(cookieAuthStrategy)
 
