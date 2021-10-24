@@ -1,4 +1,4 @@
-name: PR-preview
+name: Delete PR-preview
 #  This action deletes an instance on Clever Cloud for all PRs that have the
 #  "cc-preview" label when they are closed
 

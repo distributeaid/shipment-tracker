@@ -1,9 +1,14 @@
-name: PR-preview
+name: Create PR-preview
 #  This action creates an instance on Clever Cloud for all PRs that have the
 #  "cc-preview" label
 
 on:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      restartApp:
+        description: "Restart the application (set to 'yes')"
+        required: false
 
 env:
   CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
@@ -172,7 +177,12 @@ jobs:
         run: npx clever link -o ${{ secrets.CLEVER_ORG }} ${{ needs.app.outputs.name }}
 
       - name: Deploy the application
+        if: github.event.inputs.restartApp != 'yes'
         run: npx clever deploy -f
+
+      - name: Restart the application
+        if: github.event.inputs.restartApp == 'yes'
+        run: npx clever restart
 
       - name: Migrate database
         run: |
