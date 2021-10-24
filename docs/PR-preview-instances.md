@@ -1,6 +1,6 @@
 # PR preview instances
 
-A set of GitHub Actions workflows exist in this project that allow to deploy a clean preview instance of a PR to Clever Cloud.
+A GitHub Actions workflow exist in this project that allow to deploy a clean preview instance of a PR to Clever Cloud.
 
 This is done automatically for all PRs that have the `cc-preview` label.
 

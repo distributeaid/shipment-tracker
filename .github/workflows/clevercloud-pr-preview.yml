@@ -62,7 +62,7 @@ jobs:
         run: echo "::set-output name=url::https://${{ steps.hostname.outputs.hostname }}/"
 
   create:
-    if: contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'false'
+    if: github.event.action != 'closed' && contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'false'
     runs-on: ubuntu-latest
     environment: cc-preview
     name: Create preview instance
@@ -149,7 +149,7 @@ jobs:
             --data '{ "body": "Preview available on ${{ needs.app.outputs.url }}" }'
 
   update:
-    if: contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'true'
+    if: github.event.action != 'closed' && contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'true'
     runs-on: ubuntu-latest
     environment: cc-preview
     name: Update preview instance
@@ -197,3 +197,47 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             --data '{ "body": "Preview updated on ${{ needs.app.outputs.url }}" }'
+
+  delete:
+    if: github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'true'
+    runs-on: ubuntu-latest
+    environment: cc-preview
+    name: Delete preview instance
+    needs:
+      - app
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install NPM packages
+        run: yarn install --frozen-lockfile
+
+      - name: Link application
+        run: npx clever link -o ${{ secrets.CLEVER_ORG }} ${{ needs.app.outputs.name }}
+
+      - name: Delete application
+        run: npx clever delete -a ${{ needs.app.outputs.name }}
+
+      - name: Delete PostgreSQL addon
+        run: npx clever addon delete postgresql-addon ${{ needs.app.outputs.name }}-db
+
+      - name: Delete Cellar addon
+        run: npx clever addon delete cellar-addon ${{ needs.app.outputs.name }}-frontend
+
+      - name: Add comment with preview URL to PR
+        run: |
+          curl \
+            -X POST \
+            ${{ github.event.pull_request.comments_url }} \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            --data '{ "body": "Preview instance deleted" }'
