@@ -20,7 +20,7 @@
     "prod:build": "yarn build && cd frontend && yarn install --frozen-lockfile && yarn build"
   },
   "engines": {
-    "node": ">=16.0.0",
+    "node": "^16",
     "yarn": ">= 1.22.5"
   },
   "keywords": [],
