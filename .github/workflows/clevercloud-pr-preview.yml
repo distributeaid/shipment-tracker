@@ -7,8 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       restartApp:
-        description: "Restart the application (set to 'yes')"
+        description: 'Restart the application'
         required: false
+        default: 'no'
 
 env:
   CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
