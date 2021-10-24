@@ -119,7 +119,7 @@ jobs:
       - name: Initialize database
         run: |
           export `npx clever env -a ${{ needs.app.outputs.name }} | grep POSTGRESQL_ADDON_URI`
-          npx sequelize-cli --env=prod db:migrate
+          npx sequelize-cli --env=production db:migrate
 
       - name: Create Cellar addon
         run: npx clever addon create --link ${{ needs.app.outputs.name }} -p S cellar-addon ${{ needs.app.outputs.name }}-frontend
@@ -177,7 +177,7 @@ jobs:
       - name: Migrate database
         run: |
           export `npx clever env -a ${{ needs.app.outputs.name }} | grep POSTGRESQL_ADDON_URI`
-          npx sequelize-cli --env=prod db:migrate
+          npx sequelize-cli --env=production db:migrate
 
       - name: Add comment with preview URL to PR
         run: |
