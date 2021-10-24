@@ -124,7 +124,7 @@ jobs:
 
       - name: Initialize database
         run: |
-          export `npx clever env -a ${{ needs.app.outputs.name }} | grep POSTGRESQL_ADDON_URI`
+          export `npx clever env -a ${{ needs.app.outputs.name }} | grep POSTGRESQL_ADDON_URI | tr -d '"'`
           npx sequelize-cli --env=clevercloud db:migrate
 
       - name: Create Cellar addon
@@ -187,7 +187,7 @@ jobs:
 
       - name: Migrate database
         run: |
-          export `npx clever env -a ${{ needs.app.outputs.name }} | grep POSTGRESQL_ADDON_URI`
+          export `npx clever env -a ${{ needs.app.outputs.name }} | grep POSTGRESQL_ADDON_URI | tr -d '"'`
           npx sequelize-cli --env=clevercloud db:migrate
 
       - name: Add comment with preview URL to PR
