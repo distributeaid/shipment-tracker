@@ -952,6 +952,13 @@
   dependencies:
     tslib "~2.3.0"
 
+"@graphql-tools/utils@8.5.1":
+  version "8.5.1"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-8.5.1.tgz#95f3a9bdcaa8de312130c46b6da829a3fcbac3f6"
+  integrity sha512-V/OQVpj+Z05qW9ZdlJWSKzREYlgGEq+juV+pUy3JO9jI+sZo/W3oncuW9+1awwp/RkL0aZ9RgjL+XYOgCsmOLw==
+  dependencies:
+    tslib "~2.3.0"
+
 "@graphql-tools/wrap@^8.3.0":
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/@graphql-tools/wrap/-/wrap-8.3.0.tgz#ae40302965176614adde80fd1e3ea93b87d3219d"
