@@ -83,30 +83,50 @@ You can click on the printed URLs to open them in a browser.
 
 ### Using your local machine
 
-⚠️ these instructions are out of date.
+1. Install Node.js 16:
+   1. Install with [nodenv](https://github.com/nodenv/nodenv)
+   2. or [nvm](https://github.com/nvm-sh/nvm)
+1. Switch to Node 16 if needed. nodenv should do it automatically, but with nvm you'll need to run `nvm use 16`
+1. Install the dependencies: `yarn install --frozen-lockfile`
+1. Build the project: `yarn build`
+1. Install postgresql: `brew install postgresql@13`
+1. Start postgresql: `brew services start postgresql@13`
+1. Launch the PostgreSQL CLI: `psql -d postgres`
+1. Run all these commands consecutively:
 
-Install node.js v16:
+   ```postgres
+   CREATE USER distributeaid_test;
+   ALTER USER distributeaid_test PASSWORD 'distributeaid_test';
+   CREATE DATABASE distributeaid_test;
 
-- Install with [nodenv](https://github.com/nodenv/nodenv)
-- or [nvm](https://github.com/nvm-sh/nvm)
+   CREATE USER distributeaid;
+   ALTER USER distributeaid PASSWORD 'distributeaid';
+   CREATE DATABASE distributeaid_dev;
+   ```
 
-Run the setup script:
+1. Seed the database:
+   ```shell
+   npx sequelize-cli --env=test db:migrate
+   npx sequelize-cli --env=development db:migrate
+   ```
+1. Start the backend: `yarn dev`
 
-```
-$ script/dev_setup
-```
+You're now ready to run the frontend of the app:
 
-Run the dev server:
+1. Navigate to the `frontend` directory
+2. Make sure you're using Node 16
+3. Install the dependencies: `yarn install --frozen-lockfile`
+4. Start the dev server: `yarn start`
 
-```
-$ yarn dev
-```
+You should now be able to run the project locally!
 
-And then view graphql sandbox at http://localhost:3000/graphql
+If this is your first time, you'll probably want to create an account. You can use the UI to do that:
 
-If you run into problems setting up your development environment please create an issue describing any errors you encounter.
-
-See [the README in the `frontend` directory](/frontend/README.md) for instructions on setting up for front end development.
+1. Navigate to the login page: http://localhost:8080/
+2. Register a new account
+3. When asked for an email confirmation, check your terminal! There will be a confirmation token.
+4. Once confirmed, enter your password again to log in.
+5. To make yourself an admin, run: `node cli admin <youremail@domain.com>`
 
 ## Technical documentation
 
