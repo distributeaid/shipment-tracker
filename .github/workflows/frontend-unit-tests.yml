@@ -9,10 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      # scripts/dev_setup complains if TERM is unset
-      TERM: xterm
-
     steps:
       - uses: actions/checkout@v2
       - name: Install Node.js
