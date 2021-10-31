@@ -153,6 +153,7 @@ Back end:
 - [PostgreSQL](https://www.postgresql.org/)
 - [Sequelize ORM](https://sequelize.org/)
 - [Apollo Server](https://www.apollographql.com/docs/apollo-server/)
+- [Express](https://expressjs.com/) with [Passport](http://www.passportjs.org/)
 
 Front end:
 
