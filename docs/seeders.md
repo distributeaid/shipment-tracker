@@ -8,7 +8,7 @@ npx sequelize-cli --help
 
 ## Running seeders
 
-Seeders are run on database setup by `script/init_db`. They run sequentially like migrations. If you'd like to run them all manually you can with:
+To execute the seeders, run:
 
 ```sh
 npx sequelize-cli db:seed:all
