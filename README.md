@@ -83,6 +83,8 @@ You can click on the printed URLs to open them in a browser.
 
 ### Using your local machine
 
+#### Using Mac OS X
+
 1. Install Node.js 16:
    1. Install with [nodenv](https://github.com/nodenv/nodenv)
    2. or [nvm](https://github.com/nvm-sh/nvm)
