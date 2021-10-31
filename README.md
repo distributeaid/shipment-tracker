@@ -132,8 +132,7 @@ If this is your first time, you'll probably want to create an account. You can u
 
 ## Technical documentation
 
-- [Database Migrations](./docs/migrations.md)
-- [Graphql Codegen](./docs/codegen.md)
+See the [docs](./docs) folder.
 
 ### Type definitions
 
