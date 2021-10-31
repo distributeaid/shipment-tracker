@@ -29,6 +29,10 @@
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "typescript": "4.4.3"
   },
+  "engines": {
+    "node": "^16",
+    "yarn": ">= 1.22.5"
+  },
   "devDependencies": {
     "@babel/core": "7.14.8",
     "@babel/preset-env": "7.14.8",
