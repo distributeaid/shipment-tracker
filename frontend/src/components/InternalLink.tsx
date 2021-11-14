@@ -7,7 +7,7 @@ const InternalLink: FunctionComponent<LinkProps> = ({
   children,
   ...otherProps
 }) => {
-  const classes = cx('text-navy-700 hover:underline', className)
+  const classes = cx('text-navy-700 font-semibold hover:underline', className)
 
   return (
     <Link className={classes} {...otherProps}>
