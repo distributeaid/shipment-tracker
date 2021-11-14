@@ -28,7 +28,7 @@ const ConfirmEmailWithTokenPage: FunctionComponent = () => {
           <h1 className="text-2xl mb-4 text-center">Shipment Tracker</h1>
           {state?.email !== undefined && (
             <Success>
-              <p>Registration successfull.</p>
+              <p>Registration successful.</p>
               <p>
                 Please check your inbox for <code>{state?.email}</code>!
               </p>

@@ -29,7 +29,7 @@ const LoginPage: FunctionComponent = () => {
         <h1 className="text-2xl mb-4 text-center">Shipment Tracker</h1>
         {state?.email_confirmation_success && (
           <Success className="mb-2">
-            <p>Email confirmation successfull.</p>
+            <p>Email confirmation successful.</p>
             <p>You can now log in!</p>
           </Success>
         )}
