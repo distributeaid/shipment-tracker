@@ -22,9 +22,7 @@ https://shipment-tracker-saga.distributeaid.dev/
 
 ## Devopment process
 
-### Code of conduct
-
-First, please read our [code of conduct](https://www.notion.so/distributeaid/Code-of-Conduct-6ba4ca07a6fa4e4da9ef8ad91757c5b4).
+First, please read our [contribution guidelines](./CONTRIBUTING.md).
 
 ### Issue tracking
 
