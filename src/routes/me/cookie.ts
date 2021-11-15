@@ -25,9 +25,11 @@ export const renewCookie = async (request: Request, response: Response) => {
     })
   }
   // Generate new token
+  const [name, val, options] = authCookie(user)
   response
     .status(HTTPStatusCode.NoContent)
-    .cookie(...authCookie(user))
+    .cookie(name, val, options)
+    .header('Expires', options.expires.toString())
     .end()
 }
 
