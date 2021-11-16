@@ -48,6 +48,7 @@ type AuthInfo = {
   }) => Promise<void>
   confirm: (_: { email: string; token: string }) => Promise<void>
   refreshMe: () => Promise<void>
+  refreshCookie: () => Promise<void>
 }
 
 export const AuthContext = createContext<AuthInfo>({
@@ -58,6 +59,7 @@ export const AuthContext = createContext<AuthInfo>({
   register: () => Promise.resolve(),
   confirm: () => Promise.resolve(),
   refreshMe: () => Promise.resolve(),
+  refreshCookie: () => Promise.resolve(),
 })
 
 export const useAuth = () => useContext(AuthContext)
@@ -78,6 +80,8 @@ export const AuthProvider = ({
 }: PropsWithChildren<{ logoutUrl?: URL }>) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [me, setMe] = useState<UserProfile>()
+  const [expires, setExpires] = useState<Date>()
+  const [userClickTime, setUserClickTime] = useState<Date>()
 
   const fetchMe = useCallback(
     () =>
@@ -98,9 +102,48 @@ export const AuthProvider = ({
     fetchMe()
   }, [isAuthenticated, me, fetchMe])
 
+  // Auto-refresh auth cookie
+  const refreshCookie = useCallback(
+    () =>
+      fetch(`${SERVER_URL}/me/cookie`, {
+        credentials: 'include',
+        cache: 'no-store',
+      })
+        .then(({ ok, status: httpStatusCode, headers }) => {
+          if (!ok)
+            throw new AuthError(`Failed to refresh cookie!`, httpStatusCode)
+          const exp = headers.get('Expires')
+          if (exp !== null) {
+            setExpires(new Date(exp))
+          }
+        })
+        .catch(console.error),
+    [],
+  )
+  useEffect(() => {
+    if (expires === undefined) return
+    if (userClickTime === undefined) return
+    // Refresh cookie if expires in less than 5 minutes
+    const diff = expires.getTime() - userClickTime.getTime()
+    if (diff < 5 * 60 * 1000) {
+      refreshCookie()
+    }
+  }, [expires, userClickTime, refreshCookie])
+
+  useEffect(() => {
+    const onClick = () => {
+      setUserClickTime(new Date())
+    }
+    document.body.addEventListener('click', onClick)
+    return () => {
+      document.body.removeEventListener('click', onClick)
+    }
+  }, [])
+
   const auth: AuthInfo = {
     me,
     refreshMe: fetchMe,
+    refreshCookie,
     logout: async () =>
       // Delete cookies (since the auth cookie is httpOnly we cannot access
       // it using JavaScript, e.g. cookie.delete() will not work).
@@ -125,9 +168,13 @@ export const AuthProvider = ({
           ...headers,
         },
         body: JSON.stringify({ email, password }),
-      }).then(({ ok, status: httpStatusCode }) => {
+      }).then(({ ok, status: httpStatusCode, headers }) => {
         setIsAuthenticated(ok)
         if (!ok) throw new AuthError(`Failed to log-in!`, httpStatusCode)
+        const exp = headers.get('Expires')
+        if (exp !== null) {
+          setExpires(new Date(exp))
+        }
       }),
     register: async ({ name, email, password }) =>
       fetch(`${SERVER_URL}/register`, {

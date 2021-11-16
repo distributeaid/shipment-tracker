@@ -56,7 +56,7 @@ export const backend = ({
   app.post('/password/token', sendVerificationTokenByEmail(omnibus))
   app.post('/password/new', setNewPasswordUsingTokenAndEmail())
   app.get('/me', cookieAuth, getProfile)
-  app.post('/me/cookie', cookieAuth, renewCookie)
+  app.get('/me/cookie', cookieAuth, renewCookie)
   app.delete('/me/cookie', cookieAuth, deleteCookie)
   app.delete('/me/reset-password', cookieAuth, changePassword())
 

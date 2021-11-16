@@ -48,7 +48,7 @@ export const cookieAuthStrategy = new CookieStrategy(
 export const authCookie = (
   user: UserAccount,
   lifetimeInMinutes: number = 30,
-): [string, string, CookieOptions] => [
+): [string, string, CookieOptions & { expires: Date }] => [
   authCookieName,
   JSON.stringify({
     i: user.id,

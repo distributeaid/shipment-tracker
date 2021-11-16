@@ -167,8 +167,19 @@ describe('User account API', () => {
         new Date(cookieInfo.options.Expires).getTime() - Date.now()
       expect(expiresIn).toBeLessThan(30 * 60 * 1000)
       expect(expiresIn).toBeGreaterThan(0)
-
       authCookie = tokenCookieRx.exec(res.header['set-cookie'])?.[1] as string
+    })
+    it('should send cookie expiry time in the expires header', async () => {
+      const res = await r
+        .post('/login')
+        .send({
+          email,
+          password,
+        })
+        .expect(HTTPStatusCode.NoContent)
+      const expiresIn = new Date(res.headers['expires']).getTime() - Date.now()
+      expect(expiresIn).toBeLessThan(30 * 60 * 1000)
+      expect(expiresIn).toBeGreaterThan(0)
     })
     it('should fail with invalid password', () =>
       r
@@ -253,6 +264,16 @@ describe('User account API', () => {
           .get('/me/cookie')
           .set('Cookie', [`${authCookieName}=${authCookie}`])
           .expect(HTTPStatusCode.NoContent))
+      it('should send cookie expiry time in the expires header', async () => {
+        const res = await r
+          .get('/me/cookie')
+          .set('Cookie', [`${authCookieName}=${authCookie}`])
+          .expect(HTTPStatusCode.NoContent)
+        const expiresIn =
+          new Date(res.headers['expires']).getTime() - Date.now()
+        expect(expiresIn).toBeLessThan(30 * 60 * 1000)
+        expect(expiresIn).toBeGreaterThan(0)
+      })
       it('should delete a cookie', async () => {
         const res = await r
           .delete('/me/cookie')
