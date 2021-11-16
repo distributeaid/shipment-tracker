@@ -102,7 +102,7 @@ jobs:
       - name: Configure Node.js application settings
         run: |
           npx clever env set CC_NODE_DEV_DEPENDENCIES install
-          npx clever env set CC_POST_BUILD_HOOK 'yarn run prod:build && ./.clevercloud/publish-frontend-to-cellar.sh'
+          npx clever env set CC_POST_BUILD_HOOK 'yarn run prod:build'
           npx clever env set CC_RUN_COMMAND 'yarn run prod:server'
           npx clever env set DB_ENV clevercloud
           npx clever env set NODE_ENV production
@@ -110,7 +110,6 @@ jobs:
 
       - name: Configure frontend settings
         run: |
-          npx clever env set CELLAR_BUCKET ${{ needs.app.outputs.hostname }}
           npx clever env set REACT_APP_SERVER_URL https://`npx clever domain | tr -d ' \n'`
 
       - name: Configure email settings
@@ -129,16 +128,6 @@ jobs:
         run: |
           export `npx clever env -a ${{ needs.app.outputs.name }} | grep POSTGRESQL_ADDON_URI | tr -d '"'`
           npx sequelize-cli --env=clevercloud db:migrate
-
-      - name: Create Cellar addon
-        run: npx clever addon create --link ${{ needs.app.outputs.name }} -p S cellar-addon ${{ needs.app.outputs.name }}-frontend
-
-      - name: Create Cellar bucket
-        run: |
-          pip install --upgrade --user 'awscli<2.0.0'
-          export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_ID | sed 's/CELLAR_ADDON_KEY_ID/AWS_ACCESS_KEY_ID/' | tr -d '"'`
-          export `npx clever env -a ${{ needs.app.outputs.name }} | grep CELLAR_ADDON_KEY_SECRET | sed 's/CELLAR_ADDON_KEY_SECRET/AWS_SECRET_ACCESS_KEY/' | tr -d '"'`
-          aws s3api create-bucket --bucket ${{ needs.app.outputs.hostname }} --acl public-read --endpoint-url https://cellar-c2.services.clever-cloud.com
 
       - name: Deploy the application
         run: npx clever deploy
@@ -236,9 +225,6 @@ jobs:
 
       - name: Delete PostgreSQL addon
         run: npx clever addon delete postgresql-addon ${{ needs.app.outputs.name }}-db
-
-      - name: Delete Cellar addon
-        run: npx clever addon delete cellar-addon ${{ needs.app.outputs.name }}-frontend
 
       - name: Add comment with preview URL to PR
         run: |

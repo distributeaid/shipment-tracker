@@ -85,7 +85,7 @@ export const AuthProvider = ({
 
   const fetchMe = useCallback(
     () =>
-      fetch(`${SERVER_URL}/me`, {
+      fetch(`${SERVER_URL}/auth/me`, {
         credentials: 'include',
       })
         .then((response) => response.json())
@@ -105,7 +105,7 @@ export const AuthProvider = ({
   // Auto-refresh auth cookie
   const refreshCookie = useCallback(
     () =>
-      fetch(`${SERVER_URL}/me/cookie`, {
+      fetch(`${SERVER_URL}/auth/me/cookie`, {
         credentials: 'include',
         cache: 'no-store',
       })
@@ -148,7 +148,7 @@ export const AuthProvider = ({
       // Delete cookies (since the auth cookie is httpOnly we cannot access
       // it using JavaScript, e.g. cookie.delete() will not work).
       // Therefore we ask the server to send us an invalid cookie.
-      fetch(`${SERVER_URL}/me/cookie`, {
+      fetch(`${SERVER_URL}/auth/me/cookie`, {
         method: 'DELETE',
         credentials: 'include',
       }).then(({ ok, status: httpStatusCode }) => {
@@ -161,7 +161,7 @@ export const AuthProvider = ({
         ).toString()
       }),
     login: async ({ email, password }) =>
-      fetch(`${SERVER_URL}/login`, {
+      fetch(`${SERVER_URL}/auth/login`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -177,7 +177,7 @@ export const AuthProvider = ({
         }
       }),
     register: async ({ name, email, password }) =>
-      fetch(`${SERVER_URL}/register`, {
+      fetch(`${SERVER_URL}/auth/register`, {
         method: 'POST',
         headers: {
           ...headers,
@@ -187,7 +187,7 @@ export const AuthProvider = ({
         if (!ok) throw new AuthError(`Failed to register`, httpStatusCode)
       }),
     sendVerificationTokenByEmail: async ({ email }) =>
-      fetch(`${SERVER_URL}/password/token`, {
+      fetch(`${SERVER_URL}/auth/password/token`, {
         method: 'POST',
         headers: {
           ...headers,
@@ -197,7 +197,7 @@ export const AuthProvider = ({
         if (!ok) throw new AuthError(statusText, httpStatusCode)
       }),
     setNewPasswordUsingTokenAndEmail: async ({ email, password, token }) =>
-      fetch(`${SERVER_URL}/password/new`, {
+      fetch(`${SERVER_URL}/auth/password/new`, {
         method: 'POST',
         headers: {
           ...headers,
@@ -208,7 +208,7 @@ export const AuthProvider = ({
           throw new AuthError(`Setting a new password failed`, httpStatusCode)
       }),
     confirm: async ({ email, token }) =>
-      fetch(`${SERVER_URL}/register/confirm`, {
+      fetch(`${SERVER_URL}/auth/register/confirm`, {
         method: 'POST',
         headers: {
           ...headers,

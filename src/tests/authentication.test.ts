@@ -65,15 +65,15 @@ describe('User account API', () => {
     app.use(cookieParser(process.env.COOKIE_SECRET ?? 'cookie-secret'))
     app.use(json())
     app.use(passport.initialize())
-    app.post('/register', registerUser(omnibus, 1))
-    app.post('/register/confirm', confirmRegistration)
-    app.post('/login', login)
-    app.post('/password/token', sendVerificationTokenByEmail(omnibus))
-    app.post('/password/new', setNewPasswordUsingTokenAndEmail(1))
-    app.get('/me', cookieAuth, getProfile)
-    app.post('/me/password', cookieAuth, resetPassword(1))
-    app.get('/me/cookie', cookieAuth, renewCookie)
-    app.delete('/me/cookie', cookieAuth, deleteCookie)
+    app.post('/auth/register', registerUser(omnibus, 1))
+    app.post('/auth/register/confirm', confirmRegistration)
+    app.post('/auth/login', login)
+    app.post('/auth/password/token', sendVerificationTokenByEmail(omnibus))
+    app.post('/auth/password/new', setNewPasswordUsingTokenAndEmail(1))
+    app.get('/auth/me', cookieAuth, getProfile)
+    app.post('/auth/me/password', cookieAuth, resetPassword(1))
+    app.get('/auth/me/cookie', cookieAuth, renewCookie)
+    app.delete('/auth/me/cookie', cookieAuth, deleteCookie)
     httpServer = createServer(app)
     await new Promise<void>((resolve) =>
       httpServer.listen(8888, '127.0.0.1', undefined, resolve),
@@ -83,10 +83,10 @@ describe('User account API', () => {
   afterAll(async () => {
     httpServer.close()
   })
-  describe('/register', () => {
+  describe('/auth/register', () => {
     it('should register a new user account', async () => {
       const res = await r
-        .post('/register')
+        .post('/auth/register')
         .set('Content-type', 'application/json; charset=utf-8')
         .send({
           email,
@@ -102,7 +102,7 @@ describe('User account API', () => {
       ],
     ])('should not allow to register with the same email (%s) twice', (email) =>
       r
-        .post('/register')
+        .post('/auth/register')
         .set('Content-type', 'application/json; charset=utf-8')
         .send({
           email,
@@ -114,10 +114,10 @@ describe('User account API', () => {
           status: HTTPStatusCode.Conflict,
         }),
     )
-    describe('/register/confirm', () => {
+    describe('/auth/register/confirm', () => {
       test('new accounts should not be able to log in', () =>
         r
-          .post('/login')
+          .post('/auth/login')
           .send({
             email,
             password,
@@ -135,7 +135,7 @@ describe('User account API', () => {
         })
         expect(token).not.toBeUndefined()
         return r
-          .post('/register/confirm')
+          .post('/auth/register/confirm')
           .set('Content-type', 'application/json; charset=utf-8')
           .send({
             email,
@@ -145,10 +145,10 @@ describe('User account API', () => {
       })
     })
   })
-  describe('/login', () => {
+  describe('/auth/login', () => {
     it('should return a token on login', async () => {
       const res = await r
-        .post('/login')
+        .post('/auth/login')
         .send({
           email,
           password,
@@ -171,7 +171,7 @@ describe('User account API', () => {
     })
     it('should send cookie expiry time in the expires header', async () => {
       const res = await r
-        .post('/login')
+        .post('/auth/login')
         .send({
           email,
           password,
@@ -183,7 +183,7 @@ describe('User account API', () => {
     })
     it('should fail with invalid password', () =>
       r
-        .post('/login')
+        .post('/auth/login')
         .send({
           email,
           password: "Y<N-'#sQ2/RCrN_c",
@@ -194,7 +194,7 @@ describe('User account API', () => {
         }))
     it('should fail with user not found', () =>
       r
-        .post('/login')
+        .post('/auth/login')
         .send({
           email: 'foo@example.com',
           password: "Y<N-'#sQ2/RCrN_c",
@@ -219,7 +219,7 @@ describe('User account API', () => {
       })
 
       const res = await r
-        .post('/login')
+        .post('/auth/login')
         .send({
           email: adminEmail,
           password: '2DhE.sf!f9Z3u8x',
@@ -238,10 +238,10 @@ describe('User account API', () => {
       ).toBe(true)
     })
   })
-  describe('/me', () => {
+  describe('/auth/me', () => {
     it('should return the user account of the current user', async () => {
       const res = await r
-        .get('/me')
+        .get('/auth/me')
         .set('Cookie', [`${authCookieName}=${authCookie}`])
         .set('Accept', 'application/json')
         .send()
@@ -254,19 +254,19 @@ describe('User account API', () => {
     })
     it('should deny request for unknown token', async () =>
       r
-        .get('/me')
+        .get('/auth/me')
         .set('Cookie', [`${authCookieName}=foo`])
         .send()
         .expect(HTTPStatusCode.Unauthorized)) // FIXME: set response body in CookieStrategy
-    describe('/me/cookie', () => {
+    describe('/auth/me/cookie', () => {
       it('should send a new cookie', () =>
         r
-          .get('/me/cookie')
+          .get('/auth/me/cookie')
           .set('Cookie', [`${authCookieName}=${authCookie}`])
           .expect(HTTPStatusCode.NoContent))
       it('should send cookie expiry time in the expires header', async () => {
         const res = await r
-          .get('/me/cookie')
+          .get('/auth/me/cookie')
           .set('Cookie', [`${authCookieName}=${authCookie}`])
           .expect(HTTPStatusCode.NoContent)
         const expiresIn =
@@ -276,7 +276,7 @@ describe('User account API', () => {
       })
       it('should delete a cookie', async () => {
         const res = await r
-          .delete('/me/cookie')
+          .delete('/auth/me/cookie')
           .set('Cookie', [`${authCookieName}=${authCookie}`])
           .expect(HTTPStatusCode.NoContent)
         const cookieInfo = parseCookie(res.header['set-cookie'][0] as string)
@@ -291,12 +291,12 @@ describe('User account API', () => {
         expect(expiresIn).toBeLessThan(0) // Expires is in the past
       })
     })
-    describe('/me/password', () => {
+    describe('/auth/me/password', () => {
       const newPassword = 'H`2h?)Z<F-Z.3gYT'
       describe('as a logged-in user', () => {
         it('should change a users password if they know the current password', () =>
           r
-            .post('/me/password')
+            .post('/auth/me/password')
             .set('Content-type', 'application/json; charset=utf-8')
             .set('Cookie', [`${authCookieName}=${authCookie}`])
             .send({
@@ -307,7 +307,7 @@ describe('User account API', () => {
             .expect('set-cookie', tokenCookieRx))
         test('log-in with new password', () =>
           r
-            .post('/login')
+            .post('/auth/login')
             .send({
               email,
               password: newPassword,
@@ -315,7 +315,7 @@ describe('User account API', () => {
             .expect(HTTPStatusCode.NoContent))
         it('should not change a users password if they do not know the current password', () =>
           r
-            .post('/me/password')
+            .post('/auth/me/password')
             .set('Content-type', 'application/json; charset=utf-8')
             .set('Cookie', [`${authCookieName}=${authCookie}`])
             .send({
@@ -333,7 +333,7 @@ describe('User account API', () => {
         const newPasswordWithToken = "8>5_TZ?'hH9xd}Z7:"
         it('should create a password reset token', async () => {
           await r
-            .post('/password/token')
+            .post('/auth/password/token')
             .set('Content-type', 'application/json; charset=utf-8')
             .send({
               email,
@@ -351,7 +351,7 @@ describe('User account API', () => {
         })
         it('should reset the password using the token', () =>
           r
-            .post('/password/new')
+            .post('/auth/password/new')
             .set('Content-type', 'application/json; charset=utf-8')
             .send({
               email,
@@ -362,7 +362,7 @@ describe('User account API', () => {
         it('should not change a users password if they do not know the right token', async () => {
           expect(token).not.toEqual('000000') // Could fail sometimes, we use this as a test case here
           return r
-            .post('/password/new')
+            .post('/auth/password/new')
             .set('Content-type', 'application/json; charset=utf-8')
             .send({
               email,
@@ -377,7 +377,7 @@ describe('User account API', () => {
 
         test('log-in with new password', () =>
           r
-            .post('/login')
+            .post('/auth/login')
             .send({
               email,
               password: newPasswordWithToken,
