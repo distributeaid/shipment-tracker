@@ -89,7 +89,7 @@ jobs:
         run: npx clever config set force-https true
 
       - name: Determine frontend URL
-        run: echo "ORIGIN=`https://`npx clever domain | tr -d ' \n'`" >> $GITHUB_ENV
+        run: echo "ORIGIN=https://`npx clever domain | tr -d ' \n'`" >> $GITHUB_ENV
 
       - name: Configure Node.js application settings
         run: |
@@ -178,7 +178,7 @@ jobs:
           npx sequelize-cli --env=clevercloud db:migrate
 
       - name: Determine frontend URL
-        run: echo "ORIGIN=`https://`npx clever domain | tr -d ' \n'`" >> $GITHUB_ENV
+        run: echo "ORIGIN=https://`npx clever domain | tr -d ' \n'`" >> $GITHUB_ENV
 
       - name: Add comment with preview URL to PR
         run: |
