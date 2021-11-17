@@ -14,7 +14,6 @@ on:
 env:
   CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
   CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-  PREVIEW_DOMAIN: stp.distributeaid.dev
 
 jobs:
   app:
@@ -25,8 +24,6 @@ jobs:
     outputs:
       name: ${{ steps.name.outputs.name }}
       exists: ${{ steps.exists.outputs.exists }}
-      url: ${{ steps.url.outputs.url }}
-      hostname: ${{ steps.hostname.outputs.hostname }}
     steps:
       - uses: actions/checkout@v2
 
@@ -53,14 +50,6 @@ jobs:
           npx clever link -o ${{ secrets.CLEVER_ORG }} ${{ steps.name.outputs.name }} \
           && echo "::set-output name=exists::true" \
           || echo "::set-output name=exists::false"
-
-      - name: Set preview hostname
-        id: hostname
-        run: echo "::set-output name=hostname::pr${{ github.event.pull_request.number }}.${{ env.PREVIEW_DOMAIN }}"
-
-      - name: Set preview URL
-        id: url
-        run: echo "::set-output name=url::https://${{ steps.hostname.outputs.hostname }}/"
 
   create:
     if: github.event.action != 'closed' && contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'false'
@@ -99,6 +88,9 @@ jobs:
       - name: Force HTTPs
         run: npx clever config set force-https true
 
+      - name: Determine frontend URL
+        run: echo "ORIGIN=`https://`npx clever domain | tr -d ' \n'`" >> $GITHUB_ENV
+
       - name: Configure Node.js application settings
         run: |
           npx clever env set CC_NODE_DEV_DEPENDENCIES install
@@ -106,11 +98,11 @@ jobs:
           npx clever env set CC_RUN_COMMAND 'yarn run prod:server'
           npx clever env set DB_ENV clevercloud
           npx clever env set NODE_ENV production
-          npx clever env set ORIGIN ${{ needs.app.outputs.url }}
+          npx clever env set ORIGIN ${{ env.ORIGIN }}
 
       - name: Configure frontend settings
         run: |
-          npx clever env set REACT_APP_SERVER_URL https://`npx clever domain | tr -d ' \n'`
+          npx clever env set REACT_APP_SERVER_URL ${{ env.ORIGIN }}
 
       - name: Configure email settings
         run: |
@@ -139,7 +131,7 @@ jobs:
             ${{ github.event.pull_request.comments_url }} \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            --data '{ "body": "Preview available on ${{ needs.app.outputs.url }}" }'
+            --data '{ "body": "Preview available on ${{ env.ORIGIN }}" }'
 
   update:
     if: github.event.action != 'closed' && contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'true' || github.event_name == 'workflow_dispatch'
@@ -185,6 +177,9 @@ jobs:
           export `npx clever env -a ${{ needs.app.outputs.name }} | grep POSTGRESQL_ADDON_URI | tr -d '"'`
           npx sequelize-cli --env=clevercloud db:migrate
 
+      - name: Determine frontend URL
+        run: echo "ORIGIN=`https://`npx clever domain | tr -d ' \n'`" >> $GITHUB_ENV
+
       - name: Add comment with preview URL to PR
         run: |
           curl \
@@ -192,7 +187,7 @@ jobs:
             ${{ github.event.pull_request.comments_url }} \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            --data '{ "body": "Preview updated on ${{ needs.app.outputs.url }}" }'
+            --data '{ "body": "Preview updated on ${{ env.ORIGIN }}" }'
 
   delete:
     if: github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'cc-preview') && needs.app.outputs.exists == 'true'
