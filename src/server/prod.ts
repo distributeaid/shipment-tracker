@@ -1,5 +1,7 @@
 import EventEmitter from 'events'
+import { static as staticWebsite } from 'express'
 import { createServer } from 'http'
+import path from 'path'
 import { URL } from 'url'
 import { v4 } from 'uuid'
 import '../sequelize'
@@ -48,3 +50,11 @@ httpServer.listen(port, '0.0.0.0', (): void => {
 
 // Configure email sending
 setUpEmails(omnibus)
+
+// Host web application
+app.use(staticWebsite(path.join(process.cwd(), 'frontend', 'build')))
+// All other requests are handled by the index.html
+const spaIndex = path.join(process.cwd(), 'frontend', 'build', 'index.html')
+app.get('*', function (_, res) {
+  res.sendFile(spaIndex)
+})

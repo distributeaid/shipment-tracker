@@ -50,17 +50,17 @@ export const backend = ({
   app.use(addVersion(version))
   app.use(addRequestId)
 
-  app.post('/register', registerUser(omnibus))
-  app.post('/register/confirm', confirmRegistrationByEmail)
-  app.post('/login', login)
-  app.post('/password/token', sendVerificationTokenByEmail(omnibus))
-  app.post('/password/new', setNewPasswordUsingTokenAndEmail())
-  app.get('/me', cookieAuth, getProfile)
-  app.get('/me/cookie', cookieAuth, renewCookie)
-  app.delete('/me/cookie', cookieAuth, deleteCookie)
-  app.delete('/me/reset-password', cookieAuth, changePassword())
+  app.post('/auth/register', registerUser(omnibus))
+  app.post('/auth/register/confirm', confirmRegistrationByEmail)
+  app.post('/auth/login', login)
+  app.post('/auth/password/token', sendVerificationTokenByEmail(omnibus))
+  app.post('/auth/password/new', setNewPasswordUsingTokenAndEmail())
+  app.get('/auth/me', cookieAuth, getProfile)
+  app.get('/auth/me/cookie', cookieAuth, renewCookie)
+  app.delete('/auth/me/cookie', cookieAuth, deleteCookie)
+  app.delete('/auth/me/reset-password', cookieAuth, changePassword())
 
-  app.get('/shipment-exports/:id', cookieAuth, sendShipmentExportCsv)
+  app.get('/auth/shipment-exports/:id', cookieAuth, sendShipmentExportCsv)
 
   app.use(compression())
 
