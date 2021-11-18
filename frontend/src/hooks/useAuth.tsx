@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
 } from 'react'
+import { withLocalStorage } from '../utils/withLocalStorage'
 
 export type UserProfile = {
   id: number
@@ -78,8 +79,15 @@ export const AuthProvider = ({
   children,
   logoutUrl,
 }: PropsWithChildren<{ logoutUrl?: URL }>) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
-  const [me, setMe] = useState<UserProfile>()
+  const storedIsAuthenticated = withLocalStorage<boolean>(
+    'auth:isAuthenticated',
+    false,
+  )
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    storedIsAuthenticated.get() as boolean,
+  )
+  const storedMe = withLocalStorage<UserProfile>('auth:me')
+  const [me, setMe] = useState<UserProfile>(storedMe.get() as UserProfile)
   const [expires, setExpires] = useState<Date>()
   const [userClickTime, setUserClickTime] = useState<Date>()
 
@@ -91,9 +99,10 @@ export const AuthProvider = ({
         .then((response) => response.json())
         .then((data) => {
           setMe(data)
+          storedMe.set(data)
         })
         .catch(console.error),
-    [],
+    [storedMe],
   )
 
   useEffect(() => {
@@ -154,7 +163,9 @@ export const AuthProvider = ({
       }).then(({ ok, status: httpStatusCode }) => {
         if (!ok) throw new AuthError(`Failed to logout!`, httpStatusCode)
         setIsAuthenticated(false)
-        setMe(undefined)
+        storedIsAuthenticated.destroy()
+        storedMe.destroy()
+        localStorage.removeItem('auth:me')
         const current = new URL(document.location.href)
         document.location.href = (
           logoutUrl ?? new URL(`${current.protocol}//${current.host}`)
@@ -170,6 +181,7 @@ export const AuthProvider = ({
         body: JSON.stringify({ email, password }),
       }).then(({ ok, status: httpStatusCode, headers }) => {
         setIsAuthenticated(ok)
+        storedIsAuthenticated.set(ok)
         if (!ok) throw new AuthError(`Failed to log-in!`, httpStatusCode)
         const exp = headers.get('Expires')
         if (exp !== null) {
