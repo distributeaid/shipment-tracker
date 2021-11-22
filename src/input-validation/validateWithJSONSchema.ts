@@ -1,9 +1,4 @@
-import {
-  Static,
-  StaticProperties,
-  TObject,
-  TProperties,
-} from '@sinclair/typebox'
+import { Static, TObject, TProperties } from '@sinclair/typebox'
 import Ajv, { ErrorObject } from 'ajv'
 import addFormats from 'ajv-formats'
 
@@ -19,9 +14,7 @@ const ajv = addFormats(new Ajv(), [
 ajv.addKeyword('kind')
 ajv.addKeyword('modifier')
 
-export const validateWithJSONSchema = <
-  T extends TObject<StaticProperties<TProperties>>,
->(
+export const validateWithJSONSchema = <T extends TObject<TProperties>>(
   schema: T,
 ): ((value: Record<string, any>) =>
   | {
