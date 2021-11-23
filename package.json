@@ -28,7 +28,7 @@
   "license": "AGPL-3.0-only",
   "dependencies": {
     "@graphql-tools/utils": "8.5.3",
-    "@sinclair/typebox": "0.22.0",
+    "@sinclair/typebox": "0.22.1",
     "ajv": "8.8.2",
     "ajv-formats": "2.1.1",
     "apollo-server": "3.5.0",
