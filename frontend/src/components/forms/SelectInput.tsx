@@ -39,7 +39,7 @@ const SelectInput: FunctionComponent<Props> = ({
     {
       'border-gray-300 hover:border-gray-400': !hasError && !disabled,
       'border-red-400': hasError,
-      'cursor-pointer': !disabled,
+      'cursor-pointer bg-white': !disabled,
       'cursor-not-allowed bg-gray-100': disabled,
     },
   )
