@@ -13,14 +13,13 @@ import ShipmentForm from './ShipmentForm'
 const ShipmentCreatePage: FunctionComponent = () => {
   const history = useHistory()
 
-  const [
-    addShipment,
-    { loading: mutationIsLoading, error: mutationError },
-  ] = useCreateShipmentMutation()
+  const [addShipment, { loading: mutationIsLoading, error: mutationError }] =
+    useCreateShipmentMutation()
 
   const onSubmit = (input: ShipmentCreateInput) => {
     // Create the shipment and then redirect to its "view" page
     input.status = ShipmentStatus.Draft
+    input.pricing = undefined
 
     addShipment({
       variables: { input },

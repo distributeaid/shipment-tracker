@@ -1,6 +1,6 @@
-import { PropsWithChildren } from 'react-router/node_modules/@types/react'
+import { FC } from 'react'
 
-const FormFooter = ({ children }: PropsWithChildren<unknown>) => (
+const FormFooter: FC = ({ children }) => (
   <footer className="mt-4 space-y-6">{children}</footer>
 )
 

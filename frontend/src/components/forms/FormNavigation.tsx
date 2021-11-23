@@ -1,6 +1,6 @@
-import { PropsWithChildren } from 'react-router/node_modules/@types/react'
+import { FC } from 'react'
 
-const FormNavigation = ({ children }: PropsWithChildren<unknown>) => (
+const FormNavigation: FC = ({ children }) => (
   <nav className="flex flex-row justify-between">{children}</nav>
 )
 
