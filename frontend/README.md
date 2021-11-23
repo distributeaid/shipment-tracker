@@ -4,51 +4,7 @@ This is a React and Typescript application bootstrapped using [Create React App]
 
 ## Development setup
 
-1. Make sure you're using Node 16
-
-   ```shell
-   nvm use 16
-   ```
-
-2. **Install the dependencies CLI**
-
-   ```shell
-   yarn install --frozen-lockfile
-
-   ```
-
-3. **Start the app**
-
-   ```shell
-   yarn start
-   ```
-
-4. **That's it!**
-
-   View the app at http://localhost:8080/
-
-### Running the backend
-
-You'll usually want access to our data when running the frontend. Here's how to set that up:
-
-1. **Navigate to the root folder**
-2. **Install the dependencies:**
-
-   ```shell
-   yarn install --frozen-lockfile
-
-   ```
-
-3. **Launch the server:**
-
-   ```shell
-   yarn start
-
-   ```
-
-4. **You're done 🎉**
-
-   The server is now running at http://localhost:3000. There's a sweet GrapqhQL interface at http://localhost:3000/grapqhl.
+See the [Dev setup section](../README.md#dev-setup) in the project root.
 
 ## Infrastructure
 
