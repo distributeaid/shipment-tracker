@@ -39,7 +39,7 @@
     "@babel/preset-typescript": "7.14.5",
     "autoprefixer": "^9",
     "babel-jest": "27.4.2",
-    "jest": "27.4.2",
+    "jest": "27.4.3",
     "postcss": "^7"
   },
   "scripts": {
