@@ -72,7 +72,7 @@ export default class Shipment extends Model<
   public statusChangeTime!: Date
 
   @Column(DataType.JSONB)
-  public pricing!: ShipmentPricing
+  public pricing?: ShipmentPricing
 
   @CreatedAt
   @Column

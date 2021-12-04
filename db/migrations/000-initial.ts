@@ -181,17 +181,6 @@ export const up = async (queryInterface: QueryInterface) => {
     },
     pricing: {
       type: DataTypes.JSONB,
-      allowNull: false,
-    },
-    sendingHubs: {
-      type: DataTypes.INTEGER,
-      references: { model: `Groups`, key: 'id' },
-      allowNull: false,
-    },
-    receivingHubId: {
-      type: DataTypes.INTEGER,
-      references: { model: `Groups`, key: 'id' },
-      allowNull: false,
     },
     statusChangeTime: {
       allowNull: false,
