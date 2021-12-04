@@ -143,7 +143,7 @@ const addShipmentInput = Type.Object(
     sendingHubs: Type.Array(ID, { minItems: 1 }),
     receivingHubs: Type.Array(ID, { minItems: 1 }),
     status: Type.Enum(ShipmentStatus),
-    pricing: Pricing,
+    pricing: Type.Optional(Pricing),
   },
   { additionalProperties: false },
 )
