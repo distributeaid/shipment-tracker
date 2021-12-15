@@ -36,7 +36,7 @@ describe('appMailer', () => {
         from: `"Distribute Aid Shipment Tracker" <no-reply@distributeaid.org>`,
         to: `"Alex" <alex@example.com>`,
         subject: `Verification token: 123456`,
-        text: `Hei 👋 Alex,\n\nPlease use the token 123456 to verify your email address.\n\nPlease do not reply to this email.`,
+        text: `Hei 👋 Alex,\n\nPlease use the token 123456 to verify your email address.\n\nPlease do not reply to this email.\n\nIf you need support, please contact help@distributeaid.org.`,
       })
     })
   })
