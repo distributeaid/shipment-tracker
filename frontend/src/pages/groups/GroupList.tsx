@@ -16,6 +16,10 @@ const COLUMNS: Column<AllGroupsQuery['listGroups'][0]>[] = [
     accessor: 'name',
   },
   {
+    Header: 'Description',
+    accessor: 'description',
+  },
+  {
     Header: 'Location',
     accessor: (group) =>
       `${group.primaryLocation.townCity} (${group.primaryLocation.countryCode})`,

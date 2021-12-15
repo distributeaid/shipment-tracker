@@ -66,3 +66,35 @@ export const augmentRegisterOptionsForInput = (
 
   return options
 }
+
+/**
+ * Adds error messages for the following validations:
+ * - required
+ * - minLength
+ * - maxLength
+ */
+export const augmentRegisterOptionsForTextArea = (
+  registerOptions: RegisterOptions,
+) => {
+  const options = Object.assign({}, registerOptions)
+
+  if (options.required === true) {
+    options.required = 'This field is required'
+  }
+
+  if (typeof options.minLength === 'number') {
+    options.minLength = {
+      value: options.minLength,
+      message: `Insert at least ${options.minLength} characters`,
+    }
+  }
+
+  if (typeof options.maxLength === 'number') {
+    options.maxLength = {
+      value: options.maxLength,
+      message: `Insert less than ${options.maxLength} characters`,
+    }
+  }
+
+  return options
+}

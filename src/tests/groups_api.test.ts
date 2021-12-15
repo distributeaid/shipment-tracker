@@ -30,6 +30,11 @@ describe('Groups API', () => {
       ...commonGroupData,
     }
 
+    const groupWithDescription = {
+      name: 'Group with description',
+      description: `Description for the group.\n\nCan contain newlines.`,
+    }
+
     const daHub: GroupCreateInput = {
       ...commonGroupData,
       name: 'hub1',
@@ -67,6 +72,7 @@ describe('Groups API', () => {
       const ADD_GROUP = gql`
         mutation (
           $name: String!
+          $description: String
           $groupType: GroupType!
           $primaryLocation: LocationInput!
           $primaryContact: ContactInfoInput!
@@ -75,6 +81,7 @@ describe('Groups API', () => {
           addGroup(
             input: {
               name: $name
+              description: $description
               groupType: $groupType
               primaryLocation: $primaryLocation
               primaryContact: $primaryContact
@@ -83,6 +90,7 @@ describe('Groups API', () => {
           ) {
             id
             name
+            description
             groupType
           }
         }
@@ -128,6 +136,23 @@ describe('Groups API', () => {
         expect(res?.data?.addGroup?.name).toEqual(daHub.name)
         expect(res?.data?.addGroup?.id).not.toBeNull()
       })
+
+      test('with a description', async () => {
+        const res = await testServer.executeOperation({
+          query: ADD_GROUP,
+          variables: {
+            ...groupWithDescription,
+            ...commonGroupData,
+          },
+        })
+
+        expect(res.errors).toBeUndefined()
+        expect(res?.data?.addGroup?.name).toEqual('Group with description')
+        expect(res?.data?.addGroup?.description).toEqual(
+          `Description for the group.\n\nCan contain newlines.`,
+        )
+        expect(res?.data?.addGroup?.id).not.toBeNull()
+      })
     })
 
     describe('updateGroup', () => {
@@ -139,6 +164,7 @@ describe('Groups API', () => {
           updateGroup(id: $id, input: $input) {
             id
             name
+            description
             groupType
             primaryLocation {
               countryCode
@@ -266,6 +292,23 @@ describe('Groups API', () => {
 
         expect(res.errors?.[0].message).toEqual('Not permitted to update group')
       })
+
+      it('updates the description', async () => {
+        const res = await adminTestServer.executeOperation({
+          query: UPDATE_GROUP,
+          variables: {
+            id: existingGroup.id,
+            input: {
+              description: groupWithDescription.description + '\n\nUpdated!',
+            },
+          },
+        })
+
+        expect(res.errors).toBeUndefined()
+        expect(res.data?.updateGroup?.description).toEqual(
+          groupWithDescription.description + '\n\nUpdated!',
+        )
+      })
     })
   })
 
@@ -308,6 +351,7 @@ describe('Groups API', () => {
       })
       sendingGroup1 = await Group.create({
         name: sendingGroup1Name,
+        description: 'Sending Group #1',
         captainId: captain1.id,
         ...commonGroupData,
       })
@@ -345,6 +389,7 @@ describe('Groups API', () => {
           group(id: $id) {
             id
             name
+            description
           }
         }
       `
@@ -395,6 +440,16 @@ describe('Groups API', () => {
             expect(res.errors[0].message).toBe('No group exists with ID 17')
           })
         })
+      })
+
+      it('returns the description', async () => {
+        const res = await testServer.executeOperation({
+          query: GROUP,
+          variables: { id: sendingGroup1.id },
+        })
+
+        expect(res?.errors).toBeUndefined()
+        expect(res?.data?.group.description).toBe('Sending Group #1')
       })
     })
 

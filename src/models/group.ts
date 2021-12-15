@@ -1,20 +1,21 @@
 import { Optional } from 'sequelize'
 import {
-  Model,
+  BelongsTo,
   Column,
-  Table,
   CreatedAt,
-  UpdatedAt,
   DataType,
   ForeignKey,
-  BelongsTo,
+  Model,
+  Table,
+  UpdatedAt,
 } from 'sequelize-typescript'
-import { GroupType, Location, ContactInfo } from '../server-internal-types'
+import { ContactInfo, GroupType, Location } from '../server-internal-types'
 import UserAccount from './user_account'
 
 export interface GroupAttributes {
   id: number
   name: string
+  description?: string | null
   groupType: GroupType
   primaryLocation: Location
   primaryContact: ContactInfo
@@ -23,7 +24,7 @@ export interface GroupAttributes {
 }
 
 export interface GroupCreationAttributes
-  extends Optional<GroupAttributes, 'id' | 'website'> {}
+  extends Optional<GroupAttributes, 'id' | 'website' | 'description'> {}
 
 @Table({
   timestamps: true,
@@ -36,6 +37,9 @@ export default class Group extends Model<
 
   @Column
   public name!: string
+
+  @Column
+  public description?: string
 
   @Column(DataType.STRING)
   public groupType!: GroupType
