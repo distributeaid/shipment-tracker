@@ -1,6 +1,7 @@
 fragment AllGroupFields on Group {
   id
   name
+  description
   groupType
   primaryLocation {
     townCity

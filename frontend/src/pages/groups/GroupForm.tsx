@@ -2,6 +2,7 @@ import { FunctionComponent, ReactNode, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
+import TextArea from '../../components/forms/TextArea'
 import TextField from '../../components/forms/TextField'
 import { COUNTRY_CODE_OPTIONS, GROUP_TYPE_OPTIONS } from '../../data/constants'
 import { useAuth } from '../../hooks/useAuth'
@@ -69,6 +70,14 @@ const GroupForm: FunctionComponent<Props> = (props) => {
         required
         errors={errors}
       />
+      <fieldset className="space-y-4 mt-8">
+        <TextArea
+          label="Group description"
+          name="description"
+          register={register}
+          errors={errors}
+        />
+      </fieldset>
       {profile?.isAdmin && (
         <SelectField
           label="Type"

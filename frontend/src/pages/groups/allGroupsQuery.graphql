@@ -2,6 +2,7 @@ query AllGroups($captainId: Int, $groupType: [GroupType!]) {
   listGroups(captainId: $captainId, groupType: $groupType) {
     id
     name
+    description
     groupType
     captainId
     primaryContact {
@@ -22,6 +23,7 @@ query AllGroupsMinimal($captainId: Int, $groupType: [GroupType!]) {
   listGroups(captainId: $captainId, groupType: $groupType) {
     id
     name
+    description
     groupType
     captainId
   }

@@ -53,6 +53,11 @@ const GroupViewPage: FunctionComponent = () => {
         </header>
         {groupData && (
           <main className="p-4 md:p-6 max-w-lg pb-20 space-y-6">
+            {groupData?.description && (
+              <ReadOnlyField label="Description">
+                {groupData.description}
+              </ReadOnlyField>
+            )}
             <ReadOnlyField label="Group type">
               {groupData && formatGroupType(groupData.groupType)}
             </ReadOnlyField>
