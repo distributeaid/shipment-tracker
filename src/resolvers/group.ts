@@ -79,6 +79,13 @@ const group: QueryResolvers['group'] = async (_, { id }) => {
 
 // Group mutation resolvers
 
+const Description = Type.Optional(
+  Type.String({
+    minLength: 0,
+    title: 'Description',
+  }),
+)
+
 // - add a group
 export const addGroupInputSchema = Type.Object(
   {
@@ -87,6 +94,7 @@ export const addGroupInputSchema = Type.Object(
     primaryLocation: Location,
     primaryContact: Contact,
     website: Type.Optional(URI),
+    description: Description,
   },
   { additionalProperties: false },
 )
@@ -139,6 +147,7 @@ export const updateGroupInput = Type.Object(
     primaryContact: Type.Optional(Contact),
     website: OptionalValueOrUnset(URI),
     captainId: Type.Optional(ID),
+    description: Description,
   },
   { additionalProperties: false },
 )
@@ -172,6 +181,9 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
   const updateAttributes: Partial<Omit<GroupAttributes, 'id'>> = {}
 
   if (valid.value.name !== undefined) updateAttributes.name = valid.value.name
+
+  if (valid.value.description !== undefined)
+    updateAttributes.description = valid.value.description
 
   if (valid.value.groupType !== undefined) {
     if (valid.value.groupType !== group.groupType && !context.auth.isAdmin) {

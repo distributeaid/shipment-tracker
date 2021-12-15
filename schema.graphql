@@ -33,6 +33,7 @@ input ContactInfoInput {
 type Group {
   id: Int!
   name: String!
+  description: String
   groupType: GroupType!
   primaryLocation: Location!
   primaryContact: ContactInfo!
@@ -45,6 +46,7 @@ type Group {
 
 input GroupCreateInput {
   name: String!
+  description: String
   groupType: GroupType!
   primaryLocation: LocationInput!
   primaryContact: ContactInfoInput!
@@ -53,6 +55,7 @@ input GroupCreateInput {
 
 input GroupUpdateInput {
   name: String
+  description: String
   groupType: GroupType
   primaryLocation: LocationInput
   primaryContact: ContactInfoInput
