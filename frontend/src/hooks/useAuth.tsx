@@ -12,7 +12,6 @@ export type UserProfile = {
   id: number
   isAdmin: boolean
   name: string
-  groupId?: number
 }
 
 export enum AuthErrorType {

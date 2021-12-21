@@ -8,6 +8,7 @@ import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
 import Spinner from '../../components/Spinner'
 import { useAuth } from '../../hooks/useAuth'
+import { useGroupLeaderGroups } from '../../hooks/useGroupLeaderGroups'
 import {
   GroupType,
   OfferCreateInput,
@@ -50,6 +51,7 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
   )
 
   const { me: profile } = useAuth()
+  const usersGroups = useGroupLeaderGroups()
 
   const [getGroups, { loading: isLoadingGroups, data: groups }] =
     useAllGroupsLazyQuery()
@@ -95,7 +97,10 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
     function updateContactInformation() {
       if (sendingGroups.length > 0) {
         // When the sendingGroupId changes, we pre-fill the contact info
-        const sendingGroupId = watchSendingGroupId || profile?.groupId
+        const sendingGroupId =
+          watchSendingGroupId ||
+          // Use first group of user
+          usersGroups[0]?.id
         let matchingGroup = sendingGroups.find(
           (group) => group.id === sendingGroupId,
         )
@@ -121,7 +126,7 @@ const CreateOfferForm: FunctionComponent<Props> = (props) => {
         }
       }
     },
-    [watchSendingGroupId, groups, reset, profile, sendingGroups],
+    [watchSendingGroupId, groups, reset, profile, sendingGroups, usersGroups],
   )
 
   const onSubmitForm = (input: OfferCreateInput) => {
