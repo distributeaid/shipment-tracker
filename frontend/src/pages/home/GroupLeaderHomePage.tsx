@@ -4,15 +4,13 @@ import CheckIcon from '../../components/icons/CheckIcon'
 import CogIcon from '../../components/icons/CogIcon'
 import TruckIcon from '../../components/icons/TruckIcon'
 import InternalLink from '../../components/InternalLink'
-import { useAuth } from '../../hooks/useAuth'
+import { useGroupLeaderGroups } from '../../hooks/useGroupLeaderGroups'
 import ROUTES, { groupViewRoute } from '../../utils/routes'
 
 const GroupLeaderHomePage: FunctionComponent = () => {
-  const { me: profile } = useAuth()
+  const groups = useGroupLeaderGroups()
 
-  const groupLeaderHasCreatedGroup = profile?.groupId != null
-
-  if (groupLeaderHasCreatedGroup) {
+  if (groups.length > 0) {
     return (
       <div>
         <h2 className="text-gray-700 font-medium mb-2 text-lg">Quick links</h2>
@@ -25,15 +23,18 @@ const GroupLeaderHomePage: FunctionComponent = () => {
               <TruckIcon className="w-4 h-4 mr-1" /> Shipments
             </InternalLink>
           </li>
-          <li>
-            <InternalLink
-              to={groupViewRoute(profile?.groupId!)}
-              className="inline-flex items-center"
-            >
-              <CogIcon className="w-4 h-4 mr-1" />
-              Group settings
-            </InternalLink>
-          </li>
+          {groups.map((group) => (
+            <li key={group.id}>
+              <InternalLink
+                to={groupViewRoute(group.id)}
+                className="inline-flex items-center"
+              >
+                <CogIcon className="w-4 h-4 mr-1" />
+                Group settings
+                {groups.length > 1 && <span>for {group.name}</span>}
+              </InternalLink>
+            </li>
+          ))}
         </ul>
         <h2 className="text-gray-700 font-medium mb-2 mt-8 text-lg">
           Onboarding

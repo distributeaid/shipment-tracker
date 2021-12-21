@@ -4,6 +4,7 @@ import ButtonLink from '../../components/ButtonLink'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import InternalLink from '../../components/InternalLink'
 import { useAuth } from '../../hooks/useAuth'
+import { useGroupLeaderGroups } from '../../hooks/useGroupLeaderGroups'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { useGroupQuery } from '../../types/api-types'
 import { formatCountryCodeToName, formatGroupType } from '../../utils/format'
@@ -11,6 +12,7 @@ import ROUTES, { groupEditRoute } from '../../utils/routes'
 
 const GroupViewPage: FunctionComponent = () => {
   const { me: profile } = useAuth()
+  const usersGroups = useGroupLeaderGroups()
 
   // Extract the group's ID from the URL
   const groupId = parseInt(useParams<{ groupId: string }>().groupId, 10)
@@ -22,7 +24,8 @@ const GroupViewPage: FunctionComponent = () => {
 
   const groupData = group?.group
 
-  const canEditGroup = profile?.isAdmin || profile?.groupId === groupId
+  const canEditGroup =
+    profile?.isAdmin || usersGroups.map((group) => group.id).includes(groupId)
 
   return (
     <LayoutWithNav>
