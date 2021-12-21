@@ -193,7 +193,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
         <SelectField
           defaultValue={DEFAULT_MONTH}
           options={MONTH_OPTIONS}
-          label="Label month"
+          label="Month"
           name="labelMonth"
           castAsNumber
           register={register}
@@ -205,7 +205,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
         />
         <SelectField
           options={YEAR_OPTIONS}
-          label="Label year"
+          label="Year"
           name="labelYear"
           castAsNumber
           register={register}
