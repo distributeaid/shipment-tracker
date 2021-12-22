@@ -72,7 +72,7 @@ export const verificationEmail = (
   from: `"Distribute Aid Shipment Tracker" <${fromEmail}>`,
   to: `"${user.name}" <${user.email}>`,
   subject: `Verification token: ${token.token}`,
-  text: `Hei 👋 ${user.name},\n\nPlease use the token ${token.token} to verify your email address.\n\nPlease do not reply to this email.\n\nIf you need support, please contact help@distributeaid.org.`,
+  text: `Hey 👋 ${user.name},\n\nPlease use the token ${token.token} to verify your email address.\n\nPlease do not reply to this email.\n\nIf you need support, please contact help@distributeaid.org.`,
 })
 
 export const appMailer = (
