@@ -357,7 +357,7 @@ export const COUNTRY_CODES_TO_NAME = {
   ST: 'Sao Tome and Principe',
   SA: 'Saudi Arabia',
   SN: 'Senegal',
-  CS: 'Serbia and Montenegro',
+  RS: 'Serbia',
   SC: 'Seychelles',
   SL: 'Sierra Leone',
   SG: 'Singapore',
@@ -425,7 +425,7 @@ export const SENDING_REGIONS = [
 export const RECEIVING_REGIONS = [
   { code: 'FR', label: 'France' },
   { code: 'GR', label: 'Greece' },
-  { code: 'CS', label: 'Serbia' },
+  { code: 'RS', label: 'Serbia' },
   { code: 'BA', label: 'Bosnia' },
   { code: 'LB', label: 'Lebanon' },
 ]
