@@ -8,7 +8,7 @@ export const useGroupLeaderGroups = () => {
     variables: {
       captainId: profile?.id,
     },
+    fetchPolicy: 'no-cache',
   })
-  const usersGroups = data?.listGroups ?? []
-  return usersGroups
+  return data?.listGroups ?? []
 }
