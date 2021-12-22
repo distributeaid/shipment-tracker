@@ -60,9 +60,9 @@ const CreatePalletModal: FunctionComponent<Props> = (props) => {
           pallet doesn't fit within those dimensions, please let us know at{' '}
           <a
             className="text-blue-700 hover:underline"
-            href="mailto:dom@distributeaid.org"
+            href="mailto:hubs@distributeaid.org"
           >
-            dom@distributeaid.org
+            hubs@distributeaid.org
           </a>
           .
         </p>
