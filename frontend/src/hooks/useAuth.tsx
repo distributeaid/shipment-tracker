@@ -160,7 +160,9 @@ export const AuthProvider = ({
         method: 'DELETE',
         credentials: 'include',
       }).then(({ ok, status: httpStatusCode }) => {
-        if (!ok) throw new AuthError(`Failed to logout!`, httpStatusCode)
+        if (!ok) {
+          console.error(`[auth]`, `Failed to logout!`, httpStatusCode)
+        }
         setIsAuthenticated(false)
         storedIsAuthenticated.destroy()
         storedMe.destroy()
