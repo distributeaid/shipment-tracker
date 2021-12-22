@@ -46,7 +46,9 @@ const ShipmentViewPage: FunctionComponent = () => {
             {profile?.isAdmin && shipment && (
               <DownloadCSVMenu shipment={shipment.shipment} />
             )}
-            <ButtonLink to={shipmentEditRoute(shipmentId)}>Edit</ButtonLink>
+            {profile?.isAdmin && (
+              <ButtonLink to={shipmentEditRoute(shipmentId)}>Edit</ButtonLink>
+            )}
           </div>
         </header>
 
