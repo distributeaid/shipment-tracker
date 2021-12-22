@@ -25,7 +25,6 @@ const ShipmentViewPage: FunctionComponent = () => {
   const { data: shipment } = useShipmentQuery({
     variables: { id: shipmentId },
   })
-
   const shipmentData = shipment?.shipment
 
   return (

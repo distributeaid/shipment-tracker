@@ -6,6 +6,7 @@ import useModalState from '../../hooks/useModalState'
 import {
   ShipmentQuery,
   useExportShipmentToCsvMutation,
+  useShipmentWithExportsQuery,
 } from '../../types/api-types'
 
 interface Props {
@@ -16,6 +17,14 @@ const SERVER_URL = process.env.REACT_APP_SERVER_URL?.replace(/\/$/, '')
 
 const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
   const [modalIsVisible, showModal, hideModal] = useModalState()
+
+  const { data: shipmentWithExports } = useShipmentWithExportsQuery({
+    variables: { id: shipment.id },
+  })
+  const shipmentExports = useMemo(
+    () => shipmentWithExports?.shipment?.exports ?? [],
+    [shipmentWithExports],
+  )
 
   const [exportShipment, { loading: exportIsProcessing }] =
     useExportShipmentToCsvMutation()
@@ -38,29 +47,22 @@ const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
     window.open(downloadUrl.href)
   }
 
-  const sortedExports = useMemo(
-    function sortExportsChronologically() {
-      if (shipment.exports) {
-        const sorted = [...shipment.exports]
-        sorted.sort((a, b) => {
-          const aValue = new Date(a.createdAt)
-          const bValue = new Date(b.createdAt)
-          if (aValue > bValue) {
-            return -1
-          } else if (aValue < bValue) {
-            return 1
-          }
-          return 0
-        })
-        return sorted
+  const sortedExports = useMemo(() => {
+    const sorted = [...shipmentExports]
+    sorted.sort((a, b) => {
+      const aValue = new Date(a.createdAt)
+      const bValue = new Date(b.createdAt)
+      if (aValue > bValue) {
+        return -1
+      } else if (aValue < bValue) {
+        return 1
       }
+      return 0
+    })
+    return sorted
+  }, [shipmentExports])
 
-      return []
-    },
-    [shipment.exports],
-  )
-
-  if (!shipment.exports || shipment.exports.length === 0) {
+  if (shipmentExports.length === 0) {
     return (
       <Button disabled={exportIsProcessing} onClick={exportToCSV}>
         Export to CSV
