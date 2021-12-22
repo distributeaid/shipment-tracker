@@ -358,6 +358,7 @@ export const COUNTRY_CODES_TO_NAME = {
   SA: 'Saudi Arabia',
   SN: 'Senegal',
   RS: 'Serbia',
+  ME: 'Montenegro',
   SC: 'Seychelles',
   SL: 'Sierra Leone',
   SG: 'Singapore',
