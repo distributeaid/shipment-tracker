@@ -117,7 +117,11 @@ const ShipmentList: FunctionComponent = () => {
         <header className="p-6 border-b border-gray-200">
           <div className="md:flex items-center justify-between">
             <h1 className="text-navy-800 text-3xl mb-4 md:mb-0">Shipments</h1>
-            <ButtonLink to={ROUTES.SHIPMENT_CREATE}>Create shipment</ButtonLink>
+            {profile?.isAdmin && (
+              <ButtonLink to={ROUTES.SHIPMENT_CREATE}>
+                Create shipment
+              </ButtonLink>
+            )}
           </div>
           <div className="mt-4">
             <DropdownMenu label="Shipment status" position="right">
