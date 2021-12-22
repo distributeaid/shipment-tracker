@@ -55,7 +55,7 @@ const GroupLeaderHomePage: FunctionComponent = () => {
       <div className="rounded border border-gray-200 p-4 relative md:flex items-center">
         <div className="flex-grow mb-4 md:mb-0">
           <div className="font-semibold text-gray-600">
-            2. Set up your sending group
+            2. Set up your group
           </div>
           <div className="text-gray-500">Fill out a short questionnaire</div>
         </div>
