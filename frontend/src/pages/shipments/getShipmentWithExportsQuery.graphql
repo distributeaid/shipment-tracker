@@ -1,4 +1,4 @@
-query Shipment($id: Int!) {
+query ShipmentWithExports($id: Int!) {
   shipment(id: $id) {
     ...AllShipmentFields
     exports {
