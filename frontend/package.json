@@ -46,7 +46,7 @@
     "ts-jest": "27.1.2"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "NODE_ENV=development craco start",
     "build": "craco build",
     "test": "jest",
     "eject": "react-scripts eject"
