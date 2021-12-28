@@ -1,6 +1,6 @@
-import format from 'date-fns/format'
 import { FunctionComponent, useMemo } from 'react'
 import Button from '../../components/Button'
+import { FormattedDate } from '../../components/FormattedDate'
 import PlainModal from '../../components/modal/PlainModal'
 import useModalState from '../../hooks/useModalState'
 import {
@@ -89,9 +89,7 @@ const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
                 key={e.id}
                 className="py-2 flex items-center justify-between"
               >
-                <span>
-                  {format(new Date(e.createdAt), 'MMM d, yyyy, H:mm')}
-                </span>
+                <FormattedDate date={e.createdAt} />
                 <Button
                   slim
                   disabled={exportIsProcessing}
