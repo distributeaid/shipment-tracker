@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'frontend/**'
+      - '.github/workflows/codesee-arch-diagram.yml'
+      - '.github/workflows/frontend-unit-tests.yml'
 
 jobs:
   build:
