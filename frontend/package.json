@@ -38,10 +38,10 @@
     "@babel/preset-env": "7.16.5",
     "@babel/preset-typescript": "7.16.5",
     "@testing-library/react": "12.1.2",
-    "autoprefixer": "^9",
+    "autoprefixer": "9.8.8",
     "babel-jest": "27.4.5",
     "jest": "27.4.5",
-    "postcss": "^7",
+    "postcss": "7.0.39",
     "ts-jest": "27.1.2"
   },
   "scripts": {
