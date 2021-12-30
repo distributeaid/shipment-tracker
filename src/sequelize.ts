@@ -12,17 +12,19 @@ import UserAccount from './models/user_account'
 import VerificationToken from './models/verification_token'
 
 const debug = (...args: any[]) =>
-  process.env.SEQUELIZE_DEBUG !== undefined && console.debug(...args)
+  process.env.SEQUELIZE_DEBUG !== undefined
+    ? console.debug('[sequelize]', ...args)
+    : () => undefined
 
 // DB_ENV is used soley to set the database config to "ci" for running
 // tests on CI. This is because DB connection config is different between
 // CI and local test envs. See db/config.json
 const env = process.env.DB_ENV || process.env.NODE_ENV || 'development'
-debug(`sequelize env`, env)
+debug(`env`, env)
 const sequelizeConfig = path.join(process.cwd(), 'db', 'config.json')
-debug(`sequelize config`, sequelizeConfig)
+debug(`config`, sequelizeConfig)
 const config = require(sequelizeConfig)[env]
-debug(`sequelize config loaded`, config)
+debug(`config loaded`, config)
 
 export let sequelize: Sequelize
 
@@ -33,7 +35,7 @@ const COMMON_CONFIG: Partial<SequelizeOptions> = {
 }
 
 if (config.use_env_variable !== undefined) {
-  debug(`sequelize env variable`, config.use_env_variable)
+  debug(`env variable`, config.use_env_variable)
   const connectionUrl = process.env[config.use_env_variable] as
     | string
     | undefined
