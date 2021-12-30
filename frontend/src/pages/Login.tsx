@@ -17,6 +17,7 @@ const LoginPage: FunctionComponent = () => {
       email?: string
     }
   }
+
   const { login } = useAuth()
   const [email, setEmail] = useState(state?.email ?? '')
   const [password, setPassword] = useState('')
