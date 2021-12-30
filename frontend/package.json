@@ -41,7 +41,7 @@
     "autoprefixer": "^9",
     "babel-jest": "27.4.5",
     "jest": "27.4.5",
-    "postcss": "^7",
+    "postcss": "8.4.5",
     "ts-jest": "27.1.2"
   },
   "scripts": {
