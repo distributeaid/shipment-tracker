@@ -10,11 +10,14 @@ import PublicLayout from '../layouts/PublicLayout'
 import ROUTES from '../utils/routes'
 
 const LoginPage: FunctionComponent = () => {
-  const { state } = useLocation<{
-    email_confirmation_success?: boolean
-    password_change_success?: boolean
-    email?: string
-  }>()
+  const { state } = useLocation() as {
+    state?: {
+      email_confirmation_success?: boolean
+      password_change_success?: boolean
+      email?: string
+    }
+  }
+
   const { login } = useAuth()
   const [email, setEmail] = useState(state?.email ?? '')
   const [password, setPassword] = useState('')

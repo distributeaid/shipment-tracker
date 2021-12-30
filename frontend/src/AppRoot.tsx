@@ -1,7 +1,11 @@
 import { ApolloProvider } from '@apollo/client'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom'
 import { apolloClient } from './apolloClient'
-import PrivateRoute from './components/PrivateRoute'
 import { AuthProvider, useAuth } from './hooks/useAuth'
 import AdminPage from './pages/AdminPage'
 import ConfirmEmailWithTokenPage from './pages/ConfirmEmailWithTokenPage'
@@ -30,74 +34,85 @@ const isDev = process.env.NODE_ENV === 'development'
 const App = () => {
   const { me } = useAuth()
 
+  const isLoggedIn = me !== undefined
+  const isNotLoggedIn = !isLoggedIn
+
   return (
     <ApolloProvider client={apolloClient}>
       <Router>
-        <Switch>
+        <Routes>
+          {isNotLoggedIn && (
+            <>
+              <Route path={ROUTES.HOME} element={<LoginPage />} />
+              <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+              <Route
+                path={ROUTES.SEND_VERIFICATION_TOKEN_BY_EMAIL}
+                element={<RequestTokenPage />}
+              />
+              <Route
+                path={ROUTES.SET_NEW_PASSWORD_USING_EMAIL_AND_TOKEN}
+                element={<SetNewPasswordPage />}
+              />
+              <Route
+                path={ROUTES.CONFIRM_EMAIL_WITH_TOKEN}
+                element={<ConfirmEmailWithTokenPage />}
+              />
+            </>
+          )}
+          {isLoggedIn && (
+            <>
+              <Route path={ROUTES.HOME} element={<HomePage />} />
+              <Route path={ROUTES.ADMIN_ROOT} element={<AdminPage />} />
+              <Route path={ROUTES.GROUP_LIST} element={<GroupList />} />
+              <Route path={ROUTES.GROUP_CREATE} element={<GroupCreatePage />} />
+              <Route path={ROUTES.GROUP_EDIT} element={<GroupEditPage />} />
+              <Route path={ROUTES.GROUP_VIEW} element={<GroupViewPage />} />
+              <Route
+                path={ROUTES.SHIPMENT_OFFER_CREATE}
+                element={<CreateOfferPage />}
+              />
+              <Route
+                path={ROUTES.SHIPMENT_OFFER_VIEW}
+                element={<ViewOfferPage />}
+              />
+              <Route path={ROUTES.SHIPMENT_LIST} element={<ShipmentList />} />
+              <Route
+                path={ROUTES.SHIPMENT_CREATE}
+                element={<ShipmentCreatePage />}
+              />
+              <Route
+                path={ROUTES.SHIPMENT_EDIT}
+                element={<ShipmentEditPage />}
+              />
+              <Route
+                path={ROUTES.SHIPMENT_VIEW}
+                element={<ShipmentViewPage />}
+              />
+            </>
+          )}
           {isDev && (
-            <Route path={ROUTES.KITCHEN_SINK}>
-              <KitchenSink />
-            </Route>
+            <>
+              <Route path={ROUTES.KITCHEN_SINK} element={<KitchenSink />} />
+              <Route path={ROUTES.APOLLO_DEMO} element={<ApolloDemoPage />} />
+            </>
           )}
-          <Route path={ROUTES.HOME} exact>
-            {me !== undefined ? <HomePage /> : <LoginPage />}
-          </Route>
-          {me === undefined && (
-            <Switch>
-              <Route path={ROUTES.REGISTER} exact>
-                <RegisterPage />
-              </Route>
-              <Route path={ROUTES.SEND_VERIFICATION_TOKEN_BY_EMAIL} exact>
-                <RequestTokenPage />
-              </Route>
-              <Route path={ROUTES.SET_NEW_PASSWORD_USING_EMAIL_AND_TOKEN} exact>
-                <SetNewPasswordPage />
-              </Route>
-              <Route path={ROUTES.CONFIRM_EMAIL_WITH_TOKEN} exact>
-                <ConfirmEmailWithTokenPage />
-              </Route>
-            </Switch>
+          {/* Catch all in case route is not found */}
+          {/* if logged in, show not found page, because the route probably does not exist */}
+          {isLoggedIn && <Route path="*" element={<NotFoundPage />} />}
+          {/* if not logged in, redirect to start page, which will show the login */}
+          {isNotLoggedIn && (
+            <Route
+              path="*"
+              element={
+                <Navigate
+                  to={{
+                    pathname: '/',
+                  }}
+                />
+              }
+            />
           )}
-          <PrivateRoute path={ROUTES.ADMIN_ROOT} exact>
-            <AdminPage />
-          </PrivateRoute>
-          <Route path={ROUTES.APOLLO_DEMO}>
-            <ApolloDemoPage />
-          </Route>
-          <PrivateRoute path={ROUTES.GROUP_LIST}>
-            <GroupList />
-          </PrivateRoute>
-          <PrivateRoute path={ROUTES.GROUP_CREATE}>
-            <GroupCreatePage />
-          </PrivateRoute>
-          <PrivateRoute path={ROUTES.GROUP_EDIT}>
-            <GroupEditPage />
-          </PrivateRoute>
-          <PrivateRoute path={ROUTES.GROUP_VIEW}>
-            <GroupViewPage />
-          </PrivateRoute>
-          <PrivateRoute path={ROUTES.SHIPMENT_OFFER_CREATE}>
-            <CreateOfferPage />
-          </PrivateRoute>
-          <PrivateRoute path={ROUTES.SHIPMENT_OFFER_VIEW}>
-            <ViewOfferPage />
-          </PrivateRoute>
-          <PrivateRoute path={ROUTES.SHIPMENT_LIST}>
-            <ShipmentList />
-          </PrivateRoute>
-          <PrivateRoute path={ROUTES.SHIPMENT_CREATE}>
-            <ShipmentCreatePage />
-          </PrivateRoute>
-          <PrivateRoute path={ROUTES.SHIPMENT_EDIT}>
-            <ShipmentEditPage />
-          </PrivateRoute>
-          <PrivateRoute path={ROUTES.SHIPMENT_VIEW}>
-            <ShipmentViewPage />
-          </PrivateRoute>
-          <PrivateRoute path="*">
-            <NotFoundPage />
-          </PrivateRoute>
-        </Switch>
+        </Routes>
       </Router>
     </ApolloProvider>
   )

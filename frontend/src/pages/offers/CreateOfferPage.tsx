@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
   OfferCreateInput,
@@ -11,18 +11,16 @@ import CreateOfferForm from './CreateOfferForm'
 
 const CreateOfferPage: FunctionComponent = () => {
   const params = useParams<{ shipmentId: string }>()
-  const shipmentId = parseInt(params.shipmentId, 10)
+  const shipmentId = parseInt(params.shipmentId ?? '-1', 10)
 
-  const history = useHistory()
+  const navigate = useNavigate()
 
-  const [
-    addOffer,
-    { loading: mutationIsLoading, error: mutationError },
-  ] = useCreateOfferMutation({
-    refetchQueries: [
-      { query: OffersForShipmentDocument, variables: { shipmentId } },
-    ],
-  })
+  const [addOffer, { loading: mutationIsLoading, error: mutationError }] =
+    useCreateOfferMutation({
+      refetchQueries: [
+        { query: OffersForShipmentDocument, variables: { shipmentId } },
+      ],
+    })
 
   const onSubmit = (input: OfferCreateInput) => {
     // Create the new offer, then navigate to its page
@@ -30,7 +28,7 @@ const CreateOfferPage: FunctionComponent = () => {
       .then(({ data }) => {
         if (data) {
           const { shipmentId, id } = data.addOffer
-          history.push(offerViewRoute(shipmentId, id))
+          navigate(offerViewRoute(shipmentId, id))
         }
       })
       .catch(console.error)

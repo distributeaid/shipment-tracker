@@ -15,12 +15,15 @@ import { shipmentViewRoute } from '../../utils/routes'
 import ShipmentForm from './ShipmentForm'
 
 const ShipmentEditPage: FunctionComponent = () => {
-  const { shipmentId } = useParams<{ shipmentId: string }>()
+  const shipmentId = parseInt(
+    useParams<{ shipmentId: string }>().shipmentId ?? '-1',
+    10,
+  )
   const [error, setError] = useState<string>()
   const { showConfirmation, triggerConfirmation } = useSaveConfirmation()
 
   const { data: originalShipmentData, loading: queryIsLoading } =
-    useShipmentQuery({ variables: { id: parseInt(shipmentId, 10) } })
+    useShipmentQuery({ variables: { id: shipmentId } })
 
   // Set up the mutation to update the shipment
   const [updateShipmentMutation, { loading: mutationIsLoading }] =
@@ -40,7 +43,7 @@ const ShipmentEditPage: FunctionComponent = () => {
     ])
 
     updateShipmentMutation({
-      variables: { id: parseInt(shipmentId, 10), input: formattedInput },
+      variables: { id: shipmentId, input: formattedInput },
     })
       .then(() => {
         triggerConfirmation()

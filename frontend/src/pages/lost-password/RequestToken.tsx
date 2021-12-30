@@ -1,5 +1,5 @@
 import { FunctionComponent, useState } from 'react'
-import { Redirect } from 'react-router'
+import { Navigate } from 'react-router'
 import Error from '../../components/alert/Error'
 import FormFooter from '../../components/forms/FormFooter'
 import TextField from '../../components/forms/TextField'
@@ -54,11 +54,11 @@ const RequestTokenPage: FunctionComponent = () => {
           </FormFooter>
         </form>
         {emailSent && (
-          <Redirect
+          <Navigate
             to={{
               pathname: ROUTES.SET_NEW_PASSWORD_USING_EMAIL_AND_TOKEN,
-              state: { email },
             }}
+            state={{ email }}
           />
         )}
       </div>

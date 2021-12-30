@@ -1,5 +1,5 @@
 import { FunctionComponent, useState } from 'react'
-import { Redirect, useLocation } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import Error from '../components/alert/Error'
 import Success from '../components/alert/Success'
 import DistributeAidWordmark from '../components/branding/DistributeAidWordmark'
@@ -9,9 +9,10 @@ import { AuthError, emailRegEx, tokenRegex, useAuth } from '../hooks/useAuth'
 import ROUTES from '../utils/routes'
 
 const ConfirmEmailWithTokenPage: FunctionComponent = () => {
-  const { state } = useLocation<{ email?: string }>()
+  const { state } = useLocation()
+  const { email: passedEmail } = (state ?? {}) as { email?: string }
   const { confirm } = useAuth()
-  const [email, setEmail] = useState(state?.email ?? '')
+  const [email, setEmail] = useState(passedEmail ?? '')
   const [token, setToken] = useState('')
   const [error, setError] = useState<AuthError>()
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false)
@@ -26,11 +27,11 @@ const ConfirmEmailWithTokenPage: FunctionComponent = () => {
         </div>
         <div className="bg-white rounded p-6">
           <h1 className="text-2xl mb-4 text-center">Shipment Tracker</h1>
-          {state?.email !== undefined && (
+          {passedEmail !== undefined && (
             <Success>
               <p>Registration successful.</p>
               <p>
-                Please check your inbox for <code>{state?.email}</code>!
+                Please check your inbox for <code>{passedEmail}</code>!
               </p>
             </Success>
           )}
@@ -78,11 +79,11 @@ const ConfirmEmailWithTokenPage: FunctionComponent = () => {
             </FormFooter>
           </form>
           {isConfirmed && (
-            <Redirect
+            <Navigate
               to={{
                 pathname: ROUTES.HOME,
-                state: { email_confirmation_success: true, email },
               }}
+              state={{ email_confirmation_success: true, email }}
             />
           )}
         </div>

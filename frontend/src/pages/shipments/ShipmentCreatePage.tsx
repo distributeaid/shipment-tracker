@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
   AllShipmentsDocument,
@@ -11,7 +11,7 @@ import { shipmentViewRoute } from '../../utils/routes'
 import ShipmentForm from './ShipmentForm'
 
 const ShipmentCreatePage: FunctionComponent = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [addShipment, { loading: mutationIsLoading, error: mutationError }] =
     useCreateShipmentMutation()
@@ -29,7 +29,7 @@ const ShipmentCreatePage: FunctionComponent = () => {
       .then(({ data }) => {
         if (data) {
           const newShipmentId = data.addShipment.id
-          history.push(shipmentViewRoute(newShipmentId))
+          navigate(shipmentViewRoute(newShipmentId))
         }
       })
       .catch(console.error)

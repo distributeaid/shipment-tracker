@@ -1,5 +1,5 @@
 import { FunctionComponent, useState } from 'react'
-import { Redirect, useLocation } from 'react-router'
+import { Navigate, useLocation } from 'react-router'
 import Error from '../../components/alert/Error'
 import Success from '../../components/alert/Success'
 import FormFooter from '../../components/forms/FormFooter'
@@ -15,7 +15,7 @@ import PublicLayout from '../../layouts/PublicLayout'
 import ROUTES from '../../utils/routes'
 
 const SetNewPasswordPage: FunctionComponent = () => {
-  const { state } = useLocation<{ email?: string }>()
+  const { state } = useLocation() as { state?: { email?: string } }
   const { setNewPasswordUsingTokenAndEmail } = useAuth()
   const [email, setEmail] = useState(state?.email ?? '')
   const [password, setPassword] = useState('')
@@ -107,11 +107,11 @@ const SetNewPasswordPage: FunctionComponent = () => {
           </FormFooter>
         </form>
         {passwordChanged && (
-          <Redirect
+          <Navigate
             to={{
               pathname: ROUTES.HOME,
-              state: { password_change_success: true, email },
             }}
+            state={{ password_change_success: true, email }}
           />
         )}
       </div>

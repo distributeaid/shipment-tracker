@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import InternalLink from '../../components/InternalLink'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
@@ -13,14 +13,15 @@ import { stripIdAndTypename } from '../../utils/types'
 import GroupForm from './GroupForm'
 
 const GroupEditPage: FunctionComponent = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   // Extract the group's ID from the URL
-  const { groupId } = useParams<{ groupId: string }>()
+  const { groupId: maybeGroupId } = useParams<{ groupId: string }>()
+  const groupId = parseInt(maybeGroupId ?? '-1', 10)
 
   // Load the group's information
   const { data: originalGroupData, loading: queryIsLoading } = useGroupQuery({
-    variables: { id: parseInt(groupId, 10) },
+    variables: { id: groupId },
   })
 
   // Set up the mutation to update the group
@@ -41,9 +42,9 @@ const GroupEditPage: FunctionComponent = () => {
       }
 
       await updateGroup({
-        variables: { id: parseInt(groupId, 10), input },
+        variables: { id: groupId, input },
       })
-      history.push(groupViewRoute(groupId))
+      navigate(groupViewRoute(groupId))
     } catch (error) {
       console.error(error)
     }
