@@ -15,7 +15,7 @@ const GroupViewPage: FunctionComponent = () => {
   const usersGroups = useGroupLeaderGroups()
 
   // Extract the group's ID from the URL
-  const groupId = parseInt(useParams<{ groupId: string }>().groupId, 10)
+  const groupId = parseInt(useParams<{ groupId: string }>().groupId ?? '-1', 10)
 
   // Load the group's information
   const { data: group } = useGroupQuery({

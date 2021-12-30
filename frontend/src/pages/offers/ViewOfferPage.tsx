@@ -22,8 +22,8 @@ import PalletsEditor from './PalletsEditor'
 
 const ViewOfferPage: FunctionComponent = () => {
   const params = useParams<{ shipmentId: string; offerId: string }>()
-  const offerId = parseInt(params.offerId, 10)
-  const shipmentId = parseInt(params.shipmentId, 10)
+  const offerId = parseInt(params.offerId ?? '-1', 10)
+  const shipmentId = parseInt(params.shipmentId ?? '-1', 10)
 
   const { data: shipment } = useShipmentQuery({
     variables: { id: shipmentId },

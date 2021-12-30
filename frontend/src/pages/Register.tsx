@@ -1,5 +1,5 @@
 import { FunctionComponent, useState } from 'react'
-import { Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import Error from '../components/alert/Error'
 import CheckboxField from '../components/forms/CheckboxField'
 import FormFooter from '../components/forms/FormFooter'
@@ -91,11 +91,11 @@ const RegisterPage: FunctionComponent = () => {
         </form>
 
         {isRegistered && (
-          <Redirect
+          <Navigate
             to={{
               pathname: ROUTES.CONFIRM_EMAIL_WITH_TOKEN,
-              state: { email },
             }}
+            state={{ email }}
           />
         )}
       </div>

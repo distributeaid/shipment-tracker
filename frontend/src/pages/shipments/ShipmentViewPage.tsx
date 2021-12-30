@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { Route, Switch, useParams } from 'react-router-dom'
+import { Route, Routes, useParams } from 'react-router-dom'
 import ButtonLink from '../../components/ButtonLink'
 import InternalLink from '../../components/InternalLink'
 import TabLink from '../../components/tabs/TabLink'
@@ -19,8 +19,10 @@ import ShipmentOffers from './ShipmentOffers'
 
 const ShipmentViewPage: FunctionComponent = () => {
   const { me: profile } = useAuth()
-  const params = useParams<{ shipmentId: string }>()
-  const shipmentId = parseInt(params.shipmentId, 10)
+  const shipmentId = parseInt(
+    useParams<{ shipmentId: string }>().shipmentId ?? '-1',
+    10,
+  )
 
   const { data: shipment } = useShipmentQuery({
     variables: { id: shipmentId },
@@ -57,8 +59,8 @@ const ShipmentViewPage: FunctionComponent = () => {
           <TabLink to={shipmentViewOffersRoute(shipmentId)}>Offers</TabLink>
         </TabList>
         <main className="pb-20">
-          <Switch>
-            <Route path={shipmentViewRoute(shipmentId)} exact>
+          <Routes>
+            <Route path={shipmentViewRoute(shipmentId)}>
               <ShipmentDetails shipmentId={shipmentId} />
             </Route>
             <Route path={shipmentViewOffersRoute(shipmentId)}>
@@ -67,7 +69,7 @@ const ShipmentViewPage: FunctionComponent = () => {
                 allowNewOffers={shipmentData?.status === ShipmentStatus.Open}
               />
             </Route>
-          </Switch>
+          </Routes>
         </main>
       </div>
     </LayoutWithNav>

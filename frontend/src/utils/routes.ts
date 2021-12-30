@@ -23,35 +23,43 @@ export const ROUTES = {
   CONFIRM_EMAIL_WITH_TOKEN: '/register/confirm',
 }
 
-export function groupViewRoute(groupId: number | string) {
-  return generatePath(ROUTES.GROUP_VIEW, { groupId })
+export function groupViewRoute(groupId: number) {
+  return generatePath(ROUTES.GROUP_VIEW, { groupId: groupId.toString() })
 }
 
-export function groupEditRoute(groupId: number | string) {
-  return generatePath(ROUTES.GROUP_EDIT, { groupId })
+export function groupEditRoute(groupId: number) {
+  return generatePath(ROUTES.GROUP_EDIT, { groupId: groupId.toString() })
 }
 
-export function offerCreateRoute(shipmentId: number | string) {
-  return generatePath(ROUTES.SHIPMENT_OFFER_CREATE, { shipmentId })
+export function offerCreateRoute(shipmentId: number) {
+  return generatePath(ROUTES.SHIPMENT_OFFER_CREATE, {
+    shipmentId: shipmentId.toString(),
+  })
 }
 
-export function offerViewRoute(
-  shipmentId: number | string,
-  offerId: number | string,
-) {
-  return generatePath(ROUTES.SHIPMENT_OFFER_VIEW, { shipmentId, offerId })
+export function offerViewRoute(shipmentId: number, offerId: number) {
+  return generatePath(ROUTES.SHIPMENT_OFFER_VIEW, {
+    shipmentId: shipmentId.toString(),
+    offerId: offerId.toString(),
+  })
 }
 
-export function shipmentViewRoute(shipmentId: number | string) {
-  return generatePath(ROUTES.SHIPMENT_VIEW, { shipmentId })
+export function shipmentViewRoute(shipmentId: number) {
+  return generatePath(ROUTES.SHIPMENT_VIEW, {
+    shipmentId: shipmentId.toString(),
+  })
 }
 
-export function shipmentViewOffersRoute(shipmentId: number | string) {
-  return generatePath(ROUTES.SHIPMENT_OFFER_LIST, { shipmentId })
+export function shipmentViewOffersRoute(shipmentId: number) {
+  return generatePath(ROUTES.SHIPMENT_OFFER_LIST, {
+    shipmentId: shipmentId.toString(),
+  })
 }
 
-export function shipmentEditRoute(shipmentId: number | string) {
-  return generatePath(ROUTES.SHIPMENT_EDIT, { shipmentId })
+export function shipmentEditRoute(shipmentId: number) {
+  return generatePath(ROUTES.SHIPMENT_EDIT, {
+    shipmentId: shipmentId.toString(),
+  })
 }
 
 export default ROUTES

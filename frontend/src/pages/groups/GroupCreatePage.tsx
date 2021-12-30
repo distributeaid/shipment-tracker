@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
@@ -13,7 +13,7 @@ import GroupForm from './GroupForm'
 
 const GroupCreatePage: FunctionComponent = () => {
   const { refreshMe } = useAuth()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [addGroup, { loading: mutationIsLoading, error: mutationError }] =
     useCreateGroupMutation()
@@ -37,7 +37,7 @@ const GroupCreatePage: FunctionComponent = () => {
 
       if (data) {
         const newGroupId = data.addGroup.id
-        history.push(groupViewRoute(newGroupId))
+        navigate(groupViewRoute(newGroupId))
       }
     } catch (error) {
       console.error(error)

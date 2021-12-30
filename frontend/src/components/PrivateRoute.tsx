@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { Redirect, Route, RouteProps } from 'react-router-dom'
+import { Navigate, Route, RouteProps } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
 /**
@@ -8,25 +8,18 @@ import { useAuth } from '../hooks/useAuth'
  */
 const PrivateRoute: FunctionComponent<RouteProps> = (props) => {
   const { me } = useAuth()
-  const { children, ...rest } = props
 
-  return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        me !== undefined ? (
-          children
-        ) : (
-          <Redirect
-            to={{
-              pathname: '/',
-              state: { redirectAfterAuth: location },
-            }}
-          />
-        )
-      }
-    />
-  )
+  if (me !== undefined)
+    return (
+      <Navigate
+        to={{
+          pathname: '/',
+        }}
+        state={{ redirectAfterAuth: props.path }}
+      />
+    )
+
+  return <Route {...props} />
 }
 
 export default PrivateRoute
