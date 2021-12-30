@@ -22,7 +22,7 @@
     "react-hook-form": "7.22.5",
     "react-router-dom": "6.2.1",
     "react-scripts": "4.0.3",
-    "react-select": "4.3.1",
+    "react-select": "5.2.1",
     "react-table": "7.7.0",
     "react-transition-group": "4.4.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
@@ -38,10 +38,10 @@
     "@babel/preset-env": "7.16.5",
     "@babel/preset-typescript": "7.16.5",
     "@testing-library/react": "12.1.2",
-    "autoprefixer": "^9",
+    "autoprefixer": "9.6.1",
     "babel-jest": "27.4.5",
     "jest": "27.4.5",
-    "postcss": "^7",
+    "postcss": "8.4.5",
     "ts-jest": "27.1.2"
   },
   "scripts": {
