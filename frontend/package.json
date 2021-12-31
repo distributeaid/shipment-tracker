@@ -33,10 +33,10 @@
     "yarn": ">= 1.22.5"
   },
   "devDependencies": {
-    "@babel/core": "7.16.5",
-    "@babel/helper-environment-visitor": "7.16.5",
-    "@babel/preset-env": "7.16.5",
-    "@babel/preset-typescript": "7.16.5",
+    "@babel/core": "7.16.7",
+    "@babel/helper-environment-visitor": "7.16.7",
+    "@babel/preset-env": "7.16.7",
+    "@babel/preset-typescript": "7.16.7",
     "@testing-library/react": "12.1.2",
     "autoprefixer": "9.8.8",
     "babel-jest": "27.4.5",
