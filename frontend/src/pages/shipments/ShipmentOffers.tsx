@@ -66,7 +66,11 @@ const ShipmentOffers: FunctionComponent<Props> = ({
       },
       {
         Header: 'Photos',
-        accessor: (row) => row.photoUris.length,
+        accessor: (row) => (
+          <abbr title="Support for photo uploads is not implemented, yet.">
+            &mdash;
+          </abbr>
+        ),
       },
     ]
 
