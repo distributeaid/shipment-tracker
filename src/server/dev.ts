@@ -1,7 +1,6 @@
 import EventEmitter from 'events'
 import { createServer } from 'http'
 import { URL } from 'url'
-import { v4 } from 'uuid'
 import '../sequelize'
 import { backend } from './feat/backend'
 import { setUp as setUpEmails } from './feat/emails'
@@ -13,7 +12,7 @@ const origin = new URL(process.env.ORIGIN || 'http://localhost:8080')
 
 const app = backend({
   omnibus,
-  cookieSecret: process.env.COOKIE_SECRET ?? v4(),
+  cookieSecret: process.env.COOKIE_SECRET,
   origin,
   version: 'development',
 })

@@ -6,6 +6,7 @@ import EventEmitter from 'events'
 import express, { Express } from 'express'
 import passport from 'passport'
 import { URL } from 'url'
+import { v4 } from 'uuid'
 import { cookieAuthStrategy } from '../../authenticateRequest'
 import login from '../../routes/login'
 import getProfile from '../../routes/me'
@@ -27,14 +28,17 @@ export const backend = ({
 }: {
   omnibus: EventEmitter
   origin: URL
-  cookieSecret: string
+  cookieSecret?: string
   version: string
 }): Express => {
   const app = express()
   /**
    * @see ../docs/authentication.md
    */
-  app.use(cookieParser(cookieSecret))
+  if (cookieSecret === undefined) {
+    console.warn(`⚠️ Cookie secret not set, using random value.`)
+  }
+  app.use(cookieParser(cookieSecret ?? v4()))
   app.use(json())
   app.use(passport.initialize())
   const cookieAuth = passport.authenticate('cookie', { session: false })

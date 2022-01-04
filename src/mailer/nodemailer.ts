@@ -61,7 +61,7 @@ export const transportFromConfig = (
       fromEmail: fromEmail as string,
     }
   }
-  console.error(`Sending of emails DISABLED!`)
+  console.error(`⚠️ Sending of emails DISABLED!`)
 }
 
 export const verificationEmail = (

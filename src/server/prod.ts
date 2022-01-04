@@ -3,7 +3,6 @@ import { static as staticWebsite } from 'express'
 import { createServer } from 'http'
 import path from 'path'
 import { URL } from 'url'
-import { v4 } from 'uuid'
 import '../sequelize'
 import { backend } from './feat/backend'
 import { setUp as setUpEmails } from './feat/emails'
@@ -13,12 +12,6 @@ const version = process.env.COMMIT_ID ?? '0.0.0-development'
 console.debug(`Launching version ${version}`)
 
 const omnibus = new EventEmitter()
-
-let cookieSecret = process.env.COOKIE_SECRET
-if (cookieSecret === undefined || cookieSecret.length === 0) {
-  console.warn(`Cookie secret not set, using random value.`)
-  cookieSecret = v4()
-}
 
 let origin: URL
 try {
@@ -34,9 +27,9 @@ try {
 
 const app = backend({
   omnibus,
-  cookieSecret,
   origin,
   version,
+  cookieSecret: process.env.COOKIE_SECRET,
 })
 
 startExpressServer(app)
