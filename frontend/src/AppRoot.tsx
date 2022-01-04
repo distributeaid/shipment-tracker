@@ -85,9 +85,9 @@ const App = () => {
                 element={<ShipmentEditPage />}
               />
               <Route
-                path={ROUTES.SHIPMENT_VIEW}
+                path={ROUTES.SHIPMENT.$}
                 element={<ShipmentViewPage />}
-              />
+              ></Route>
             </>
           )}
           {isDev && (

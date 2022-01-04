@@ -60,15 +60,19 @@ const ShipmentViewPage: FunctionComponent = () => {
         </TabList>
         <main className="pb-20">
           <Routes>
-            <Route path={shipmentViewRoute(shipmentId)}>
-              <ShipmentDetails shipmentId={shipmentId} />
-            </Route>
-            <Route path={shipmentViewOffersRoute(shipmentId)}>
-              <ShipmentOffers
-                shipmentId={shipmentId}
-                allowNewOffers={shipmentData?.status === ShipmentStatus.Open}
-              />
-            </Route>
+            <Route
+              path={ROUTES.SHIPMENT.VIEW}
+              element={<ShipmentDetails shipmentId={shipmentId} />}
+            />
+            <Route
+              path={ROUTES.SHIPMENT.OFFER_LIST}
+              element={
+                <ShipmentOffers
+                  shipmentId={shipmentId}
+                  allowNewOffers={shipmentData?.status === ShipmentStatus.Open}
+                />
+              }
+            />
           </Routes>
         </main>
       </div>
