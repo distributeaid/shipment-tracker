@@ -28,7 +28,7 @@ const RequestTokenPage: FunctionComponent = () => {
             label="Email"
             type="email"
             name="email"
-            autoComplete="email"
+            autoComplete="username"
             value={email}
             onChange={({ target: { value } }) => setEmail(value)}
           />

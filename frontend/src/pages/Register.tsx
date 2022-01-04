@@ -45,7 +45,7 @@ const RegisterPage: FunctionComponent = () => {
             label="Your email"
             type="email"
             name="email"
-            autoComplete="email"
+            autoComplete="username"
             value={email}
             onChange={({ target: { value } }) => setEmail(value)}
           />

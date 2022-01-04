@@ -51,7 +51,7 @@ const SetNewPasswordPage: FunctionComponent = () => {
             label="Your email"
             type="email"
             name="email"
-            autoComplete="email"
+            autoComplete="username"
             value={email}
             onChange={({ target: { value } }) => setEmail(value)}
           />
@@ -59,6 +59,7 @@ const SetNewPasswordPage: FunctionComponent = () => {
             label="Your verification token"
             type="text"
             name="token"
+            autoComplete="off"
             value={token}
             pattern="^[0-9]{6}"
             onChange={({ target: { value } }) => setToken(value)}
