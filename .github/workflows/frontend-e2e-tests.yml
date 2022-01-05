@@ -1,0 +1,78 @@
+name: Frontend end-to-end tests
+
+on:
+  push:
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-e2e-tests.yml'
+
+env:
+  DB_ENV: ci
+
+jobs:
+  frontend-e2e-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: distributeaid_test
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+
+      - name: Install modules
+        run: yarn --frozen-lockfile
+
+      - name: Run codegen
+        run: yarn codegen
+
+      - name: Install frontend modules
+        working-directory: frontend
+        run: yarn --frozen-lockfile
+
+      - name: Build
+        working-directory: frontend
+        run: |
+          echo "REACT_APP_SERVER_URL=\"http://localhost:3000\"" > .env.production.local
+          yarn build
+
+      - name: Build TypeScript
+        run: yarn run build
+
+      - name: Initialize Database
+        run: npx sequelize-cli --env=ci db:migrate
+
+      - name: Run backend
+        run: node dist/src/server/dev.js > server.log 2>&1 &
+
+      - name: Wait for backend to be up
+        run: until nc -w 10 127.0.0.1 3000; do sleep 1; done
+
+      - name: Run tests
+        working-directory: frontend
+        run: npx playwright test
+
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: playwright-artifacts-${{ github.sha }}
+          path: |
+            frontend/test-results/
+            server.log

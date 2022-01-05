@@ -22,7 +22,8 @@ const passwordResetInput = Type.Object(
 const validatePasswordResetInput = validateWithJSONSchema(passwordResetInput)
 
 const sendVerificationTokenByEmail =
-  (omnibus: EventEmitter) => async (request: Request, response: Response) => {
+  (omnibus: EventEmitter, generateToken = () => generateDigits(6)) =>
+  async (request: Request, response: Response) => {
     const valid = validatePasswordResetInput(trimAll(request.body))
     if ('errors' in valid) {
       return respondWithProblem(response, errorsToProblemDetail(valid.errors))
@@ -38,7 +39,7 @@ const sendVerificationTokenByEmail =
     // Generate new token
     const token = await VerificationToken.create({
       userAccountId: user.id,
-      token: generateDigits(6),
+      token: generateToken(),
     })
     omnibus.emit(events.user_password_reset_requested, user, token)
     response.status(202).end()

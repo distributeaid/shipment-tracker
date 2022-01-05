@@ -107,7 +107,12 @@ const DropdownMenu: FunctionComponent<Props> & NestedComponents = ({
 
   return (
     <div className="relative inline-block">
-      <Button type="button" onClick={toggleMenu} variant={buttonVariant}>
+      <Button
+        type="button"
+        onClick={toggleMenu}
+        variant={buttonVariant}
+        data-test-id="nav-dropdown"
+      >
         {label} <ChevronIcon direction="down" className="ml-2 w-5 h-5 -mr-2" />
       </Button>
       <div
