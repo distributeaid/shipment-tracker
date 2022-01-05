@@ -38,7 +38,11 @@ const registerUserInput = Type.Object(
 const validateRegisterUserInput = validateWithJSONSchema(registerUserInput)
 
 const registerUser =
-  (omnibus: EventEmitter, saltRounds = 10) =>
+  (
+    omnibus: EventEmitter,
+    saltRounds = 10,
+    generateToken = () => generateDigits(6),
+  ) =>
   async (request: Request, response: Response) => {
     const valid = validateRegisterUserInput(trimAll(request.body))
     if ('errors' in valid) {
@@ -54,7 +58,7 @@ const registerUser =
       // Generate new token
       const token = await VerificationToken.create({
         userAccountId: user.id,
-        token: generateDigits(6),
+        token: generateToken(),
       })
       omnibus.emit(events.user_registered, user, token)
       return response.status(HTTPStatusCode.Accepted).end()

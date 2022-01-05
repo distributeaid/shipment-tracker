@@ -1,12 +1,11 @@
 import EventEmitter from 'events'
-import { static as staticWebsite } from 'express'
 import { createServer } from 'http'
-import path from 'path'
 import { URL } from 'url'
 import '../sequelize'
 import { backend } from './feat/backend'
 import { setUp as setUpEmails } from './feat/emails'
 import { startExpressServer } from './feat/express'
+import { frontend } from './feat/frontend'
 
 const version = process.env.COMMIT_ID ?? '0.0.0-development'
 console.debug(`Launching version ${version}`)
@@ -45,9 +44,4 @@ httpServer.listen(port, '0.0.0.0', (): void => {
 setUpEmails(omnibus)
 
 // Host web application
-app.use(staticWebsite(path.join(process.cwd(), 'frontend', 'build')))
-// All other requests are handled by the index.html
-const spaIndex = path.join(process.cwd(), 'frontend', 'build', 'index.html')
-app.get('*', function (_, res) {
-  res.sendFile(spaIndex)
-})
+frontend(app)

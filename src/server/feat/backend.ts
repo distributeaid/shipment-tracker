@@ -25,11 +25,16 @@ export const backend = ({
   cookieSecret,
   origin,
   version,
+  generateToken,
 }: {
   omnibus: EventEmitter
   origin: URL
   cookieSecret?: string
   version: string
+  /**
+   * This functions is used to generate confirmation tokens send to users to validate their email addresses.
+   */
+  generateToken?: () => string
 }): Express => {
   const app = express()
   /**
@@ -54,10 +59,13 @@ export const backend = ({
   app.use(addVersion(version))
   app.use(addRequestId)
 
-  app.post('/auth/register', registerUser(omnibus))
+  app.post('/auth/register', registerUser(omnibus, undefined, generateToken))
   app.post('/auth/register/confirm', confirmRegistrationByEmail)
   app.post('/auth/login', login)
-  app.post('/auth/password/token', sendVerificationTokenByEmail(omnibus))
+  app.post(
+    '/auth/password/token',
+    sendVerificationTokenByEmail(omnibus, generateToken),
+  )
   app.post('/auth/password/new', setNewPasswordUsingTokenAndEmail())
   app.get('/auth/me', cookieAuth, getProfile)
   app.get('/auth/me/cookie', cookieAuth, renewCookie)

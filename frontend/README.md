@@ -6,6 +6,33 @@ This is a React and Typescript application bootstrapped using [Create React App]
 
 See the [Dev setup section](../README.md#dev-setup) in the project root.
 
+## End-to-end tests using Playwright
+
+The frontend provides [end-to-end tests](./tests/playwright) using [Playwright](https://playwright.dev/).
+
+In order to run the tests follow the steps to launch the backend server, and create a production build of the frontend, which the backend will server from the `build` folder.
+
+Make sure to configure the server URL in your `.env.production.local`:
+
+    REACT_APP_SERVER_URL="http://localhost:3000"
+
+You can then run the tests using
+
+    npx playwright test
+
+This works on your local machine, as well as using the Docker container.
+
+### Playwright Inspector
+
+For developing tests it is helpful to run the [Playwright Inspector](https://playwright.dev/docs/inspector).
+
+Then launch the inspector **on your local machine** using
+
+    PWDEBUG=1 npx playwright test
+
+This cannot be done inside the Docker container, since it launches the Firefox browser.
+[For Linux it is possible to forward the X session from inside the Docker container](https://www.geeksforgeeks.org/running-gui-applications-on-docker-in-linux/), but this is not implemented, yet.
+
 ## Infrastructure
 
 ### Styling

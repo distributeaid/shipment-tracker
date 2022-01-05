@@ -5,6 +5,7 @@ import '../sequelize'
 import { backend } from './feat/backend'
 import { setUp as setUpEmails } from './feat/emails'
 import { startExpressServer } from './feat/express'
+import { frontend } from './feat/frontend'
 
 const omnibus = new EventEmitter()
 
@@ -15,6 +16,7 @@ const app = backend({
   cookieSecret: process.env.COOKIE_SECRET,
   origin,
   version: 'development',
+  generateToken: () => '123456',
 })
 
 startExpressServer(app)
@@ -30,3 +32,6 @@ httpServer.listen({ port }, (): void => {
 
 // Configure email sending
 setUpEmails(omnibus)
+
+// Host web application
+frontend(app)
