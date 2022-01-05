@@ -39,8 +39,8 @@
     "@babel/preset-typescript": "7.16.7",
     "@testing-library/react": "12.1.2",
     "autoprefixer": "9.8.8",
-    "babel-jest": "27.4.5",
-    "jest": "27.4.5",
+    "babel-jest": "27.4.6",
+    "jest": "27.4.7",
     "postcss": "8.4.5",
     "ts-jest": "27.1.2"
   },
