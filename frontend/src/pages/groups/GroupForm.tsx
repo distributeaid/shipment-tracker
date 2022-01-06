@@ -107,7 +107,9 @@ const GroupForm: FunctionComponent<Props> = (props) => {
               value: '',
               disabled: true,
             },
-            ...COUNTRY_CODE_OPTIONS,
+            ...COUNTRY_CODE_OPTIONS.sort(({ label: l1 }, { label: l2 }) =>
+              l1.localeCompare(l2),
+            ),
           ]}
           required
           register={register}
