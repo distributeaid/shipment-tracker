@@ -170,7 +170,7 @@ export const COUNTRY_CODES_TO_NAME = {
   AL: 'Albania',
   DZ: 'Algeria',
   AS: 'American Samoa',
-  AD: 'AndorrA',
+  AD: 'Andorra',
   AO: 'Angola',
   AI: 'Anguilla',
   AQ: 'Antarctica',
