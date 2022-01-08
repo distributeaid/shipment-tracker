@@ -1,4 +1,9 @@
-![CI status](https://github.com/distributeaid/shipment-tracker/actions/workflows/ci.yml/badge.svg)
+[![Node.js CI](https://github.com/distributeaid/shipment-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/distributeaid/shipment-tracker/actions/workflows/ci.yml)
+[![Continuous deployment](https://github.com/distributeaid/shipment-tracker/actions/workflows/cd.yml/badge.svg)](https://github.com/distributeaid/shipment-tracker/actions/workflows/cd.yml)
+[![Frontend unit tests](https://github.com/distributeaid/shipment-tracker/actions/workflows/frontend-unit-tests.yml/badge.svg)](https://github.com/distributeaid/shipment-tracker/actions/workflows/frontend-unit-tests.yml)
+[![Frontend end-to-end tests](https://github.com/distributeaid/shipment-tracker/actions/workflows/frontend-e2e-tests.yml/badge.svg)](https://github.com/distributeaid/shipment-tracker/actions/workflows/frontend-e2e-tests.yml)
+[![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier/)
 
 # Distribute Aid Shipment Tracker
 
