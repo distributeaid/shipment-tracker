@@ -1,0 +1,4 @@
+contact_links:
+  - name: Questions and Ideas
+    url: https://github.com/distributeaid/shipment-tracker/discussions
+    about: Please only report issues for bugs and well defined tasks as issues to help us maintain a clear and actionable list of issues. Open questions and ideas should be discussed first.
