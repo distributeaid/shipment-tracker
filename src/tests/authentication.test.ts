@@ -7,6 +7,7 @@ import passport from 'passport'
 import request, { SuperTest, Test } from 'supertest'
 import { v4 } from 'uuid'
 import {
+  authCookie as getAuthCookie,
   authCookieName,
   cookieAuthStrategy,
   decodeAuthCookie,
@@ -71,7 +72,14 @@ describe('User account API', () => {
     app.post('/auth/password/token', sendVerificationTokenByEmail(omnibus))
     app.post('/auth/password/new', setNewPasswordUsingTokenAndEmail(1))
     app.get('/auth/me', cookieAuth, getProfile)
-    app.post('/auth/me/password', cookieAuth, resetPassword(1))
+    app.post(
+      '/auth/me/password',
+      cookieAuth,
+      resetPassword({
+        authCookie: getAuthCookie(1800),
+        saltRounds: 1,
+      }),
+    )
     app.get('/auth/me/cookie', cookieAuth, renewCookie)
     app.delete('/auth/me/cookie', cookieAuth, deleteCookie)
     httpServer = createServer(app)

@@ -18,3 +18,4 @@ These environment variables control the authentication:
 
 - Backend
   - `COOKIE_SECRET`: sets the secret used to sign cookies, default value is a random string
+  - `COOKIE_LIFETIME_SECONDS`: sets the cookie lifetime in seconds, default value is `'1800'` (5 minutes)

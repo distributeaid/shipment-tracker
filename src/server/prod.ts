@@ -29,6 +29,10 @@ const app = backend({
   origin,
   version,
   cookieSecret: process.env.COOKIE_SECRET,
+  cookieLifetimeSeconds:
+    process.env.COOKIE_LIFETIME_SECONDS !== undefined
+      ? parseInt(process.env.COOKIE_LIFETIME_SECONDS, 10)
+      : undefined,
 })
 
 startExpressServer(app)

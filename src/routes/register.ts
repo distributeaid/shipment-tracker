@@ -23,8 +23,10 @@ export const passwordInput = Type.String({
   title: 'Password',
 })
 
-export const hashPassword = (password: string, saltRounds: number): string =>
-  bcrypt.hashSync(password, saltRounds)
+export const hashPassword = (
+  password: string,
+  saltRounds: number = 10,
+): string => bcrypt.hashSync(password, saltRounds)
 
 const registerUserInput = Type.Object(
   {
@@ -40,7 +42,7 @@ const validateRegisterUserInput = validateWithJSONSchema(registerUserInput)
 const registerUser =
   (
     omnibus: EventEmitter,
-    saltRounds = 10,
+    saltRounds?: number,
     generateToken = () => generateDigits(6),
   ) =>
   async (request: Request, response: Response) => {

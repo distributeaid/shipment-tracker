@@ -89,6 +89,7 @@ export const AuthProvider = ({
   const [me, setMe] = useState<UserProfile>(storedMe.get() as UserProfile)
   const [expires, setExpires] = useState<Date>()
   const [userClickTime, setUserClickTime] = useState<Date>()
+  const [refreshing, setRefreshing] = useState<boolean>(false)
 
   const fetchMe = useCallback(
     () =>
@@ -110,24 +111,54 @@ export const AuthProvider = ({
     fetchMe()
   }, [isAuthenticated, me, fetchMe])
 
-  // Auto-refresh auth cookie
-  const refreshCookie = useCallback(
-    () =>
-      fetch(`${SERVER_URL}/auth/me/cookie`, {
-        credentials: 'include',
-        cache: 'no-store',
-      })
-        .then(({ ok, status: httpStatusCode, headers }) => {
-          if (!ok)
-            throw new AuthError(`Failed to refresh cookie!`, httpStatusCode)
-          const exp = headers.get('Expires')
-          if (exp !== null) {
-            setExpires(new Date(exp))
-          }
-        })
-        .catch(console.error),
-    [],
+  const clientLogout = useCallback(
+    (args?: Record<string, string>) => {
+      setIsAuthenticated(false)
+      storedIsAuthenticated.destroy()
+      storedMe.destroy()
+      localStorage.removeItem('auth:me')
+      const current = new URL(document.location.href)
+      document.location.href = (
+        logoutUrl ??
+        new URL(
+          `${current.protocol}//${current.host}${
+            args === undefined ? '' : `?${new URLSearchParams(args).toString()}`
+          }`,
+        )
+      ).toString()
+    },
+    [logoutUrl, storedIsAuthenticated, storedMe],
   )
+
+  // Auto-refresh auth cookie
+  const refreshCookie = useCallback(async () => {
+    if (refreshing) return
+    setRefreshing(true)
+    await new Promise((resolve) => setTimeout(resolve, 5000))
+    return fetch(`${SERVER_URL}/auth/me/cookie`, {
+      credentials: 'include',
+      cache: 'no-store',
+    })
+      .then(({ ok, status: httpStatusCode, headers }) => {
+        setRefreshing(false)
+        if (!ok) {
+          if (httpStatusCode === 401) {
+            // Unauthorized, so existing cookie no longer works
+            clientLogout({ cookieExpired: 'true' })
+            return
+          }
+          throw new AuthError(`Failed to refresh cookie!`, httpStatusCode)
+        }
+        const exp = headers.get('Expires')
+        if (exp !== null) {
+          setExpires(new Date(exp))
+        }
+      })
+      .catch((err) => {
+        setRefreshing(false)
+        console.error(err)
+      })
+  }, [clientLogout, refreshing])
   useEffect(() => {
     if (expires === undefined) return
     if (userClickTime === undefined) return
@@ -148,6 +179,18 @@ export const AuthProvider = ({
     }
   }, [])
 
+  // Log-out if cookie has expired
+  useEffect(() => {
+    console.log(expires)
+    if (expires === undefined) {
+      // May happen if cookie has already expired
+      if (isAuthenticated) refreshCookie()
+    } else {
+      const diff = expires.getTime() - Date.now()
+      if (diff < 0) clientLogout({ cookieExpired: 'true' })
+    }
+  }, [expires, refreshCookie, isAuthenticated, clientLogout])
+
   const auth: AuthInfo = {
     me,
     refreshMe: fetchMe,
@@ -163,14 +206,7 @@ export const AuthProvider = ({
         if (!ok) {
           console.error(`[auth]`, `Failed to logout!`, httpStatusCode)
         }
-        setIsAuthenticated(false)
-        storedIsAuthenticated.destroy()
-        storedMe.destroy()
-        localStorage.removeItem('auth:me')
-        const current = new URL(document.location.href)
-        document.location.href = (
-          logoutUrl ?? new URL(`${current.protocol}//${current.host}`)
-        ).toString()
+        clientLogout()
       }),
     login: async ({ email, password }) =>
       fetch(`${SERVER_URL}/auth/login`, {
@@ -188,6 +224,10 @@ export const AuthProvider = ({
         if (exp !== null) {
           setExpires(new Date(exp))
         }
+        const current = new URL(document.location.href)
+        document.location.href = new URL(
+          `${current.protocol}//${current.host}`,
+        ).toString()
       }),
     register: async ({ name, email, password }) =>
       fetch(`${SERVER_URL}/auth/register`, {
