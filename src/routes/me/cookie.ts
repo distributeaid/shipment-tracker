@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import {
   AuthContext,
   expireAuthCookie,
-  ExpressCookieForUser,
+  ExpressCookieForUserFn,
   userHash,
 } from '../../authenticateRequest'
 import UserAccount from '../../models/user_account'
@@ -10,7 +10,7 @@ import { HTTPStatusCode } from '../../rest/response/HttpStatusCode'
 import { respondWithProblem } from '../../rest/response/problem'
 
 export const renewCookie =
-  (authCookie: ExpressCookieForUser) =>
+  (authCookie: ExpressCookieForUserFn) =>
   async (request: Request, response: Response) => {
     const authContext = request.user as AuthContext
     const user = await UserAccount.findByPk(authContext.userId)

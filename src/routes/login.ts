@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
-import { ExpressCookieForUser } from '../authenticateRequest'
+import { ExpressCookieForUserFn } from '../authenticateRequest'
 import { errorsToProblemDetail } from '../input-validation/errorsToProblemDetail'
 import { trimAll } from '../input-validation/trimAll'
 import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
@@ -21,7 +21,7 @@ const loginInput = Type.Object(
 const validateLoginInput = validateWithJSONSchema(loginInput)
 
 const login =
-  (authCookie: ExpressCookieForUser) =>
+  (authCookie: ExpressCookieForUserFn) =>
   async (request: Request, response: Response) => {
     const valid = validateLoginInput(trimAll(request.body))
     if ('errors' in valid) {

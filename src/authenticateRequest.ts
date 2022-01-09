@@ -50,7 +50,7 @@ export type ExpressCookieInfo = [
   cookie: string,
   options: CookieOptions & { expires: Date },
 ]
-export type ExpressCookieForUser = (user: UserAccount) => ExpressCookieInfo
+export type ExpressCookieForUserFn = (user: UserAccount) => ExpressCookieInfo
 
 export const authCookie =
   (lifetimeInSeconds: number) =>

@@ -60,6 +60,7 @@ describe('User account API', () => {
   let httpServer: Server
   let r: SuperTest<Test>
 
+  const getExpressCookie = getAuthCookie(1800)
   let authCookie: string
   beforeAll(async () => {
     app = express()
@@ -68,7 +69,7 @@ describe('User account API', () => {
     app.use(passport.initialize())
     app.post('/auth/register', registerUser(omnibus, 1))
     app.post('/auth/register/confirm', confirmRegistration)
-    app.post('/auth/login', login)
+    app.post('/auth/login', login(getExpressCookie))
     app.post('/auth/password/token', sendVerificationTokenByEmail(omnibus))
     app.post('/auth/password/new', setNewPasswordUsingTokenAndEmail(1))
     app.get('/auth/me', cookieAuth, getProfile)
@@ -76,11 +77,11 @@ describe('User account API', () => {
       '/auth/me/password',
       cookieAuth,
       resetPassword({
-        authCookie: getAuthCookie(1800),
+        authCookie: getExpressCookie,
         saltRounds: 1,
       }),
     )
-    app.get('/auth/me/cookie', cookieAuth, renewCookie)
+    app.get('/auth/me/cookie', cookieAuth, renewCookie(getExpressCookie))
     app.delete('/auth/me/cookie', cookieAuth, deleteCookie)
     httpServer = createServer(app)
     await new Promise<void>((resolve) =>
