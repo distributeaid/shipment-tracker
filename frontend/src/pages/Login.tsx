@@ -42,6 +42,12 @@ const LoginPage: FunctionComponent = () => {
             <p>You can now log in!</p>
           </Success>
         )}
+        {new URLSearchParams(document.location.search).get('cookieExpired') ===
+          'true' && (
+          <Error className="mb-2">
+            You have been automatically logged out because of inactivity.
+          </Error>
+        )}
         <p>
           Welcome to Distribute Aid's shipment tracker! Please log in to
           continue.
@@ -91,7 +97,9 @@ const LoginPage: FunctionComponent = () => {
               Log in
             </button>
             {error !== undefined && (
-              <Error className="mt-2">Sorry, could not log you in.</Error>
+              <Error className="mt-2">
+                Sorry, could not log you in: <code>{error.message}</code>
+              </Error>
             )}
           </FormFooter>
         </form>

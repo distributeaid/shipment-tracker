@@ -7,7 +7,7 @@ import express, { Express } from 'express'
 import passport from 'passport'
 import { URL } from 'url'
 import { v4 } from 'uuid'
-import { cookieAuthStrategy } from '../../authenticateRequest'
+import { authCookie, cookieAuthStrategy } from '../../authenticateRequest'
 import login from '../../routes/login'
 import getProfile from '../../routes/me'
 import { deleteCookie, renewCookie } from '../../routes/me/cookie'
@@ -23,6 +23,7 @@ import { addVersion } from '../addVersion'
 export const backend = ({
   omnibus,
   cookieSecret,
+  cookieLifetimeSeconds,
   origin,
   version,
   generateToken,
@@ -30,6 +31,7 @@ export const backend = ({
   omnibus: EventEmitter
   origin: URL
   cookieSecret?: string
+  cookieLifetimeSeconds?: number
   version: string
   /**
    * This functions is used to generate confirmation tokens send to users to validate their email addresses.
@@ -43,6 +45,10 @@ export const backend = ({
   if (cookieSecret === undefined) {
     console.warn(`⚠️ Cookie secret not set, using random value.`)
   }
+  console.debug(
+    `ℹ️ Cookie lifetime is ${cookieLifetimeSeconds ?? 1800} seconds`,
+  )
+  const getAuthCookie = authCookie(cookieLifetimeSeconds ?? 1800)
   app.use(cookieParser(cookieSecret ?? v4()))
   app.use(json())
   app.use(passport.initialize())
@@ -61,16 +67,22 @@ export const backend = ({
 
   app.post('/auth/register', registerUser(omnibus, undefined, generateToken))
   app.post('/auth/register/confirm', confirmRegistrationByEmail)
-  app.post('/auth/login', login)
+  app.post('/auth/login', login(getAuthCookie))
   app.post(
     '/auth/password/token',
     sendVerificationTokenByEmail(omnibus, generateToken),
   )
   app.post('/auth/password/new', setNewPasswordUsingTokenAndEmail())
   app.get('/auth/me', cookieAuth, getProfile)
-  app.get('/auth/me/cookie', cookieAuth, renewCookie)
+  app.get('/auth/me/cookie', cookieAuth, renewCookie(getAuthCookie))
   app.delete('/auth/me/cookie', cookieAuth, deleteCookie)
-  app.delete('/auth/me/reset-password', cookieAuth, changePassword())
+  app.delete(
+    '/auth/me/reset-password',
+    cookieAuth,
+    changePassword({
+      authCookie: authCookie(cookieLifetimeSeconds ?? 1800),
+    }),
+  )
 
   app.get('/auth/shipment-exports/:id', cookieAuth, sendShipmentExportCsv)
 

@@ -14,6 +14,10 @@ const origin = new URL(process.env.ORIGIN || 'http://localhost:8080')
 const app = backend({
   omnibus,
   cookieSecret: process.env.COOKIE_SECRET,
+  cookieLifetimeSeconds:
+    process.env.COOKIE_LIFETIME_SECONDS === undefined
+      ? 1800
+      : parseInt(process.env.COOKIE_LIFETIME_SECONDS, 10),
   origin,
   version: 'development',
   generateToken: () => '123456',

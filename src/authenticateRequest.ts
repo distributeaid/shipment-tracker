@@ -45,24 +45,31 @@ export const cookieAuthStrategy = new CookieStrategy(
   },
 )
 
-export const authCookie = (
-  user: UserAccount,
-  lifetimeInMinutes: number = 30,
-): [string, string, CookieOptions & { expires: Date }] => [
-  authCookieName,
-  JSON.stringify({
-    i: user.id,
-    a: user.isAdmin,
-    c: userHash(user),
-  }),
-  {
-    signed: true,
-    secure: true,
-    httpOnly: true,
-    expires: new Date(Date.now() + lifetimeInMinutes * 60 * 1000),
-    sameSite: 'none',
-  },
+export type ExpressCookieInfo = [
+  authCookieName: string,
+  cookie: string,
+  options: CookieOptions & { expires: Date },
 ]
+export type ExpressCookieForUserFn = (user: UserAccount) => ExpressCookieInfo
+
+export const authCookie =
+  (lifetimeInSeconds: number) =>
+  (user: UserAccount): ExpressCookieInfo =>
+    [
+      authCookieName,
+      JSON.stringify({
+        i: user.id,
+        a: user.isAdmin,
+        c: userHash(user),
+      }),
+      {
+        signed: true,
+        secure: true,
+        httpOnly: true,
+        expires: new Date(Date.now() + lifetimeInSeconds * 1000),
+        sameSite: 'none',
+      },
+    ]
 
 // Sends an expired cookie to the client so it will be removed
 export const expireAuthCookie = (): [string, string, CookieOptions] => [

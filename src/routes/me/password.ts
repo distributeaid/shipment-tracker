@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
-import { AuthContext, authCookie } from '../../authenticateRequest'
+import { AuthContext, ExpressCookieForUserFn } from '../../authenticateRequest'
 import { errorsToProblemDetail } from '../../input-validation/errorsToProblemDetail'
 import { trimAll } from '../../input-validation/trimAll'
 import { validateWithJSONSchema } from '../../input-validation/validateWithJSONSchema'
@@ -21,7 +21,13 @@ const changePasswordInput = Type.Object(
 const validateChangePasswordInput = validateWithJSONSchema(changePasswordInput)
 
 const changePassword =
-  (saltRounds = 10) =>
+  ({
+    authCookie,
+    saltRounds,
+  }: {
+    authCookie: ExpressCookieForUserFn
+    saltRounds?: number
+  }) =>
   async (request: Request, response: Response) => {
     const valid = validateChangePasswordInput(trimAll(request.body))
     if ('errors' in valid) {
