@@ -97,7 +97,9 @@ const LoginPage: FunctionComponent = () => {
               Log in
             </button>
             {error !== undefined && (
-              <Error className="mt-2">Sorry, could not log you in.</Error>
+              <Error className="mt-2">
+                Sorry, could not log you in: <code>{error.message}</code>
+              </Error>
             )}
           </FormFooter>
         </form>

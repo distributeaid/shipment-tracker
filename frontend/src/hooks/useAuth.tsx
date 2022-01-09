@@ -78,6 +78,10 @@ export const AuthProvider = ({
   children,
   logoutUrl,
 }: PropsWithChildren<{ logoutUrl?: URL }>) => {
+  // State for the hook
+  // - is also persisted in local storage to survive reloads
+
+  // Whether the uses is authenticated
   const storedIsAuthenticated = withLocalStorage<boolean>(
     'auth:isAuthenticated',
     false,
@@ -85,38 +89,23 @@ export const AuthProvider = ({
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
     storedIsAuthenticated.get() as boolean,
   )
+  // The user's profile
   const storedMe = withLocalStorage<UserProfile>('auth:me')
   const [me, setMe] = useState<UserProfile>(storedMe.get() as UserProfile)
-  const [expires, setExpires] = useState<Date>()
+
+  // This is used to track the last user activity
+  // - to auto-refresh the auth cookie if the users is still active
   const [userClickTime, setUserClickTime] = useState<Date>()
-  const [refreshing, setRefreshing] = useState<boolean>(false)
 
-  const fetchMe = useCallback(
-    () =>
-      fetch(`${SERVER_URL}/auth/me`, {
-        credentials: 'include',
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setMe(data)
-          storedMe.set(data)
-        })
-        .catch(console.error),
-    [storedMe],
-  )
+  // This prevents multiple refresh from happening at the same time
+  const [cookieIsRefreshing, setCookieIsRefreshing] = useState<boolean>(false)
 
-  useEffect(() => {
-    if (!isAuthenticated) return
-    if (me !== undefined) return
-    fetchMe()
-  }, [isAuthenticated, me, fetchMe])
-
+  // This function is called to force a logout, in case authentication expires, or the user profile cannot be fetched
   const clientLogout = useCallback(
     (args?: Record<string, string>) => {
-      setIsAuthenticated(false)
       storedIsAuthenticated.destroy()
       storedMe.destroy()
-      localStorage.removeItem('auth:me')
+      setIsAuthenticated(false)
       const current = new URL(document.location.href)
       document.location.href = (
         logoutUrl ??
@@ -130,45 +119,75 @@ export const AuthProvider = ({
     [logoutUrl, storedIsAuthenticated, storedMe],
   )
 
-  // Auto-refresh auth cookie
+  // Fetch information about the current user,
+  // if they are currently logged in
+  const fetchMe = useCallback(
+    () =>
+      fetch(`${SERVER_URL}/auth/me`, {
+        credentials: 'include',
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setMe(data)
+          storedMe.set(data)
+        })
+        .catch((err) => {
+          console.error('[auth] Failed to fetch profile', err)
+          clientLogout({
+            redirect: document.location.pathname,
+          })
+        }),
+    [storedMe, clientLogout],
+  )
+  useEffect(() => {
+    if (!isAuthenticated) return
+    if (me !== undefined) return
+    fetchMe()
+  }, [isAuthenticated, me, fetchMe])
+
+  // Auto-refresh auth cookie, as long as the user is active
   const refreshCookie = useCallback(async () => {
-    if (refreshing) return
-    setRefreshing(true)
-    await new Promise((resolve) => setTimeout(resolve, 5000))
+    if (cookieIsRefreshing) return
+    setCookieIsRefreshing(true)
+    console.debug(`[auth] refreshing cookie`)
     return fetch(`${SERVER_URL}/auth/me/cookie`, {
       credentials: 'include',
       cache: 'no-store',
     })
       .then(({ ok, status: httpStatusCode, headers }) => {
-        setRefreshing(false)
+        setCookieIsRefreshing(false)
         if (!ok) {
           if (httpStatusCode === 401) {
             // Unauthorized, so existing cookie no longer works
-            clientLogout({ cookieExpired: 'true' })
+            clientLogout({
+              cookieExpired: 'true',
+              redirect: document.location.pathname,
+            })
             return
           }
           throw new AuthError(`Failed to refresh cookie!`, httpStatusCode)
         }
         const exp = headers.get('Expires')
         if (exp !== null) {
-          setExpires(new Date(exp))
+          storedIsAuthenticated.set(true, new Date(exp))
         }
       })
       .catch((err) => {
-        setRefreshing(false)
+        setCookieIsRefreshing(false)
         console.error(err)
       })
-  }, [clientLogout, refreshing])
+  }, [clientLogout, cookieIsRefreshing, storedIsAuthenticated])
   useEffect(() => {
-    if (expires === undefined) return
+    if (!isAuthenticated) return
     if (userClickTime === undefined) return
+    const expires = storedIsAuthenticated.expires()
+    if (expires === undefined) return
     // Refresh cookie if expires in less than 5 minutes
     const diff = expires.getTime() - userClickTime.getTime()
     if (diff < 5 * 60 * 1000) {
       refreshCookie()
     }
-  }, [expires, userClickTime, refreshCookie])
-
+  }, [isAuthenticated, userClickTime, refreshCookie, storedIsAuthenticated])
   useEffect(() => {
     const onClick = () => {
       setUserClickTime(new Date())
@@ -181,15 +200,21 @@ export const AuthProvider = ({
 
   // Log-out if cookie has expired
   useEffect(() => {
-    console.log(expires)
-    if (expires === undefined) {
-      // May happen if cookie has already expired
-      if (isAuthenticated) refreshCookie()
-    } else {
-      const diff = expires.getTime() - Date.now()
-      if (diff < 0) clientLogout({ cookieExpired: 'true' })
+    if (!isAuthenticated) return
+    const expires = storedIsAuthenticated.expires()
+    if (expires === undefined) return
+    const diff = expires.getTime() - Date.now()
+    const t = setTimeout(() => {
+      console.info(`[auth] Cookie expired`)
+      clientLogout({
+        cookieExpired: 'true',
+        redirect: document.location.pathname,
+      })
+    }, diff)
+    return () => {
+      clearTimeout(t)
     }
-  }, [expires, refreshCookie, isAuthenticated, clientLogout])
+  }, [isAuthenticated, clientLogout, storedIsAuthenticated])
 
   const auth: AuthInfo = {
     me,
@@ -216,18 +241,31 @@ export const AuthProvider = ({
           ...headers,
         },
         body: JSON.stringify({ email, password }),
-      }).then(({ ok, status: httpStatusCode, headers }) => {
-        setIsAuthenticated(ok)
-        storedIsAuthenticated.set(ok)
-        if (!ok) throw new AuthError(`Failed to log-in!`, httpStatusCode)
-        const exp = headers.get('Expires')
-        if (exp !== null) {
-          setExpires(new Date(exp))
+      }).then(({ ok, headers }) => {
+        if (!ok) {
+          storedIsAuthenticated.set(false)
+          setIsAuthenticated(false)
+          return
         }
+        const exp = headers.get('Expires')
+        storedIsAuthenticated.set(
+          true,
+          exp !== null ? new Date(exp) : undefined,
+        )
         const current = new URL(document.location.href)
-        document.location.href = new URL(
-          `${current.protocol}//${current.host}`,
+        const query = new URLSearchParams(document.location.search)
+        const redirect = query.get('redirect')
+        let redirectToPath = '/'
+        if (redirect !== null) {
+          redirectToPath = new URL(
+            redirect,
+            `${current.protocol}//${current.host}`,
+          ).pathname
+        }
+        const redirectTarget = new URL(
+          `${current.protocol}//${current.host}${redirectToPath}`,
         ).toString()
+        document.location.href = redirectTarget.toString()
       }),
     register: async ({ name, email, password }) =>
       fetch(`${SERVER_URL}/auth/register`, {
