@@ -1845,7 +1845,7 @@ apollo-server-caching@^3.3.0:
   dependencies:
     lru-cache "^6.0.0"
 
-apollo-server-core@^3.6.1, apollo-server-core@^3.6.2:
+apollo-server-core@^3.6.2:
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/apollo-server-core/-/apollo-server-core-3.6.2.tgz#d9cbc3d0ba928d86a24640a485f4601b89b485fd"
   integrity sha512-GNx41BnpH/yvGv7nTt4bQXuH5BDVs9CBQawfOcgtVdoVoWkazv1Dwy1muqPa7WDt2rk9oY+P6QymtJpBAtmzhg==
@@ -1883,7 +1883,7 @@ apollo-server-errors@^3.3.1:
   resolved "https://registry.yarnpkg.com/apollo-server-errors/-/apollo-server-errors-3.3.1.tgz#ba5c00cdaa33d4cbd09779f8cb6f47475d1cd655"
   integrity sha512-xnZJ5QWs6FixHICXHxUfm+ZWqqxrNuPlQ+kj5m6RtEgIpekOPssH/SD9gf2B4HuWV0QozorrygwZnux8POvyPA==
 
-apollo-server-express@3.6.2, apollo-server-express@^3.6.1:
+apollo-server-express@3.6.2, apollo-server-express@^3.6.2:
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/apollo-server-express/-/apollo-server-express-3.6.2.tgz#859022b95247e1329e1ed96425c10143598b8fd7"
   integrity sha512-C/guyWmewY/7rjI1Y2Fdpvq0TgF3F/7kTWcGzQhRe/h31ehvFFCeulrmxJ0MEpnIPB3eX7WHS2DZnyuJplsHKQ==
@@ -1916,13 +1916,13 @@ apollo-server-types@^3.5.1:
     apollo-server-caching "^3.3.0"
     apollo-server-env "^4.2.1"
 
-apollo-server@3.6.1:
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/apollo-server/-/apollo-server-3.6.1.tgz#29420b1c0cddbf2e18147a3ca7299485f17137a2"
-  integrity sha512-Y2MY2/WvaTiofVoIR5ZIYt6c6wX8klZRaXI9x+7JBiFV9HMcOuLLpU3+P4r2EVXuN1LLe82m1PgiAYr+a1OmQg==
+apollo-server@3.6.2:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/apollo-server/-/apollo-server-3.6.2.tgz#7acf37658a4438a46cf510e026ab82fd354825f9"
+  integrity sha512-siObsC0F1IfZIjhZpRq2TSjNHpEX8Hi1VHZc7gjTifAJ5CH+S0GY5MRt8PjhoxhQq4/0DIlzHEcOofydLnQ0PA==
   dependencies:
-    apollo-server-core "^3.6.1"
-    apollo-server-express "^3.6.1"
+    apollo-server-core "^3.6.2"
+    apollo-server-express "^3.6.2"
     express "^4.17.1"
 
 "aproba@^1.0.3 || ^2.0.0":
