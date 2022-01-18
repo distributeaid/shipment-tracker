@@ -2,6 +2,7 @@ import { FunctionComponent, useState } from 'react'
 import { Navigate, useLocation } from 'react-router'
 import Error from '../../components/alert/Error'
 import Success from '../../components/alert/Success'
+import { DisableableButton } from '../../components/forms/DisableableButton'
 import FormFooter from '../../components/forms/FormFooter'
 import TextField from '../../components/forms/TextField'
 import {
@@ -83,9 +84,7 @@ const SetNewPasswordPage: FunctionComponent = () => {
             onChange={({ target: { value } }) => setPassword2(value)}
           />
           <FormFooter>
-            <button
-              className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
-              type="button"
+            <DisableableButton
               onClick={() => {
                 setError(undefined)
                 setNewPasswordUsingTokenAndEmail({
@@ -99,7 +98,7 @@ const SetNewPasswordPage: FunctionComponent = () => {
               disabled={!isFormValid}
             >
               Set new password
-            </button>
+            </DisableableButton>
             {error !== undefined && (
               <Error className="mt-2">
                 Sorry, setting a new password failed: {error.message}

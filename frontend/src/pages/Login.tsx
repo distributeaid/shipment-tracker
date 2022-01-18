@@ -2,6 +2,7 @@ import { FunctionComponent, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import Error from '../components/alert/Error'
 import Success from '../components/alert/Success'
+import { DisableableButton } from '../components/forms/DisableableButton'
 import FormFooter from '../components/forms/FormFooter'
 import TextField from '../components/forms/TextField'
 import InternalLink from '../components/InternalLink'
@@ -82,9 +83,8 @@ const LoginPage: FunctionComponent = () => {
             </InternalLink>
           </p>
           <FormFooter>
-            <button
-              className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
-              type="button"
+            <DisableableButton
+              disabled={!isFormValid || isLoading}
               onClick={() => {
                 setIsLoading(true)
                 setError(undefined)
@@ -92,10 +92,9 @@ const LoginPage: FunctionComponent = () => {
                   .catch(setError)
                   .finally(() => setIsLoading(false))
               }}
-              disabled={!isFormValid || isLoading}
             >
               Log in
-            </button>
+            </DisableableButton>
             {error !== undefined && (
               <Error className="mt-2">
                 Sorry, could not log you in: <code>{error.message}</code>

@@ -1,6 +1,7 @@
 import { FunctionComponent, useState } from 'react'
 import { Navigate } from 'react-router'
 import Error from '../../components/alert/Error'
+import { DisableableButton } from '../../components/forms/DisableableButton'
 import FormFooter from '../../components/forms/FormFooter'
 import TextField from '../../components/forms/TextField'
 import InternalLink from '../../components/InternalLink'
@@ -33,9 +34,7 @@ const RequestTokenPage: FunctionComponent = () => {
             onChange={({ target: { value } }) => setEmail(value)}
           />
           <FormFooter>
-            <button
-              className="bg-navy-800 text-white text-lg px-4 py-2 rounded-sm w-full hover:bg-opacity-90"
-              type="button"
+            <DisableableButton
               onClick={() =>
                 sendVerificationTokenByEmail({ email })
                   .then(() => setEmailSent(true))
@@ -44,7 +43,7 @@ const RequestTokenPage: FunctionComponent = () => {
               disabled={!isFormValid}
             >
               Recover password
-            </button>
+            </DisableableButton>
             {error !== undefined && (
               <Error className="mt-2">Oops: {error.message}</Error>
             )}
