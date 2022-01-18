@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
 } from 'react'
+import { ProblemDetail } from '../types/ProblemDetail'
 import { withLocalStorage } from '../utils/withLocalStorage'
 
 export type UserProfile = {
@@ -30,6 +31,25 @@ export class AuthError extends Error {
     this.httpStatusCode = httpStatusCode
   }
 }
+
+/**
+ * Throws an AuthError if respons contains a problem detail, otherwise returns the response
+ * @see https://datatracker.ietf.org/doc/html/rfc7807#section-3
+ * @throws AuthError
+ */
+const throwOnProblem =
+  (fallbackTitle: string) =>
+  async (response: Response): Promise<Response> => {
+    const { ok, status: httpStatusCode } = response
+    if (ok) return response
+    const { title } = JSON.parse(await response.text()) as ProblemDetail
+    throw new AuthError(title ?? fallbackTitle, httpStatusCode)
+  }
+
+/**
+ * Used to prevent the promise chain from returning a value
+ */
+const noop = async () => undefined
 
 type AuthInfo = {
   me?: UserProfile
@@ -241,32 +261,29 @@ export const AuthProvider = ({
           ...headers,
         },
         body: JSON.stringify({ email, password }),
-      }).then(({ ok, headers }) => {
-        if (!ok) {
-          storedIsAuthenticated.set(false)
-          setIsAuthenticated(false)
-          return
-        }
-        const exp = headers.get('Expires')
-        storedIsAuthenticated.set(
-          true,
-          exp !== null ? new Date(exp) : undefined,
-        )
-        const current = new URL(document.location.href)
-        const query = new URLSearchParams(document.location.search)
-        const redirect = query.get('redirect')
-        let redirectToPath = '/'
-        if (redirect !== null) {
-          redirectToPath = new URL(
-            redirect,
-            `${current.protocol}//${current.host}`,
-          ).pathname
-        }
-        const redirectTarget = new URL(
-          `${current.protocol}//${current.host}${redirectToPath}`,
-        ).toString()
-        document.location.href = redirectTarget.toString()
-      }),
+      })
+        .then(throwOnProblem(`Login failed!`))
+        .then(({ headers }) => {
+          const exp = headers.get('Expires')
+          storedIsAuthenticated.set(
+            true,
+            exp !== null ? new Date(exp) : undefined,
+          )
+          const current = new URL(document.location.href)
+          const query = new URLSearchParams(document.location.search)
+          const redirect = query.get('redirect')
+          let redirectToPath = '/'
+          if (redirect !== null) {
+            redirectToPath = new URL(
+              redirect,
+              `${current.protocol}//${current.host}`,
+            ).pathname
+          }
+          const redirectTarget = new URL(
+            `${current.protocol}//${current.host}${redirectToPath}`,
+          ).toString()
+          document.location.href = redirectTarget.toString()
+        }),
     register: async ({ name, email, password }) =>
       fetch(`${SERVER_URL}/auth/register`, {
         method: 'POST',
@@ -274,9 +291,9 @@ export const AuthProvider = ({
           ...headers,
         },
         body: JSON.stringify({ email, password, name }),
-      }).then(({ ok, status: httpStatusCode }) => {
-        if (!ok) throw new AuthError(`Failed to register`, httpStatusCode)
-      }),
+      })
+        .then(throwOnProblem('Failed to register!'))
+        .then(noop),
     sendVerificationTokenByEmail: async ({ email }) =>
       fetch(`${SERVER_URL}/auth/password/token`, {
         method: 'POST',
@@ -284,9 +301,9 @@ export const AuthProvider = ({
           ...headers,
         },
         body: JSON.stringify({ email }),
-      }).then(({ ok, statusText, status: httpStatusCode }) => {
-        if (!ok) throw new AuthError(statusText, httpStatusCode)
-      }),
+      })
+        .then(throwOnProblem('Sending verification mail failed!'))
+        .then(noop),
     setNewPasswordUsingTokenAndEmail: async ({ email, password, token }) =>
       fetch(`${SERVER_URL}/auth/password/new`, {
         method: 'POST',
@@ -294,10 +311,9 @@ export const AuthProvider = ({
           ...headers,
         },
         body: JSON.stringify({ email, newPassword: password, token }),
-      }).then(({ ok, status: httpStatusCode }) => {
-        if (!ok)
-          throw new AuthError(`Setting a new password failed`, httpStatusCode)
-      }),
+      })
+        .then(throwOnProblem(`Setting a new password failed!`))
+        .then(noop),
     confirm: async ({ email, token }) =>
       fetch(`${SERVER_URL}/auth/register/confirm`, {
         method: 'POST',
@@ -305,10 +321,9 @@ export const AuthProvider = ({
           ...headers,
         },
         body: JSON.stringify({ email, token }),
-      }).then(({ ok, status: httpStatusCode }) => {
-        if (!ok)
-          throw new AuthError(`Failed to confirm registration!`, httpStatusCode)
-      }),
+      })
+        .then(throwOnProblem('Failed to confirm registration!'))
+        .then(noop),
   }
 
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
