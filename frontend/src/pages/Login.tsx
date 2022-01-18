@@ -89,7 +89,9 @@ const LoginPage: FunctionComponent = () => {
                 setIsLoading(true)
                 setError(undefined)
                 login({ email, password })
-                  .catch(setError)
+                  .catch((error) => {
+                    setError(error)
+                  })
                   .finally(() => setIsLoading(false))
               }}
             >
@@ -97,7 +99,7 @@ const LoginPage: FunctionComponent = () => {
             </DisableableButton>
             {error !== undefined && (
               <Error className="mt-2">
-                Sorry, could not log you in: <code>{error.message}</code>
+                Sorry, could not log you in: {error.message}
               </Error>
             )}
           </FormFooter>
