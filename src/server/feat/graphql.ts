@@ -1,7 +1,7 @@
 import { Express } from 'express'
 import apolloServer from '../../apolloServer'
 
-export const startExpressServer = async (app: Express) => {
+export const startApolloServer = async (app: Express) => {
   await apolloServer.start()
 
   apolloServer.applyMiddleware({

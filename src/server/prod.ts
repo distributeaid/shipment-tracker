@@ -4,8 +4,8 @@ import { URL } from 'url'
 import '../sequelize'
 import { backend } from './feat/backend'
 import { setUp as setUpEmails } from './feat/emails'
-import { startExpressServer } from './feat/express'
 import { frontend } from './feat/frontend'
+import { startApolloServer } from './feat/graphql'
 
 const version = process.env.COMMIT_ID ?? '0.0.0-development'
 console.debug(`Launching version ${version}`)
@@ -35,7 +35,7 @@ const app = backend({
       : undefined,
 })
 
-startExpressServer(app)
+startApolloServer(app)
 
 const httpServer = createServer(app)
 const port = parseInt(process.env.PORT ?? '8080', 10)

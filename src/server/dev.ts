@@ -4,8 +4,8 @@ import { URL } from 'url'
 import '../sequelize'
 import { backend } from './feat/backend'
 import { setUp as setUpEmails } from './feat/emails'
-import { startExpressServer } from './feat/express'
 import { frontend } from './feat/frontend'
+import { startApolloServer } from './feat/graphql'
 
 const omnibus = new EventEmitter()
 
@@ -23,7 +23,7 @@ const app = backend({
   generateToken: () => '123456',
 })
 
-startExpressServer(app)
+startApolloServer(app)
 
 const httpServer = createServer(app)
 const port = parseInt(process.env.PORT ?? '3000', 10)
