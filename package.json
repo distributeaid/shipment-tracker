@@ -2,6 +2,14 @@
   "name": "@distributeaid/shipment-tracker-backend",
   "version": "0.0.0-development",
   "description": "Backend for organizing aid shipments.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/distributeaid/shipment-tracker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/distributeaid/shipment-tracker/issues"
+  },
+  "homepage": "https://github.com/distributeaid/shipment-tracker#readme",
   "scripts": {
     "predev": "yarn codegen",
     "dev:server": "ts-node-dev --no-notify --respawn --transpile-only src/server/dev",
@@ -23,7 +31,6 @@
     "node": "^16",
     "yarn": ">= 1.22.5"
   },
-  "keywords": [],
   "author": "Distribute Aid | https://distributeaid.org/",
   "license": "AGPL-3.0-only",
   "dependencies": {
