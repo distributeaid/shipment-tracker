@@ -1,7 +1,17 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@distributeaid/shipment-tracker-frontend",
+  "version": "0.0.0-development",
+  "description": "Frontend for organizing aid shipments.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/distributeaid/shipment-tracker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/distributeaid/shipment-tracker/issues"
+  },
+  "homepage": "https://github.com/distributeaid/shipment-tracker/tree/saga/frontend#shipment-tracker-frontend",
+  "author": "Distribute Aid | https://distributeaid.org/",
+  "license": "AGPL-3.0-only",
   "dependencies": {
     "@apollo/client": "3.5.7",
     "@craco/craco": "6.4.3",
