@@ -1,14 +1,14 @@
 import { ForbiddenError, UserInputError } from 'apollo-server'
+import { Includeable } from 'sequelize'
 import { CsvRow } from '../generateCsv'
 import LineItem from '../models/line_item'
 import Offer from '../models/offer'
 import Pallet from '../models/pallet'
 import Shipment from '../models/shipment'
 import ShipmentExport from '../models/shipment_export'
-import UserAccount from '../models/user_account'
 import { MutationResolvers, QueryResolvers } from '../server-internal-types'
 
-const include = [UserAccount]
+const include: Includeable[] = ['userAccount']
 
 const exportShipment: MutationResolvers['exportShipment'] = async (
   _,
