@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { strict as assert } from 'assert'
-import { FindOptions, Op } from 'sequelize'
+import { FindOptions, Includeable, Op } from 'sequelize'
 import { Contact } from '../input-validation/Contact'
 import { validateIdInput } from '../input-validation/idInputSchema'
 import { Location } from '../input-validation/Location'
@@ -20,7 +20,7 @@ import {
   QueryResolvers,
 } from '../server-internal-types'
 
-const include = [UserAccount]
+const include: Includeable[] = ['captain']
 
 // Group query resolvers
 
