@@ -25,18 +25,19 @@ const exportShipment: MutationResolvers['exportShipment'] = async (
       include: [
         {
           association: 'pallets',
-          include: {
-            // @ts-ignore
-            association: 'lineItems',
-            include: [
-              {
-                association: 'acceptedReceivingGroup',
-              },
-              {
-                association: 'proposedReceivingGroup',
-              },
-            ],
-          },
+          include: [
+            {
+              association: 'lineItems',
+              include: [
+                {
+                  association: 'acceptedReceivingGroup',
+                },
+                {
+                  association: 'proposedReceivingGroup',
+                },
+              ],
+            },
+          ],
         },
         { association: 'sendingGroup' },
       ],

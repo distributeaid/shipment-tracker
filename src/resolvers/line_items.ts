@@ -279,15 +279,16 @@ async function getLineItemWithParentAssociations(
   return LineItem.findByPk(id, {
     include: {
       association: 'offerPallet',
-      include: {
-        // The need for ts-ignore here seems to be a bug in sequelize-typescript. There
-        // are several open issues related to bad type errors on the project so hopefully
-        // it will be fixed in an upcoming version. --bion, 3/17/21
-        // @ts-ignore
-        model: Offer,
-        as: 'offer',
-        include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
-      },
+      include: [
+        {
+          model: Offer,
+          as: 'offer',
+          include: [
+            { association: 'sendingGroup' },
+            { association: 'shipment' },
+          ],
+        },
+      ],
     },
   })
 }
