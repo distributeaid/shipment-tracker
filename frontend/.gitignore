@@ -31,4 +31,4 @@ yarn-error.log*
 src/types/api-types.ts
 
 # Playwright artifacts
-test-results/
+test-session/

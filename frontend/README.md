@@ -18,7 +18,8 @@ Make sure to configure the server URL in your `.env.production.local`:
 
 You can then run the tests using
 
-    npx playwright test
+    npx playwright test tests/playwright/unauthenticated
+    npx playwright test tests/playwright/authenticated
 
 This works on your local machine, as well as using the Docker container.
 
@@ -28,7 +29,8 @@ For developing tests it is helpful to run the [Playwright Inspector](https://pla
 
 Then launch the inspector **on your local machine** using
 
-    PWDEBUG=1 npx playwright test
+    PWDEBUG=1 npx playwright test tests/playwright/unauthenticated
+    PWDEBUG=1 npx playwright test tests/playwright/authenticated
 
 This cannot be done inside the Docker container, since it launches the Firefox browser.
 [For Linux it is possible to forward the X session from inside the Docker container](https://www.geeksforgeeks.org/running-gui-applications-on-docker-in-linux/), but this is not implemented, yet.
