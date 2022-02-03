@@ -43,7 +43,7 @@
     "yarn": ">= 1.22.5"
   },
   "devDependencies": {
-    "@babel/core": "7.16.12",
+    "@babel/core": "7.17.0",
     "@babel/helper-environment-visitor": "7.16.7",
     "@babel/preset-env": "7.16.11",
     "@babel/preset-typescript": "7.16.7",
