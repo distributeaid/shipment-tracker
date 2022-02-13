@@ -9,6 +9,7 @@ on:
       - 'frontend/**'
       - '.github/workflows/codesee-arch-diagram.yml'
       - '.github/workflows/frontend-unit-tests.yml'
+      - '.github/workflows/frontend-e2e-tests.yml'
 
 jobs:
   tests:
