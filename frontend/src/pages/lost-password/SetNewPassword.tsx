@@ -73,6 +73,9 @@ const SetNewPasswordPage: FunctionComponent = () => {
             minLength={8}
             value={password}
             onChange={({ target: { value } }) => setPassword(value)}
+            helpText={
+              'The password must be at least 8 characters long and contain at least a lower-case letter (a-z), an upper-case letter (A-Z), and a number.'
+            }
           />
           <TextField
             label="Repeat your password"
