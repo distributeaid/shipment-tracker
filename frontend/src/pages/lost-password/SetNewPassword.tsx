@@ -2,6 +2,7 @@ import { FunctionComponent, useState } from 'react'
 import { Navigate, useLocation } from 'react-router'
 import Error from '../../components/alert/Error'
 import Success from '../../components/alert/Success'
+import CheckboxField from '../../components/forms/CheckboxField'
 import { DisableableButton } from '../../components/forms/DisableableButton'
 import FormFooter from '../../components/forms/FormFooter'
 import TextField from '../../components/forms/TextField'
@@ -20,15 +21,14 @@ const SetNewPasswordPage: FunctionComponent = () => {
   const { setNewPasswordUsingTokenAndEmail } = useAuth()
   const [email, setEmail] = useState(state?.email ?? '')
   const [password, setPassword] = useState('')
-  const [password2, setPassword2] = useState('')
   const [token, setToken] = useState('')
   const [error, setError] = useState<AuthError>()
   const [passwordChanged, setPasswordChanged] = useState<boolean>(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const isFormValid =
     emailRegEx.test(email) &&
     passwordRegEx.test(password) &&
-    password === password2 &&
     tokenRegex.test(token)
 
   return (
@@ -67,7 +67,7 @@ const SetNewPasswordPage: FunctionComponent = () => {
           />
           <TextField
             label="Pick a good password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             name="password"
             autoComplete="new-password"
             minLength={8}
@@ -77,14 +77,10 @@ const SetNewPasswordPage: FunctionComponent = () => {
               'The password must be at least 8 characters long and contain at least a lower-case letter (a-z), an upper-case letter (A-Z), and a number.'
             }
           />
-          <TextField
-            label="Repeat your password"
-            type="password"
-            name="password2"
-            autoComplete="new-password"
-            minLength={8}
-            value={password2}
-            onChange={({ target: { value } }) => setPassword2(value)}
+          <CheckboxField
+            containerClassName="mt-2"
+            label="Reveal password"
+            onChange={() => setShowPassword((prev) => !prev)}
           />
           <FormFooter>
             <DisableableButton
