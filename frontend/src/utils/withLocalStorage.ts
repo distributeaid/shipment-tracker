@@ -1,5 +1,8 @@
 export const withLocalStorage = <T>(key: string, defaultValue?: T) => {
-  const destroy = () => localStorage.removeItem(key)
+  const destroy = () => {
+    localStorage.removeItem(key)
+    localStorage.removeItem(`${key}__exp`)
+  }
   const getExpires = (): Date | undefined => {
     const expires = localStorage.getItem(`${key}__exp`)
     if (expires === null) return

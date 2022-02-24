@@ -198,7 +198,6 @@ export const AuthProvider = ({
       })
   }, [clientLogout, cookieIsRefreshing, storedIsAuthenticated])
   useEffect(() => {
-    if (!isAuthenticated) return
     if (userClickTime === undefined) return
     const expires = storedIsAuthenticated.expires()
     if (expires === undefined) return
@@ -207,7 +206,7 @@ export const AuthProvider = ({
     if (diff < 5 * 60 * 1000) {
       refreshCookie()
     }
-  }, [isAuthenticated, userClickTime, refreshCookie, storedIsAuthenticated])
+  }, [userClickTime, refreshCookie, storedIsAuthenticated])
   useEffect(() => {
     const onClick = () => {
       setUserClickTime(new Date())
@@ -220,8 +219,8 @@ export const AuthProvider = ({
 
   // Log-out if cookie has expired
   useEffect(() => {
-    if (!isAuthenticated) return
     const expires = storedIsAuthenticated.expires()
+    if (!isAuthenticated) return
     if (expires === undefined) return
     const diff = expires.getTime() - Date.now()
     const t = setTimeout(() => {
