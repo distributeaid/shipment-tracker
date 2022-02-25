@@ -1,6 +1,8 @@
 import { FunctionComponent } from 'react'
+import { Hint } from '../../components/alert/Hint'
 import Badge from '../../components/Badge'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
+import InternalLink from '../../components/InternalLink'
 import Spinner from '../../components/Spinner'
 import { useShipmentQuery } from '../../types/api-types'
 import {
@@ -10,6 +12,7 @@ import {
   formatShippingRouteName,
   getShipmentStatusBadgeColor,
 } from '../../utils/format'
+import { shipmentViewOffersRoute } from '../../utils/routes'
 
 interface Props {
   shipmentId: number
@@ -33,6 +36,20 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
 
   return (
     <div className="p-4 md:p-6">
+      <Hint
+        id={'select-offers'}
+        title={`What's next:`}
+        text={
+          <>
+            Select the{' '}
+            <InternalLink to={shipmentViewOffersRoute(shipmentId)}>
+              Offers
+            </InternalLink>{' '}
+            tab to create an offer for this shipment.
+          </>
+        }
+        className="mb-4"
+      />
       <div className="flex space-x-6">
         <ReadOnlyField label="Date">
           {formatLabelMonth(shipmentData.labelMonth)} {shipmentData.labelYear}

@@ -13,7 +13,27 @@ const GroupLeaderHomePage: FunctionComponent = () => {
   if (groups.length > 0) {
     return (
       <div>
-        <h2 className="text-gray-700 font-medium mb-2 text-lg">Quick links</h2>
+        <p className="mb-4">
+          Distribute Aid runs regular shipments from a number of aid hubs in
+          sending countries such as UK and Germany, to hubs in receiving
+          countries such as France and Lebanon to be picked and used by
+          grassroots receiving groups who distribute directly to people in need.
+        </p>
+        <p className="mb-4">
+          Using this Shipment Tracker, you can view upcoming Distribute Aid hub
+          shipments and create offers of aid to go on the shipments, which will
+          be matched to a specific receiving group based on the their needs.
+        </p>
+        <p className="mb-4">
+          To see shipments, click on the shipments icon in the navigation.
+        </p>
+        <p className="mb-4">
+          To change the information and settings for your aid sending group,
+          click on group settings below.
+        </p>
+        <h2 className="text-gray-700 font-medium mb-2 mt-8 text-lg">
+          Quick links
+        </h2>
         <ul>
           <li>
             <InternalLink
@@ -32,7 +52,7 @@ const GroupLeaderHomePage: FunctionComponent = () => {
                 <CogIcon className="w-4 h-4 mr-1" />
                 Group settings
                 {groups.length > 1 && <span>for {group.name}</span>}
-              </InternalLink>
+              </InternalLink>{' '}
             </li>
           ))}
         </ul>

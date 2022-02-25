@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react'
 import { useParams } from 'react-router-dom'
+import { Hint } from '../../components/alert/Hint'
 import ButtonLink from '../../components/ButtonLink'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import InternalLink from '../../components/InternalLink'
@@ -87,6 +88,22 @@ const GroupViewPage: FunctionComponent = () => {
                 </ReadOnlyField>
               </div>
             </ReadOnlyField>
+            <Hint
+              id="group:whatsnext"
+              title={`What's next:`}
+              text={
+                <>
+                  Go to{' '}
+                  <InternalLink
+                    to={ROUTES.SHIPMENT_LIST}
+                    className="inline-flex items-center"
+                  >
+                    Shipments
+                  </InternalLink>{' '}
+                  to create an offer.
+                </>
+              }
+            />
           </main>
         )}
       </div>
