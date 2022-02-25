@@ -1,4 +1,22 @@
-export const withLocalStorage = <T>(key: string, defaultValue?: T) => {
+type withLocalStorageType = {
+  <T>(key: string): {
+    set: (v?: T, expires?: Date) => void
+    get: () => T | undefined
+    destroy: () => void
+    expires: () => Date | undefined
+  }
+  <T>(key: string, defaultValue: T): {
+    set: (v?: T, expires?: Date) => void
+    get: () => T
+    destroy: () => void
+    expires: () => Date | undefined
+  }
+}
+
+export const withLocalStorage: withLocalStorageType = <T>(
+  key: string,
+  defaultValue?: T,
+) => {
   const destroy = () => {
     localStorage.removeItem(key)
     localStorage.removeItem(`${key}__exp`)
