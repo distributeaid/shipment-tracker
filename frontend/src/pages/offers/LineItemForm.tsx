@@ -315,15 +315,7 @@ const LineItemForm: FunctionComponent<Props> = ({
       )}
       <fieldset className="space-y-4 mb-6">
         <legend className="font-semibold text-gray-700">Contents</legend>
-        <TextField
-          label="Description"
-          name="description"
-          required
-          minLength={5}
-          register={register}
-          errors={errors}
-          helpText="Pallets with comprehensive descriptions are more likely to get picked up."
-        />
+
         <SelectField
           label="Category"
           name="category"
@@ -337,6 +329,15 @@ const LineItemForm: FunctionComponent<Props> = ({
           }}
           required
           errors={errors}
+        />
+        <TextField
+          label="Description"
+          name="description"
+          required
+          minLength={5}
+          register={register}
+          errors={errors}
+          helpText="Pallets with comprehensive descriptions are more likely to get picked up."
         />
         <TextField
           label="Total number of items"

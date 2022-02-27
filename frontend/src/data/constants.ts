@@ -117,7 +117,7 @@ export const LINE_ITEM_CATEGORY_OPTIONS = [
     value: LineItemCategory.Medical,
   },
   { label: 'PPE (masks, antibacterial hand gel)', value: LineItemCategory.Ppe },
-  { label: 'Other (washing machines)', value: LineItemCategory.Other },
+  { label: 'Other', value: LineItemCategory.Other },
 ]
 
 export const LINE_ITEM_CONTAINER_OPTIONS = [
