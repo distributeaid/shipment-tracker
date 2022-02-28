@@ -7,8 +7,8 @@ import {
   GroupCreateInput,
   useCreateGroupMutation,
 } from '../../types/api-types'
-import { setEmptyFieldsToUndefined } from '../../utils/data'
 import { groupViewRoute } from '../../utils/routes'
+import { setEmptyFieldsToUndefined } from '../../utils/setEmptyFieldsToUndefined'
 import GroupForm from './GroupForm'
 
 const GroupCreatePage: FunctionComponent = () => {

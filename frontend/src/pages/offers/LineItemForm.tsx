@@ -30,12 +30,12 @@ import {
   useLineItemQuery,
   useUpdateLineItemMutation,
 } from '../../types/api-types'
-import { setEmptyFieldsToUndefined } from '../../utils/data'
 import {
   gramsToKilos,
   groupToSelectOption,
   kilosToGrams,
 } from '../../utils/format'
+import { setEmptyFieldsToUndefined } from '../../utils/setEmptyFieldsToUndefined'
 
 interface Props {
   /**

@@ -13,9 +13,9 @@ import {
   useShipmentQuery,
   useUpdateOfferMutation,
 } from '../../types/api-types'
-import { setEmptyFieldsToUndefined } from '../../utils/data'
 import { formatListOfHubs, formatShipmentName } from '../../utils/format'
 import { shipmentViewOffersRoute } from '../../utils/routes'
+import { setEmptyFieldsToUndefined } from '../../utils/setEmptyFieldsToUndefined'
 import { stripIdAndTypename } from '../../utils/types'
 import OfferStatusSwitcher from './OfferStatusSwitcher'
 import PalletsEditor from './PalletsEditor'
