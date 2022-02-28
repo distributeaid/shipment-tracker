@@ -169,13 +169,13 @@ const ViewLineItem: FunctionComponent<Props> = ({
             </legend>
             <div className="md:flex md:space-x-8">
               <ReadOnlyField label="Width">
-                {data.lineItem.containerWidthCm || 0}cm
+                {data.lineItem.containerWidthCm || 0} cm
               </ReadOnlyField>
               <ReadOnlyField label="Length">
-                {data.lineItem.containerLengthCm || 0}cm
+                {data.lineItem.containerLengthCm || 0} cm
               </ReadOnlyField>
               <ReadOnlyField label="Height">
-                {data.lineItem.containerHeightCm || 0}cm
+                {data.lineItem.containerHeightCm || 0} cm
               </ReadOnlyField>
               <ReadOnlyField label="Volume">
                 {getLineItemVolumeInSquareMeters(data.lineItem)}
@@ -185,7 +185,7 @@ const ViewLineItem: FunctionComponent<Props> = ({
             <ReadOnlyField label="Weight">
               {Math.round(
                 gramsToKilos(data.lineItem.containerWeightGrams || 0),
-              )}
+              )}{' '}
               kg
             </ReadOnlyField>
           </fieldset>
