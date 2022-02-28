@@ -24,7 +24,7 @@ import {
   ShipmentQuery,
   useAllGroupsMinimalQuery,
 } from '../../types/api-types'
-import { arraysOverlap } from '../../utils/data'
+import { arraysOverlap } from '../../utils/arraysOverlap'
 
 interface Props {
   /**
