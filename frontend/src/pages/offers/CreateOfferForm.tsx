@@ -15,9 +15,9 @@ import {
   useAllGroupsLazyQuery,
   useShipmentQuery,
 } from '../../types/api-types'
-import { setEmptyFieldsToUndefined } from '../../utils/data'
 import { formatListOfHubs, formatShipmentName } from '../../utils/format'
 import { shipmentViewRoute } from '../../utils/routes'
+import { setEmptyFieldsToUndefined } from '../../utils/setEmptyFieldsToUndefined'
 
 interface Props {
   /**

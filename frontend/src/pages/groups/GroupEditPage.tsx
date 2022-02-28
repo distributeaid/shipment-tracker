@@ -7,8 +7,8 @@ import {
   useGroupQuery,
   useUpdateGroupMutation,
 } from '../../types/api-types'
-import { setEmptyFieldsToUndefined } from '../../utils/data'
 import { groupViewRoute } from '../../utils/routes'
+import { setEmptyFieldsToUndefined } from '../../utils/setEmptyFieldsToUndefined'
 import { stripIdAndTypename } from '../../utils/types'
 import GroupForm from './GroupForm'
 
