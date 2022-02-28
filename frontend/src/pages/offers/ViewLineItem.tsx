@@ -37,12 +37,17 @@ interface Props {
    * user has permission to do so.
    */
   editLineItem: () => void
+  /**
+   * Whether this line item can be edited (edits are only allowed for draft offers)
+   */
+  canEdit: boolean
 }
 
 const ViewLineItem: FunctionComponent<Props> = ({
   lineItemId,
   onLineItemDeleted,
   editLineItem,
+  canEdit,
 }) => {
   const {
     data,
@@ -108,10 +113,12 @@ const ViewLineItem: FunctionComponent<Props> = ({
         <h2 className="text-gray-700 text-lg flex items-center">
           Line Item {lineItemIsLoading && <Spinner className="ml-2" />}
         </h2>
-        <div className="space-x-4">
-          <Button onClick={showDeleteConfirmation}>Delete</Button>
-          <Button onClick={editLineItem}>Edit</Button>
-        </div>
+        {canEdit && (
+          <div className="space-x-4">
+            <Button onClick={showDeleteConfirmation}>Delete</Button>
+            <Button onClick={editLineItem}>Edit</Button>
+          </div>
+        )}
       </div>
       <ConfirmationModal
         isOpen={deleteConfirmationIsVisible}

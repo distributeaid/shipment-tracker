@@ -12,11 +12,16 @@ import PalletContentValidator from './PalletContentValidator'
 interface Props {
   palletId: number
   onPalletDestroyed: () => void
+  /**
+   * Whether this pallet can be edited (edits are only allowed for draft offers)
+   */
+  canEdit: boolean
 }
 
 const ViewPallet: FunctionComponent<Props> = ({
   palletId,
   onPalletDestroyed,
+  canEdit,
 }) => {
   const {
     data,
@@ -56,9 +61,11 @@ const ViewPallet: FunctionComponent<Props> = ({
         <h2 className="text-gray-700 text-lg flex items-center">
           Pallet {palletIsLoading && <Spinner className="ml-2" />}
         </h2>
-        <div className="space-x-4">
-          <Button onClick={showDeleteConfirmation}>Delete pallet</Button>
-        </div>
+        {canEdit && (
+          <div className="space-x-4">
+            <Button onClick={showDeleteConfirmation}>Delete pallet</Button>
+          </div>
+        )}
       </div>
       <ConfirmationModal
         isOpen={deleteConfirmationIsVisible}

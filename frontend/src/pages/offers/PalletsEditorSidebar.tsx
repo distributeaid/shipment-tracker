@@ -16,6 +16,10 @@ type Props = {
   selectPallet: (palletId: number) => void
   addLineItem: (palletId: number) => void
   selectLineItemId: (lineItemId: number) => void
+  /**
+   * Whether this pallet can be edited (edits are only allowed for draft offers)
+   */
+  canEdit: boolean
 }
 
 const PalletsEditorSidebar: FunctionComponent<Props> = ({
@@ -28,14 +32,17 @@ const PalletsEditorSidebar: FunctionComponent<Props> = ({
   addLineItem,
   selectLineItemId,
   selectedPalletData,
+  canEdit,
 }) => {
   return (
     <div className="w-80 flex-shrink-0 h-full">
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <span className="text-lg text-gray-700">Pallets</span>
-        <Button disabled={isLoading} onClick={createPallet}>
-          Add a pallet
-        </Button>
+        {canEdit && (
+          <Button disabled={isLoading} onClick={createPallet}>
+            Add a pallet
+          </Button>
+        )}
       </div>
       {pallets && (
         <ul className="divide-y divide-gray-100">
@@ -104,13 +111,15 @@ const PalletsEditorSidebar: FunctionComponent<Props> = ({
                         {item.description || `Item ${item.id}`}
                       </button>
                     ))}
-                    <Button
-                      type="button"
-                      className="mt-4"
-                      onClick={() => addLineItem(pallet.id)}
-                    >
-                      Add items
-                    </Button>
+                    {canEdit && (
+                      <Button
+                        type="button"
+                        className="mt-4"
+                        onClick={() => addLineItem(pallet.id)}
+                      >
+                        Add items
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>
