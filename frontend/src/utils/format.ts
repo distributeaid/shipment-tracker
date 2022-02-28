@@ -154,7 +154,7 @@ export function getLineItemVolumeInSquareMeters(
     (
       (containerHeightCm! * containerLengthCm! * containerWidthCm!) /
       1000000
-    ).toFixed(2) + 'm³'
+    ).toFixed(3) + ' m³'
   )
 }
 

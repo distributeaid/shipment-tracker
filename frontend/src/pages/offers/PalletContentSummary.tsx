@@ -21,7 +21,7 @@ const PalletContentSummary: FunctionComponent<Props> = ({ lineItems }) => {
 
   const totalWeightInKilos = gramsToKilos(
     lineItems.reduce((sum, item) => {
-      return sum + (item.containerWeightGrams ?? 0)
+      return sum + (item.containerWeightGrams ?? 0) * (item.containerCount ?? 1)
     }, 0),
   )
 
@@ -55,7 +55,10 @@ const PalletContentSummary: FunctionComponent<Props> = ({ lineItems }) => {
             </td>
             <td className="p-2 text-right">{item.itemCount}</td>
             <td className="p-2 pr-4 text-right">
-              {gramsToKilos(item.containerWeightGrams ?? 1)} kg
+              {gramsToKilos(
+                (item.containerWeightGrams ?? 1) * (item.containerCount ?? 1),
+              )}{' '}
+              kg
             </td>
           </tr>
         ))}
