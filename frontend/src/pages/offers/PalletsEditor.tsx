@@ -3,6 +3,7 @@ import useModalState from '../../hooks/useModalState'
 import {
   OfferDocument,
   OfferQuery,
+  OfferStatus,
   PalletCreateInput,
   PalletDocument,
   PalletType,
@@ -35,6 +36,8 @@ const PalletsEditor: FunctionComponent<Props> = ({ offer, pallets = [] }) => {
   const [selectedLineItemId, setSelectedLineItemId] = useState<number>()
 
   const [allowEditingLineItem, setEditingMode] = useState(false)
+
+  const canEditOffer = offer.status === OfferStatus.Draft
 
   /**
    * Select a pallet and download its data, line items included
@@ -134,6 +137,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ offer, pallets = [] }) => {
         addLineItem={addLineItem}
         selectLineItemId={selectLineItem}
         selectedPalletData={selectedPalletData.data}
+        canEdit={canEditOffer}
       />
       <div className="flex-grow border-l border-gray-100">
         {mutationError && (
@@ -152,6 +156,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ offer, pallets = [] }) => {
             <ViewPallet
               palletId={selectedPalletId}
               onPalletDestroyed={() => setSelectedPalletId(undefined)}
+              canEdit={canEditOffer}
             />
           </div>
         )}
@@ -172,6 +177,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ offer, pallets = [] }) => {
                 lineItemId={selectedLineItemId}
                 onLineItemDeleted={onLineItemDeleted}
                 editLineItem={() => setEditingMode(true)}
+                canEdit={canEditOffer}
               />
             )}
           </div>
