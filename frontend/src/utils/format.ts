@@ -179,3 +179,6 @@ export function groupToSelectOption(
 
 export const formatListOfHubs = (hubs: { name: string }[]): string =>
   hubs.map(({ name }) => name).join(', ')
+
+export const formatNumberToFixedWithoutTrailingZeros = (n: number, len = 3) =>
+  n.toFixed(len).replace(/\.?0+$/, '')

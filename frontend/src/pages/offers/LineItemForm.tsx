@@ -392,9 +392,7 @@ const LineItemForm: FunctionComponent<Props> = ({
           name="containerCount"
           type="number"
           min={1}
-          max={36}
           required
-          helpText="1 pallet can contain between 1–36 boxes"
           register={register}
           errors={errors}
           className="max-w-xs"

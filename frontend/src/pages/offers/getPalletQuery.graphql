@@ -12,6 +12,9 @@ query Pallet($id: Int!) {
       status
       containerType
       containerCount
+      containerHeightCm
+      containerLengthCm
+      containerWidthCm
       category
       description
       itemCount

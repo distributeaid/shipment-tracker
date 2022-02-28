@@ -92,7 +92,7 @@
     "transform": {
       ".+\\.tsx?$": "ts-jest"
     },
-    "testRegex": ".+\\.spec\\.tsx?$",
+    "testRegex": ".+\\.(spec|test)\\.tsx?$",
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/tests/playwright/"

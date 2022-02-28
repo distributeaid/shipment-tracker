@@ -1,19 +1,30 @@
 import { FunctionComponent } from 'react'
-import { LineItem } from '../../types/api-types'
-import { validatePalletContents } from '../../utils/data'
+import { PalletType } from '../../types/api-types'
+import {
+  PalletLineItem,
+  validatePalletContents,
+} from '../../utils/validatePalletContents'
 
 type Props = {
-  lineItems: Pick<LineItem, 'containerType' | 'containerCount'>[]
+  palletType: PalletType
+  lineItems: PalletLineItem[]
 }
 
-const PalletContentValidator: FunctionComponent<Props> = ({ lineItems }) => {
-  const { valid, error } = validatePalletContents(lineItems)
+const PalletContentValidator: FunctionComponent<Props> = ({
+  palletType,
+  lineItems,
+}) => {
+  const palletValidationResult = validatePalletContents(palletType, lineItems)
 
-  if (!valid) {
+  if ('errors' in palletValidationResult) {
     return (
-      <div className="bg-red-50 text-red-700 p-4 rounded mb-4">
-        <h4 className="font-semibold mb-2">Invalid pallet contents</h4>
-        <p>{error}</p>
+      <div className="bg-yellow-50 text-yellow-700 p-4 rounded mb-4">
+        <h4 className="font-semibold mb-2">Problematic pallet configuration</h4>
+        <ul>
+          {palletValidationResult.errors.map(({ message }, k) => (
+            <li key={k}>{message}</li>
+          ))}
+        </ul>
       </div>
     )
   }

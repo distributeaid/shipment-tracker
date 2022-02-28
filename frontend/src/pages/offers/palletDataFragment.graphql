@@ -8,6 +8,9 @@ fragment PalletDataFragment on Pallet {
     category
     containerCount
     containerType
+    containerHeightCm
+    containerLengthCm
+    containerWidthCm
   }
   paymentStatus
 }

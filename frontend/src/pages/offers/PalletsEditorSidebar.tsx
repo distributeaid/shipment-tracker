@@ -4,7 +4,7 @@ import Button from '../../components/Button'
 import ChevronIcon from '../../components/icons/ChevronIcon'
 import WarningIcon from '../../components/icons/WarningIcon'
 import { OfferQuery, PalletQuery } from '../../types/api-types'
-import { validatePalletContents } from '../../utils/data'
+import { validatePalletContents } from '../../utils/validatePalletContents'
 
 type Props = {
   pallets: OfferQuery['offer']['pallets'] | undefined
@@ -69,7 +69,11 @@ const PalletsEditorSidebar: FunctionComponent<Props> = ({
                     }
                   />
                   Pallet {index + 1}
-                  {validatePalletContents(pallet.lineItems).valid === false && (
+                  {'errors' in
+                    validatePalletContents(
+                      pallet.palletType,
+                      pallet.lineItems,
+                    ) && (
                     <span
                       className="inline-block ml-auto"
                       title="The contents of this pallet are invalid"
