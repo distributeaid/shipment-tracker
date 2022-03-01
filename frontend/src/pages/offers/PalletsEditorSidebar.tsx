@@ -108,7 +108,7 @@ const PalletsEditorSidebar: FunctionComponent<Props> = ({
                           selectLineItemId(item.id)
                         }}
                       >
-                        {item.description || `Item ${item.id}`}
+                        {item.description || <em>Unsaved item</em>}
                       </button>
                     ))}
                     {canEdit && (
