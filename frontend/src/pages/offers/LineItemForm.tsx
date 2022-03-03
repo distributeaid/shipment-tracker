@@ -288,17 +288,9 @@ const LineItemForm: FunctionComponent<Props> = ({
 
   return (
     <form onSubmit={submitForm} className="pb-12">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-gray-700 text-lg flex items-center">
-          Line Item {lineItemIsLoading && <Spinner className="ml-2" />}
-        </h2>
-        <div className="space-x-4">
-          <Button onClick={onEditingComplete}>Cancel</Button>
-          <Button variant="primary" type="submit" disabled={mutationIsLoading}>
-            Save changes
-          </Button>
-        </div>
-      </div>
+      <h2 className="text-gray-700 text-lg flex items-center mb-4">
+        Line Item {lineItemIsLoading && <Spinner className="ml-2" />}
+      </h2>
       {receivingGroups.length > 0 ? (
         <SelectField
           name="proposedReceivingGroupId"
@@ -479,6 +471,15 @@ const LineItemForm: FunctionComponent<Props> = ({
               <span>{good.label}</span>
             </label>
           ))}
+        </div>
+      </fieldset>
+
+      <fieldset className="mt-12 flex justify-end">
+        <div className="space-x-4">
+          <Button onClick={onEditingComplete}>Cancel</Button>
+          <Button variant="primary" type="submit" disabled={mutationIsLoading}>
+            Save line item
+          </Button>
         </div>
       </fieldset>
     </form>
