@@ -76,7 +76,7 @@ jobs:
         working-directory: frontend
         run: npx playwright test tests/playwright/authenticated
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: playwright-artifacts-${{ github.sha }}
