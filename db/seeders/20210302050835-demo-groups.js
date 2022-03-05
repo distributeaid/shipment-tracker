@@ -28,7 +28,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           primaryLocation: JSON.stringify({
-            countryCode: 'FR',
+            country: 'FR',
             townCity: 'Calais',
           }),
           primaryContact: JSON.stringify({
@@ -42,7 +42,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           primaryLocation: JSON.stringify({
-            countryCode: 'FR',
+            country: 'FR',
             townCity: 'Dunkerque',
           }),
           primaryContact: JSON.stringify({
@@ -56,7 +56,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           primaryLocation: JSON.stringify({
-            countryCode: 'GB',
+            country: 'GB',
             townCity: 'London',
           }),
           primaryContact: JSON.stringify({

@@ -8,7 +8,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { useGroupLeaderGroups } from '../../hooks/useGroupLeaderGroups'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { useGroupQuery } from '../../types/api-types'
-import { formatCountryCodeToName, formatGroupType } from '../../utils/format'
+import { formatGroupType } from '../../utils/format'
 import ROUTES, { groupEditRoute } from '../../utils/routes'
 
 const GroupViewPage: FunctionComponent = () => {
@@ -66,8 +66,17 @@ const GroupViewPage: FunctionComponent = () => {
               {groupData && formatGroupType(groupData.groupType)}
             </ReadOnlyField>
             <ReadOnlyField label="Location">
-              {groupData.primaryLocation.townCity},{' '}
-              {formatCountryCodeToName(groupData.primaryLocation.countryCode)}
+              {groupData && (
+                <>
+                  {groupData.primaryLocation.townCity}
+                  {groupData.primaryLocation.country && (
+                    <>
+                      {', '}
+                      {groupData.primaryLocation.country.shortNameEN}
+                    </>
+                  )}
+                </>
+              )}
             </ReadOnlyField>
             <ReadOnlyField label="Primary contact">
               <p className="font-semibold mb-4">

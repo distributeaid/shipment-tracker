@@ -52,11 +52,13 @@ const addPallet: MutationResolvers['addPallet'] = async (
 
   authorizeOfferMutation(offer, context)
 
-  return Pallet.create({
-    ...input,
-    paymentStatus: PaymentStatus.Uninitiated,
-    paymentStatusChangeTime: new Date(),
-  })
+  return (
+    await Pallet.create({
+      ...input,
+      paymentStatus: PaymentStatus.Uninitiated,
+      paymentStatusChangeTime: new Date(),
+    })
+  ).toWireFormat()
 }
 
 // - update pallet
@@ -112,7 +114,7 @@ const updatePallet: MutationResolvers['updatePallet'] = async (
     updateAttributes.palletType = valid.value.input.palletType
   }
 
-  return pallet.update(updateAttributes)
+  return (await pallet.update(updateAttributes)).toWireFormat()
 }
 
 // - get pallet
@@ -137,7 +139,7 @@ const pallet: QueryResolvers['pallet'] = async (_, { id }, context) => {
 
   authorizeOfferQuery(offer, context)
 
-  return pallet
+  return pallet.toWireFormat()
 }
 
 // - destroy pallet
@@ -167,13 +169,15 @@ const destroyPallet: MutationResolvers['destroyPallet'] = async (
   authorizeOfferMutation(offer, context)
 
   await pallet.destroy()
-  return offer
+  return offer.toWireFormat()
 }
 
 // - list line items
 
 const palletLineItems: PalletResolvers['lineItems'] = async (parent) => {
-  return LineItem.findAll({ where: { offerPalletId: parent.id } })
+  return (await LineItem.findAll({ where: { offerPalletId: parent.id } })).map(
+    (lineItem) => lineItem.toWireFormat(),
+  )
 }
 
 export { addPallet, updatePallet, destroyPallet, palletLineItems, pallet }

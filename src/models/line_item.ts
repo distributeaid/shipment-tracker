@@ -10,6 +10,7 @@ import {
 } from 'sequelize-typescript'
 import {
   DangerousGoods,
+  LineItem as WireLineItem,
   LineItemCategory,
   LineItemContainerType,
   LineItemStatus,
@@ -143,4 +144,12 @@ export default class LineItem extends Model<
   @UpdatedAt
   @Column
   public readonly updatedAt!: Date
+
+  public toWireFormat(): WireLineItem {
+    return {
+      ...this,
+      proposedReceivingGroup: this.proposedReceivingGroup?.toWireFormat(),
+      acceptedReceivingGroup: this.acceptedReceivingGroup?.toWireFormat(),
+    }
+  }
 }

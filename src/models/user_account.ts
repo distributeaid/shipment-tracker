@@ -81,7 +81,7 @@ export default class UserAccount extends Model<
       id: this.id,
       isAdmin: this.isAdmin,
       name: this.name,
-      group: groupForUser,
+      group: groupForUser?.toWireFormat(),
     }
   }
 

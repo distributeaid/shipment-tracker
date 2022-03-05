@@ -48,7 +48,7 @@ const lineItem: QueryResolvers['lineItem'] = async (_, { id }, context) => {
 
   authorizeOfferQuery(pallet.offer, context)
 
-  return lineItem
+  return lineItem.toWireFormat()
 }
 
 // - add new line item
@@ -75,18 +75,20 @@ const addLineItem: MutationResolvers['addLineItem'] = async (
 
   authorizeOfferMutation(pallet.offer, context)
 
-  return LineItem.create({
-    offerPalletId: valid.value.id,
-    status: LineItemStatus.Proposed,
-    containerType: LineItemContainerType.Unset,
-    category: LineItemCategory.Unset,
-    itemCount: 0,
-    affirmLiability: false,
-    tosAccepted: false,
-    dangerousGoods: [],
-    photoUris: [],
-    statusChangeTime: new Date(),
-  })
+  return (
+    await LineItem.create({
+      offerPalletId: valid.value.id,
+      status: LineItemStatus.Proposed,
+      containerType: LineItemContainerType.Unset,
+      category: LineItemCategory.Unset,
+      itemCount: 0,
+      affirmLiability: false,
+      tosAccepted: false,
+      dangerousGoods: [],
+      photoUris: [],
+      statusChangeTime: new Date(),
+    })
+  ).toWireFormat()
 }
 
 // - update line item
@@ -139,7 +141,11 @@ const updateLineItem: MutationResolvers['updateLineItem'] = async (
     context,
   )
 
-  return lineItem.update(await getUpdateAttributes(lineItem, valid.value.input))
+  return (
+    await lineItem.update(
+      await getUpdateAttributes(lineItem, valid.value.input),
+    )
+  ).toWireFormat()
 }
 
 async function authorizeLineItemMutation(
@@ -319,7 +325,7 @@ const destroyLineItem: MutationResolvers['destroyLineItem'] = async (
   const pallet = lineItem.offerPallet
   await lineItem.destroy()
 
-  return pallet
+  return pallet.toWireFormat()
 }
 
 // - move line item
@@ -371,7 +377,7 @@ const moveLineItem: MutationResolvers['moveLineItem'] = async (
 
   await lineItem.update({ offerPalletId: valid.value.targetPalletId })
 
-  return lineItem.offerPallet.offer
+  return lineItem.offerPallet.offer.toWireFormat()
 }
 
 // Line item custom resolvers
@@ -387,7 +393,7 @@ const proposedReceivingGroup: LineItemResolvers['proposedReceivingGroup'] =
       throw new ApolloError('No group exists with that ID')
     }
 
-    return receivingGroup
+    return receivingGroup.toWireFormat()
   }
 
 const acceptedReceivingGroup: LineItemResolvers['acceptedReceivingGroup'] =
@@ -402,7 +408,7 @@ const acceptedReceivingGroup: LineItemResolvers['acceptedReceivingGroup'] =
       throw new ApolloError('No group exists with that ID')
     }
 
-    return receivingGroup
+    return receivingGroup.toWireFormat()
   }
 
 export {

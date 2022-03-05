@@ -20,8 +20,8 @@ import {
   formatLabelMonth,
   formatListOfHubs,
   formatShipmentName,
+  formatShipmentRoute,
   formatShipmentStatus,
-  formatShippingRouteName,
   getShipmentStatusBadgeColor,
 } from '../../utils/format'
 import ROUTES, { shipmentViewRoute } from '../../utils/routes'
@@ -33,7 +33,7 @@ const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
   },
   {
     Header: 'Route',
-    accessor: (row) => formatShippingRouteName(row.shippingRoute),
+    accessor: (row) => formatShipmentRoute(row.shipmentRoute),
   },
   {
     Header: 'Sending hubs',

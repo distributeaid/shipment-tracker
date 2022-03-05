@@ -7,6 +7,6 @@ import {
 
 export const Location = Type.Object({
   townCity: NonEmptyShortString,
-  countryCode: Type.Optional(TwoLetterCountryCode),
+  country: Type.Optional(TwoLetterCountryCode),
   openLocationCode: Type.Optional(OpenLocationCode),
 })

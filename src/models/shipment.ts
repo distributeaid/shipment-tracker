@@ -9,10 +9,11 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
+import { ShipmentRoutes, wireFormatShipmentRoute } from '../data/shipmentRoutes'
 import {
+  Shipment as WireShipment,
   ShipmentPricing,
   ShipmentStatus,
-  ShippingRoute,
 } from '../server-internal-types'
 import Group from './group'
 import Offer from './offer'
@@ -21,7 +22,7 @@ import ShipmentSendingHub from './shipment_sending_hub'
 
 export interface ShipmentAttributes {
   id: number
-  shippingRoute: ShippingRoute
+  shipmentRoute: typeof ShipmentRoutes[number]['id']
   labelYear: number
   labelMonth: number
   offerSubmissionDeadline?: Date | null
@@ -45,7 +46,7 @@ export default class Shipment extends Model<
   public id!: number
 
   @Column(DataType.STRING)
-  public shippingRoute!: ShippingRoute
+  public shipmentRoute!: typeof ShipmentRoutes[number]['id']
 
   @Column
   public labelYear!: number
@@ -85,9 +86,18 @@ export default class Shipment extends Model<
   public displayName(): string {
     return [
       'Shipment',
-      this.shippingRoute,
+      this.shipmentRoute,
       this.labelYear,
       this.labelMonth.toString().padStart(2, '0'),
     ].join('-')
+  }
+
+  public toWireFormat(): WireShipment {
+    return {
+      ...this,
+      shipmentRoute: wireFormatShipmentRoute(this.shipmentRoute),
+      receivingHubs: this.receivingHubs.map((group) => group.toWireFormat()),
+      sendingHubs: this.sendingHubs.map((group) => group.toWireFormat()),
+    }
   }
 }

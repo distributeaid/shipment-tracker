@@ -5,7 +5,10 @@ fragment AllGroupFields on Group {
   groupType
   primaryLocation {
     townCity
-    countryCode
+    country {
+      shortNameEN
+      alpha2
+    }
     openLocationCode
   }
   primaryContact {

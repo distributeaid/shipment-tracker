@@ -32,7 +32,7 @@ test('Onboarding: users can create a group', async ({ page }) => {
     `Description for ${name}'s group`,
   )
   await page.fill('input[name="primaryLocation.townCity"]', 'Trondheim')
-  await page.selectOption('select[name="primaryLocation.countryCode"]', 'NO')
+  await page.selectOption('select[name="primaryLocation.country"]', 'NO')
   await page.fill('input[name="primaryContact.name"]', name)
   await page.fill('input[name="primaryContact.email"]', email)
   await page.click('text=Create group')

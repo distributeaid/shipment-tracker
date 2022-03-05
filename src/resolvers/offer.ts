@@ -92,11 +92,13 @@ const addOffer: MutationResolvers['addOffer'] = async (
     )
   }
 
-  return Offer.create({
-    ...valid.value,
-    status: OfferStatus.Draft,
-    statusChangeTime: new Date(),
-  })
+  return (
+    await Offer.create({
+      ...valid.value,
+      status: OfferStatus.Draft,
+      statusChangeTime: new Date(),
+    })
+  ).toWireFormat()
 }
 
 // - update offer
@@ -148,7 +150,7 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
     updateAttributes.photoUris = valid.value.photoUris
   }
 
-  return offer.update(updateAttributes)
+  return (await offer.update(updateAttributes)).toWireFormat()
 }
 
 // Offer query resolvers
@@ -169,7 +171,7 @@ const offer: QueryResolvers['offer'] = async (_, { id }, context) => {
 
   authorizeOfferQuery(offer, context)
 
-  return offer
+  return offer.toWireFormat()
 }
 
 const listOffers: QueryResolvers['listOffers'] = async (
@@ -198,17 +200,22 @@ const listOffers: QueryResolvers['listOffers'] = async (
     throw new UserInputError(`Shipment ${shipmentId} does not exist`)
   }
 
-  const groupIds = (await groupsPromise).map((group) => group.id)
-
   if (context.auth.isAdmin) {
-    return Offer.findAll({ where: { shipmentId } })
+    return (await Offer.findAll({ where: { shipmentId } })).map((offer) =>
+      offer.toWireFormat(),
+    )
   }
 
-  return Offer.findAll({ where: { shipmentId, sendingGroupId: groupIds } })
+  const groupIds = (await groupsPromise).map((group) => group.id)
+  return (
+    await Offer.findAll({ where: { shipmentId, sendingGroupId: groupIds } })
+  ).map((offer) => offer.toWireFormat())
 }
 
 const offerPallets: OfferResolvers['pallets'] = async (parent) => {
-  return Pallet.findAll({ where: { offerId: parent.id } })
+  return (await Pallet.findAll({ where: { offerId: parent.id } })).map(
+    (pallet) => pallet.toWireFormat(),
+  )
 }
 
 export { addOffer, updateOffer, offer, listOffers, offerPallets }

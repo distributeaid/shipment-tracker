@@ -1,7 +1,23 @@
 query AllShipments($status: [ShipmentStatus!]) {
   listShipments(status: $status) {
     id
-    shippingRoute
+    shipmentRoute {
+      id
+      from {
+        country {
+          shortNameEN
+          alpha2
+        }
+        region
+      }
+      to {
+        country {
+          shortNameEN
+          alpha2
+        }
+        region
+      }
+    }
     labelYear
     labelMonth
     offerSubmissionDeadline

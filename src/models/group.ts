@@ -9,7 +9,14 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript'
-import { ContactInfo, GroupType, Location } from '../server-internal-types'
+import { countries } from '../data/countries'
+import {
+  ContactInfo,
+  Country,
+  Group as WireGroup,
+  GroupType,
+  Location,
+} from '../server-internal-types'
 import UserAccount from './user_account'
 
 export interface GroupAttributes {
@@ -17,7 +24,9 @@ export interface GroupAttributes {
   name: string
   description?: string | null
   groupType: GroupType
-  primaryLocation: Location
+  primaryLocation: Omit<Location, 'country'> & {
+    country?: typeof countries[number]['alpha2']
+  }
   primaryContact: ContactInfo
   website?: string | null
   captainId: number
@@ -45,7 +54,7 @@ export default class Group extends Model<
   public groupType!: GroupType
 
   @Column(DataType.JSONB)
-  public primaryLocation!: Location
+  public primaryLocation!: GroupAttributes['primaryLocation']
 
   @Column(DataType.JSONB)
   public primaryContact!: ContactInfo
@@ -67,4 +76,26 @@ export default class Group extends Model<
   @UpdatedAt
   @Column
   public readonly updatedAt!: Date
+
+  public toWireFormat(): WireGroup {
+    // Resolve country
+    let country: Country | undefined = undefined
+    if (this.primaryLocation.country !== undefined) {
+      country = countries.find(
+        ({ alpha2 }) => alpha2 === this.primaryLocation.country,
+      )
+      if (country === undefined) {
+        throw new Error(
+          `Unknown country ${this.primaryLocation.country} for group primary location!`,
+        )
+      }
+    }
+    return {
+      ...this,
+      primaryLocation: {
+        ...this.primaryLocation,
+        country,
+      },
+    }
+  }
 }

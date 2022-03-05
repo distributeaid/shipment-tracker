@@ -1,7 +1,7 @@
 /**
  * @source https://www.iso.org/obp/ui/#search
  */
-export const countryCodes = [
+export const countries = [
   {
     shortNameEN: 'Afghanistan',
     shortNameFR: "Afghanistan (l')",

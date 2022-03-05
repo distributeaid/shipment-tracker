@@ -10,7 +10,11 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript'
-import { PalletType, PaymentStatus } from '../server-internal-types'
+import {
+  Pallet as WirePallet,
+  PalletType,
+  PaymentStatus,
+} from '../server-internal-types'
 import LineItem from './line_item'
 import Offer from './offer'
 
@@ -66,5 +70,13 @@ export default class Pallet extends Model<
       .map((lineItem) => lineItem.containerWeightGrams || 0)
       .reduce((result, current) => result + current)
     return Math.round(weightInGrams / 1000)
+  }
+
+  public toWireFormat(): WirePallet {
+    return {
+      ...this,
+      offer: this.offer.toWireFormat(),
+      lineItems: this.lineItems.map((lineItem) => lineItem.toWireFormat()),
+    }
   }
 }

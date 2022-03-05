@@ -6,10 +6,9 @@ import InternalLink from '../../components/InternalLink'
 import Spinner from '../../components/Spinner'
 import { useShipmentQuery } from '../../types/api-types'
 import {
-  formatCountryCodeToName,
   formatLabelMonth,
+  formatShipmentRoute,
   formatShipmentStatus,
-  formatShippingRouteName,
   getShipmentStatusBadgeColor,
 } from '../../utils/format'
 import { shipmentViewOffersRoute } from '../../utils/routes'
@@ -64,7 +63,7 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
       <p className="text-gray-600 mb-4">
         This shipment follows the{' '}
         <span className="font-semibold text-gray-800">
-          {formatShippingRouteName(shipmentData.shippingRoute)}
+          {formatShipmentRoute(shipmentData.shipmentRoute)}
         </span>{' '}
         route.
       </p>
@@ -75,8 +74,13 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
             <div key={hub.id}>
               <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
               <div className="text-gray-600">
-                {hub.primaryLocation.townCity},{' '}
-                {formatCountryCodeToName(hub.primaryLocation.countryCode)}
+                {hub.primaryLocation.townCity}
+                {hub.primaryLocation.country && (
+                  <>
+                    {', '}
+                    {hub.primaryLocation.country.shortNameEN}
+                  </>
+                )}
               </div>
             </div>
           ))}
@@ -90,8 +94,13 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
             <div key={hub.id}>
               <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
               <div className="text-gray-600">
-                {hub.primaryLocation.townCity},{' '}
-                {formatCountryCodeToName(hub.primaryLocation.countryCode)}
+                {hub.primaryLocation.townCity}
+                {hub.primaryLocation.country && (
+                  <>
+                    {', '}
+                    {hub.primaryLocation.country.shortNameEN}
+                  </>
+                )}
               </div>
             </div>
           ))}

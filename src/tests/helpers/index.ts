@@ -25,7 +25,10 @@ async function createGroup(
     captainId = groupCaptain.id
   }
 
-  return await Group.create({ ...input, captainId })
+  return await Group.create({
+    ...(input as any),
+    captainId,
+  })
 }
 
 async function createShipment(input: ShipmentCreateInput): Promise<Shipment> {

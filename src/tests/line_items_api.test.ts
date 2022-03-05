@@ -17,7 +17,6 @@ import {
   PalletType,
   PaymentStatus,
   ShipmentStatus,
-  ShippingRoute,
 } from '../server-internal-types'
 import { makeAdminTestServer, makeTestServer } from '../testServer'
 import { TypedGraphQLResponse } from './helpers'
@@ -51,13 +50,13 @@ describe('LineItems API', () => {
     group = await Group.create({
       name: 'group 1',
       groupType: GroupType.DaHub,
-      primaryLocation: { countryCode: 'GB', townCity: 'Bristol' },
+      primaryLocation: { country: 'GB', townCity: 'Bristol' },
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
       captainId: captain.id,
     })
 
     shipment = await Shipment.create({
-      shippingRoute: ShippingRoute.UkToBa,
+      shipmentRoute: 'UkToBa',
       labelYear: 2020,
       labelMonth: 1,
       sendingHubs: [group],

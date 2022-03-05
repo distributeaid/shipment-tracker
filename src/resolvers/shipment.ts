@@ -1,6 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { isEqual, xor } from 'lodash'
+import { ShipmentRoutes, wireFormatShipmentRoute } from '../data/shipmentRoutes'
 import { validateIdInput } from '../input-validation/idInputSchema'
 import {
   CurrentYearOrGreater,
@@ -19,8 +20,8 @@ import {
   MutationResolvers,
   QueryResolvers,
   ShipmentResolvers,
+  ShipmentRoute,
   ShipmentStatus,
-  ShippingRoute,
 } from '../server-internal-types'
 
 const arraysOverlap = (a: unknown[], b: unknown[]): boolean =>
@@ -81,8 +82,10 @@ const listShipments: QueryResolvers['listShipments'] = async (
       )
   }
 
+  let shipments: Shipment[] = []
+
   if (status !== undefined) {
-    return Shipment.findAll({
+    shipments = await Shipment.findAll({
       where: {
         status,
       },
@@ -91,16 +94,18 @@ const listShipments: QueryResolvers['listShipments'] = async (
   }
 
   if (!context.auth.isAdmin)
-    return Shipment.findAll({
+    shipments = await Shipment.findAll({
       where: {
         status: SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS,
       },
       include,
     })
 
-  return Shipment.findAll({
+  shipments = await Shipment.findAll({
     include,
   })
+
+  return shipments.map((shipment) => shipment.toWireFormat())
 }
 
 // - get shipment
@@ -128,7 +133,7 @@ const shipment: QueryResolvers['shipment'] = async (_, { id }, context) => {
     )
   }
 
-  return shipment
+  return shipment.toWireFormat()
 }
 
 // Shipment mutation resolvers
@@ -137,7 +142,7 @@ const shipment: QueryResolvers['shipment'] = async (_, { id }, context) => {
 
 const addShipmentInput = Type.Object(
   {
-    shippingRoute: Type.Enum(ShippingRoute),
+    shipmentRoute: Type.Union(ShipmentRoutes.map(({ id }) => Type.Literal(id))),
     labelYear: CurrentYearOrGreater(),
     labelMonth: MonthIndexStartingAt1,
     sendingHubs: Type.Array(ID, { minItems: 1 }),
@@ -215,8 +220,15 @@ const addShipment: MutationResolvers['addShipment'] = async (
     )
   }
 
+  let shipmentRoute: ShipmentRoute
+  try {
+    shipmentRoute = wireFormatShipmentRoute(valid.value.shipmentRoute)
+  } catch (err) {
+    throw new UserInputError((err as Error).message)
+  }
+
   const shipment = await Shipment.create({
-    shippingRoute: valid.value.shippingRoute,
+    shipmentRoute: valid.value.shipmentRoute,
     labelYear: valid.value.labelYear,
     labelMonth: valid.value.labelMonth,
     sendingHubs: sendingHubs,
@@ -243,9 +255,12 @@ const addShipment: MutationResolvers['addShipment'] = async (
       ),
     ),
   ])
-  return Shipment.findByPk(shipment.id, {
-    include,
-  }) as Promise<Shipment>
+
+  return (
+    (await Shipment.findByPk(shipment.id, {
+      include,
+    })) as Shipment
+  ).toWireFormat()
 }
 
 // - update shipment
@@ -260,7 +275,9 @@ const updateShipmentInput = Type.Object(
         receivingHubs: Type.Optional(Type.Array(ID, { minItems: 1 })),
         labelYear: Type.Optional(CurrentYearOrGreater()),
         labelMonth: Type.Optional(MonthIndexStartingAt1),
-        shippingRoute: Type.Optional(Type.Enum(ShippingRoute)),
+        shipmentRoute: Type.Optional(
+          Type.Union(ShipmentRoutes.map(({ id }) => Type.Literal(id))),
+        ),
         pricing: Type.Optional(Pricing),
       },
       { additionalProperties: false },
@@ -297,7 +314,7 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     sendingHubs: sendingHubsUpdate,
     labelMonth,
     labelYear,
-    shippingRoute,
+    shipmentRoute,
     pricing,
   } = valid.value.input
 
@@ -375,8 +392,13 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     )
   }
 
-  if (shippingRoute !== undefined) {
-    updateAttributes.shippingRoute = shippingRoute
+  if (shipmentRoute !== undefined) {
+    try {
+      const route = wireFormatShipmentRoute(shipmentRoute)
+      updateAttributes.shipmentRoute = shipmentRoute
+    } catch (err) {
+      throw new UserInputError((err as Error).message)
+    }
   }
 
   if (pricing !== undefined && !isEqual(pricing, shipment.pricing)) {
@@ -444,9 +466,11 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
 
   await shipment.update(updateAttributes)
 
-  return Shipment.findByPk(shipment.id, {
-    include,
-  }) as Promise<Shipment>
+  return (
+    (await Shipment.findByPk(shipment.id, {
+      include,
+    })) as Shipment
+  ).toWireFormat()
 }
 
 // Shipment custom resolvers
@@ -462,7 +486,7 @@ const sendingHubs: ShipmentResolvers['sendingHubs'] = async (parent) => {
     throw new ApolloError(`No sending groups exists with IDs "${ids}"`)
   }
 
-  return sendingHubs
+  return sendingHubs.map((hub) => hub.toWireFormat())
 }
 
 const receivingHubs: ShipmentResolvers['receivingHubs'] = async (parent) => {
@@ -477,7 +501,7 @@ const receivingHubs: ShipmentResolvers['receivingHubs'] = async (parent) => {
     throw new ApolloError(`No receiving group exists with IDs "${ids}"`)
   }
 
-  return receivingHubs
+  return receivingHubs.map((hub) => hub.toWireFormat())
 }
 
 const shipmentExports: ShipmentResolvers['exports'] = async (

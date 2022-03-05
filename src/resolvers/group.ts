@@ -60,7 +60,7 @@ const listGroups: QueryResolvers['listGroups'] = async (_, input) => {
     }
   }
 
-  return Group.findAll(query)
+  return (await Group.findAll(query)).map((group) => group.toWireFormat())
 }
 
 const group: QueryResolvers['group'] = async (_, { id }) => {
@@ -74,7 +74,7 @@ const group: QueryResolvers['group'] = async (_, { id }) => {
     throw new ApolloError(`No group exists with ID ${valid.value.id}`)
   }
 
-  return group
+  return group.toWireFormat()
 }
 
 // Group mutation resolvers
@@ -131,10 +131,12 @@ const addGroup: MutationResolvers['addGroup'] = async (
     }
   }
 
-  return Group.create({
-    ...valid.value,
-    captainId: context.auth.userId,
-  })
+  return (
+    await Group.create({
+      ...valid.value,
+      captainId: context.auth.userId,
+    })
+  ).toWireFormat()
 }
 
 // - update a group
@@ -215,7 +217,7 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
     updateAttributes.captainId = captain.id
   }
 
-  return group.update(updateAttributes)
+  return (await group.update(updateAttributes)).toWireFormat()
 }
 
 // Group custom resolvers

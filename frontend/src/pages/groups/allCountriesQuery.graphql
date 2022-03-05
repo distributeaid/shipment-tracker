@@ -1,0 +1,6 @@
+query AllCountries {
+  listCountries {
+    shortNameEN
+    alpha2
+  }
+}
