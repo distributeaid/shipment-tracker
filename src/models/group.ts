@@ -91,11 +91,21 @@ export default class Group extends Model<
       }
     }
     return {
-      ...this,
+      ...this.get({ plain: true }),
       primaryLocation: {
         ...this.primaryLocation,
         country,
       },
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     }
+  }
+
+  public static findAllWithCaptainAssociation() {
+    return Group.findAll({ include: [{ association: 'captain' }] })
+  }
+
+  public static getWithCaptainAssociation(id: number) {
+    return Group.findByPk(id, { include: [{ association: 'captain' }] })
   }
 }

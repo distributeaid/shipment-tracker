@@ -266,12 +266,7 @@ describe('Pallets API', () => {
 
     const DESTROY_PALLET = gql`
       mutation ($id: Int!) {
-        destroyPallet(id: $id) {
-          id
-          pallets {
-            id
-          }
-        }
+        destroyPallet(id: $id)
       }
     `
 
@@ -312,7 +307,7 @@ describe('Pallets API', () => {
 
       expect(res.errors).toBeUndefined()
       expect(await Pallet.findByPk(palletA.id)).toBeNull()
-      expect(res.data?.destroyPallet?.pallets?.[0].id).toEqual(palletB.id)
+      expect(res.data?.destroyPallet).toEqual(true)
 
       expect(await LineItem.findByPk(lineItem.id)).toBeNull()
     })

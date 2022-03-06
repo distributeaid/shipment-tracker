@@ -13,7 +13,6 @@ import {
 import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
 import Group from '../models/group'
 import LineItem, { LineItemAttributes } from '../models/line_item'
-import Offer from '../models/offer'
 import Pallet from '../models/pallet'
 import {
   DangerousGoods,
@@ -25,7 +24,6 @@ import {
   MutationResolvers,
   QueryResolvers,
 } from '../server-internal-types'
-import getPalletWithParentAssociations from './getPalletWithParentAssociations'
 import {
   authorizeOfferMutation,
   authorizeOfferQuery,
@@ -36,7 +34,7 @@ import {
 // - get line item
 
 const lineItem: QueryResolvers['lineItem'] = async (_, { id }, context) => {
-  const lineItem = await getLineItemWithParentAssociations(id)
+  const lineItem = await LineItem.getWithAssociations(id)
   if (lineItem === null) {
     throw new UserInputError(`Line item ${id} does not exist`)
   }
@@ -63,7 +61,7 @@ const addLineItem: MutationResolvers['addLineItem'] = async (
     throw new UserInputError('Offer arguments invalid', valid.errors)
   }
 
-  const pallet = await getPalletWithParentAssociations(valid.value.id)
+  const pallet = await Pallet.getWithParentAssociation(valid.value.id)
 
   if (pallet === null) {
     throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
@@ -134,7 +132,7 @@ const updateLineItem: MutationResolvers['updateLineItem'] = async (
     throw new UserInputError('Update line item arguments invalid', valid.errors)
   }
 
-  const maybeLineItem = await getLineItemWithParentAssociations(valid.value.id)
+  const maybeLineItem = await LineItem.getWithAssociations(valid.value.id)
   const lineItem = await authorizeLineItemMutation(
     valid.value.id,
     maybeLineItem,
@@ -279,26 +277,6 @@ async function getUpdateGroupIdAttr(
   return input[attr]
 }
 
-async function getLineItemWithParentAssociations(
-  id: number,
-): Promise<(LineItem & { offerPallet: Pallet | null }) | null> {
-  return LineItem.findByPk(id, {
-    include: {
-      association: 'offerPallet',
-      include: [
-        {
-          model: Offer,
-          as: 'offer',
-          include: [
-            { association: 'sendingGroup' },
-            { association: 'shipment' },
-          ],
-        },
-      ],
-    },
-  })
-}
-
 // - delete line item
 
 const destroyLineItem: MutationResolvers['destroyLineItem'] = async (
@@ -311,7 +289,7 @@ const destroyLineItem: MutationResolvers['destroyLineItem'] = async (
     throw new UserInputError('Destroy line item input invalid', valid.errors)
   }
 
-  const maybeLineItem = await getLineItemWithParentAssociations(valid.value.id)
+  const maybeLineItem = await LineItem.getWithAssociations(valid.value.id)
   if (maybeLineItem === null) {
     throw new UserInputError(`Line item ${id} does not exist`)
   }
@@ -322,10 +300,9 @@ const destroyLineItem: MutationResolvers['destroyLineItem'] = async (
     context,
   )
 
-  const pallet = lineItem.offerPallet
   await lineItem.destroy()
 
-  return pallet.toWireFormat()
+  return true
 }
 
 // - move line item
@@ -350,7 +327,7 @@ const moveLineItem: MutationResolvers['moveLineItem'] = async (
     throw new UserInputError('Move line item input invalid', valid.errors)
   }
 
-  const maybeLineItem = await getLineItemWithParentAssociations(valid.value.id)
+  const maybeLineItem = await LineItem.getWithAssociations(valid.value.id)
   if (maybeLineItem === null) {
     throw new UserInputError(`Line item ${valid.value.id} does not exist`)
   }

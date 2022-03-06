@@ -75,8 +75,8 @@ const ViewLineItem: FunctionComponent<Props> = ({
   const confirmDeleteLineItem = () => {
     destroyLineItem({
       variables: { id: lineItemId },
-      update: (cache, { data }) => {
-        const palletId = data?.destroyLineItem.id
+      update: (cache) => {
+        const palletId = data?.lineItem.offerPalletId
 
         try {
           const palletData = cache.readQuery<PalletQuery>({

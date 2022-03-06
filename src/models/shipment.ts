@@ -94,10 +94,12 @@ export default class Shipment extends Model<
 
   public toWireFormat(): WireShipment {
     return {
-      ...this,
+      ...this.get({ plain: true }),
       shipmentRoute: wireFormatShipmentRoute(this.shipmentRoute),
       receivingHubs: this.receivingHubs.map((group) => group.toWireFormat()),
       sendingHubs: this.sendingHubs.map((group) => group.toWireFormat()),
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     }
   }
 }

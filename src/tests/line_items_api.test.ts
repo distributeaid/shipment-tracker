@@ -266,12 +266,7 @@ describe('LineItems API', () => {
     describe('destroyLineItem', () => {
       const DESTROY_LINE_ITEM = gql`
         mutation ($id: Int!) {
-          destroyLineItem(id: $id) {
-            id
-            lineItems {
-              id
-            }
-          }
+          destroyLineItem(id: $id)
         }
       `
 
@@ -284,7 +279,7 @@ describe('LineItems API', () => {
         })) as TypedGraphQLResponse<{ destroyLineItem: Pallet }>
 
         expect(res.errors).toBeUndefined()
-        expect(res.data?.destroyLineItem?.lineItems.length).toEqual(0)
+        expect(res.data?.destroyLineItem).toEqual(true)
       })
     })
 

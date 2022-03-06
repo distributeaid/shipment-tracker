@@ -13,7 +13,6 @@ import {
   PaymentStatus,
   QueryResolvers,
 } from '../server-internal-types'
-import getPalletWithParentAssociations from './getPalletWithParentAssociations'
 import {
   authorizeOfferMutation,
   authorizeOfferQuery,
@@ -43,9 +42,7 @@ const addPallet: MutationResolvers['addPallet'] = async (
     throw new UserInputError('Add pallet arguments invalid', valid.errors)
   }
 
-  const offer = await Offer.findByPk(valid.value.offerId, {
-    include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
-  })
+  const offer = await Offer.getWithChildAssociations(valid.value.offerId)
   if (offer === null) {
     throw new UserInputError(`Offer ${valid.value.offerId} does not exist`)
   }
@@ -89,7 +86,7 @@ const updatePallet: MutationResolvers['updatePallet'] = async (
     throw new UserInputError('Add pallet arguments invalid', valid.errors)
   }
 
-  const pallet = await getPalletWithParentAssociations(valid.value.id)
+  const pallet = await Pallet.getWithParentAssociation(valid.value.id)
 
   if (!pallet) {
     throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
@@ -125,7 +122,7 @@ const pallet: QueryResolvers['pallet'] = async (_, { id }, context) => {
     throw new UserInputError('Get pallet input invalid', valid.errors)
   }
 
-  const pallet = await getPalletWithParentAssociations(valid.value.id)
+  const pallet = await Pallet.getWithParentAssociation(valid.value.id)
 
   if (pallet === null) {
     throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
@@ -154,7 +151,7 @@ const destroyPallet: MutationResolvers['destroyPallet'] = async (
     throw new UserInputError('Destroy pallet input invalid', valid.errors)
   }
 
-  const pallet = await getPalletWithParentAssociations(valid.value.id)
+  const pallet = await Pallet.getWithParentAssociation(valid.value.id)
 
   if (pallet === null) {
     throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
@@ -169,7 +166,7 @@ const destroyPallet: MutationResolvers['destroyPallet'] = async (
   authorizeOfferMutation(offer, context)
 
   await pallet.destroy()
-  return offer.toWireFormat()
+  return true
 }
 
 // - list line items

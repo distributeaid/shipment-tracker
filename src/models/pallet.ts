@@ -74,9 +74,20 @@ export default class Pallet extends Model<
 
   public toWireFormat(): WirePallet {
     return {
-      ...this,
-      offer: this.offer.toWireFormat(),
+      ...this.get({ plain: true }),
       lineItems: this.lineItems.map((lineItem) => lineItem.toWireFormat()),
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     }
+  }
+
+  public static getWithParentAssociation(id: number): Promise<Pallet | null> {
+    return Pallet.findByPk(id, {
+      include: {
+        model: Offer,
+        as: 'offer',
+        include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
+      },
+    })
   }
 }

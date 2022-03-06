@@ -51,7 +51,9 @@ const addOffer: MutationResolvers['addOffer'] = async (
     throw new UserInputError('Add offer arguments invalid', valid.errors)
   }
 
-  const sendingGroupPromise = Group.findByPk(valid.value.sendingGroupId)
+  const sendingGroupPromise = Group.getWithCaptainAssociation(
+    valid.value.sendingGroupId,
+  )
   const shipmentPromise = Shipment.findByPk(valid.value.shipmentId)
   const existingOfferCountPromise = Offer.count({
     where: {
@@ -92,13 +94,13 @@ const addOffer: MutationResolvers['addOffer'] = async (
     )
   }
 
-  return (
-    await Offer.create({
-      ...valid.value,
-      status: OfferStatus.Draft,
-      statusChangeTime: new Date(),
-    })
-  ).toWireFormat()
+  const { id } = await Offer.create({
+    ...valid.value,
+    status: OfferStatus.Draft,
+    statusChangeTime: new Date(),
+  })
+
+  return ((await Offer.getWithChildAssociations(id)) as Offer).toWireFormat()
 }
 
 // - update offer
@@ -125,9 +127,7 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
     throw new UserInputError('Update offer arguments invalid', valid.errors)
   }
 
-  const offer = await Offer.findByPk(valid.value.id, {
-    include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
-  })
+  const offer = await Offer.getWithChildAssociations(valid.value.id)
 
   if (!offer) {
     throw new UserInputError(`Offer ${valid.value.id} does not exist`)
@@ -161,9 +161,7 @@ const offer: QueryResolvers['offer'] = async (_, { id }, context) => {
     throw new UserInputError('Offer arguments invalid', valid.errors)
   }
 
-  const offer = await Offer.findByPk(id, {
-    include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
-  })
+  const offer = await Offer.getWithChildAssociations(id)
 
   if (!offer) {
     throw new UserInputError(`Offer ${id} does not exist`)
@@ -201,14 +199,16 @@ const listOffers: QueryResolvers['listOffers'] = async (
   }
 
   if (context.auth.isAdmin) {
-    return (await Offer.findAll({ where: { shipmentId } })).map((offer) =>
-      offer.toWireFormat(),
-    )
+    return (
+      await Offer.findAllWithChildAssociations({ where: { shipmentId } })
+    ).map((offer) => offer.toWireFormat())
   }
 
   const groupIds = (await groupsPromise).map((group) => group.id)
   return (
-    await Offer.findAll({ where: { shipmentId, sendingGroupId: groupIds } })
+    await Offer.findAllWithChildAssociations({
+      where: { shipmentId, sendingGroupId: groupIds },
+    })
   ).map((offer) => offer.toWireFormat())
 }
 

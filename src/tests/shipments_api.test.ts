@@ -51,7 +51,9 @@ describe('Shipments API', () => {
     mutation ($input: ShipmentCreateInput!) {
       addShipment(input: $input) {
         id
-        shipmentRoute
+        shipmentRoute {
+          id
+        }
         labelYear
         labelMonth
         sendingHubs {
@@ -108,10 +110,12 @@ describe('Shipments API', () => {
             status: ShipmentStatus.Open,
           },
         },
-      })) as TypedGraphQLResponse<{ addShipment: Shipment }>
+      })) as TypedGraphQLResponse<{
+        addShipment: GqlShipment
+      }>
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.addShipment?.shipmentRoute).toEqual('UkToFr')
+      expect(res?.data?.addShipment?.shipmentRoute.id).toEqual('UkToFr')
       expect(res?.data?.addShipment?.labelYear).toEqual(nextYear)
       expect(res?.data?.addShipment?.labelMonth).toEqual(1)
       expect(res?.data?.addShipment?.sendingHubs).toHaveLength(1)
@@ -543,7 +547,9 @@ describe('Shipments API', () => {
     const SHIPMENT = gql`
       query ($id: Int!) {
         shipment(id: $id) {
-          shipmentRoute
+          shipmentRoute {
+            id
+          }
         }
       }
     `
@@ -551,7 +557,9 @@ describe('Shipments API', () => {
     const SHIPMENT_WITH_EXPORTS = gql`
       query ($id: Int!) {
         shipment(id: $id) {
-          shipmentRoute
+          shipmentRoute {
+            id
+          }
           exports {
             id
             downloadPath
@@ -579,10 +587,12 @@ describe('Shipments API', () => {
           const res = (await testServer.executeOperation({
             query: SHIPMENT,
             variables: { id: shipment.id },
-          })) as TypedGraphQLResponse<{ shipment: Shipment }>
+          })) as TypedGraphQLResponse<{ shipment: GqlShipment }>
 
           expect(res.errors).toBeUndefined()
-          expect(res.data?.shipment?.shipmentRoute).toBe(shipment.shipmentRoute)
+          expect(res.data?.shipment?.shipmentRoute.id).toBe(
+            shipment.shipmentRoute,
+          )
         })
 
         it('returns exports when admins ask for them', async () => {

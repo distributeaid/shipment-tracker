@@ -167,7 +167,10 @@ describe('Groups API', () => {
             description
             groupType
             primaryLocation {
-              country
+              country {
+                shortNameEN
+                alpha2
+              }
               townCity
             }
             primaryContact {
@@ -216,7 +219,7 @@ describe('Groups API', () => {
         expect(res.data?.updateGroup?.primaryContact?.email).toEqual(
           updateParams?.primaryContact?.email,
         )
-        expect(res.data?.updateGroup?.primaryLocation?.country).toEqual(
+        expect(res.data?.updateGroup?.primaryLocation?.country.alpha2).toEqual(
           updateParams?.primaryLocation?.country,
         )
         expect(res.data?.updateGroup?.primaryLocation?.townCity).toEqual(
@@ -604,11 +607,7 @@ describe('Groups API', () => {
             expect(res.errors).toBeUndefined()
             expect(res?.data?.listGroups).toEqual(
               expect.arrayContaining(
-                (
-                  await Group.findAll({
-                    include: [{ association: 'captain' }],
-                  })
-                )
+                (await Group.findAllWithCaptainAssociation())
                   .filter(({ name }) => expectedGroupNames.includes(name))
                   .filter(
                     ({ captain }) =>

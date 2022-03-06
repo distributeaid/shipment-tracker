@@ -9,7 +9,7 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript'
-import { Optional } from 'sequelize/types'
+import { Attributes, FindOptions, Optional } from 'sequelize/types'
 import {
   ContactInfo,
   Offer as WireOffer,
@@ -28,6 +28,15 @@ export interface OfferAttributes {
   sendingGroupId: number
   photoUris: string[]
 }
+
+const include = [
+  { association: 'sendingGroup' },
+  { association: 'pallets' },
+  {
+    association: 'shipment',
+    include: [{ association: 'receivingHubs' }, { association: 'sendingHubs' }],
+  },
+]
 
 export interface OfferCreationAttributes
   extends Optional<OfferAttributes, 'id'> {}
@@ -77,10 +86,25 @@ export default class Offer extends Model {
 
   public toWireFormat(): WireOffer {
     return {
-      ...this,
+      ...this.get({ plain: true }),
       shipment: this.shipment.toWireFormat(),
       sendingGroup: this.sendingGroup.toWireFormat(),
       pallets: this.pallets.map((pallet) => pallet.toWireFormat()),
     }
+  }
+
+  public static getWithChildAssociations(id: number) {
+    return Offer.findByPk(id, {
+      include,
+    })
+  }
+
+  public static findAllWithChildAssociations(
+    query: FindOptions<Attributes<Offer>>,
+  ) {
+    return Offer.findAll({
+      ...query,
+      include,
+    })
   }
 }

@@ -63,7 +63,7 @@ input GroupUpdateInput {
 }
 
 input ShipmentUpdateInput {
-  shipmentRoute: ID!
+  shipmentRoute: ID
   labelYear: Int
   labelMonth: Int
   sendingHubs: [Int!]
@@ -106,10 +106,10 @@ type Mutation {
 
   addPallet(input: PalletCreateInput!): Pallet!
   updatePallet(id: Int!, input: PalletUpdateInput!): Pallet!
-  destroyPallet(id: Int!): Offer! # return the destroyed pallet's offer
+  destroyPallet(id: Int!): Boolean!
   addLineItem(palletId: Int!): LineItem!
   updateLineItem(id: Int!, input: LineItemUpdateInput!): LineItem!
-  destroyLineItem(id: Int!): Pallet!
+  destroyLineItem(id: Int!): Boolean!
   moveLineItem(id: Int!, targetPalletId: Int!): Offer!
 
   exportShipment(shipmentId: Int!): ShipmentExport!
