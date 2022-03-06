@@ -70,40 +70,40 @@ const listShipments: QueryResolvers['listShipments'] = async (
   }
   const { status } = valid.value
 
-  if (!context.auth.isAdmin && status !== undefined) {
-    const forbiddenStatus = status.filter(
-      (s) => !SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS.includes(s),
-    )
-    if (forbiddenStatus.length > 0)
-      throw new ForbiddenError(
-        `non-admin users are not allowed to view shipments with status ${forbiddenStatus.join(
-          ', ',
-        )}`,
-      )
-  }
-
   let shipments: Shipment[] = []
 
   if (status !== undefined) {
+    if (!context.auth.isAdmin) {
+      const forbiddenStatus = status.filter(
+        (s) => !SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS.includes(s),
+      )
+      if (forbiddenStatus.length > 0)
+        throw new ForbiddenError(
+          `non-admin users are not allowed to view shipments with status ${forbiddenStatus.join(
+            ', ',
+          )}`,
+        )
+    }
     shipments = await Shipment.findAll({
       where: {
         status,
       },
       include,
     })
+  } else {
+    if (!context.auth.isAdmin) {
+      shipments = await Shipment.findAll({
+        where: {
+          status: SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS,
+        },
+        include,
+      })
+    } else {
+      shipments = await Shipment.findAll({
+        include,
+      })
+    }
   }
-
-  if (!context.auth.isAdmin)
-    shipments = await Shipment.findAll({
-      where: {
-        status: SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS,
-      },
-      include,
-    })
-
-  shipments = await Shipment.findAll({
-    include,
-  })
 
   return shipments.map((shipment) => shipment.toWireFormat())
 }

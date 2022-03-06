@@ -5,6 +5,7 @@ import {
   MONTHS,
   SHIPMENT_STATUS_OPTIONS,
 } from '../data/constants'
+import { formatShipmentRouteToID } from '../hooks/useShipmentRoutes'
 import {
   AllGroupsMinimalQuery,
   GroupType,
@@ -14,7 +15,6 @@ import {
   PalletType,
   Shipment,
   ShipmentQuery,
-  ShipmentRoute,
   ShipmentStatus,
 } from '../types/api-types'
 
@@ -93,7 +93,7 @@ export function formatShipmentName(
       >,
 ) {
   const month = shipment.labelMonth.toString().padStart(2, '0')
-  return `${shipment.shipmentRoute.toString().replace('_TO_', '-')}-${
+  return `${formatShipmentRouteToID(shipment.shipmentRoute)}-${
     shipment.labelYear
   }-${month}`
 }
@@ -162,6 +162,3 @@ export const formatListOfHubs = (hubs: { name: string }[]): string =>
 
 export const formatNumberToFixedWithoutTrailingZeros = (n: number, len = 3) =>
   n.toFixed(len).replace(/\.?0+$/, '')
-
-export const formatShipmentRoute = (route: ShipmentRoute): string =>
-  `${route.from.country.shortNameEN} → ${route.to.country.shortNameEN}`

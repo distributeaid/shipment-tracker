@@ -4,6 +4,10 @@ export type Country = {
    */
   shortNameEN: string
   /**
+   * Alias, if the short name is too cumbersume
+   */
+  alias?: string
+  /**
    * Short name of the country, in French
    * Example: "Norvège (la)"
    */
@@ -1662,6 +1666,7 @@ export const countries: Readonly<Country[]> = [
   {
     shortNameEN: 'United Kingdom of Great Britain and Northern Ireland (the)',
     shortNameFR: "Royaume-Uni de Grande-Bretagne et d'Irlande du Nord (le)",
+    alias: 'UK',
     alpha2: 'GB',
     alpha3: 'GBR',
     numeric: 826,

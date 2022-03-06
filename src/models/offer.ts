@@ -30,7 +30,7 @@ export interface OfferAttributes {
 }
 
 const include = [
-  { association: 'sendingGroup' },
+  { association: 'sendingGroup', include: [{ association: 'captain' }] },
   { association: 'pallets' },
   {
     association: 'shipment',

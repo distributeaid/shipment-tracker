@@ -5,15 +5,17 @@ query AllShipments($status: [ShipmentStatus!]) {
       id
       from {
         country {
-          shortNameEN
           alpha2
+          shortNameEN
+          alias
         }
         region
       }
       to {
         country {
-          shortNameEN
           alpha2
+          shortNameEN
+          alias
         }
         region
       }

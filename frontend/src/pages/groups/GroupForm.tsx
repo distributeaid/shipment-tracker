@@ -116,8 +116,8 @@ const GroupForm: FunctionComponent<Props> = (props) => {
               value: '',
               disabled: true,
             },
-            ...countries.map(({ shortNameEN, alpha2 }) => ({
-              label: shortNameEN,
+            ...countries.map(({ alias, shortNameEN, alpha2 }) => ({
+              label: alias ?? shortNameEN,
               value: alpha2,
             })),
           ]}

@@ -22,7 +22,6 @@ import {
   useAllGroupsMinimalQuery,
 } from '../../types/api-types'
 import { arraysOverlap } from '../../utils/arraysOverlap'
-import { formatShipmentRoute } from '../../utils/format'
 
 interface Props {
   /**
@@ -183,7 +182,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
       )}
       <SelectField
         options={shipmentRoutes.map((route) => ({
-          label: formatShipmentRoute(route),
+          label: route.label,
           value: route.id,
         }))}
         label="Shipping route"

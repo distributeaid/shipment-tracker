@@ -4,15 +4,17 @@ fragment AllShipmentFields on Shipment {
     id
     from {
       country {
-        shortNameEN
         alpha2
+        shortNameEN
+        alias
       }
       region
     }
     to {
       country {
-        shortNameEN
         alpha2
+        shortNameEN
+        alias
       }
       region
     }
@@ -27,8 +29,9 @@ fragment AllShipmentFields on Shipment {
     primaryLocation {
       townCity
       country {
-        shortNameEN
         alpha2
+        shortNameEN
+        alias
       }
     }
   }
@@ -38,8 +41,9 @@ fragment AllShipmentFields on Shipment {
     primaryLocation {
       townCity
       country {
-        shortNameEN
         alpha2
+        shortNameEN
+        alias
       }
     }
   }

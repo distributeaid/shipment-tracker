@@ -14,8 +14,9 @@ query AllGroups($captainId: Int, $groupType: [GroupType!]) {
     }
     primaryLocation {
       country {
-        shortNameEN
         alpha2
+        shortNameEN
+        alias
       }
       townCity
     }

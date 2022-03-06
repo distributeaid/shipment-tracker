@@ -1,6 +1,7 @@
 query AllCountries {
   countries {
-    shortNameEN
     alpha2
+    shortNameEN
+    alias
   }
 }

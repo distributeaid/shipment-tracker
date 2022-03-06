@@ -168,8 +168,9 @@ describe('Groups API', () => {
             groupType
             primaryLocation {
               country {
-                shortNameEN
                 alpha2
+                shortNameEN
+                alias
               }
               townCity
             }

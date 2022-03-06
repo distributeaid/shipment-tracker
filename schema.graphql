@@ -126,8 +126,9 @@ input ShipmentCreateInput {
 }
 
 type Country {
-  shortNameEN: String!
   alpha2: ID!
+  shortNameEN: String!
+  alias: String
 }
 
 type Region {

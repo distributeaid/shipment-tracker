@@ -15,15 +15,17 @@ const shipmentRoutesQuery = gql`
       id
       from {
         country {
-          shortNameEN
           alpha2
+          shortNameEN
+          alias
         }
         region
       }
       to {
         country {
-          shortNameEN
           alpha2
+          shortNameEN
+          alias
         }
         region
       }
@@ -45,6 +47,7 @@ describe('shipmentRoutes API', () => {
     })
   })
   afterAll(purgeDb)
+
   it('should allow listing of all shipmentRoutes', async () => {
     const res = await testServer.executeOperation({
       query: shipmentRoutesQuery,
@@ -64,6 +67,7 @@ describe('shipmentRoutes API', () => {
         country: {
           shortNameEN: 'Germany',
           alpha2: 'DE',
+          alias: null,
         },
         region: null,
       },
@@ -71,6 +75,7 @@ describe('shipmentRoutes API', () => {
         country: {
           shortNameEN: 'Bosnia and Herzegovina',
           alpha2: 'BA',
+          alias: null,
         },
         region: null,
       },

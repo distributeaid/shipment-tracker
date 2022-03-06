@@ -4,10 +4,10 @@ import Badge from '../../components/Badge'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import InternalLink from '../../components/InternalLink'
 import Spinner from '../../components/Spinner'
+import { formatShipmentRouteToLabel } from '../../hooks/useShipmentRoutes'
 import { useShipmentQuery } from '../../types/api-types'
 import {
   formatLabelMonth,
-  formatShipmentRoute,
   formatShipmentStatus,
   getShipmentStatusBadgeColor,
 } from '../../utils/format'
@@ -63,7 +63,7 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
       <p className="text-gray-600 mb-4">
         This shipment follows the{' '}
         <span className="font-semibold text-gray-800">
-          {formatShipmentRoute(shipmentData.shipmentRoute)}
+          {formatShipmentRouteToLabel(shipmentData.shipmentRoute)}
         </span>{' '}
         route.
       </p>
@@ -78,7 +78,8 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
                 {hub.primaryLocation.country && (
                   <>
                     {', '}
-                    {hub.primaryLocation.country.shortNameEN}
+                    {hub.primaryLocation.country.alias ??
+                      hub.primaryLocation.country.shortNameEN}
                   </>
                 )}
               </div>
@@ -98,7 +99,8 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
                 {hub.primaryLocation.country && (
                   <>
                     {', '}
-                    {hub.primaryLocation.country.shortNameEN}
+                    {hub.primaryLocation.country.alias ??
+                      hub.primaryLocation.country.shortNameEN}
                   </>
                 )}
               </div>

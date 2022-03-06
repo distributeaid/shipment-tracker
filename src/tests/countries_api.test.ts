@@ -12,8 +12,9 @@ const purgeDb = async () => sequelize.sync({ force: true })
 const countriesQuery = gql`
   query {
     countries {
-      shortNameEN
       alpha2
+      shortNameEN
+      alias
     }
   }
 `
@@ -41,10 +42,13 @@ describe('Countries API', () => {
 
     expect(res.data?.countries ?? []).toHaveLength(countries.length)
 
-    const no = ((res.data?.countries ?? []) as Country[]).find(
-      ({ alpha2 }) => alpha2 === 'NO',
+    const uk = ((res.data?.countries ?? []) as Country[]).find(
+      ({ alpha2 }) => alpha2 === 'GB',
     )
 
-    expect(no?.shortNameEN).toEqual('Norway')
+    expect(uk?.shortNameEN).toEqual(
+      'United Kingdom of Great Britain and Northern Ireland (the)',
+    )
+    expect(uk?.alias).toEqual('UK')
   })
 })

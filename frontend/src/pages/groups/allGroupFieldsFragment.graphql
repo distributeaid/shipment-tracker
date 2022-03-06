@@ -6,8 +6,9 @@ fragment AllGroupFields on Group {
   primaryLocation {
     townCity
     country {
-      shortNameEN
       alpha2
+      shortNameEN
+      alias
     }
     openLocationCode
   }
