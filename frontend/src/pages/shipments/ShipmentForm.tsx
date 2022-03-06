@@ -234,6 +234,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
               options={hubs}
               isMulti
               value={hubs.filter((hub) => field.value?.includes(hub.value))}
+              id="new-shipment-sendingHubs"
             />
           )}
         />
@@ -254,6 +255,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
               options={hubs}
               isMulti
               value={hubs.filter((hub) => field.value?.includes(hub.value))}
+              id="new-shipment-receivingHubs"
             />
           )}
         />

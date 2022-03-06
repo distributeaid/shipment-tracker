@@ -16,10 +16,16 @@ Make sure to configure the server URL in your `.env.production.local`:
 
     REACT_APP_SERVER_URL="http://localhost:3000"
 
+You can also run the tests against the frontend development server. Export the environment variable `PORT` to change the port playwright expects the web app to run at:
+
+    export PORT=8080
+
 You can then run the tests using
 
     npx playwright test tests/playwright/unauthenticated
-    npx playwright test tests/playwright/authenticated
+    npx playwright test tests/playwright/authenticated/admin
+    npx playwright test tests/playwright/authenticated/user/onboarding
+    npx playwright test tests/playwright/authenticated/user/offer
 
 This works on your local machine, as well as using the Docker container.
 
@@ -30,7 +36,9 @@ For developing tests it is helpful to run the [Playwright Inspector](https://pla
 Then launch the inspector **on your local machine** using
 
     PWDEBUG=1 npx playwright test tests/playwright/unauthenticated
-    PWDEBUG=1 npx playwright test tests/playwright/authenticated
+    PWDEBUG=1 npx playwright test tests/playwright/authenticated/admin
+    PWDEBUG=1 npx playwright test tests/playwright/authenticated/user/onboarding
+    PWDEBUG=1 npx playwright test tests/playwright/authenticated/user/offer
 
 This cannot be done inside the Docker container, since it launches the Firefox browser.
 [For Linux it is possible to forward the X session from inside the Docker container](https://www.geeksforgeeks.org/running-gui-applications-on-docker-in-linux/), but this is not implemented, yet.

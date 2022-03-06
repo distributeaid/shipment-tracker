@@ -16,7 +16,7 @@ export const users = {
     ),
     infoFile: path.join(process.cwd(), 'test-session', 'admin.json'),
   },
-  user: {
+  userA: {
     user: false,
     email: chance.email({ domain: 'example.com' }),
     password: `U${v4()}!`,
@@ -24,8 +24,20 @@ export const users = {
     stateFile: path.join(
       process.cwd(),
       'test-session',
-      'authenticated-user.json',
+      'authenticated-userA.json',
     ),
-    infoFile: path.join(process.cwd(), 'test-session', 'user.json'),
+    infoFile: path.join(process.cwd(), 'test-session', 'userA.json'),
+  },
+  userB: {
+    user: false,
+    email: chance.email({ domain: 'example.com' }),
+    password: `U${v4()}!`,
+    name: chance.name({ middle: true }),
+    stateFile: path.join(
+      process.cwd(),
+      'test-session',
+      'authenticated-userB.json',
+    ),
+    infoFile: path.join(process.cwd(), 'test-session', 'userB.json'),
   },
 } as const
