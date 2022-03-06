@@ -2,21 +2,21 @@ import { expect, test } from '@playwright/test'
 import { promises as fs } from 'fs'
 import * as path from 'path'
 import { baseUrl } from '../baseUrl'
+import { users } from '../users'
 
 test.use({
-  storageState: path.join(process.cwd(), 'test-session', 'authenticated.json'),
+  storageState: path.join(
+    process.cwd(),
+    'test-session',
+    'authenticated-user.json',
+  ),
 })
 
 let email: string
 let name: string
 
 test.beforeAll(async () => {
-  const user = JSON.parse(
-    await fs.readFile(
-      path.join(process.cwd(), 'test-session', 'user.json'),
-      'utf-8',
-    ),
-  )
+  const user = JSON.parse(await fs.readFile(users.user.infoFile, 'utf-8'))
   email = user.email
   name = user.name
 })

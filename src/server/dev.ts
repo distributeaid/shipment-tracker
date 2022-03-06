@@ -1,6 +1,8 @@
 import EventEmitter from 'events'
 import { createServer } from 'http'
 import { URL } from 'url'
+import { events } from '../events'
+import UserAccount from '../models/user_account'
 import '../sequelize'
 import { backend } from './feat/backend'
 import { setUp as setUpEmails } from './feat/emails'
@@ -39,3 +41,11 @@ setUpEmails(omnibus)
 
 // Host web application
 frontend(app)
+
+// Make all distributeAid users admins
+omnibus.on(events.user_registered, async (user: UserAccount) => {
+  if (user.email.endsWith('@admin.example.com')) {
+    await user.update({ isAdmin: true })
+    console.debug(`Granted admin permissions to ${user.email}.`)
+  }
+})

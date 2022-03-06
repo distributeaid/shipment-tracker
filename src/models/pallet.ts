@@ -1,4 +1,4 @@
-import { Optional } from 'sequelize'
+import { Attributes, FindOptions, Optional } from 'sequelize'
 import {
   BelongsTo,
   Column,
@@ -88,6 +88,13 @@ export default class Pallet extends Model<
         as: 'offer',
         include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
       },
+    })
+  }
+
+  public static findAllWithLineItems(query: FindOptions<Attributes<Pallet>>) {
+    return Pallet.findAll({
+      ...query,
+      include: [{ association: 'lineItems' }],
     })
   }
 

@@ -213,9 +213,9 @@ const listOffers: QueryResolvers['listOffers'] = async (
 }
 
 const offerPallets: OfferResolvers['pallets'] = async (parent) => {
-  return (await Pallet.findAll({ where: { offerId: parent.id } })).map(
-    (pallet) => pallet.toWireFormat(),
-  )
+  return (
+    await Pallet.findAllWithLineItems({ where: { offerId: parent.id } })
+  ).map((pallet) => pallet.toWireFormat())
 }
 
 export { addOffer, updateOffer, offer, listOffers, offerPallets }

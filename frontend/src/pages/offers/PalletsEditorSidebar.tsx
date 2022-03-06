@@ -46,85 +46,90 @@ const PalletsEditorSidebar: FunctionComponent<Props> = ({
       </div>
       {pallets && (
         <ul className="divide-y divide-gray-100">
-          {pallets.map((pallet, index) => (
-            <li
-              key={pallet.id}
-              className="bg-white"
-              data-qa={`pallet-${pallet.id}`}
-              onClick={() => selectPallet(pallet.id)}
-            >
-              <div className="bg-white">
-                <div
-                  className={cx(
-                    'p-4 flex items-center text-gray-800 cursor-pointer border-l-4 border-transparent',
-                    {
-                      'hover:bg-gray-100':
-                        pallet.id !== selectedPalletId ||
-                        selectedLineItemId != null,
-                      'border-navy-600 font-semibold':
-                        pallet.id === selectedPalletId,
-                      'bg-navy-100':
-                        pallet.id === selectedPalletId &&
-                        selectedLineItemId == null,
-                    },
-                  )}
-                >
-                  <ChevronIcon
-                    className="w-5 h-5 mr-4 text-gray-500"
-                    direction={
-                      pallet.id === selectedPalletId ? 'down' : 'right'
-                    }
-                  />
-                  Pallet {index + 1}
-                  {'errors' in
-                    validatePalletContents(
-                      pallet.palletType,
-                      pallet.lineItems,
-                    ) && (
-                    <span
-                      className="inline-block ml-auto"
-                      title="The contents of this pallet are invalid"
-                    >
-                      <WarningIcon className="text-red-700 w-5 h-5" />
-                    </span>
-                  )}
-                </div>
-                {selectedPalletId === pallet.id && (
-                  <div className="flex flex-col pb-4 pr-4 pl-8">
-                    {selectedPalletData?.pallet.lineItems.map((item) => (
-                      <button
-                        type="button"
-                        className={cx(
-                          'px-4 py-2 text-left border-l-4 border-transparent',
-                          {
-                            'hover:bg-gray-100': item.id !== selectedLineItemId,
-                            'border-navy-500 bg-navy-100 text-navy-700':
-                              item.id === selectedLineItemId,
-                          },
-                        )}
-                        key={item.id}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          selectLineItemId(item.id)
-                        }}
+          {pallets.map((pallet, index) => {
+            const palletValidation = validatePalletContents(
+              pallet.palletType,
+              pallet.lineItems,
+            )
+            return (
+              <li
+                key={pallet.id}
+                className="bg-white"
+                data-qa={`pallet-${pallet.id}`}
+                onClick={() => selectPallet(pallet.id)}
+              >
+                <div className="bg-white">
+                  <div
+                    className={cx(
+                      'p-4 flex items-center text-gray-800 cursor-pointer border-l-4 border-transparent',
+                      {
+                        'hover:bg-gray-100':
+                          pallet.id !== selectedPalletId ||
+                          selectedLineItemId != null,
+                        'border-navy-600 font-semibold':
+                          pallet.id === selectedPalletId,
+                        'bg-navy-100':
+                          pallet.id === selectedPalletId &&
+                          selectedLineItemId == null,
+                      },
+                    )}
+                  >
+                    <ChevronIcon
+                      className="w-5 h-5 mr-4 text-gray-500"
+                      direction={
+                        pallet.id === selectedPalletId ? 'down' : 'right'
+                      }
+                    />
+                    Pallet {index + 1}
+                    {'errors' in palletValidation && (
+                      <span
+                        className="inline-block ml-auto"
+                        title={`The contents of this pallet are invalid: ${palletValidation.errors
+                          .map(({ message }) => message)
+                          .join(', ')}`}
                       >
-                        {item.description || <em>Unsaved item</em>}
-                      </button>
-                    ))}
-                    {canEdit && (
-                      <Button
-                        type="button"
-                        className="mt-4"
-                        onClick={() => addLineItem(pallet.id)}
-                      >
-                        Add items
-                      </Button>
+                        <WarningIcon className="text-red-700 w-5 h-5" />
+                      </span>
                     )}
                   </div>
-                )}
-              </div>
-            </li>
-          ))}
+                  {selectedPalletId === pallet.id && (
+                    <div className="flex flex-col pb-4 pr-4 pl-8">
+                      {selectedPalletData?.pallet.lineItems.map((item) => (
+                        <button
+                          type="button"
+                          className={cx(
+                            'px-4 py-2 text-left border-l-4 border-transparent',
+                            {
+                              'hover:bg-gray-100':
+                                item.id !== selectedLineItemId,
+                              'border-navy-500 bg-navy-100 text-navy-700':
+                                item.id === selectedLineItemId,
+                            },
+                          )}
+                          key={item.id}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            selectLineItemId(item.id)
+                          }}
+                        >
+                          {item.description || <em>Unsaved item</em>}
+                        </button>
+                      ))}
+                      {canEdit && (
+                        <Button
+                          type="button"
+                          className="mt-4"
+                          onClick={() => addLineItem(pallet.id)}
+                        >
+                          Add items
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </li>
+            )
+          })}
         </ul>
       )}
     </div>

@@ -31,10 +31,13 @@ export interface OfferAttributes {
 
 const include = [
   { association: 'sendingGroup', include: [{ association: 'captain' }] },
-  { association: 'pallets' },
   {
     association: 'shipment',
     include: [{ association: 'receivingHubs' }, { association: 'sendingHubs' }],
+  },
+  {
+    association: 'pallets',
+    include: [{ association: 'lineItems' }],
   },
 ]
 
@@ -89,7 +92,7 @@ export default class Offer extends Model {
       ...this.get({ plain: true }),
       shipment: this.shipment.toWireFormat(),
       sendingGroup: this.sendingGroup.toWireFormat(),
-      pallets: this.pallets.map((pallet) => pallet.toWireFormat()),
+      pallets: (this.pallets ?? []).map((pallet) => pallet.toWireFormat()),
     }
   }
 
