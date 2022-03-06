@@ -1,7 +1,33 @@
+export type Country = {
+  /**
+   * Short name of the country, in English
+   */
+  shortNameEN: string
+  /**
+   * Short name of the country, in French
+   * Example: "Norvège (la)"
+   */
+  shortNameFR: string
+  /**
+   * Two-letter ISO code for the country.
+   * Example: "NO"
+   */
+  alpha2: string
+  /**
+   * Three-letter ISO code for the country.
+   * Example: "NOR"
+   */
+  alpha3: string
+  /**
+   * Numeric country idenitifier
+   * Example: 578
+   */
+  numeric: number
+}
 /**
  * @source https://www.iso.org/obp/ui/#search
  */
-export const countries = [
+export const countries: Readonly<Country[]> = [
   {
     shortNameEN: 'Afghanistan',
     shortNameFR: "Afghanistan (l')",

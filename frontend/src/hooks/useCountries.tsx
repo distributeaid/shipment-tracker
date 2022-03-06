@@ -4,5 +4,5 @@ export const useCountries = () => {
   const { data } = useAllCountriesQuery({
     fetchPolicy: 'cache-and-network',
   })
-  return data?.listCountries ?? []
+  return data?.countries ?? []
 }

@@ -77,7 +77,7 @@ type Query {
 
   listGroups(groupType: [GroupType!], captainId: Int): [Group!]!
 
-  listShipmentRoutes: [ShipmentRoute!]!
+  shipmentRoutes: [ShipmentRoute!]!
 
   shipment(id: Int!): Shipment!
   listShipments(status: [ShipmentStatus!]): [Shipment!]!
@@ -91,7 +91,7 @@ type Query {
 
   listShipmentExports(shipmentId: Int!): [ShipmentExport!]!
 
-  listCountries: [Country!]!
+  countries: [Country!]!
 }
 
 type Mutation {

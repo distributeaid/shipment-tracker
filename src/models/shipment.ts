@@ -9,7 +9,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
-import { ShipmentRoutes, wireFormatShipmentRoute } from '../data/shipmentRoutes'
+import { shipmentRoutes, wireFormatShipmentRoute } from '../data/shipmentRoutes'
 import {
   Shipment as WireShipment,
   ShipmentPricing,
@@ -22,7 +22,7 @@ import ShipmentSendingHub from './shipment_sending_hub'
 
 export interface ShipmentAttributes {
   id: number
-  shipmentRoute: typeof ShipmentRoutes[number]['id']
+  shipmentRoute: typeof shipmentRoutes[number]['id']
   labelYear: number
   labelMonth: number
   offerSubmissionDeadline?: Date | null
@@ -46,7 +46,7 @@ export default class Shipment extends Model<
   public id!: number
 
   @Column(DataType.STRING)
-  public shipmentRoute!: typeof ShipmentRoutes[number]['id']
+  public shipmentRoute!: typeof shipmentRoutes[number]['id']
 
   @Column
   public labelYear!: number

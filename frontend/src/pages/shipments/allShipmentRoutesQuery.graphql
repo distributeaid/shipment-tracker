@@ -1,5 +1,5 @@
 query AllShipmentRoutes {
-  listShipmentRoutes {
+  shipmentRoutes {
     id
     from {
       country {

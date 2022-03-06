@@ -4,5 +4,5 @@ export const useShipmentRoutes = () => {
   const { data } = useAllShipmentRoutesQuery({
     fetchPolicy: 'cache-and-network',
   })
-  return data?.listShipmentRoutes ?? []
+  return data?.shipmentRoutes ?? []
 }
