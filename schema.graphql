@@ -110,7 +110,7 @@ type Mutation {
   addLineItem(palletId: Int!): LineItem!
   updateLineItem(id: Int!, input: LineItemUpdateInput!): LineItem!
   destroyLineItem(id: Int!): Boolean!
-  moveLineItem(id: Int!, targetPalletId: Int!): Offer!
+  moveLineItem(id: Int!, targetPalletId: Int!): Boolean!
 
   exportShipment(shipmentId: Int!): ShipmentExport!
 }

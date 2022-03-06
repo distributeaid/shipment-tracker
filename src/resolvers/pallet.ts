@@ -49,13 +49,13 @@ const addPallet: MutationResolvers['addPallet'] = async (
 
   authorizeOfferMutation(offer, context)
 
-  return (
-    await Pallet.create({
-      ...input,
-      paymentStatus: PaymentStatus.Uninitiated,
-      paymentStatusChangeTime: new Date(),
-    })
-  ).toWireFormat()
+  const { id } = await Pallet.create({
+    ...input,
+    paymentStatus: PaymentStatus.Uninitiated,
+    paymentStatusChangeTime: new Date(),
+  })
+
+  return ((await Pallet.getWithLineItems(id)) as Pallet).toWireFormat()
 }
 
 // - update pallet
@@ -86,7 +86,7 @@ const updatePallet: MutationResolvers['updatePallet'] = async (
     throw new UserInputError('Add pallet arguments invalid', valid.errors)
   }
 
-  const pallet = await Pallet.getWithParentAssociation(valid.value.id)
+  const pallet = await Pallet.getWithAssociations(valid.value.id)
 
   if (!pallet) {
     throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
@@ -122,7 +122,7 @@ const pallet: QueryResolvers['pallet'] = async (_, { id }, context) => {
     throw new UserInputError('Get pallet input invalid', valid.errors)
   }
 
-  const pallet = await Pallet.getWithParentAssociation(valid.value.id)
+  const pallet = await Pallet.getWithAssociations(valid.value.id)
 
   if (pallet === null) {
     throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
@@ -151,7 +151,7 @@ const destroyPallet: MutationResolvers['destroyPallet'] = async (
     throw new UserInputError('Destroy pallet input invalid', valid.errors)
   }
 
-  const pallet = await Pallet.getWithParentAssociation(valid.value.id)
+  const pallet = await Pallet.getWithOffer(valid.value.id)
 
   if (pallet === null) {
     throw new UserInputError(`Pallet ${valid.value.id} does not exist`)

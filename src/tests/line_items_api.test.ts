@@ -288,14 +288,7 @@ describe('LineItems API', () => {
 
       const MOVE_LINE_ITEM = gql`
         mutation ($id: Int!, $targetPalletId: Int!) {
-          moveLineItem(id: $id, targetPalletId: $targetPalletId) {
-            pallets {
-              id
-              lineItems {
-                id
-              }
-            }
-          }
+          moveLineItem(id: $id, targetPalletId: $targetPalletId)
         }
       `
 
@@ -315,26 +308,17 @@ describe('LineItems API', () => {
             id: lineItem.id,
             targetPalletId: palletTwo.id,
           },
-        })) as TypedGraphQLResponse<{ moveLineItem: Offer }>
+        })) as TypedGraphQLResponse<{ moveLineItem: boolean }>
 
         expect(res.errors).toBeUndefined()
 
+        expect(res.data?.moveLineItem).toBe(true)
+
+        await pallet.reload({ include: 'lineItems' })
         await palletTwo.reload({ include: 'lineItems' })
 
-        expect(palletTwo.lineItems[0].id).toEqual(lineItem.id)
-        expect(res.data?.moveLineItem?.pallets.length).toEqual(2)
-
-        expect(res.data?.moveLineItem?.pallets.length).toEqual(2)
-
-        const originalPallet = res.data?.moveLineItem?.pallets.find(
-          (p) => p.id === pallet.id,
-        )
-        const targetPallet = res.data?.moveLineItem?.pallets.find(
-          (p) => p.id === palletTwo.id,
-        )
-
-        expect(originalPallet!.lineItems.length).toEqual(0)
-        expect(targetPallet!.lineItems[0].id).toEqual(lineItem.id)
+        expect(pallet!.lineItems.length).toEqual(0)
+        expect(palletTwo!.lineItems[0].id).toEqual(lineItem.id)
       })
     })
   })

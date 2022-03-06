@@ -61,7 +61,7 @@ const addLineItem: MutationResolvers['addLineItem'] = async (
     throw new UserInputError('Offer arguments invalid', valid.errors)
   }
 
-  const pallet = await Pallet.getWithParentAssociation(valid.value.id)
+  const pallet = await Pallet.getWithOffer(valid.value.id)
 
   if (pallet === null) {
     throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
@@ -73,20 +73,20 @@ const addLineItem: MutationResolvers['addLineItem'] = async (
 
   authorizeOfferMutation(pallet.offer, context)
 
-  return (
-    await LineItem.create({
-      offerPalletId: valid.value.id,
-      status: LineItemStatus.Proposed,
-      containerType: LineItemContainerType.Unset,
-      category: LineItemCategory.Unset,
-      itemCount: 0,
-      affirmLiability: false,
-      tosAccepted: false,
-      dangerousGoods: [],
-      photoUris: [],
-      statusChangeTime: new Date(),
-    })
-  ).toWireFormat()
+  const { id } = await LineItem.create({
+    offerPalletId: valid.value.id,
+    status: LineItemStatus.Proposed,
+    containerType: LineItemContainerType.Unset,
+    category: LineItemCategory.Unset,
+    itemCount: 0,
+    affirmLiability: false,
+    tosAccepted: false,
+    dangerousGoods: [],
+    photoUris: [],
+    statusChangeTime: new Date(),
+  })
+
+  return ((await LineItem.getWithAssociations(id)) as LineItem).toWireFormat()
 }
 
 // - update line item
@@ -354,7 +354,7 @@ const moveLineItem: MutationResolvers['moveLineItem'] = async (
 
   await lineItem.update({ offerPalletId: valid.value.targetPalletId })
 
-  return lineItem.offerPallet.offer.toWireFormat()
+  return true
 }
 
 // Line item custom resolvers

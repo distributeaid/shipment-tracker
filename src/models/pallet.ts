@@ -81,13 +81,35 @@ export default class Pallet extends Model<
     }
   }
 
-  public static getWithParentAssociation(id: number): Promise<Pallet | null> {
+  public static getWithOffer(id: number): Promise<Pallet | null> {
     return Pallet.findByPk(id, {
       include: {
         model: Offer,
         as: 'offer',
         include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
       },
+    })
+  }
+
+  public static getWithLineItems(id: number): Promise<Pallet | null> {
+    return Pallet.findByPk(id, {
+      include: [{ association: 'lineItems' }],
+    })
+  }
+
+  public static getWithAssociations(id: number): Promise<Pallet | null> {
+    return Pallet.findByPk(id, {
+      include: [
+        {
+          model: Offer,
+          as: 'offer',
+          include: [
+            { association: 'sendingGroup' },
+            { association: 'shipment' },
+          ],
+        },
+        { association: 'lineItems' },
+      ],
     })
   }
 }
