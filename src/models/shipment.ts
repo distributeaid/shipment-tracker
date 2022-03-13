@@ -9,12 +9,8 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
-import { shipmentRoutes, wireFormatShipmentRoute } from '../data/shipmentRoutes'
-import {
-  Shipment as WireShipment,
-  ShipmentPricing,
-  ShipmentStatus,
-} from '../server-internal-types'
+import { shipmentRoutes } from '../data/shipmentRoutes'
+import { ShipmentPricing, ShipmentStatus } from '../server-internal-types'
 import Group from './group'
 import Offer from './offer'
 import ShipmentReceivingHub from './shipment_receiving_hub'
@@ -82,24 +78,4 @@ export default class Shipment extends Model<
   @UpdatedAt
   @Column
   public readonly updatedAt!: Date
-
-  public displayName(): string {
-    return [
-      'Shipment',
-      this.shipmentRoute,
-      this.labelYear,
-      this.labelMonth.toString().padStart(2, '0'),
-    ].join('-')
-  }
-
-  public toWireFormat(): WireShipment {
-    return {
-      ...this.get({ plain: true }),
-      shipmentRoute: wireFormatShipmentRoute(this.shipmentRoute),
-      receivingHubs: this.receivingHubs.map((group) => group.toWireFormat()),
-      sendingHubs: this.sendingHubs.map((group) => group.toWireFormat()),
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-    }
-  }
 }

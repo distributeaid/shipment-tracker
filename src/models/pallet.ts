@@ -1,4 +1,4 @@
-import { Attributes, FindOptions, Optional } from 'sequelize'
+import { Optional } from 'sequelize'
 import {
   BelongsTo,
   Column,
@@ -10,11 +10,7 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript'
-import {
-  Pallet as WirePallet,
-  PalletType,
-  PaymentStatus,
-} from '../server-internal-types'
+import { PalletType, PaymentStatus } from '../server-internal-types'
 import LineItem from './line_item'
 import Offer from './offer'
 
@@ -70,53 +66,5 @@ export default class Pallet extends Model<
       .map((lineItem) => lineItem.containerWeightGrams || 0)
       .reduce((result, current) => result + current)
     return Math.round(weightInGrams / 1000)
-  }
-
-  public toWireFormat(): WirePallet {
-    return {
-      ...this.get({ plain: true }),
-      lineItems: this.lineItems.map((lineItem) => lineItem.toWireFormat()),
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-    }
-  }
-
-  public static getWithOffer(id: number): Promise<Pallet | null> {
-    return Pallet.findByPk(id, {
-      include: {
-        model: Offer,
-        as: 'offer',
-        include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
-      },
-    })
-  }
-
-  public static findAllWithLineItems(query: FindOptions<Attributes<Pallet>>) {
-    return Pallet.findAll({
-      ...query,
-      include: [{ association: 'lineItems' }],
-    })
-  }
-
-  public static getWithLineItems(id: number): Promise<Pallet | null> {
-    return Pallet.findByPk(id, {
-      include: [{ association: 'lineItems' }],
-    })
-  }
-
-  public static getWithAssociations(id: number): Promise<Pallet | null> {
-    return Pallet.findByPk(id, {
-      include: [
-        {
-          model: Offer,
-          as: 'offer',
-          include: [
-            { association: 'sendingGroup' },
-            { association: 'shipment' },
-          ],
-        },
-        { association: 'lineItems' },
-      ],
-    })
   }
 }

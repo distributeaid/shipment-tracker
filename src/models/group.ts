@@ -10,13 +10,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript'
 import { countries } from '../data/countries'
-import {
-  ContactInfo,
-  Country,
-  Group as WireGroup,
-  GroupType,
-  Location,
-} from '../server-internal-types'
+import { ContactInfo, GroupType, Location } from '../server-internal-types'
 import UserAccount from './user_account'
 
 export interface GroupAttributes {
@@ -25,7 +19,7 @@ export interface GroupAttributes {
   description?: string | null
   groupType: GroupType
   primaryLocation: Omit<Location, 'country'> & {
-    country?: typeof countries[number]['alpha2']
+    country?: typeof countries[number]['countrycode']
   }
   primaryContact: ContactInfo
   website?: string | null
@@ -76,36 +70,4 @@ export default class Group extends Model<
   @UpdatedAt
   @Column
   public readonly updatedAt!: Date
-
-  public toWireFormat(): WireGroup {
-    // Resolve country
-    let country: Country | undefined = undefined
-    if (this.primaryLocation.country !== undefined) {
-      country = countries.find(
-        ({ alpha2 }) => alpha2 === this.primaryLocation.country,
-      )
-      if (country === undefined) {
-        throw new Error(
-          `Unknown country ${this.primaryLocation.country} for group primary location!`,
-        )
-      }
-    }
-    return {
-      ...this.get({ plain: true }),
-      primaryLocation: {
-        ...this.primaryLocation,
-        country,
-      },
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-    }
-  }
-
-  public static findAllWithCaptainAssociation() {
-    return Group.findAll({ include: [{ association: 'captain' }] })
-  }
-
-  public static getWithCaptainAssociation(id: number) {
-    return Group.findByPk(id, { include: [{ association: 'captain' }] })
-  }
 }

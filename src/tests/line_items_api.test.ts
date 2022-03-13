@@ -288,7 +288,9 @@ describe('LineItems API', () => {
 
       const MOVE_LINE_ITEM = gql`
         mutation ($id: Int!, $targetPalletId: Int!) {
-          moveLineItem(id: $id, targetPalletId: $targetPalletId)
+          moveLineItem(id: $id, targetPalletId: $targetPalletId) {
+            id
+          }
         }
       `
 
@@ -308,11 +310,11 @@ describe('LineItems API', () => {
             id: lineItem.id,
             targetPalletId: palletTwo.id,
           },
-        })) as TypedGraphQLResponse<{ moveLineItem: boolean }>
+        })) as TypedGraphQLResponse<{ moveLineItem: LineItem }>
 
         expect(res.errors).toBeUndefined()
 
-        expect(res.data?.moveLineItem).toBe(true)
+        expect(res.data?.moveLineItem?.id).toEqual(lineItem.id)
 
         await pallet.reload({ include: 'lineItems' })
         await palletTwo.reload({ include: 'lineItems' })

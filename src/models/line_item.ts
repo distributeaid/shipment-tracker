@@ -10,13 +10,11 @@ import {
 } from 'sequelize-typescript'
 import {
   DangerousGoods,
-  LineItem as WireLineItem,
   LineItemCategory,
   LineItemContainerType,
   LineItemStatus,
 } from '../server-internal-types'
 import Group from './group'
-import Offer from './offer'
 import Pallet from './pallet'
 
 export interface LineItemAttributes {
@@ -145,38 +143,4 @@ export default class LineItem extends Model<
   @UpdatedAt
   @Column
   public readonly updatedAt!: Date
-
-  public toWireFormat(): WireLineItem {
-    return {
-      ...this.get({ plain: true }),
-      proposedReceivingGroup: this.proposedReceivingGroup?.toWireFormat(),
-      acceptedReceivingGroup: this.acceptedReceivingGroup?.toWireFormat(),
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-    }
-  }
-
-  public static getWithAssociations(
-    id: number,
-  ): Promise<(LineItem & { offerPallet: Pallet | null }) | null> {
-    return LineItem.findByPk(id, {
-      include: [
-        {
-          association: 'offerPallet',
-          include: [
-            {
-              model: Offer,
-              as: 'offer',
-              include: [
-                { association: 'sendingGroup' },
-                { association: 'shipment' },
-              ],
-            },
-          ],
-        },
-        { association: 'proposedReceivingGroup' },
-        { association: 'acceptedReceivingGroup' },
-      ],
-    })
-  }
 }

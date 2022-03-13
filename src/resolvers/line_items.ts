@@ -23,18 +23,43 @@ import {
   LineItemStatus,
   MutationResolvers,
   QueryResolvers,
+  ResolversTypes,
 } from '../server-internal-types'
+import { dbToGraphQL as dbGroupToGraphQL } from './group'
 import {
   authorizeOfferMutation,
   authorizeOfferQuery,
 } from './offer_authorization'
+
+export const dbToGraphQL = (
+  lineItem: LineItem,
+): ResolversTypes['LineItem'] => ({
+  ...lineItem.get({ plain: true }),
+  createdAt: lineItem.createdAt,
+  updatedAt: lineItem.updatedAt,
+})
+
+const palletInclude = [
+  {
+    association: 'offer',
+    include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
+  },
+]
+const include = [
+  {
+    association: 'offerPallet',
+    include: palletInclude,
+  },
+]
 
 // Line item mutation resolvers
 
 // - get line item
 
 const lineItem: QueryResolvers['lineItem'] = async (_, { id }, context) => {
-  const lineItem = await LineItem.getWithAssociations(id)
+  const lineItem = await LineItem.findByPk(id, {
+    include,
+  })
   if (lineItem === null) {
     throw new UserInputError(`Line item ${id} does not exist`)
   }
@@ -46,7 +71,7 @@ const lineItem: QueryResolvers['lineItem'] = async (_, { id }, context) => {
 
   authorizeOfferQuery(pallet.offer, context)
 
-  return lineItem.toWireFormat()
+  return dbToGraphQL(lineItem)
 }
 
 // - add new line item
@@ -61,7 +86,9 @@ const addLineItem: MutationResolvers['addLineItem'] = async (
     throw new UserInputError('Offer arguments invalid', valid.errors)
   }
 
-  const pallet = await Pallet.getWithOffer(valid.value.id)
+  const pallet = await Pallet.findByPk(valid.value.id, {
+    include: palletInclude,
+  })
 
   if (pallet === null) {
     throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
@@ -73,20 +100,23 @@ const addLineItem: MutationResolvers['addLineItem'] = async (
 
   authorizeOfferMutation(pallet.offer, context)
 
-  const { id } = await LineItem.create({
-    offerPalletId: valid.value.id,
-    status: LineItemStatus.Proposed,
-    containerType: LineItemContainerType.Unset,
-    category: LineItemCategory.Unset,
-    itemCount: 0,
-    affirmLiability: false,
-    tosAccepted: false,
-    dangerousGoods: [],
-    photoUris: [],
-    statusChangeTime: new Date(),
-  })
+  const lineItem = await LineItem.create(
+    {
+      offerPalletId: valid.value.id,
+      status: LineItemStatus.Proposed,
+      containerType: LineItemContainerType.Unset,
+      category: LineItemCategory.Unset,
+      itemCount: 0,
+      affirmLiability: false,
+      tosAccepted: false,
+      dangerousGoods: [],
+      photoUris: [],
+      statusChangeTime: new Date(),
+    },
+    { include },
+  )
 
-  return ((await LineItem.getWithAssociations(id)) as LineItem).toWireFormat()
+  return dbToGraphQL(lineItem)
 }
 
 // - update line item
@@ -132,18 +162,20 @@ const updateLineItem: MutationResolvers['updateLineItem'] = async (
     throw new UserInputError('Update line item arguments invalid', valid.errors)
   }
 
-  const maybeLineItem = await LineItem.getWithAssociations(valid.value.id)
+  const maybeLineItem = await LineItem.findByPk(valid.value.id, {
+    include,
+  })
   const lineItem = await authorizeLineItemMutation(
     valid.value.id,
     maybeLineItem,
     context,
   )
 
-  return (
-    await lineItem.update(
-      await getUpdateAttributes(lineItem, valid.value.input),
-    )
-  ).toWireFormat()
+  const updatedLineItem = await lineItem.update(
+    await getUpdateAttributes(lineItem, valid.value.input),
+  )
+
+  return dbToGraphQL(updatedLineItem)
 }
 
 async function authorizeLineItemMutation(
@@ -289,7 +321,9 @@ const destroyLineItem: MutationResolvers['destroyLineItem'] = async (
     throw new UserInputError('Destroy line item input invalid', valid.errors)
   }
 
-  const maybeLineItem = await LineItem.getWithAssociations(valid.value.id)
+  const maybeLineItem = await LineItem.findByPk(valid.value.id, {
+    include,
+  })
   if (maybeLineItem === null) {
     throw new UserInputError(`Line item ${id} does not exist`)
   }
@@ -327,7 +361,9 @@ const moveLineItem: MutationResolvers['moveLineItem'] = async (
     throw new UserInputError('Move line item input invalid', valid.errors)
   }
 
-  const maybeLineItem = await LineItem.getWithAssociations(valid.value.id)
+  const maybeLineItem = await LineItem.findByPk(valid.value.id, {
+    include,
+  })
   if (maybeLineItem === null) {
     throw new UserInputError(`Line item ${valid.value.id} does not exist`)
   }
@@ -352,9 +388,11 @@ const moveLineItem: MutationResolvers['moveLineItem'] = async (
     )
   }
 
-  await lineItem.update({ offerPalletId: valid.value.targetPalletId })
+  const updatedLineItem = await lineItem.update({
+    offerPalletId: valid.value.targetPalletId,
+  })
 
-  return true
+  return dbToGraphQL(updatedLineItem)
 }
 
 // Line item custom resolvers
@@ -370,7 +408,7 @@ const proposedReceivingGroup: LineItemResolvers['proposedReceivingGroup'] =
       throw new ApolloError('No group exists with that ID')
     }
 
-    return receivingGroup.toWireFormat()
+    return dbGroupToGraphQL(receivingGroup)
   }
 
 const acceptedReceivingGroup: LineItemResolvers['acceptedReceivingGroup'] =
@@ -385,7 +423,7 @@ const acceptedReceivingGroup: LineItemResolvers['acceptedReceivingGroup'] =
       throw new ApolloError('No group exists with that ID')
     }
 
-    return receivingGroup.toWireFormat()
+    return dbGroupToGraphQL(receivingGroup)
   }
 
 export {

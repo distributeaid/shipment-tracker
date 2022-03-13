@@ -2,8 +2,8 @@ import { countries } from './countries'
 
 export type ShipmentRoute = {
   id: string
-  from: { country: typeof countries[number]['alpha2']; region?: string }
-  to: { country: typeof countries[number]['alpha2']; region?: string }
+  from: { country: typeof countries[number]['countrycode']; region?: string }
+  to: { country: typeof countries[number]['countrycode']; region?: string }
 }
 
 export const shipmentRoutes: ShipmentRoute[] = [
@@ -26,7 +26,7 @@ export const wireFormatShipmentRoute = (shipmentRouteId: string) => {
     throw new Error(`Unknown shipment route ${shipmentRouteId}!`)
   }
   const fromCountry = countries.find(
-    ({ alpha2 }) => alpha2 === shipmentRoute.from.country,
+    ({ countrycode }) => countrycode === shipmentRoute.from.country,
   )
   if (fromCountry === undefined) {
     throw new Error(
@@ -34,7 +34,7 @@ export const wireFormatShipmentRoute = (shipmentRouteId: string) => {
     )
   }
   const toCountry = countries.find(
-    ({ alpha2 }) => alpha2 === shipmentRoute.to.country,
+    ({ countrycode }) => countrycode === shipmentRoute.to.country,
   )
   if (toCountry === undefined) {
     throw new Error(

@@ -8,7 +8,6 @@ import {
   Table,
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
-import { ShipmentExport as WireShipmentExport } from '../server-internal-types'
 import Shipment from './shipment'
 import UserAccount from './user_account'
 
@@ -47,18 +46,4 @@ export default class ShipmentExport extends Model {
   @CreatedAt
   @Column
   public readonly createdAt!: Date
-
-  public toWireFormat(): WireShipmentExport {
-    return {
-      id: this.id,
-      shipmentId: this.shipmentId,
-      downloadPath: `/shipment-exports/${this.id}`,
-      createdBy: {
-        id: this.userAccountId,
-        isAdmin: this.userAccount.isAdmin,
-        name: this.userAccount.name,
-      },
-      createdAt: this.createdAt,
-    }
-  }
 }

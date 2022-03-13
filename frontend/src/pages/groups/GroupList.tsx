@@ -25,7 +25,7 @@ const COLUMNS: Column<AllGroupsQuery['listGroups'][0]>[] = [
     accessor: (group) =>
       `${group.primaryLocation.townCity} (${
         group.primaryLocation.country?.alias ??
-        group.primaryLocation.country?.shortNameEN
+        group.primaryLocation.country?.shortName
       })`,
   },
   {

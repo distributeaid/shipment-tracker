@@ -14,12 +14,25 @@ import {
   OfferResolvers,
   OfferStatus,
   QueryResolvers,
+  ResolversTypes,
   ShipmentStatus,
 } from '../server-internal-types'
 import {
   authorizeOfferMutation,
   authorizeOfferQuery,
 } from './offer_authorization'
+import { dbToGraphQL as dbPalletToGraphQL } from './pallet'
+
+const dbToGraphQL = (offer: Offer): ResolversTypes['Offer'] => {
+  const plain: ResolversTypes['Offer'] = offer.get({ plain: true })
+  return {
+    ...plain,
+    // Handled in sub resolver
+    pallets: [],
+  }
+}
+
+const include = [{ association: 'sendingGroup' }, { association: 'shipment' }]
 
 // Offer mutation resolvers
 
@@ -51,18 +64,7 @@ const addOffer: MutationResolvers['addOffer'] = async (
     throw new UserInputError('Add offer arguments invalid', valid.errors)
   }
 
-  const sendingGroupPromise = Group.getWithCaptainAssociation(
-    valid.value.sendingGroupId,
-  )
-  const shipmentPromise = Shipment.findByPk(valid.value.shipmentId)
-  const existingOfferCountPromise = Offer.count({
-    where: {
-      sendingGroupId: valid.value.sendingGroupId,
-      shipmentId: valid.value.sendingGroupId,
-    },
-  })
-
-  const sendingGroup = await sendingGroupPromise
+  const sendingGroup = await Group.findByPk(valid.value.sendingGroupId)
   if (sendingGroup == null) {
     throw new UserInputError(
       `Group ${valid.value.sendingGroupId} does not exist`,
@@ -74,7 +76,7 @@ const addOffer: MutationResolvers['addOffer'] = async (
     )
   }
 
-  const shipment = await shipmentPromise
+  const shipment = await Shipment.findByPk(valid.value.shipmentId)
   if (shipment == null) {
     throw new UserInputError(
       `Shipment ${valid.value.shipmentId} does not exist`,
@@ -87,20 +89,25 @@ const addOffer: MutationResolvers['addOffer'] = async (
     )
   }
 
-  const existingOfferCount = await existingOfferCountPromise
+  const existingOfferCount = await Offer.count({
+    where: {
+      sendingGroupId: valid.value.sendingGroupId,
+      shipmentId: valid.value.sendingGroupId,
+    },
+  })
   if (existingOfferCount > 0) {
     throw new UserInputError(
       `Shipment ${valid.value.shipmentId} already has offer from group ${valid.value.sendingGroupId}`,
     )
   }
 
-  const { id } = await Offer.create({
-    ...valid.value,
-    status: OfferStatus.Draft,
-    statusChangeTime: new Date(),
-  })
-
-  return ((await Offer.getWithChildAssociations(id)) as Offer).toWireFormat()
+  return dbToGraphQL(
+    await Offer.create({
+      ...valid.value,
+      status: OfferStatus.Draft,
+      statusChangeTime: new Date(),
+    }),
+  )
 }
 
 // - update offer
@@ -127,7 +134,7 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
     throw new UserInputError('Update offer arguments invalid', valid.errors)
   }
 
-  const offer = await Offer.getWithChildAssociations(valid.value.id)
+  const offer = await Offer.findByPk(valid.value.id, { include })
 
   if (!offer) {
     throw new UserInputError(`Offer ${valid.value.id} does not exist`)
@@ -150,7 +157,7 @@ const updateOffer: MutationResolvers['updateOffer'] = async (
     updateAttributes.photoUris = valid.value.photoUris
   }
 
-  return (await offer.update(updateAttributes)).toWireFormat()
+  return dbToGraphQL(await offer.update(updateAttributes))
 }
 
 // Offer query resolvers
@@ -161,7 +168,7 @@ const offer: QueryResolvers['offer'] = async (_, { id }, context) => {
     throw new UserInputError('Offer arguments invalid', valid.errors)
   }
 
-  const offer = await Offer.getWithChildAssociations(id)
+  const offer = await Offer.findByPk(id, { include })
 
   if (!offer) {
     throw new UserInputError(`Offer ${id} does not exist`)
@@ -169,7 +176,7 @@ const offer: QueryResolvers['offer'] = async (_, { id }, context) => {
 
   authorizeOfferQuery(offer, context)
 
-  return offer.toWireFormat()
+  return dbToGraphQL(offer)
 }
 
 const listOffers: QueryResolvers['listOffers'] = async (
@@ -189,9 +196,6 @@ const listOffers: QueryResolvers['listOffers'] = async (
     throw new UserInputError('Offer arguments invalid', valid.errors)
   }
 
-  const groupsPromise = Group.findAll({
-    where: { captainId: context.auth.userId },
-  })
   const shipment = await Shipment.findByPk(shipmentId)
 
   if (!shipment) {
@@ -199,23 +203,27 @@ const listOffers: QueryResolvers['listOffers'] = async (
   }
 
   if (context.auth.isAdmin) {
-    return (
-      await Offer.findAllWithChildAssociations({ where: { shipmentId } })
-    ).map((offer) => offer.toWireFormat())
+    return (await Offer.findAll({ where: { shipmentId }, include })).map(
+      dbToGraphQL,
+    )
   }
 
-  const groupIds = (await groupsPromise).map((group) => group.id)
-  return (
-    await Offer.findAllWithChildAssociations({
-      where: { shipmentId, sendingGroupId: groupIds },
+  const groupIds = (
+    await Group.findAll({
+      where: { captainId: context.auth.userId },
     })
-  ).map((offer) => offer.toWireFormat())
+  ).map((group) => group.id)
+  return (
+    await Offer.findAll({
+      where: { shipmentId, sendingGroupId: groupIds },
+      include,
+    })
+  ).map(dbToGraphQL)
 }
 
-const offerPallets: OfferResolvers['pallets'] = async (parent) => {
-  return (
-    await Pallet.findAllWithLineItems({ where: { offerId: parent.id } })
-  ).map((pallet) => pallet.toWireFormat())
-}
+const offerPallets: OfferResolvers['pallets'] = async (parent) =>
+  (await Pallet.findAll({ where: { offerId: parent.id } })).map(
+    dbPalletToGraphQL,
+  )
 
 export { addOffer, updateOffer, offer, listOffers, offerPallets }

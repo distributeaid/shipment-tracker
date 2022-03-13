@@ -15,16 +15,16 @@ const shipmentRoutesQuery = gql`
       id
       from {
         country {
-          alpha2
-          shortNameEN
+          countrycode
+          shortName
           alias
         }
         region
       }
       to {
         country {
-          alpha2
-          shortNameEN
+          countrycode
+          shortName
           alias
         }
         region
@@ -65,16 +65,16 @@ describe('shipmentRoutes API', () => {
       id: 'DeToBa',
       from: {
         country: {
-          shortNameEN: 'Germany',
-          alpha2: 'DE',
+          shortName: 'Germany',
+          countrycode: 'DE',
           alias: null,
         },
         region: null,
       },
       to: {
         country: {
-          shortNameEN: 'Bosnia and Herzegovina',
-          alpha2: 'BA',
+          shortName: 'Bosnia and Herzegovina',
+          countrycode: 'BA',
           alias: null,
         },
         region: null,

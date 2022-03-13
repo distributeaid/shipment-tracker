@@ -73,7 +73,7 @@ const GroupViewPage: FunctionComponent = () => {
                     <>
                       {', '}
                       {groupData.primaryLocation.country.alias ??
-                        groupData.primaryLocation.country.shortNameEN}
+                        groupData.primaryLocation.country.shortName}
                     </>
                   )}
                 </>

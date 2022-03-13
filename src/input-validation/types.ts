@@ -41,7 +41,7 @@ export const NonEmptyShortString = NonEmptyLimitedString({
 
 export type TwoLetterCountryCode = Static<typeof TwoLetterCountryCode>
 export const TwoLetterCountryCode = Type.Union(
-  countries.map(({ alpha2 }) => Type.Literal(alpha2)),
+  countries.map(({ countrycode }) => Type.Literal(countrycode)),
   { title: 'ISO 3166 country code' },
 )
 

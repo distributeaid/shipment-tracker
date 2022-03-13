@@ -53,7 +53,7 @@ const GroupForm: FunctionComponent<Props> = (props) => {
           ...defaults,
           primaryLocation: {
             ...defaults.primaryLocation,
-            country: defaults.primaryLocation.country?.alpha2,
+            country: defaults.primaryLocation.country?.countrycode,
           },
         })
       }
@@ -116,9 +116,9 @@ const GroupForm: FunctionComponent<Props> = (props) => {
               value: '',
               disabled: true,
             },
-            ...countries.map(({ alias, shortNameEN, alpha2 }) => ({
-              label: alias ?? shortNameEN,
-              value: alpha2,
+            ...countries.map(({ alias, shortName, countrycode }) => ({
+              label: alias ?? shortName,
+              value: countrycode,
             })),
           ]}
           required

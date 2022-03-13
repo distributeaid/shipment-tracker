@@ -79,7 +79,7 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
                   <>
                     {', '}
                     {hub.primaryLocation.country.alias ??
-                      hub.primaryLocation.country.shortNameEN}
+                      hub.primaryLocation.country.shortName}
                   </>
                 )}
               </div>
@@ -100,7 +100,7 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
                   <>
                     {', '}
                     {hub.primaryLocation.country.alias ??
-                      hub.primaryLocation.country.shortNameEN}
+                      hub.primaryLocation.country.shortName}
                   </>
                 )}
               </div>

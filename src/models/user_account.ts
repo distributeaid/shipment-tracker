@@ -65,7 +65,7 @@ export default class UserAccount extends Model<
   @Column
   public readonly updatedAt!: Date
 
-  public async asPublicProfile(): Promise<UserProfile> {
+  public async asPublicProfile(): Promise<Omit<UserProfile, 'group'>> {
     let groupForUser: Maybe<Group>
     if (!this.isAdmin) {
       // Note: this assumes that there is only 1 captain per group, where in
@@ -81,7 +81,6 @@ export default class UserAccount extends Model<
       id: this.id,
       isAdmin: this.isAdmin,
       name: this.name,
-      group: groupForUser?.toWireFormat(),
     }
   }
 

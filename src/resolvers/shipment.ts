@@ -15,14 +15,16 @@ import Shipment, { ShipmentAttributes } from '../models/shipment'
 import ShipmentExport from '../models/shipment_export'
 import ShipmentReceivingHub from '../models/shipment_receiving_hub'
 import ShipmentSendingHub from '../models/shipment_sending_hub'
-import UserAccount from '../models/user_account'
 import {
   MutationResolvers,
   QueryResolvers,
+  ResolversTypes,
   ShipmentResolvers,
   ShipmentRoute,
   ShipmentStatus,
 } from '../server-internal-types'
+import { dbToGraphQL as dbGroupToGraphQL } from './group'
+import { dbToGraphQL as dbShipmentExportToGraphQL } from './shipment_exports'
 
 const arraysOverlap = (a: unknown[], b: unknown[]): boolean =>
   xor(a, b).length === 0
@@ -33,16 +35,15 @@ const SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS: Readonly<ShipmentStatus[]> = [
   ShipmentStatus.Staging,
 ] as const
 
-const include = [
-  {
-    model: Group,
-    as: 'sendingHubs',
-  },
-  {
-    model: Group,
-    as: 'receivingHubs',
-  },
-]
+const dbToGraphQL = (shipment: Shipment): ResolversTypes['Shipment'] => ({
+  ...shipment.get({ plain: true }),
+  createdAt: shipment.createdAt,
+  updatedAt: shipment.updatedAt,
+  shipmentRoute: wireFormatShipmentRoute(shipment.shipmentRoute),
+  // Handled in custom resolvers
+  receivingHubs: [],
+  sendingHubs: [],
+})
 
 // Shipment query resolvers
 
@@ -70,8 +71,6 @@ const listShipments: QueryResolvers['listShipments'] = async (
   }
   const { status } = valid.value
 
-  let shipments: Shipment[] = []
-
   if (status !== undefined) {
     if (!context.auth.isAdmin) {
       const forbiddenStatus = status.filter(
@@ -84,28 +83,26 @@ const listShipments: QueryResolvers['listShipments'] = async (
           )}`,
         )
     }
-    shipments = await Shipment.findAll({
-      where: {
-        status,
-      },
-      include,
-    })
+    return (
+      await Shipment.findAll({
+        where: {
+          status,
+        },
+      })
+    ).map(dbToGraphQL)
   } else {
     if (!context.auth.isAdmin) {
-      shipments = await Shipment.findAll({
-        where: {
-          status: SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS,
-        },
-        include,
-      })
+      return (
+        await Shipment.findAll({
+          where: {
+            status: SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS,
+          },
+        })
+      ).map(dbToGraphQL)
     } else {
-      shipments = await Shipment.findAll({
-        include,
-      })
+      return (await Shipment.findAll({})).map(dbToGraphQL)
     }
   }
-
-  return shipments.map((shipment) => shipment.toWireFormat())
 }
 
 // - get shipment
@@ -116,9 +113,7 @@ const shipment: QueryResolvers['shipment'] = async (_, { id }, context) => {
     throw new UserInputError('Get shipment input invalid', valid.errors)
   }
 
-  const shipment = await Shipment.findByPk(valid.value.id, {
-    include,
-  })
+  const shipment = await Shipment.findByPk(valid.value.id, {})
 
   if (!shipment) {
     throw new ApolloError(`No shipment exists with ID "${valid.value.id}"`)
@@ -133,7 +128,7 @@ const shipment: QueryResolvers['shipment'] = async (_, { id }, context) => {
     )
   }
 
-  return shipment.toWireFormat()
+  return dbToGraphQL(shipment)
 }
 
 // Shipment mutation resolvers
@@ -256,11 +251,18 @@ const addShipment: MutationResolvers['addShipment'] = async (
     ),
   ])
 
-  return (
+  return dbToGraphQL(
     (await Shipment.findByPk(shipment.id, {
-      include,
-    })) as Shipment
-  ).toWireFormat()
+      include: [
+        {
+          association: 'sendingHubs',
+        },
+        {
+          association: 'receivingHubs',
+        },
+      ],
+    })) as Shipment,
+  )
 }
 
 // - update shipment
@@ -302,7 +304,9 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     throw new ForbiddenError('updateShipment forbidden to non-admin users')
   }
 
-  const shipment = await Shipment.findByPk(valid.value.id, { include })
+  const shipment = await Shipment.findByPk(valid.value.id, {
+    include: [{ association: 'sendingHubs' }, { association: 'receivingHubs' }],
+  })
 
   if (shipment === null) {
     throw new ApolloError(`No shipment exists with ID "${valid.value.id}"`)
@@ -464,44 +468,36 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     ])
   }
 
-  await shipment.update(updateAttributes)
-
-  return (
-    (await Shipment.findByPk(shipment.id, {
-      include,
-    })) as Shipment
-  ).toWireFormat()
+  return dbToGraphQL(await shipment.update(updateAttributes))
 }
 
 // Shipment custom resolvers
 const sendingHubs: ShipmentResolvers['sendingHubs'] = async (parent) => {
-  const ids = parent.sendingHubs.map(({ id }) => id)
-  const sendingHubs = await Group.findAll({
+  const sendingHubs = await ShipmentSendingHub.findAll({
     where: {
-      id: ids,
+      shipmentId: parent.id,
     },
+    include: [
+      {
+        association: 'hub',
+      },
+    ],
   })
-
-  if (!sendingHubs) {
-    throw new ApolloError(`No sending groups exists with IDs "${ids}"`)
-  }
-
-  return sendingHubs.map((hub) => hub.toWireFormat())
+  return sendingHubs.map(({ hub }) => dbGroupToGraphQL(hub))
 }
 
 const receivingHubs: ShipmentResolvers['receivingHubs'] = async (parent) => {
-  const ids = parent.receivingHubs.map(({ id }) => id)
-  const receivingHubs = await Group.findAll({
+  const receivingHubs = await ShipmentReceivingHub.findAll({
     where: {
-      id: ids,
+      shipmentId: parent.id,
     },
+    include: [
+      {
+        association: 'hub',
+      },
+    ],
   })
-
-  if (!receivingHubs) {
-    throw new ApolloError(`No receiving group exists with IDs "${ids}"`)
-  }
-
-  return receivingHubs.map((hub) => hub.toWireFormat())
+  return receivingHubs.map(({ hub }) => dbGroupToGraphQL(hub))
 }
 
 const shipmentExports: ShipmentResolvers['exports'] = async (
@@ -513,12 +509,12 @@ const shipmentExports: ShipmentResolvers['exports'] = async (
     throw new ForbiddenError('Must be admin to query shipment exports')
   }
 
-  return ShipmentExport.findAll({
-    where: { shipmentId: parent.id },
-    include: [UserAccount],
-  }).then((shipmentExports) =>
-    shipmentExports.map((shipmentExport) => shipmentExport.toWireFormat()),
-  )
+  return (
+    await ShipmentExport.findAll({
+      where: { shipmentId: parent.id },
+      include: [{ association: 'userAccount' }],
+    })
+  ).map(dbShipmentExportToGraphQL)
 }
 
 export {

@@ -110,7 +110,7 @@ type Mutation {
   addLineItem(palletId: Int!): LineItem!
   updateLineItem(id: Int!, input: LineItemUpdateInput!): LineItem!
   destroyLineItem(id: Int!): Boolean!
-  moveLineItem(id: Int!, targetPalletId: Int!): Boolean!
+  moveLineItem(id: Int!, targetPalletId: Int!): LineItem!
 
   exportShipment(shipmentId: Int!): ShipmentExport!
 }
@@ -126,8 +126,8 @@ input ShipmentCreateInput {
 }
 
 type Country {
-  alpha2: ID!
-  shortNameEN: String!
+  countrycode: ID!
+  shortName: String!
   alias: String
 }
 

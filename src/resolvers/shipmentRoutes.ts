@@ -9,13 +9,13 @@ export const listShipmentRoutes: QueryResolvers['shipmentRoutes'] =
       from: {
         ...route.from,
         country: countries.find(
-          ({ alpha2 }) => route.from.country === alpha2,
+          ({ countrycode }) => route.from.country === countrycode,
         ) as Country,
       },
       to: {
         ...route.to,
         country: countries.find(
-          ({ alpha2 }) => route.to.country === alpha2,
+          ({ countrycode }) => route.to.country === countrycode,
         ) as Country,
       },
     })),
