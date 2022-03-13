@@ -92,9 +92,10 @@ const addOffer: MutationResolvers['addOffer'] = async (
   const existingOfferCount = await Offer.count({
     where: {
       sendingGroupId: valid.value.sendingGroupId,
-      shipmentId: valid.value.sendingGroupId,
+      shipmentId: valid.value.shipmentId,
     },
   })
+
   if (existingOfferCount > 0) {
     throw new UserInputError(
       `Shipment ${valid.value.shipmentId} already has offer from group ${valid.value.sendingGroupId}`,
