@@ -12,7 +12,7 @@ const purgeDb = async () => sequelize.sync({ force: true })
 
 const commonGroupData = {
   groupType: GroupType.Regular,
-  primaryLocation: { country: 'FR', townCity: 'Calais' },
+  primaryLocation: { country: 'FR', city: 'Calais' },
   primaryContact: { name: 'Contact', email: 'contact@example.com' },
   website: 'http://www.example.com',
 } as const
@@ -172,7 +172,7 @@ describe('Groups API', () => {
                 shortName
                 alias
               }
-              townCity
+              city
             }
             primaryContact {
               name
@@ -192,7 +192,7 @@ describe('Groups API', () => {
             name: 'updated-contact-name',
             email: 'updated@example.com',
           },
-          primaryLocation: { country: 'US', townCity: 'Bellingham' },
+          primaryLocation: { country: 'US', city: 'Bellingham' },
           captainId: newCaptain.id,
         }
 
@@ -223,8 +223,8 @@ describe('Groups API', () => {
         expect(
           res.data?.updateGroup?.primaryLocation?.country.countrycode,
         ).toEqual(updateParams?.primaryLocation?.country)
-        expect(res.data?.updateGroup?.primaryLocation?.townCity).toEqual(
-          updateParams?.primaryLocation?.townCity,
+        expect(res.data?.updateGroup?.primaryLocation?.city).toEqual(
+          updateParams?.primaryLocation?.city,
         )
         expect(res.data?.updateGroup?.captainId).toEqual(newCaptain.id)
       })

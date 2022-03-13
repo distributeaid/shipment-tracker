@@ -74,7 +74,7 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
             <div key={hub.id}>
               <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
               <div className="text-gray-600">
-                {hub.primaryLocation.townCity}
+                {hub.primaryLocation.city}
                 {hub.primaryLocation.country && (
                   <>
                     {', '}
@@ -95,7 +95,7 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
             <div key={hub.id}>
               <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
               <div className="text-gray-600">
-                {hub.primaryLocation.townCity}
+                {hub.primaryLocation.city}
                 {hub.primaryLocation.country && (
                   <>
                     {', '}

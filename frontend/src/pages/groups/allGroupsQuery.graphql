@@ -17,7 +17,7 @@ query AllGroups($captainId: Int, $groupType: [GroupType!]) {
         shortName
         alias
       }
-      townCity
+      city
     }
   }
 }

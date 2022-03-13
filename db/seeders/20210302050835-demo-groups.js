@@ -29,7 +29,7 @@ module.exports = {
           updatedAt: new Date(),
           primaryLocation: JSON.stringify({
             country: 'FR',
-            townCity: 'Calais',
+            city: 'Calais',
           }),
           primaryContact: JSON.stringify({
             name: 'Myriam McLaughlin',
@@ -43,7 +43,7 @@ module.exports = {
           updatedAt: new Date(),
           primaryLocation: JSON.stringify({
             country: 'FR',
-            townCity: 'Dunkerque',
+            city: 'Dunkerque',
           }),
           primaryContact: JSON.stringify({
             name: 'Meaghan Crist',
@@ -57,7 +57,7 @@ module.exports = {
           updatedAt: new Date(),
           primaryLocation: JSON.stringify({
             country: 'GB',
-            townCity: 'London',
+            city: 'London',
           }),
           primaryContact: JSON.stringify({
             name: 'Jacinthe Donnelly',

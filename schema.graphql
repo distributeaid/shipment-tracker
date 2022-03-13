@@ -4,7 +4,7 @@ scalar Currency
 
 type Location {
   country: Country
-  townCity: String!
+  city: String!
   openLocationCode: String
 }
 
@@ -18,7 +18,7 @@ type ContactInfo {
 
 input LocationInput {
   country: ID
-  townCity: String!
+  city: String!
   openLocationCode: String
 }
 

@@ -4,7 +4,7 @@ fragment AllGroupFields on Group {
   description
   groupType
   primaryLocation {
-    townCity
+    city
     country {
       countrycode
       shortName

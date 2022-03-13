@@ -100,8 +100,8 @@ const GroupForm: FunctionComponent<Props> = (props) => {
       <fieldset className="space-y-4 mt-8">
         <legend>Location</legend>
         <TextField
-          label="Town or city"
-          name="primaryLocation.townCity"
+          label="City"
+          name="primaryLocation.city"
           required
           register={register}
           errors={errors}

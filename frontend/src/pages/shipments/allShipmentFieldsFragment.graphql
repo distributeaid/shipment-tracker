@@ -27,7 +27,7 @@ fragment AllShipmentFields on Shipment {
     id
     name
     primaryLocation {
-      townCity
+      city
       country {
         countrycode
         shortName
@@ -39,7 +39,7 @@ fragment AllShipmentFields on Shipment {
     id
     name
     primaryLocation {
-      townCity
+      city
       country {
         countrycode
         shortName

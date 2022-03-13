@@ -68,7 +68,7 @@ const GroupViewPage: FunctionComponent = () => {
             <ReadOnlyField label="Location">
               {groupData && (
                 <>
-                  {groupData.primaryLocation.townCity}
+                  {groupData.primaryLocation.city}
                   {groupData.primaryLocation.country && (
                     <>
                       {', '}

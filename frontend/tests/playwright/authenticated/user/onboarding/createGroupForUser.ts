@@ -13,7 +13,7 @@ export const createGroupForUser =
       'textarea[name="description"]',
       `Description for ${name}'s group`,
     )
-    await page.fill('input[name="primaryLocation.townCity"]', 'Trondheim')
+    await page.fill('input[name="primaryLocation.city"]', 'Trondheim')
     await page.selectOption('select[name="primaryLocation.country"]', 'NO')
     await page.fill('input[name="primaryContact.name"]', name)
     await page.fill('input[name="primaryContact.email"]', email)
