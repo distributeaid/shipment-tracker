@@ -1,9 +1,14 @@
 import { countries } from './countries'
 
+export type Region = {
+  country: typeof countries[number]['countrycode']
+  locality?: string
+}
+
 export type ShipmentRoute = {
   id: string
-  from: { country: typeof countries[number]['countrycode']; region?: string }
-  to: { country: typeof countries[number]['countrycode']; region?: string }
+  from: Region
+  to: Region
 }
 
 export const shipmentRoutes: ShipmentRoute[] = [

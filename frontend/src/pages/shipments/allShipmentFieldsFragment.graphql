@@ -8,7 +8,7 @@ fragment AllShipmentFields on Shipment {
         shortName
         alias
       }
-      region
+      locality
     }
     to {
       country {
@@ -16,7 +16,7 @@ fragment AllShipmentFields on Shipment {
         shortName
         alias
       }
-      region
+      locality
     }
   }
   labelYear

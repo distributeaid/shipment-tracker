@@ -9,7 +9,7 @@ query AllShipments($status: [ShipmentStatus!]) {
           shortName
           alias
         }
-        region
+        locality
       }
       to {
         country {
@@ -17,7 +17,7 @@ query AllShipments($status: [ShipmentStatus!]) {
           shortName
           alias
         }
-        region
+        locality
       }
     }
     labelYear

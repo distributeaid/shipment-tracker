@@ -133,7 +133,7 @@ type Country {
 
 type Region {
   country: Country!
-  region: String
+  locality: String
 }
 
 type ShipmentRoute {
