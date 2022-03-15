@@ -1,17 +1,16 @@
 import {
-  Model,
+  BelongsTo,
   Column,
-  Table,
   CreatedAt,
-  UpdatedAt,
   DataType,
   ForeignKey,
-  BelongsTo,
   HasMany,
+  Model,
+  Table,
+  UpdatedAt,
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
-
-import { OfferStatus, ContactInfo } from '../server-internal-types'
+import { ContactInfo, OfferStatus } from '../server-internal-types'
 import Group from './group'
 import Pallet from './pallet'
 import Shipment from './shipment'

@@ -1,0 +1,21 @@
+query AllShipmentRoutes {
+  shipmentRoutes {
+    id
+    from {
+      country {
+        countrycode
+        shortName
+        alias
+      }
+      locality
+    }
+    to {
+      country {
+        countrycode
+        shortName
+        alias
+      }
+      locality
+    }
+  }
+}

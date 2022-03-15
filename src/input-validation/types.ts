@@ -3,7 +3,7 @@
  */
 
 import { Static, TSchema, Type } from '@sinclair/typebox'
-import { countryCodes } from './country-codes'
+import { countries } from '../data/countries'
 import { currencyCodes } from './currency-codes'
 
 export const OpenLocationCode = Type.RegEx(
@@ -41,7 +41,7 @@ export const NonEmptyShortString = NonEmptyLimitedString({
 
 export type TwoLetterCountryCode = Static<typeof TwoLetterCountryCode>
 export const TwoLetterCountryCode = Type.Union(
-  countryCodes.map(({ alpha2 }) => Type.Literal(alpha2)),
+  countries.map(({ countrycode }) => Type.Literal(countrycode)),
   { title: 'ISO 3166 country code' },
 )
 

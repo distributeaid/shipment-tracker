@@ -44,7 +44,10 @@ export const makeTestServer = async (
     })
   }
 
-  return new ApolloServer(merge(serverConfig, overrides))
+  return new ApolloServer({
+    ...merge(serverConfig, overrides),
+    debug: true,
+  })
 }
 
 export const makeAdminTestServer = async (

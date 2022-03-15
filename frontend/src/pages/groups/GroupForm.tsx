@@ -4,8 +4,9 @@ import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextArea from '../../components/forms/TextArea'
 import TextField from '../../components/forms/TextField'
-import { COUNTRY_CODE_OPTIONS, GROUP_TYPE_OPTIONS } from '../../data/constants'
+import { GROUP_TYPE_OPTIONS } from '../../data/constants'
 import { useAuth } from '../../hooks/useAuth'
+import { useCountries } from '../../hooks/useCountries'
 import { GroupCreateInput, GroupQuery, GroupType } from '../../types/api-types'
 import { stripIdAndTypename } from '../../utils/types'
 
@@ -34,6 +35,7 @@ interface Props {
  */
 const GroupForm: FunctionComponent<Props> = (props) => {
   const { me: profile } = useAuth()
+  const countries = useCountries()
 
   const {
     register,
@@ -45,8 +47,15 @@ const GroupForm: FunctionComponent<Props> = (props) => {
   useEffect(
     function resetFormValues() {
       if (props.defaultValues) {
+        const defaults = stripIdAndTypename(props.defaultValues.group)
         // Update the values of the fields
-        reset(stripIdAndTypename(props.defaultValues.group))
+        reset({
+          ...defaults,
+          primaryLocation: {
+            ...defaults.primaryLocation,
+            country: defaults.primaryLocation.country?.countrycode,
+          },
+        })
       }
     },
     [props.defaultValues, reset],
@@ -91,15 +100,15 @@ const GroupForm: FunctionComponent<Props> = (props) => {
       <fieldset className="space-y-4 mt-8">
         <legend>Location</legend>
         <TextField
-          label="Town or city"
-          name="primaryLocation.townCity"
+          label="City"
+          name="primaryLocation.city"
           required
           register={register}
           errors={errors}
         />
         <SelectField
           label="Country"
-          name="primaryLocation.countryCode"
+          name="primaryLocation.country"
           defaultValue=""
           options={[
             {
@@ -107,9 +116,10 @@ const GroupForm: FunctionComponent<Props> = (props) => {
               value: '',
               disabled: true,
             },
-            ...COUNTRY_CODE_OPTIONS.sort(({ label: l1 }, { label: l2 }) =>
-              l1.localeCompare(l2),
-            ),
+            ...countries.map(({ alias, shortName, countrycode }) => ({
+              label: alias ?? shortName,
+              value: countrycode,
+            })),
           ]}
           required
           register={register}

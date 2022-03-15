@@ -4,7 +4,6 @@ query AllGroups($captainId: Int, $groupType: [GroupType!]) {
     name
     description
     groupType
-    captainId
     primaryContact {
       name
       whatsApp
@@ -13,8 +12,12 @@ query AllGroups($captainId: Int, $groupType: [GroupType!]) {
       signal
     }
     primaryLocation {
-      countryCode
-      townCity
+      country {
+        countrycode
+        shortName
+        alias
+      }
+      city
     }
   }
 }
@@ -25,6 +28,5 @@ query AllGroupsMinimal($captainId: Int, $groupType: [GroupType!]) {
     name
     description
     groupType
-    captainId
   }
 }

@@ -1,14 +1,29 @@
 import { ForbiddenError, UserInputError } from 'apollo-server'
-import { Includeable } from 'sequelize'
 import { CsvRow } from '../generateCsv'
 import LineItem from '../models/line_item'
 import Offer from '../models/offer'
 import Pallet from '../models/pallet'
 import Shipment from '../models/shipment'
 import ShipmentExport from '../models/shipment_export'
-import { MutationResolvers, QueryResolvers } from '../server-internal-types'
+import {
+  MutationResolvers,
+  QueryResolvers,
+  ResolversTypes,
+} from '../server-internal-types'
 
-const include: Includeable[] = ['userAccount']
+export const dbToGraphQL = (
+  shipmentExport: ShipmentExport,
+): ResolversTypes['ShipmentExport'] => ({
+  id: shipmentExport.id,
+  shipmentId: shipmentExport.shipmentId,
+  downloadPath: `/shipment-exports/${shipmentExport.id}`,
+  createdBy: {
+    id: shipmentExport.userAccountId,
+    isAdmin: shipmentExport.userAccount.isAdmin,
+    name: shipmentExport.userAccount.name,
+  },
+  createdAt: shipmentExport.createdAt,
+})
 
 const exportShipment: MutationResolvers['exportShipment'] = async (
   _,
@@ -66,11 +81,11 @@ const exportShipment: MutationResolvers['exportShipment'] = async (
     userAccountId: auth.userId,
   })
 
-  return (
+  return dbToGraphQL(
     (await ShipmentExport.findByPk(exportRecord.id, {
-      include,
-    })) as ShipmentExport
-  ).toWireFormat()
+      include: [{ association: 'userAccount' }],
+    })) as ShipmentExport,
+  )
 }
 
 export const HEADER_ROW = [
@@ -127,9 +142,12 @@ const listShipmentExports: QueryResolvers['listShipmentExports'] = async (
     throw new ForbiddenError('Must be admin')
   }
 
-  return (await ShipmentExport.findAll({ where: { shipmentId }, include })).map(
-    (shipmentExport: ShipmentExport) => shipmentExport.toWireFormat(),
-  )
+  const shipmentExports = await ShipmentExport.findAll({
+    where: { shipmentId },
+    include: [{ association: 'userAccount' }],
+  })
+
+  return shipmentExports.map(dbToGraphQL)
 }
 
 export { exportShipment, listShipmentExports }

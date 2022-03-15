@@ -1,6 +1,24 @@
 fragment AllShipmentFields on Shipment {
   id
-  shippingRoute
+  shipmentRoute {
+    id
+    from {
+      country {
+        countrycode
+        shortName
+        alias
+      }
+      locality
+    }
+    to {
+      country {
+        countrycode
+        shortName
+        alias
+      }
+      locality
+    }
+  }
   labelYear
   labelMonth
   offerSubmissionDeadline
@@ -9,16 +27,24 @@ fragment AllShipmentFields on Shipment {
     id
     name
     primaryLocation {
-      townCity
-      countryCode
+      city
+      country {
+        countrycode
+        shortName
+        alias
+      }
     }
   }
   sendingHubs {
     id
     name
     primaryLocation {
-      townCity
-      countryCode
+      city
+      country {
+        countrycode
+        shortName
+        alias
+      }
     }
   }
 }

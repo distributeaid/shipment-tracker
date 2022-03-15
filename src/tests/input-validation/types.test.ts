@@ -16,12 +16,12 @@ describe('input validation types', () => {
       ['NO', true],
       ['no', false],
       ['ZZ', false],
-    ])('should validate %s as %s', (countryCode, isValid) => {
+    ])('should validate %s as %s', (country, isValid) => {
       const res = validateWithJSONSchema(
         Type.Object({
-          countryCode: TwoLetterCountryCode,
+          country: TwoLetterCountryCode,
         }),
-      )({ countryCode })
+      )({ country })
       expect('errors' in res).toEqual(!isValid)
     })
   })

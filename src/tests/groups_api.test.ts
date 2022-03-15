@@ -12,7 +12,7 @@ const purgeDb = async () => sequelize.sync({ force: true })
 
 const commonGroupData = {
   groupType: GroupType.Regular,
-  primaryLocation: { countryCode: 'FR', townCity: 'Calais' },
+  primaryLocation: { country: 'FR', city: 'Calais' },
   primaryContact: { name: 'Contact', email: 'contact@example.com' },
   website: 'http://www.example.com',
 } as const
@@ -167,8 +167,12 @@ describe('Groups API', () => {
             description
             groupType
             primaryLocation {
-              countryCode
-              townCity
+              country {
+                countrycode
+                shortName
+                alias
+              }
+              city
             }
             primaryContact {
               name
@@ -188,7 +192,7 @@ describe('Groups API', () => {
             name: 'updated-contact-name',
             email: 'updated@example.com',
           },
-          primaryLocation: { countryCode: 'US', townCity: 'Bellingham' },
+          primaryLocation: { country: 'US', city: 'Bellingham' },
           captainId: newCaptain.id,
         }
 
@@ -216,11 +220,11 @@ describe('Groups API', () => {
         expect(res.data?.updateGroup?.primaryContact?.email).toEqual(
           updateParams?.primaryContact?.email,
         )
-        expect(res.data?.updateGroup?.primaryLocation?.countryCode).toEqual(
-          updateParams?.primaryLocation?.countryCode,
-        )
-        expect(res.data?.updateGroup?.primaryLocation?.townCity).toEqual(
-          updateParams?.primaryLocation?.townCity,
+        expect(
+          res.data?.updateGroup?.primaryLocation?.country.countrycode,
+        ).toEqual(updateParams?.primaryLocation?.country)
+        expect(res.data?.updateGroup?.primaryLocation?.city).toEqual(
+          updateParams?.primaryLocation?.city,
         )
         expect(res.data?.updateGroup?.captainId).toEqual(newCaptain.id)
       })
@@ -604,11 +608,7 @@ describe('Groups API', () => {
             expect(res.errors).toBeUndefined()
             expect(res?.data?.listGroups).toEqual(
               expect.arrayContaining(
-                (
-                  await Group.findAll({
-                    include: [{ association: 'captain' }],
-                  })
-                )
+                (await Group.findAll({ include: [{ association: 'captain' }] }))
                   .filter(({ name }) => expectedGroupNames.includes(name))
                   .filter(
                     ({ captain }) =>

@@ -1,5 +1,6 @@
 import { DateResolver } from 'graphql-scalars'
 import { Resolvers } from '../server-internal-types'
+import { listCountries } from './countries'
 import { addGroup, group, listGroups, updateGroup } from './group'
 import {
   acceptedReceivingGroup,
@@ -27,6 +28,7 @@ import {
   shipmentExports,
   updateShipment,
 } from './shipment'
+import { listShipmentRoutes } from './shipmentRoutes'
 import { exportShipment, listShipmentExports } from './shipment_exports'
 
 const resolvers: Resolvers = {
@@ -44,6 +46,8 @@ const resolvers: Resolvers = {
     pallet,
     lineItem,
     listShipmentExports,
+    countries: listCountries,
+    shipmentRoutes: listShipmentRoutes,
   },
 
   // Mutation Resolvers

@@ -4,12 +4,11 @@ import Badge from '../../components/Badge'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import InternalLink from '../../components/InternalLink'
 import Spinner from '../../components/Spinner'
+import { formatShipmentRouteToLabel } from '../../hooks/useShipmentRoutes'
 import { useShipmentQuery } from '../../types/api-types'
 import {
-  formatCountryCodeToName,
   formatLabelMonth,
   formatShipmentStatus,
-  formatShippingRouteName,
   getShipmentStatusBadgeColor,
 } from '../../utils/format'
 import { shipmentViewOffersRoute } from '../../utils/routes'
@@ -64,7 +63,7 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
       <p className="text-gray-600 mb-4">
         This shipment follows the{' '}
         <span className="font-semibold text-gray-800">
-          {formatShippingRouteName(shipmentData.shippingRoute)}
+          {formatShipmentRouteToLabel(shipmentData.shipmentRoute)}
         </span>{' '}
         route.
       </p>
@@ -75,8 +74,14 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
             <div key={hub.id}>
               <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
               <div className="text-gray-600">
-                {hub.primaryLocation.townCity},{' '}
-                {formatCountryCodeToName(hub.primaryLocation.countryCode)}
+                {hub.primaryLocation.city}
+                {hub.primaryLocation.country && (
+                  <>
+                    {', '}
+                    {hub.primaryLocation.country.alias ??
+                      hub.primaryLocation.country.shortName}
+                  </>
+                )}
               </div>
             </div>
           ))}
@@ -90,8 +95,14 @@ const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
             <div key={hub.id}>
               <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
               <div className="text-gray-600">
-                {hub.primaryLocation.townCity},{' '}
-                {formatCountryCodeToName(hub.primaryLocation.countryCode)}
+                {hub.primaryLocation.city}
+                {hub.primaryLocation.country && (
+                  <>
+                    {', '}
+                    {hub.primaryLocation.country.alias ??
+                      hub.primaryLocation.country.shortName}
+                  </>
+                )}
               </div>
             </div>
           ))}

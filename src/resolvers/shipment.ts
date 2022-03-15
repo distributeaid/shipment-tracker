@@ -1,6 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { isEqual, xor } from 'lodash'
+import { shipmentRoutes, wireFormatShipmentRoute } from '../data/shipmentRoutes'
 import { validateIdInput } from '../input-validation/idInputSchema'
 import {
   CurrentYearOrGreater,
@@ -14,14 +15,16 @@ import Shipment, { ShipmentAttributes } from '../models/shipment'
 import ShipmentExport from '../models/shipment_export'
 import ShipmentReceivingHub from '../models/shipment_receiving_hub'
 import ShipmentSendingHub from '../models/shipment_sending_hub'
-import UserAccount from '../models/user_account'
 import {
   MutationResolvers,
   QueryResolvers,
+  ResolversTypes,
   ShipmentResolvers,
+  ShipmentRoute,
   ShipmentStatus,
-  ShippingRoute,
 } from '../server-internal-types'
+import { dbToGraphQL as dbGroupToGraphQL } from './group'
+import { dbToGraphQL as dbShipmentExportToGraphQL } from './shipment_exports'
 
 const arraysOverlap = (a: unknown[], b: unknown[]): boolean =>
   xor(a, b).length === 0
@@ -32,16 +35,15 @@ const SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS: Readonly<ShipmentStatus[]> = [
   ShipmentStatus.Staging,
 ] as const
 
-const include = [
-  {
-    model: Group,
-    as: 'sendingHubs',
-  },
-  {
-    model: Group,
-    as: 'receivingHubs',
-  },
-]
+const dbToGraphQL = (shipment: Shipment): ResolversTypes['Shipment'] => ({
+  ...shipment.get({ plain: true }),
+  createdAt: shipment.createdAt,
+  updatedAt: shipment.updatedAt,
+  shipmentRoute: wireFormatShipmentRoute(shipment.shipmentRoute),
+  // Handled in custom resolvers
+  receivingHubs: [],
+  sendingHubs: [],
+})
 
 // Shipment query resolvers
 
@@ -69,38 +71,38 @@ const listShipments: QueryResolvers['listShipments'] = async (
   }
   const { status } = valid.value
 
-  if (!context.auth.isAdmin && status !== undefined) {
-    const forbiddenStatus = status.filter(
-      (s) => !SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS.includes(s),
-    )
-    if (forbiddenStatus.length > 0)
-      throw new ForbiddenError(
-        `non-admin users are not allowed to view shipments with status ${forbiddenStatus.join(
-          ', ',
-        )}`,
-      )
-  }
-
   if (status !== undefined) {
-    return Shipment.findAll({
-      where: {
-        status,
-      },
-      include,
-    })
+    if (!context.auth.isAdmin) {
+      const forbiddenStatus = status.filter(
+        (s) => !SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS.includes(s),
+      )
+      if (forbiddenStatus.length > 0)
+        throw new ForbiddenError(
+          `non-admin users are not allowed to view shipments with status ${forbiddenStatus.join(
+            ', ',
+          )}`,
+        )
+    }
+    return (
+      await Shipment.findAll({
+        where: {
+          status,
+        },
+      })
+    ).map(dbToGraphQL)
+  } else {
+    if (!context.auth.isAdmin) {
+      return (
+        await Shipment.findAll({
+          where: {
+            status: SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS,
+          },
+        })
+      ).map(dbToGraphQL)
+    } else {
+      return (await Shipment.findAll({})).map(dbToGraphQL)
+    }
   }
-
-  if (!context.auth.isAdmin)
-    return Shipment.findAll({
-      where: {
-        status: SHIPMENT_STATUSES_ALLOWED_FOR_NON_ADMINS,
-      },
-      include,
-    })
-
-  return Shipment.findAll({
-    include,
-  })
 }
 
 // - get shipment
@@ -111,9 +113,7 @@ const shipment: QueryResolvers['shipment'] = async (_, { id }, context) => {
     throw new UserInputError('Get shipment input invalid', valid.errors)
   }
 
-  const shipment = await Shipment.findByPk(valid.value.id, {
-    include,
-  })
+  const shipment = await Shipment.findByPk(valid.value.id, {})
 
   if (!shipment) {
     throw new ApolloError(`No shipment exists with ID "${valid.value.id}"`)
@@ -128,7 +128,7 @@ const shipment: QueryResolvers['shipment'] = async (_, { id }, context) => {
     )
   }
 
-  return shipment
+  return dbToGraphQL(shipment)
 }
 
 // Shipment mutation resolvers
@@ -137,7 +137,7 @@ const shipment: QueryResolvers['shipment'] = async (_, { id }, context) => {
 
 const addShipmentInput = Type.Object(
   {
-    shippingRoute: Type.Enum(ShippingRoute),
+    shipmentRoute: Type.Union(shipmentRoutes.map(({ id }) => Type.Literal(id))),
     labelYear: CurrentYearOrGreater(),
     labelMonth: MonthIndexStartingAt1,
     sendingHubs: Type.Array(ID, { minItems: 1 }),
@@ -215,8 +215,15 @@ const addShipment: MutationResolvers['addShipment'] = async (
     )
   }
 
+  let shipmentRoute: ShipmentRoute
+  try {
+    shipmentRoute = wireFormatShipmentRoute(valid.value.shipmentRoute)
+  } catch (err) {
+    throw new UserInputError((err as Error).message)
+  }
+
   const shipment = await Shipment.create({
-    shippingRoute: valid.value.shippingRoute,
+    shipmentRoute: valid.value.shipmentRoute,
     labelYear: valid.value.labelYear,
     labelMonth: valid.value.labelMonth,
     sendingHubs: sendingHubs,
@@ -243,9 +250,19 @@ const addShipment: MutationResolvers['addShipment'] = async (
       ),
     ),
   ])
-  return Shipment.findByPk(shipment.id, {
-    include,
-  }) as Promise<Shipment>
+
+  return dbToGraphQL(
+    (await Shipment.findByPk(shipment.id, {
+      include: [
+        {
+          association: 'sendingHubs',
+        },
+        {
+          association: 'receivingHubs',
+        },
+      ],
+    })) as Shipment,
+  )
 }
 
 // - update shipment
@@ -260,7 +277,9 @@ const updateShipmentInput = Type.Object(
         receivingHubs: Type.Optional(Type.Array(ID, { minItems: 1 })),
         labelYear: Type.Optional(CurrentYearOrGreater()),
         labelMonth: Type.Optional(MonthIndexStartingAt1),
-        shippingRoute: Type.Optional(Type.Enum(ShippingRoute)),
+        shipmentRoute: Type.Optional(
+          Type.Union(shipmentRoutes.map(({ id }) => Type.Literal(id))),
+        ),
         pricing: Type.Optional(Pricing),
       },
       { additionalProperties: false },
@@ -285,7 +304,9 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     throw new ForbiddenError('updateShipment forbidden to non-admin users')
   }
 
-  const shipment = await Shipment.findByPk(valid.value.id, { include })
+  const shipment = await Shipment.findByPk(valid.value.id, {
+    include: [{ association: 'sendingHubs' }, { association: 'receivingHubs' }],
+  })
 
   if (shipment === null) {
     throw new ApolloError(`No shipment exists with ID "${valid.value.id}"`)
@@ -297,7 +318,7 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     sendingHubs: sendingHubsUpdate,
     labelMonth,
     labelYear,
-    shippingRoute,
+    shipmentRoute,
     pricing,
   } = valid.value.input
 
@@ -375,8 +396,13 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     )
   }
 
-  if (shippingRoute !== undefined) {
-    updateAttributes.shippingRoute = shippingRoute
+  if (shipmentRoute !== undefined) {
+    try {
+      const route = wireFormatShipmentRoute(shipmentRoute)
+      updateAttributes.shipmentRoute = shipmentRoute
+    } catch (err) {
+      throw new UserInputError((err as Error).message)
+    }
   }
 
   if (pricing !== undefined && !isEqual(pricing, shipment.pricing)) {
@@ -442,42 +468,36 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     ])
   }
 
-  await shipment.update(updateAttributes)
-
-  return Shipment.findByPk(shipment.id, {
-    include,
-  }) as Promise<Shipment>
+  return dbToGraphQL(await shipment.update(updateAttributes))
 }
 
 // Shipment custom resolvers
 const sendingHubs: ShipmentResolvers['sendingHubs'] = async (parent) => {
-  const ids = parent.sendingHubs.map(({ id }) => id)
-  const sendingHubs = await Group.findAll({
+  const sendingHubs = await ShipmentSendingHub.findAll({
     where: {
-      id: ids,
+      shipmentId: parent.id,
     },
+    include: [
+      {
+        association: 'hub',
+      },
+    ],
   })
-
-  if (!sendingHubs) {
-    throw new ApolloError(`No sending groups exists with IDs "${ids}"`)
-  }
-
-  return sendingHubs
+  return sendingHubs.map(({ hub }) => dbGroupToGraphQL(hub))
 }
 
 const receivingHubs: ShipmentResolvers['receivingHubs'] = async (parent) => {
-  const ids = parent.receivingHubs.map(({ id }) => id)
-  const receivingHubs = await Group.findAll({
+  const receivingHubs = await ShipmentReceivingHub.findAll({
     where: {
-      id: ids,
+      shipmentId: parent.id,
     },
+    include: [
+      {
+        association: 'hub',
+      },
+    ],
   })
-
-  if (!receivingHubs) {
-    throw new ApolloError(`No receiving group exists with IDs "${ids}"`)
-  }
-
-  return receivingHubs
+  return receivingHubs.map(({ hub }) => dbGroupToGraphQL(hub))
 }
 
 const shipmentExports: ShipmentResolvers['exports'] = async (
@@ -489,12 +509,12 @@ const shipmentExports: ShipmentResolvers['exports'] = async (
     throw new ForbiddenError('Must be admin to query shipment exports')
   }
 
-  return ShipmentExport.findAll({
-    where: { shipmentId: parent.id },
-    include: [UserAccount],
-  }).then((shipmentExports) =>
-    shipmentExports.map((shipmentExport) => shipmentExport.toWireFormat()),
-  )
+  return (
+    await ShipmentExport.findAll({
+      where: { shipmentId: parent.id },
+      include: [{ association: 'userAccount' }],
+    })
+  ).map(dbShipmentExportToGraphQL)
 }
 
 export {

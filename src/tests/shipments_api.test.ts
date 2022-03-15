@@ -9,7 +9,6 @@ import {
   GroupType,
   Shipment as GqlShipment,
   ShipmentStatus,
-  ShippingRoute,
 } from '../server-internal-types'
 import { makeAdminTestServer, makeTestServer } from '../testServer'
 import { createGroup, createShipment, TypedGraphQLResponse } from './helpers'
@@ -34,13 +33,13 @@ describe('Shipments API', () => {
     group1 = await createGroup({
       name: 'group 1',
       groupType: GroupType.DaHub,
-      primaryLocation: { countryCode: 'GB', townCity: 'Bristol' },
+      primaryLocation: { country: 'GB', city: 'Bristol' },
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
     })
     group2 = await createGroup({
       name: 'group 2',
       groupType: GroupType.Regular,
-      primaryLocation: { countryCode: 'FR', townCity: 'Bordeaux' },
+      primaryLocation: { country: 'FR', city: 'Bordeaux' },
       primaryContact: {
         name: 'Second Contact',
         email: '2ndcontact@example.com',
@@ -52,7 +51,9 @@ describe('Shipments API', () => {
     mutation ($input: ShipmentCreateInput!) {
       addShipment(input: $input) {
         id
-        shippingRoute
+        shipmentRoute {
+          id
+        }
         labelYear
         labelMonth
         sendingHubs {
@@ -74,7 +75,7 @@ describe('Shipments API', () => {
         query: ADD_SHIPMENT,
         variables: {
           input: {
-            shippingRoute: ShippingRoute.UkToFr,
+            shipmentRoute: 'UkToFr',
             labelYear: nextYear,
             labelMonth: 1,
             sendingHubs: [group1.id],
@@ -101,7 +102,7 @@ describe('Shipments API', () => {
         query: ADD_SHIPMENT,
         variables: {
           input: {
-            shippingRoute: ShippingRoute.UkToFr,
+            shipmentRoute: 'UkToFr',
             labelYear: nextYear,
             labelMonth: 1,
             sendingHubs: [group1.id],
@@ -109,12 +110,12 @@ describe('Shipments API', () => {
             status: ShipmentStatus.Open,
           },
         },
-      })) as TypedGraphQLResponse<{ addShipment: Shipment }>
+      })) as TypedGraphQLResponse<{
+        addShipment: GqlShipment
+      }>
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.addShipment?.shippingRoute).toEqual(
-        ShippingRoute.UkToFr,
-      )
+      expect(res?.data?.addShipment?.shipmentRoute.id).toEqual('UkToFr')
       expect(res?.data?.addShipment?.labelYear).toEqual(nextYear)
       expect(res?.data?.addShipment?.labelMonth).toEqual(1)
       expect(res?.data?.addShipment?.sendingHubs).toHaveLength(1)
@@ -149,7 +150,7 @@ describe('Shipments API', () => {
 
     beforeEach(async () => {
       shipment = await createShipment({
-        shippingRoute: ShippingRoute.UkToFr,
+        shipmentRoute: 'UkToFr',
         labelYear: nextYear,
         labelMonth: 1,
         sendingHubs: [group1.id],
@@ -270,7 +271,7 @@ describe('Shipments API', () => {
         group3 = await createGroup({
           name: 'group 3',
           groupType: GroupType.Regular,
-          primaryLocation: { countryCode: 'DE', townCity: 'Berlin' },
+          primaryLocation: { country: 'DE', city: 'Berlin' },
           primaryContact: {
             name: 'Third Contact',
             email: '3rdcontact@example.com',
@@ -279,7 +280,7 @@ describe('Shipments API', () => {
         group4 = await createGroup({
           name: 'group 4',
           groupType: GroupType.Regular,
-          primaryLocation: { countryCode: 'SE', townCity: 'Lund' },
+          primaryLocation: { country: 'SE', city: 'Lund' },
           primaryContact: {
             name: 'Fourth Contact',
             email: '4thcontact@example.com',
@@ -288,7 +289,7 @@ describe('Shipments API', () => {
         group5 = await createGroup({
           name: 'group 5',
           groupType: GroupType.Regular,
-          primaryLocation: { countryCode: 'NO', townCity: 'Trondheim' },
+          primaryLocation: { country: 'NO', city: 'Trondheim' },
           primaryContact: {
             name: 'Fifth Contact',
             email: '5thcontact@example.com',
@@ -301,7 +302,7 @@ describe('Shipments API', () => {
             query: ADD_SHIPMENT,
             variables: {
               input: {
-                shippingRoute: ShippingRoute.UkToFr,
+                shipmentRoute: 'UkToFr',
                 labelYear: nextYear,
                 labelMonth: 1,
                 sendingHubs: [group1.id, group2.id],
@@ -412,7 +413,7 @@ describe('Shipments API', () => {
 
     beforeEach(async () => {
       shipment1 = await createShipment({
-        shippingRoute: ShippingRoute.UkToFr,
+        shipmentRoute: 'UkToFr',
         labelYear: nextYear,
         labelMonth: 1,
         sendingHubs: [group1.id],
@@ -421,7 +422,7 @@ describe('Shipments API', () => {
       })
 
       shipment2 = await createShipment({
-        shippingRoute: ShippingRoute.UkToFr,
+        shipmentRoute: 'UkToFr',
         labelYear: nextYear + 1,
         labelMonth: 6,
         sendingHubs: [group2.id],
@@ -517,7 +518,7 @@ describe('Shipments API', () => {
 
     beforeEach(async () => {
       shipment = await createShipment({
-        shippingRoute: ShippingRoute.UkToFr,
+        shipmentRoute: 'UkToFr',
         labelYear: nextYear,
         labelMonth: 1,
         sendingHubs: [group1.id],
@@ -526,7 +527,7 @@ describe('Shipments API', () => {
       })
 
       adminOnlyShipment = await createShipment({
-        shippingRoute: ShippingRoute.UkToFr,
+        shipmentRoute: 'UkToFr',
         labelYear: nextYear,
         labelMonth: 1,
         sendingHubs: [group1.id],
@@ -546,7 +547,9 @@ describe('Shipments API', () => {
     const SHIPMENT = gql`
       query ($id: Int!) {
         shipment(id: $id) {
-          shippingRoute
+          shipmentRoute {
+            id
+          }
         }
       }
     `
@@ -554,7 +557,9 @@ describe('Shipments API', () => {
     const SHIPMENT_WITH_EXPORTS = gql`
       query ($id: Int!) {
         shipment(id: $id) {
-          shippingRoute
+          shipmentRoute {
+            id
+          }
           exports {
             id
             downloadPath
@@ -582,10 +587,12 @@ describe('Shipments API', () => {
           const res = (await testServer.executeOperation({
             query: SHIPMENT,
             variables: { id: shipment.id },
-          })) as TypedGraphQLResponse<{ shipment: Shipment }>
+          })) as TypedGraphQLResponse<{ shipment: GqlShipment }>
 
           expect(res.errors).toBeUndefined()
-          expect(res.data?.shipment?.shippingRoute).toBe(shipment.shippingRoute)
+          expect(res.data?.shipment?.shipmentRoute.id).toBe(
+            shipment.shipmentRoute,
+          )
         })
 
         it('returns exports when admins ask for them', async () => {

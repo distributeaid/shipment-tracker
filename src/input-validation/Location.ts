@@ -6,7 +6,7 @@ import {
 } from './types'
 
 export const Location = Type.Object({
-  townCity: NonEmptyShortString,
-  countryCode: Type.Optional(TwoLetterCountryCode),
+  city: NonEmptyShortString,
+  country: Type.Optional(TwoLetterCountryCode),
   openLocationCode: Type.Optional(OpenLocationCode),
 })

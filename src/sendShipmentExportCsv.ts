@@ -1,7 +1,16 @@
 import { ForbiddenError } from 'apollo-server'
 import { Request, Response } from 'express'
 import { AuthContext } from './authenticateRequest'
+import Shipment from './models/shipment'
 import ShipmentExport from './models/shipment_export'
+
+const displayName = (shipment: Shipment): string =>
+  [
+    'Shipment',
+    shipment.shipmentRoute,
+    shipment.labelYear,
+    shipment.labelMonth.toString().padStart(2, '0'),
+  ].join('-')
 
 const sendShipmentExportCsv = async (req: Request, res: Response) => {
   const auth = req.user as AuthContext
@@ -19,7 +28,7 @@ const sendShipmentExportCsv = async (req: Request, res: Response) => {
     return
   }
 
-  const filename = shipmentExport.shipment.displayName() + '.csv'
+  const filename = displayName(shipmentExport.shipment) + '.csv'
 
   res.contentType('text/csv')
   res.attachment(filename)

@@ -1,24 +1,21 @@
 import { BadgeColor } from '../components/Badge'
 import { SelectOption } from '../components/forms/SelectField'
 import {
-  COUNTRY_CODES_TO_NAME,
   LINE_ITEM_CATEGORY_OPTIONS,
   MONTHS,
   SHIPMENT_STATUS_OPTIONS,
-  SHIPPING_ROUTE_OPTIONS,
 } from '../data/constants'
+import { formatShipmentRouteToID } from '../hooks/useShipmentRoutes'
 import {
   AllGroupsMinimalQuery,
   GroupType,
   LineItem,
   LineItemCategory,
   LineItemContainerType,
-  Maybe,
   PalletType,
   Shipment,
   ShipmentQuery,
   ShipmentStatus,
-  ShippingRoute,
 } from '../types/api-types'
 
 export function formatGroupType(type: GroupType) {
@@ -39,16 +36,6 @@ export function formatGroupType(type: GroupType) {
  */
 export function formatLabelMonth(labelMonth: number) {
   return MONTHS[labelMonth - 1]
-}
-
-export function formatCountryCodeToName(countryCode?: Maybe<string>) {
-  if (countryCode && COUNTRY_CODES_TO_NAME.hasOwnProperty(countryCode)) {
-    return COUNTRY_CODES_TO_NAME[
-      countryCode as keyof typeof COUNTRY_CODES_TO_NAME
-    ]
-  }
-
-  return 'Unknown Country'
 }
 
 export function formatLineItemCategory(category: LineItemCategory) {
@@ -102,20 +89,13 @@ export function formatShipmentName(
     | Shipment
     | Pick<
         ShipmentQuery['shipment'],
-        'labelMonth' | 'labelYear' | 'shippingRoute'
+        'labelMonth' | 'labelYear' | 'shipmentRoute'
       >,
 ) {
   const month = shipment.labelMonth.toString().padStart(2, '0')
-  return `${shipment.shippingRoute.toString().replace('_TO_', '-')}-${
+  return `${formatShipmentRouteToID(shipment.shipmentRoute)}-${
     shipment.labelYear
   }-${month}`
-}
-
-export function formatShippingRouteName(shippingRoute: ShippingRoute) {
-  const matchingRoute = SHIPPING_ROUTE_OPTIONS.find(
-    (option) => option.value === shippingRoute,
-  )
-  return matchingRoute?.label || 'Unknown route'
 }
 
 export function formatShipmentStatus(shipmentStatus: ShipmentStatus) {

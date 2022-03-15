@@ -14,7 +14,7 @@
     "predev": "yarn codegen",
     "dev:server": "ts-node-dev --no-notify --respawn --transpile-only src/server/dev",
     "dev": "npm-run-all --parallel dev:server codegen:watch",
-    "start": "./node_modules/.bin/nodemon --optimize_for_size --max_old_space_size=920 --gc_interval=100 dist/src/server/dev.js",
+    "start": "./node_modules/.bin/nodemon --ignore frontend --optimize_for_size --max_old_space_size=920 --gc_interval=100 dist/src/server/dev.js",
     "prod:server": "./node_modules/.bin/nodemon --optimize_for_size --max_old_space_size=920 --gc_interval=100 dist/src/server/prod.js",
     "clean": "rm -rf dist",
     "build": "yarn --silent run clean && graphql-codegen && tsc",

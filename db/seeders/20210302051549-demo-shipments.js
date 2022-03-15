@@ -20,7 +20,7 @@ module.exports = {
 
     await queryInterface.bulkInsert('Shipments', [
       {
-        shippingRoute: 'UK',
+        shipmentRoute: 'UK',
         labelYear: 2021,
         labelMonth: 3,
         offerSubmissionDeadline: new Date(),

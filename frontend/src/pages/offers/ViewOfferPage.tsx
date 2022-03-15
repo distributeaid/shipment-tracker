@@ -102,7 +102,7 @@ const ViewOfferPage: FunctionComponent = () => {
               <ReadOnlyField label="Group">
                 <p className="text-gray-800">{sendingGroup?.group.name}</p>
                 <p className="text-gray-600 text-sm">
-                  {sendingGroup?.group.primaryLocation.townCity}
+                  {sendingGroup?.group.primaryLocation.city}
                 </p>
               </ReadOnlyField>
               <div>

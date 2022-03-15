@@ -10,7 +10,6 @@ import {
   GroupType,
   OfferStatus,
   ShipmentStatus,
-  ShippingRoute,
 } from '../server-internal-types'
 import { makeAdminTestServer, makeTestServer } from '../testServer'
 import { createGroup, createShipment, TypedGraphQLResponse } from './helpers'
@@ -49,7 +48,7 @@ describe('Offers API', () => {
       {
         name: 'group 1',
         groupType: GroupType.DaHub,
-        primaryLocation: { countryCode: 'GB', townCity: 'Bristol' },
+        primaryLocation: { country: 'GB', city: 'Bristol' },
         primaryContact: { name: 'Contact', email: 'contact@example.com' },
       },
       captain.id,
@@ -58,14 +57,14 @@ describe('Offers API', () => {
     group2 = await createGroup({
       name: 'group 2',
       groupType: GroupType.Regular,
-      primaryLocation: { countryCode: 'FR', townCity: 'Bordeaux' },
+      primaryLocation: { country: 'FR', city: 'Bordeaux' },
       primaryContact: {
         name: 'Second Contact',
         email: '2ndcontact@example.com',
       },
     })
     shipment = await createShipment({
-      shippingRoute: ShippingRoute.UkToGr,
+      shipmentRoute: 'UkToGr',
       labelYear: 2020,
       labelMonth: 1,
       sendingHubs: [captainsGroup.id],
@@ -126,7 +125,7 @@ describe('Offers API', () => {
         `does not create an offer shipment status is %s`,
         async (shipmentStatus) => {
           const shipment = await createShipment({
-            shippingRoute: ShippingRoute.UkToGr,
+            shipmentRoute: 'UkToGr',
             labelYear: 2020,
             labelMonth: 1,
             sendingHubs: [captainsGroup.id],
@@ -392,7 +391,7 @@ describe('Offers API', () => {
       otherShipment = await createShipment({
         labelYear: 2021,
         labelMonth: 1,
-        shippingRoute: ShippingRoute.UkToFr,
+        shipmentRoute: 'UkToFr',
         sendingHubs: [captainsGroup.id],
         receivingHubs: [captainsGroup.id],
         status: ShipmentStatus.Open,

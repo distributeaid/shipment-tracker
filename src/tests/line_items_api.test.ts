@@ -17,7 +17,6 @@ import {
   PalletType,
   PaymentStatus,
   ShipmentStatus,
-  ShippingRoute,
 } from '../server-internal-types'
 import { makeAdminTestServer, makeTestServer } from '../testServer'
 import { TypedGraphQLResponse } from './helpers'
@@ -51,13 +50,13 @@ describe('LineItems API', () => {
     group = await Group.create({
       name: 'group 1',
       groupType: GroupType.DaHub,
-      primaryLocation: { countryCode: 'GB', townCity: 'Bristol' },
+      primaryLocation: { country: 'GB', city: 'Bristol' },
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
       captainId: captain.id,
     })
 
     shipment = await Shipment.create({
-      shippingRoute: ShippingRoute.UkToBa,
+      shipmentRoute: 'UkToBa',
       labelYear: 2020,
       labelMonth: 1,
       sendingHubs: [group],
@@ -267,12 +266,7 @@ describe('LineItems API', () => {
     describe('destroyLineItem', () => {
       const DESTROY_LINE_ITEM = gql`
         mutation ($id: Int!) {
-          destroyLineItem(id: $id) {
-            id
-            lineItems {
-              id
-            }
-          }
+          destroyLineItem(id: $id)
         }
       `
 
@@ -285,7 +279,7 @@ describe('LineItems API', () => {
         })) as TypedGraphQLResponse<{ destroyLineItem: Pallet }>
 
         expect(res.errors).toBeUndefined()
-        expect(res.data?.destroyLineItem?.lineItems.length).toEqual(0)
+        expect(res.data?.destroyLineItem).toEqual(true)
       })
     })
 
@@ -295,12 +289,7 @@ describe('LineItems API', () => {
       const MOVE_LINE_ITEM = gql`
         mutation ($id: Int!, $targetPalletId: Int!) {
           moveLineItem(id: $id, targetPalletId: $targetPalletId) {
-            pallets {
-              id
-              lineItems {
-                id
-              }
-            }
+            id
           }
         }
       `
@@ -321,26 +310,17 @@ describe('LineItems API', () => {
             id: lineItem.id,
             targetPalletId: palletTwo.id,
           },
-        })) as TypedGraphQLResponse<{ moveLineItem: Offer }>
+        })) as TypedGraphQLResponse<{ moveLineItem: LineItem }>
 
         expect(res.errors).toBeUndefined()
 
+        expect(res.data?.moveLineItem?.id).toEqual(lineItem.id)
+
+        await pallet.reload({ include: 'lineItems' })
         await palletTwo.reload({ include: 'lineItems' })
 
-        expect(palletTwo.lineItems[0].id).toEqual(lineItem.id)
-        expect(res.data?.moveLineItem?.pallets.length).toEqual(2)
-
-        expect(res.data?.moveLineItem?.pallets.length).toEqual(2)
-
-        const originalPallet = res.data?.moveLineItem?.pallets.find(
-          (p) => p.id === pallet.id,
-        )
-        const targetPallet = res.data?.moveLineItem?.pallets.find(
-          (p) => p.id === palletTwo.id,
-        )
-
-        expect(originalPallet!.lineItems.length).toEqual(0)
-        expect(targetPallet!.lineItems[0].id).toEqual(lineItem.id)
+        expect(pallet!.lineItems.length).toEqual(0)
+        expect(palletTwo!.lineItems[0].id).toEqual(lineItem.id)
       })
     })
   })

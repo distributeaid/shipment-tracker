@@ -23,7 +23,10 @@ const COLUMNS: Column<AllGroupsQuery['listGroups'][0]>[] = [
   {
     Header: 'Location',
     accessor: (group) =>
-      `${group.primaryLocation.townCity} (${group.primaryLocation.countryCode})`,
+      `${group.primaryLocation.city} (${
+        group.primaryLocation.country?.alias ??
+        group.primaryLocation.country?.shortName
+      })`,
   },
   {
     Header: 'Type',

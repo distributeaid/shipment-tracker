@@ -13,11 +13,8 @@ import Button from '../../components/Button'
 import InlineError from '../../components/forms/InlineError'
 import Label from '../../components/forms/Label'
 import SelectField from '../../components/forms/SelectField'
-import {
-  MONTH_OPTIONS,
-  SHIPMENT_STATUS_OPTIONS,
-  SHIPPING_ROUTE_OPTIONS,
-} from '../../data/constants'
+import { MONTH_OPTIONS, SHIPMENT_STATUS_OPTIONS } from '../../data/constants'
+import { useShipmentRoutes } from '../../hooks/useShipmentRoutes'
 import {
   GroupType,
   ShipmentCreateInput,
@@ -66,6 +63,7 @@ type HubSelectOption = {
 const ShipmentForm: FunctionComponent<Props> = (props) => {
   const [hubs, setHubs] = useState<HubSelectOption[]>([])
   const [isExistingShipment, setIsExistingShipment] = useState(false)
+  const shipmentRoutes = useShipmentRoutes()
 
   // Load the list of groups
   const { data: groups, loading: hubListIsLoading } = useAllGroupsMinimalQuery({
@@ -107,6 +105,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
       if (props.defaultValues) {
         reset({
           ...props.defaultValues.shipment,
+          shipmentRoute: props.defaultValues.shipment.shipmentRoute.id,
           sendingHubs: props.defaultValues.shipment.sendingHubs.map(
             ({ id }) => id,
           ),
@@ -182,9 +181,12 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
         />
       )}
       <SelectField
-        options={SHIPPING_ROUTE_OPTIONS}
+        options={shipmentRoutes.map((route) => ({
+          label: route.label,
+          value: route.id,
+        }))}
         label="Shipping route"
-        name="shippingRoute"
+        name="shipmentRoute"
         register={register}
         required
         errors={errors}
@@ -232,6 +234,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
               options={hubs}
               isMulti
               value={hubs.filter((hub) => field.value?.includes(hub.value))}
+              id="new-shipment-sendingHubs"
             />
           )}
         />
@@ -252,6 +255,7 @@ const ShipmentForm: FunctionComponent<Props> = (props) => {
               options={hubs}
               isMulti
               value={hubs.filter((hub) => field.value?.includes(hub.value))}
+              id="new-shipment-receivingHubs"
             />
           )}
         />

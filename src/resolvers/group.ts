@@ -1,7 +1,8 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { strict as assert } from 'assert'
-import { FindOptions, Includeable, Op } from 'sequelize'
+import { FindOptions, Op } from 'sequelize'
+import { getCountryByCountryCode } from '../data/getCountryByCountryCode'
 import { Contact } from '../input-validation/Contact'
 import { validateIdInput } from '../input-validation/idInputSchema'
 import { Location } from '../input-validation/Location'
@@ -18,9 +19,21 @@ import {
   GroupType,
   MutationResolvers,
   QueryResolvers,
+  ResolversTypes,
 } from '../server-internal-types'
 
-const include: Includeable[] = ['captain']
+export const dbToGraphQL = (group: Group): ResolversTypes['Group'] => ({
+  ...group.get({ plain: true }),
+  createdAt: group.createdAt,
+  updatedAt: group.updatedAt,
+  primaryLocation: {
+    ...group.primaryLocation,
+    country:
+      group.primaryLocation.country === undefined
+        ? undefined
+        : getCountryByCountryCode(group.primaryLocation.country),
+  },
+})
 
 // Group query resolvers
 
@@ -40,9 +53,7 @@ const listGroups: QueryResolvers['listGroups'] = async (_, input) => {
     throw new UserInputError('List groups arguments invalid', valid.errors)
   }
 
-  const query = {
-    include,
-  } as FindOptions<Group['_attributes']>
+  const query = {} as FindOptions<Group['_attributes']>
 
   const { groupType, captainId } = valid.value
 
@@ -60,7 +71,9 @@ const listGroups: QueryResolvers['listGroups'] = async (_, input) => {
     }
   }
 
-  return Group.findAll(query)
+  const groups = await Group.findAll(query)
+
+  return groups.map(dbToGraphQL)
 }
 
 const group: QueryResolvers['group'] = async (_, { id }) => {
@@ -69,12 +82,12 @@ const group: QueryResolvers['group'] = async (_, { id }) => {
     throw new UserInputError('Group arguments invalid', valid.errors)
   }
 
-  const group = await Group.findByPk(valid.value.id, { include })
+  const group = await Group.findByPk(valid.value.id)
   if (!group) {
     throw new ApolloError(`No group exists with ID ${valid.value.id}`)
   }
 
-  return group
+  return dbToGraphQL(group)
 }
 
 // Group mutation resolvers
@@ -131,10 +144,12 @@ const addGroup: MutationResolvers['addGroup'] = async (
     }
   }
 
-  return Group.create({
+  const group = await Group.create({
     ...valid.value,
     captainId: context.auth.userId,
   })
+
+  return dbToGraphQL(group)
 }
 
 // - update a group
@@ -215,7 +230,9 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
     updateAttributes.captainId = captain.id
   }
 
-  return group.update(updateAttributes)
+  const updatedGroup = await group.update(updateAttributes)
+
+  return dbToGraphQL(updatedGroup)
 }
 
 // Group custom resolvers

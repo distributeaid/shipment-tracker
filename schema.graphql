@@ -3,8 +3,8 @@ scalar DateTime
 scalar Currency
 
 type Location {
-  countryCode: String
-  townCity: String!
+  country: Country
+  city: String!
   openLocationCode: String
 }
 
@@ -17,8 +17,8 @@ type ContactInfo {
 }
 
 input LocationInput {
-  countryCode: String
-  townCity: String!
+  country: ID
+  city: String!
   openLocationCode: String
 }
 
@@ -39,7 +39,6 @@ type Group {
   primaryContact: ContactInfo!
   website: String
   captainId: Int!
-
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -64,7 +63,7 @@ input GroupUpdateInput {
 }
 
 input ShipmentUpdateInput {
-  shippingRoute: ShippingRoute
+  shipmentRoute: ID
   labelYear: Int
   labelMonth: Int
   sendingHubs: [Int!]
@@ -78,6 +77,8 @@ type Query {
 
   listGroups(groupType: [GroupType!], captainId: Int): [Group!]!
 
+  shipmentRoutes: [ShipmentRoute!]!
+
   shipment(id: Int!): Shipment!
   listShipments(status: [ShipmentStatus!]): [Shipment!]!
 
@@ -89,6 +90,8 @@ type Query {
   lineItem(id: Int!): LineItem!
 
   listShipmentExports(shipmentId: Int!): [ShipmentExport!]!
+
+  countries: [Country!]!
 }
 
 type Mutation {
@@ -103,17 +106,17 @@ type Mutation {
 
   addPallet(input: PalletCreateInput!): Pallet!
   updatePallet(id: Int!, input: PalletUpdateInput!): Pallet!
-  destroyPallet(id: Int!): Offer! # return the destroyed pallet's offer
+  destroyPallet(id: Int!): Boolean!
   addLineItem(palletId: Int!): LineItem!
   updateLineItem(id: Int!, input: LineItemUpdateInput!): LineItem!
-  destroyLineItem(id: Int!): Pallet!
-  moveLineItem(id: Int!, targetPalletId: Int!): Offer!
+  destroyLineItem(id: Int!): Boolean!
+  moveLineItem(id: Int!, targetPalletId: Int!): LineItem!
 
   exportShipment(shipmentId: Int!): ShipmentExport!
 }
 
 input ShipmentCreateInput {
-  shippingRoute: ShippingRoute!
+  shipmentRoute: ID!
   labelYear: Int!
   labelMonth: Int!
   sendingHubs: [Int!]!
@@ -122,17 +125,21 @@ input ShipmentCreateInput {
   pricing: ShipmentPricingInput
 }
 
-enum ShippingRoute {
-  UK_TO_FR
-  UK_TO_GR
-  UK_TO_CS
-  UK_TO_BA
-  UK_TO_LB
-  DE_TO_FR
-  DE_TO_GR
-  DE_TO_CS
-  DE_TO_BA
-  DE_TO_LB
+type Country {
+  countrycode: ID!
+  shortName: String!
+  alias: String
+}
+
+type Region {
+  country: Country!
+  locality: String
+}
+
+type ShipmentRoute {
+  id: ID!
+  from: Region!
+  to: Region!
 }
 
 enum ShipmentStatus {
@@ -149,7 +156,7 @@ enum ShipmentStatus {
 
 type Shipment {
   id: Int!
-  shippingRoute: ShippingRoute!
+  shipmentRoute: ShipmentRoute!
   # label{year,month} are for identification purposes only e.g. for deriving
   # display names like "UK-2021-03".
   labelYear: Int!

@@ -9,6 +9,7 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript'
+import { countries } from '../data/countries'
 import { ContactInfo, GroupType, Location } from '../server-internal-types'
 import UserAccount from './user_account'
 
@@ -17,7 +18,9 @@ export interface GroupAttributes {
   name: string
   description?: string | null
   groupType: GroupType
-  primaryLocation: Location
+  primaryLocation: Omit<Location, 'country'> & {
+    country?: typeof countries[number]['countrycode']
+  }
   primaryContact: ContactInfo
   website?: string | null
   captainId: number
@@ -45,7 +48,7 @@ export default class Group extends Model<
   public groupType!: GroupType
 
   @Column(DataType.JSONB)
-  public primaryLocation!: Location
+  public primaryLocation!: GroupAttributes['primaryLocation']
 
   @Column(DataType.JSONB)
   public primaryContact!: ContactInfo

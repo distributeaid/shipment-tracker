@@ -12,12 +12,32 @@ import {
   PalletType,
   PaymentStatus,
   QueryResolvers,
+  ResolversTypes,
 } from '../server-internal-types'
-import getPalletWithParentAssociations from './getPalletWithParentAssociations'
+import { dbToGraphQL as dbLineItemToGraphQL } from './line_items'
 import {
   authorizeOfferMutation,
   authorizeOfferQuery,
 } from './offer_authorization'
+
+export const dbToGraphQL = (pallet: Pallet): ResolversTypes['Pallet'] => ({
+  ...pallet.get({ plain: true }),
+  createdAt: pallet.createdAt,
+  updatedAt: pallet.updatedAt,
+  // Handled in custom resolver
+  lineItems: undefined as any,
+})
+
+const offerInclude = [
+  { association: 'sendingGroup' },
+  { association: 'shipment' },
+]
+const include = [
+  {
+    association: 'offer',
+    include: offerInclude,
+  },
+]
 
 // Pallet mutation resolvers
 
@@ -44,7 +64,7 @@ const addPallet: MutationResolvers['addPallet'] = async (
   }
 
   const offer = await Offer.findByPk(valid.value.offerId, {
-    include: [{ association: 'sendingGroup' }, { association: 'shipment' }],
+    include: offerInclude,
   })
   if (offer === null) {
     throw new UserInputError(`Offer ${valid.value.offerId} does not exist`)
@@ -52,11 +72,13 @@ const addPallet: MutationResolvers['addPallet'] = async (
 
   authorizeOfferMutation(offer, context)
 
-  return Pallet.create({
+  const pallet = await Pallet.create({
     ...input,
     paymentStatus: PaymentStatus.Uninitiated,
     paymentStatusChangeTime: new Date(),
   })
+
+  return dbToGraphQL(pallet)
 }
 
 // - update pallet
@@ -87,7 +109,7 @@ const updatePallet: MutationResolvers['updatePallet'] = async (
     throw new UserInputError('Add pallet arguments invalid', valid.errors)
   }
 
-  const pallet = await getPalletWithParentAssociations(valid.value.id)
+  const pallet = await Pallet.findByPk(valid.value.id, { include })
 
   if (!pallet) {
     throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
@@ -112,7 +134,9 @@ const updatePallet: MutationResolvers['updatePallet'] = async (
     updateAttributes.palletType = valid.value.input.palletType
   }
 
-  return pallet.update(updateAttributes)
+  const updatedPallet = await pallet.update(updateAttributes)
+
+  return dbToGraphQL(updatedPallet)
 }
 
 // - get pallet
@@ -123,7 +147,7 @@ const pallet: QueryResolvers['pallet'] = async (_, { id }, context) => {
     throw new UserInputError('Get pallet input invalid', valid.errors)
   }
 
-  const pallet = await getPalletWithParentAssociations(valid.value.id)
+  const pallet = await Pallet.findByPk(valid.value.id, { include })
 
   if (pallet === null) {
     throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
@@ -137,7 +161,7 @@ const pallet: QueryResolvers['pallet'] = async (_, { id }, context) => {
 
   authorizeOfferQuery(offer, context)
 
-  return pallet
+  return dbToGraphQL(pallet)
 }
 
 // - destroy pallet
@@ -152,7 +176,7 @@ const destroyPallet: MutationResolvers['destroyPallet'] = async (
     throw new UserInputError('Destroy pallet input invalid', valid.errors)
   }
 
-  const pallet = await getPalletWithParentAssociations(valid.value.id)
+  const pallet = await Pallet.findByPk(valid.value.id, { include })
 
   if (pallet === null) {
     throw new UserInputError(`Pallet ${valid.value.id} does not exist`)
@@ -167,13 +191,14 @@ const destroyPallet: MutationResolvers['destroyPallet'] = async (
   authorizeOfferMutation(offer, context)
 
   await pallet.destroy()
-  return offer
+  return true
 }
 
 // - list line items
 
-const palletLineItems: PalletResolvers['lineItems'] = async (parent) => {
-  return LineItem.findAll({ where: { offerPalletId: parent.id } })
-}
+const palletLineItems: PalletResolvers['lineItems'] = async (parent) =>
+  (await LineItem.findAll({ where: { offerPalletId: parent.id } })).map(
+    dbLineItemToGraphQL,
+  )
 
 export { addPallet, updatePallet, destroyPallet, palletLineItems, pallet }
