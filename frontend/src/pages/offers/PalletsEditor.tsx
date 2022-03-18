@@ -36,7 +36,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ offer, pallets = [] }) => {
 
   const [selectedLineItemId, setSelectedLineItemId] = useState<number>()
 
-  const [allowEditingLineItem, setEditingMode] = useState(false)
+  const [lineItemToEditId, setLineItemToEditId] = useState<number>()
 
   const canEditOffer = offer.status === OfferStatus.Draft
 
@@ -68,8 +68,9 @@ const PalletsEditor: FunctionComponent<Props> = ({ offer, pallets = [] }) => {
       ],
     }).then((data) => {
       // Select the new line item and show a form to edit its fields
-      setSelectedLineItemId(data.data?.addLineItem.id)
-      setEditingMode(true)
+      const lineItemId = data.data?.addLineItem.id
+      setSelectedLineItemId(lineItemId)
+      setLineItemToEditId(lineItemId)
     })
   }
 
@@ -175,7 +176,7 @@ const PalletsEditor: FunctionComponent<Props> = ({ offer, pallets = [] }) => {
         )}
         {selectedPalletId != null && selectedLineItemId != null && (
           <div className="h-full w-full p-8">
-            {allowEditingLineItem ? (
+            {lineItemToEditId === selectedLineItemId ? (
               <LineItemForm
                 offer={offer}
                 lineItemId={selectedLineItemId}
@@ -183,13 +184,13 @@ const PalletsEditor: FunctionComponent<Props> = ({ offer, pallets = [] }) => {
                   selectedPalletData.data?.pallet.palletType ||
                   PalletType.Standard
                 }
-                onEditingComplete={() => setEditingMode(false)}
+                onEditingComplete={() => setLineItemToEditId(undefined)}
               />
             ) : (
               <ViewLineItem
                 lineItemId={selectedLineItemId}
                 onLineItemDeleted={onLineItemDeleted}
-                editLineItem={() => setEditingMode(true)}
+                editLineItem={() => setLineItemToEditId(selectedLineItemId)}
                 canEdit={canEditOffer}
               />
             )}
