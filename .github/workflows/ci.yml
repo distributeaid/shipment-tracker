@@ -40,7 +40,7 @@ jobs:
           node-version: '16.x'
 
       # Cache node_modules between builds based on the yarn.lock file's hash.
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
