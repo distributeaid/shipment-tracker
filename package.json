@@ -52,7 +52,7 @@
     "graphql-import-node": "0.0.4",
     "graphql-scalars": "1.15.0",
     "lodash": "4.17.21",
-    "nodemailer": "6.7.2",
+    "nodemailer": "6.7.3",
     "nodemon": "2.0.15",
     "passport": "0.5.2",
     "passport-cookie": "1.0.9",
