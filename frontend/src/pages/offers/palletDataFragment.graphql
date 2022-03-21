@@ -2,6 +2,7 @@ fragment PalletDataFragment on Pallet {
   id
   offerId
   palletType
+  palletCount
   lineItems {
     id
     status

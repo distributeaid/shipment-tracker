@@ -188,6 +188,7 @@ describe('Pallets API', () => {
     beforeEach(async () => {
       pallet = await Pallet.create({
         offerId: offer.id,
+        palletCount: 1,
         palletType: PalletType.Standard,
         paymentStatus: PaymentStatus.Uninitiated,
         paymentStatusChangeTime: new Date(),
@@ -227,6 +228,7 @@ describe('Pallets API', () => {
     beforeEach(async () => {
       pallet = await Pallet.create({
         offerId: offer.id,
+        palletCount: 1,
         palletType: PalletType.Standard,
         paymentStatus: PaymentStatus.Uninitiated,
         paymentStatusChangeTime: new Date(),
@@ -273,6 +275,7 @@ describe('Pallets API', () => {
     beforeEach(async () => {
       palletA = await Pallet.create({
         offerId: offer.id,
+        palletCount: 1,
         palletType: PalletType.Standard,
         paymentStatus: PaymentStatus.Uninitiated,
         paymentStatusChangeTime: new Date(),
@@ -280,6 +283,7 @@ describe('Pallets API', () => {
 
       palletB = await Pallet.create({
         offerId: offer.id,
+        palletCount: 1,
         palletType: PalletType.Standard,
         paymentStatus: PaymentStatus.Uninitiated,
         paymentStatusChangeTime: new Date(),
@@ -311,5 +315,62 @@ describe('Pallets API', () => {
 
       expect(await LineItem.findByPk(lineItem.id)).toBeNull()
     })
+  })
+
+  describe('Pallet count', () => {
+    let multiPallet: Pallet
+
+    beforeEach(async () => {
+      multiPallet = await Pallet.create({
+        offerId: offer.id,
+        palletCount: 1,
+        palletType: PalletType.Standard,
+        paymentStatus: PaymentStatus.Uninitiated,
+        paymentStatusChangeTime: new Date(),
+      })
+    })
+
+    const UPDATE_PALLET_COUNT = gql`
+      mutation ($id: Int!, $input: PalletUpdateInput!) {
+        updatePallet(id: $id, input: $input) {
+          palletCount
+        }
+      }
+    `
+
+    it('should allow to set the pallet count', async () => {
+      const res = (await captainTestServer.executeOperation({
+        query: UPDATE_PALLET_COUNT,
+        variables: {
+          id: multiPallet.id,
+          input: {
+            palletCount: 3,
+          },
+        },
+      })) as TypedGraphQLResponse<{ updatePallet: Pallet }>
+
+      expect(res.errors).toBeUndefined()
+      expect(res.data?.updatePallet?.palletCount).toEqual(3)
+    })
+
+    it.each([[0], [-3]])(
+      'should not allow %d as pallet count',
+      async (palletCount) => {
+        const res = (await captainTestServer.executeOperation({
+          query: UPDATE_PALLET_COUNT,
+          variables: {
+            id: multiPallet.id,
+            input: {
+              palletCount,
+            },
+          },
+        })) as TypedGraphQLResponse<{ updatePallet: Pallet }>
+        expect(res.errors).not.toBeUndefined()
+        expect(res.errors?.[0].message).toMatch(/Add pallet arguments invalid/)
+        expect((res.errors?.[0].extensions?.['0'] as any).instancePath).toMatch(
+          /input\/palletCount/,
+        )
+      },
+    )
   })
 })

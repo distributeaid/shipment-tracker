@@ -77,6 +77,7 @@ describe('ShipmentExports API', () => {
 
     pallet = await Pallet.create({
       offerId: offer.id,
+      palletCount: 1,
       palletType: PalletType.Standard,
       paymentStatus: PaymentStatus.Uninitiated,
       paymentStatusChangeTime: new Date(),

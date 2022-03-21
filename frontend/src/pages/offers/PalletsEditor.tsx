@@ -10,6 +10,7 @@ import {
   useCreateLineItemMutation,
   useCreatePalletMutation,
   usePalletLazyQuery,
+  useUpdatePalletMutation,
 } from '../../types/api-types'
 import CreatePalletModal from './CreatePalletModal'
 import LineItemForm from './LineItemForm'
@@ -100,6 +101,8 @@ const PalletsEditor: FunctionComponent<Props> = ({ offer, pallets = [] }) => {
       },
     })
 
+  const [updatePalletCount] = useUpdatePalletMutation()
+
   const onCreatePallet = (palletType: PalletType) => {
     const newPallet: PalletCreateInput = {
       palletType,
@@ -138,6 +141,16 @@ const PalletsEditor: FunctionComponent<Props> = ({ offer, pallets = [] }) => {
         selectLineItemId={selectLineItem}
         selectedPalletData={selectedPalletData.data}
         canEdit={canEditOffer}
+        updatePalletCount={(palletId, count) => {
+          updatePalletCount({
+            variables: {
+              id: palletId,
+              input: {
+                palletCount: count,
+              },
+            },
+          })
+        }}
       />
       <div className="flex-grow border-l border-gray-100">
         {mutationError && (
