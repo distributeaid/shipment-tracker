@@ -62,7 +62,12 @@ const ShipmentOffers: FunctionComponent<Props> = ({
       },
       {
         Header: 'Pallets',
-        accessor: (row) => row.pallets.length,
+        accessor: (row) =>
+          row.pallets.reduce(
+            (totalPalletCount, { palletCount }) =>
+              totalPalletCount + palletCount,
+            0,
+          ),
       },
       {
         Header: 'Photos',

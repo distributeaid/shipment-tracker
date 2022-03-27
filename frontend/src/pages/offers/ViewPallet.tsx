@@ -52,7 +52,7 @@ const ViewPallet: FunctionComponent<Props> = ({
                   Pallet {palletIsLoading && <Spinner className="ml-2" />}
                 </h2>
               </div>
-              <div>
+              <div className="space-y-2">
                 <ReadOnlyField label="Count">
                   {pallet.palletCount}
                 </ReadOnlyField>
