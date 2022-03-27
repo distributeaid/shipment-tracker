@@ -1,0 +1,9 @@
+mutation UpdatePallet($id: Int!, $input: PalletUpdateInput!) {
+  updatePallet(id: $id, input: $input) {
+    id
+    offerId
+    palletType
+    palletCount
+    paymentStatus
+  }
+}

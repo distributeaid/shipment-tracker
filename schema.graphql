@@ -266,6 +266,7 @@ type Pallet {
   id: Int!
   offerId: Int!
   palletType: PalletType!
+  palletCount: Int!
   lineItems: [LineItem!]!
   paymentStatus: PaymentStatus!
   paymentStatusChangeTime: DateTime!
@@ -281,6 +282,7 @@ input PalletCreateInput {
 input PalletUpdateInput {
   paymentStatus: PaymentStatus
   palletType: PalletType
+  palletCount: Int
 }
 
 enum LineItemStatus {

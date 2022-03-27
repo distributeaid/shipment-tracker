@@ -18,6 +18,7 @@ export interface PalletAttributes {
   id: number
   offerId: number
   palletType: PalletType
+  palletCount: number
   paymentStatus: PaymentStatus
   paymentStatusChangeTime: Date
 }
@@ -36,6 +37,9 @@ export default class Pallet extends Model<
 
   @Column(DataType.STRING)
   public palletType!: PalletType
+
+  @Column(DataType.INTEGER)
+  public palletCount!: number
 
   @Column(DataType.STRING)
   public paymentStatus!: PaymentStatus

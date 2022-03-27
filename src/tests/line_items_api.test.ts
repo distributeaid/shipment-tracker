@@ -73,6 +73,7 @@ describe('LineItems API', () => {
 
     pallet = await Pallet.create({
       offerId: offer.id,
+      palletCount: 1,
       palletType: PalletType.Standard,
       paymentStatus: PaymentStatus.Uninitiated,
       paymentStatusChangeTime: new Date(),
@@ -116,6 +117,7 @@ describe('LineItems API', () => {
     beforeEach(async () => {
       pallet = await Pallet.create({
         offerId: offer.id,
+        palletCount: 1,
         palletType: PalletType.Standard,
         paymentStatus: PaymentStatus.Uninitiated,
         paymentStatusChangeTime: new Date(),
@@ -297,6 +299,7 @@ describe('LineItems API', () => {
       beforeEach(async () => {
         palletTwo = await Pallet.create({
           offerId: offer.id,
+          palletCount: 1,
           palletType: PalletType.Standard,
           paymentStatus: PaymentStatus.Uninitiated,
           paymentStatusChangeTime: new Date(),

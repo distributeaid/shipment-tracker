@@ -16,6 +16,7 @@ type Props = {
   selectPallet: (palletId: number) => void
   addLineItem: (palletId: number) => void
   selectLineItemId: (lineItemId: number) => void
+  updatePalletCount: (palletId: number, count: number) => void
   /**
    * Whether this pallet can be edited (edits are only allowed for draft offers)
    */
@@ -33,6 +34,7 @@ const PalletsEditorSidebar: FunctionComponent<Props> = ({
   selectLineItemId,
   selectedPalletData,
   canEdit,
+  updatePalletCount,
 }) => {
   return (
     <div className="w-80 flex-shrink-0 h-full">
@@ -80,6 +82,14 @@ const PalletsEditorSidebar: FunctionComponent<Props> = ({
                         pallet.id === selectedPalletId ? 'down' : 'right'
                       }
                     />
+                    {pallet.palletCount > 1 && (
+                      <>
+                        <span>
+                          {pallet.palletCount}&nbsp;<small>✕</small>
+                        </span>
+                        &nbsp;
+                      </>
+                    )}
                     Pallet {index + 1}
                     {'errors' in palletValidation && (
                       <span

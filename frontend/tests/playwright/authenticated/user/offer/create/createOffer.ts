@@ -1,25 +1,18 @@
-import { expect, test } from '@playwright/test'
-import { promises as fs } from 'fs'
-import path from 'path'
-import { baseUrl } from '../../../baseUrl'
-import { users } from '../../../users'
+import { expect, Page } from '@playwright/test'
+import { baseUrl } from '../../../../baseUrl'
 
-test.use({
-  storageState: users.userA.stateFile,
-})
-
-test('Users can create an offer', async ({ page }) => {
+export const createOffer = async ({
+  page,
+  receivingGroup,
+  onPalletCreated,
+  sendingHub,
+}: {
+  page: Page
+  receivingGroup?: string
+  sendingHub: string
+  onPalletCreated?: () => Promise<void>
+}) => {
   await page.goto(`${baseUrl}/`)
-
-  const { sendingHub, receivingHub } = JSON.parse(
-    await fs.readFile(
-      path.join(process.cwd(), 'test-session', 'shipment.json'),
-      'utf-8',
-    ),
-  )
-  const { name: userBName } = JSON.parse(
-    await fs.readFile(users.userB.infoFile, 'utf-8'),
-  )
 
   // Create the offer
   await page.locator('header a:has-text("Shipments")').nth(1).click()
@@ -34,10 +27,14 @@ test('Users can create an offer', async ({ page }) => {
   await page.locator('text=Create offer').click()
   await page.locator('text=Add a pallet').click()
   await page.locator('text=Create pallet').click()
+
+  await onPalletCreated?.()
+
   await page.locator('text=Add items').click()
-  await page
-    .locator('select[name="proposedReceivingGroupId"]')
-    .selectOption({ label: `${userBName}'s group` })
+  if (receivingGroup !== undefined)
+    await page
+      .locator('select[name="proposedReceivingGroupId"]')
+      .selectOption({ label: receivingGroup })
   await page.locator('select[name="category"]').selectOption('OTHER')
   await page.locator('input[name="description"]').fill('Washing machine')
   await page.locator('input[name="itemCount"]').fill('1')
@@ -57,4 +54,4 @@ test('Users can create an offer', async ({ page }) => {
   await expect(page.locator('body')).toContainText(
     'This offer is awaiting review',
   )
-})
+}

@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, UserInputError } from 'apollo-server'
 import { validateIdInput } from '../input-validation/idInputSchema'
-import { ID } from '../input-validation/types'
+import { ID, PositiveInteger } from '../input-validation/types'
 import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
 import LineItem from '../models/line_item'
 import Offer from '../models/offer'
@@ -74,6 +74,7 @@ const addPallet: MutationResolvers['addPallet'] = async (
 
   const pallet = await Pallet.create({
     ...input,
+    palletCount: 1,
     paymentStatus: PaymentStatus.Uninitiated,
     paymentStatusChangeTime: new Date(),
   })
@@ -90,6 +91,7 @@ const updatePalletInput = Type.Object(
       {
         paymentStatus: Type.Optional(Type.Enum(PaymentStatus)),
         palletType: Type.Optional(Type.Enum(PalletType)),
+        palletCount: Type.Optional(PositiveInteger),
       },
       { additionalProperties: false },
     ),
@@ -132,6 +134,10 @@ const updatePallet: MutationResolvers['updatePallet'] = async (
 
   if (valid.value.input.palletType !== undefined) {
     updateAttributes.palletType = valid.value.input.palletType
+  }
+
+  if (valid.value.input.palletCount !== undefined) {
+    updateAttributes.palletCount = valid.value.input.palletCount
   }
 
   const updatedPallet = await pallet.update(updateAttributes)
