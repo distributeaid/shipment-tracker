@@ -82,13 +82,15 @@ const PalletsEditorSidebar: FunctionComponent<Props> = ({
                         pallet.id === selectedPalletId ? 'down' : 'right'
                       }
                     />
-                    Pallet {index + 1}
-                    {selectedPalletId !== pallet.id && pallet.palletCount > 1 && (
-                      <span>
-                        &nbsp;(<small>✕</small>
-                        {pallet.palletCount})
-                      </span>
+                    {pallet.palletCount > 1 && (
+                      <>
+                        <span>
+                          {pallet.palletCount}&nbsp;<small>✕</small>
+                        </span>
+                        &nbsp;
+                      </>
                     )}
+                    Pallet {index + 1}
                     {'errors' in palletValidation && (
                       <span
                         className="inline-block ml-auto"
@@ -98,17 +100,6 @@ const PalletsEditorSidebar: FunctionComponent<Props> = ({
                       >
                         <WarningIcon className="text-red-700 w-5 h-5" />
                       </span>
-                    )}
-                    {selectedPalletId === pallet.id && (
-                      <input
-                        type="number"
-                        value={pallet.palletCount}
-                        step={1}
-                        min={1}
-                        onChange={({ target: { value } }) =>
-                          updatePalletCount(pallet.id, parseInt(value, 10))
-                        }
-                      />
                     )}
                   </div>
                   {selectedPalletId === pallet.id && (

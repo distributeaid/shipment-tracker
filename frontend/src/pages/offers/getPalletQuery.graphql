@@ -3,6 +3,7 @@ query Pallet($id: Int!) {
     id
     offerId
     palletType
+    palletCount
     createdAt
     updatedAt
     paymentStatusChangeTime
