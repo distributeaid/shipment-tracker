@@ -14,13 +14,13 @@ test('Admins can create a shipment', async ({ page }) => {
 
   const hubs = [
     {
-      city: 'Coventry',
+      locality: 'Coventry',
       country: 'GB',
       countryName: 'UK',
       name: `Sending Hub ${v4()}`,
     },
     {
-      city: 'Calais',
+      locality: 'Calais',
       country: 'FR',
       countryName: 'France',
       name: `Receiving Hub ${v4()}`,
@@ -28,13 +28,13 @@ test('Admins can create a shipment', async ({ page }) => {
   ]
 
   // Create the sending and the receiving hub
-  for (const { name, city, country, countryName } of hubs) {
+  for (const { name, locality, country, countryName } of hubs) {
     await page.locator('header a:has-text("Admin")').nth(1).click()
     await page.locator('text=Manage groups').click()
     await page.locator('text=Create group').click()
     await page.locator('input[name="name"]').fill(name)
     await page.locator('select[name="groupType"]').selectOption(`DA_HUB`)
-    await page.locator('input[name="locality"]').fill(city)
+    await page.locator('input[name="locality"]').fill(locality)
     await page.locator('select[name="country"]').selectOption(country)
     await page
       .locator('input[name="primaryContact\\.name"]')
@@ -48,7 +48,7 @@ test('Admins can create a shipment', async ({ page }) => {
     await page.locator('text=Manage groups').click()
     await expect(page.locator('main table tbody')).toContainText(name)
     await expect(page.locator('main table tbody')).toContainText(
-      `${city} (${countryName})`,
+      `${locality}, ${countryName}`,
     )
   }
 
