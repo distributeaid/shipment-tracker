@@ -36,10 +36,6 @@ const GroupEditPage: FunctionComponent = () => {
         input.primaryContact = stripIdAndTypename(input.primaryContact)
       }
 
-      if (input.primaryLocation) {
-        input.primaryLocation = stripIdAndTypename(input.primaryLocation)
-      }
-
       await updateGroup({
         variables: { id: groupId, input },
       })

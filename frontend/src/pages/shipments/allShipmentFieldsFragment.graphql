@@ -26,25 +26,21 @@ fragment AllShipmentFields on Shipment {
   receivingHubs {
     id
     name
-    primaryLocation {
-      city
-      country {
-        countrycode
-        shortName
-        alias
-      }
+    locality
+    country {
+      countrycode
+      shortName
+      alias
     }
   }
   sendingHubs {
     id
     name
-    primaryLocation {
-      city
-      country {
-        countrycode
-        shortName
-        alias
-      }
+    locality
+    country {
+      countrycode
+      shortName
+      alias
     }
   }
 }

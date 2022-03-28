@@ -5,11 +5,11 @@ import { FindOptions, Op } from 'sequelize'
 import { getCountryByCountryCode } from '../data/getCountryByCountryCode'
 import { Contact } from '../input-validation/Contact'
 import { validateIdInput } from '../input-validation/idInputSchema'
-import { Location } from '../input-validation/Location'
 import {
   ID,
   NonEmptyShortString,
   OptionalValueOrUnset,
+  TwoLetterCountryCode,
   URI,
 } from '../input-validation/types'
 import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
@@ -26,13 +26,7 @@ export const dbToGraphQL = (group: Group): ResolversTypes['Group'] => ({
   ...group.get({ plain: true }),
   createdAt: group.createdAt,
   updatedAt: group.updatedAt,
-  primaryLocation: {
-    ...group.primaryLocation,
-    country:
-      group.primaryLocation.country === undefined
-        ? undefined
-        : getCountryByCountryCode(group.primaryLocation.country),
-  },
+  country: getCountryByCountryCode(group.country),
 })
 
 // Group query resolvers
@@ -104,7 +98,8 @@ export const addGroupInputSchema = Type.Object(
   {
     name: NonEmptyShortString,
     groupType: Type.Enum(GroupType),
-    primaryLocation: Location,
+    locality: NonEmptyShortString,
+    country: TwoLetterCountryCode,
     primaryContact: Contact,
     website: Type.Optional(URI),
     description: Description,
@@ -158,7 +153,8 @@ export const updateGroupInput = Type.Object(
   {
     name: Type.Optional(NonEmptyShortString),
     groupType: Type.Optional(Type.Enum(GroupType)),
-    primaryLocation: Type.Optional(Location),
+    locality: Type.Optional(NonEmptyShortString),
+    country: Type.Optional(TwoLetterCountryCode),
     primaryContact: Type.Optional(Contact),
     website: OptionalValueOrUnset(URI),
     captainId: Type.Optional(ID),
@@ -210,8 +206,11 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
   if (valid.value.primaryContact !== undefined) {
     updateAttributes.primaryContact = valid.value.primaryContact
   }
-  if (valid.value.primaryLocation !== undefined) {
-    updateAttributes.primaryLocation = valid.value.primaryLocation
+  if (valid.value.country !== undefined) {
+    updateAttributes.country = valid.value.country
+  }
+  if (valid.value.locality !== undefined) {
+    updateAttributes.locality = valid.value.locality
   }
 
   if (valid.value.website !== undefined) {

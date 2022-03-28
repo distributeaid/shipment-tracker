@@ -1,4 +1,5 @@
 import { DataTypes, QueryInterface, Sequelize } from 'sequelize'
+import { countries } from '../../src/data/countries'
 import {
   DangerousGoods,
   GroupType,
@@ -123,9 +124,19 @@ export const up = async (queryInterface: QueryInterface) => {
         isIn: [[GroupType.Regular, GroupType.DaHub]],
       },
     },
-    primaryLocation: {
-      type: DataTypes.JSONB,
+    country: {
+      type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        isIn: [countries.map(({ countrycode }) => countrycode)],
+      },
+    },
+    locality: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: [1, 255],
+      },
     },
     primaryContact: {
       type: DataTypes.JSONB,

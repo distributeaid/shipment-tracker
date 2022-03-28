@@ -3,13 +3,11 @@ fragment AllGroupFields on Group {
   name
   description
   groupType
-  primaryLocation {
-    city
-    country {
-      countrycode
-      shortName
-      alias
-    }
+  locality
+  country {
+    countrycode
+    shortName
+    alias
   }
   primaryContact {
     name

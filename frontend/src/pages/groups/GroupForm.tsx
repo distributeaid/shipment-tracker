@@ -56,10 +56,7 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
         // Update the values of the fields
         reset({
           ...defaults,
-          primaryLocation: {
-            ...defaults.primaryLocation,
-            country: defaults.primaryLocation.country?.countrycode,
-          },
+          country: defaults.country?.countrycode,
         })
       }
     },
@@ -105,15 +102,15 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
       <fieldset className="space-y-4 mt-8">
         <legend>Location</legend>
         <TextField
-          label="City"
-          name="primaryLocation.city"
+          label="Locality"
+          name="locality"
           required
           register={register}
           errors={errors}
         />
         <SelectField
           label="Country"
-          name="primaryLocation.country"
+          name="country"
           defaultValue=""
           options={[
             {

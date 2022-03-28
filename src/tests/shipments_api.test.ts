@@ -33,13 +33,15 @@ describe('Shipments API', () => {
     group1 = await createGroup({
       name: 'group 1',
       groupType: GroupType.DaHub,
-      primaryLocation: { country: 'GB', city: 'Bristol' },
+      country: 'GB',
+      locality: 'Bristol',
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
     })
     group2 = await createGroup({
       name: 'group 2',
       groupType: GroupType.Regular,
-      primaryLocation: { country: 'FR', city: 'Bordeaux' },
+      country: 'FR',
+      locality: 'Bordeaux',
       primaryContact: {
         name: 'Second Contact',
         email: '2ndcontact@example.com',
@@ -271,7 +273,8 @@ describe('Shipments API', () => {
         group3 = await createGroup({
           name: 'group 3',
           groupType: GroupType.Regular,
-          primaryLocation: { country: 'DE', city: 'Berlin' },
+          country: 'DE',
+          locality: 'Berlin',
           primaryContact: {
             name: 'Third Contact',
             email: '3rdcontact@example.com',
@@ -280,7 +283,8 @@ describe('Shipments API', () => {
         group4 = await createGroup({
           name: 'group 4',
           groupType: GroupType.Regular,
-          primaryLocation: { country: 'SE', city: 'Lund' },
+          country: 'SE',
+          locality: 'Lund',
           primaryContact: {
             name: 'Fourth Contact',
             email: '4thcontact@example.com',
@@ -289,7 +293,8 @@ describe('Shipments API', () => {
         group5 = await createGroup({
           name: 'group 5',
           groupType: GroupType.Regular,
-          primaryLocation: { country: 'NO', city: 'Trondheim' },
+          country: 'NO',
+          locality: 'Trondheim',
           primaryContact: {
             name: 'Fifth Contact',
             email: '5thcontact@example.com',

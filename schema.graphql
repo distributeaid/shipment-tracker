@@ -2,22 +2,12 @@ scalar Date
 scalar DateTime
 scalar Currency
 
-type Location {
-  country: Country
-  city: String!
-}
-
 type ContactInfo {
   name: String!
   email: String
   phone: String
   signal: String
   whatsApp: String
-}
-
-input LocationInput {
-  country: ID
-  city: String!
 }
 
 input ContactInfoInput {
@@ -33,7 +23,8 @@ type Group {
   name: String!
   description: String
   groupType: GroupType!
-  primaryLocation: Location!
+  country: Country!
+  locality: String!
   primaryContact: ContactInfo!
   website: String
   captainId: Int!
@@ -45,7 +36,8 @@ input GroupCreateInput {
   name: String!
   description: String
   groupType: GroupType!
-  primaryLocation: LocationInput!
+  country: ID!
+  locality: String!
   primaryContact: ContactInfoInput!
   website: String
 }
@@ -54,7 +46,8 @@ input GroupUpdateInput {
   name: String
   description: String
   groupType: GroupType
-  primaryLocation: LocationInput
+  country: ID
+  locality: String
   primaryContact: ContactInfoInput
   website: String
   captainId: Int

@@ -76,12 +76,11 @@ const ShipmentDetails: FunctionComponent<PropsWithChildren<Props>> = ({
             <div key={hub.id}>
               <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
               <div className="text-gray-600">
-                {hub.primaryLocation.city}
-                {hub.primaryLocation.country && (
+                {hub.locality}
+                {hub.country && (
                   <>
                     {', '}
-                    {hub.primaryLocation.country.alias ??
-                      hub.primaryLocation.country.shortName}
+                    {hub.country.alias ?? hub.country.shortName}
                   </>
                 )}
               </div>
@@ -97,12 +96,11 @@ const ShipmentDetails: FunctionComponent<PropsWithChildren<Props>> = ({
             <div key={hub.id}>
               <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
               <div className="text-gray-600">
-                {hub.primaryLocation.city}
-                {hub.primaryLocation.country && (
+                {hub.locality}
+                {hub.country && (
                   <>
                     {', '}
-                    {hub.primaryLocation.country.alias ??
-                      hub.primaryLocation.country.shortName}
+                    {hub.country.alias ?? hub.country.shortName}
                   </>
                 )}
               </div>

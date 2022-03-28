@@ -68,12 +68,11 @@ const GroupViewPage: FunctionComponent = () => {
             <ReadOnlyField label="Location">
               {groupData && (
                 <>
-                  {groupData.primaryLocation.city}
-                  {groupData.primaryLocation.country && (
+                  {groupData.locality}
+                  {groupData.country && (
                     <>
                       {', '}
-                      {groupData.primaryLocation.country.alias ??
-                        groupData.primaryLocation.country.shortName}
+                      {groupData.country.alias ?? groupData.country.shortName}
                     </>
                   )}
                 </>

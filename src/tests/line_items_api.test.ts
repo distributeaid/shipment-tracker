@@ -50,7 +50,8 @@ describe('LineItems API', () => {
     group = await Group.create({
       name: 'group 1',
       groupType: GroupType.DaHub,
-      primaryLocation: { country: 'GB', city: 'Bristol' },
+      country: 'GB',
+      locality: 'Bristol',
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
       captainId: captain.id,
     })

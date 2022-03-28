@@ -12,7 +12,8 @@ const purgeDb = async () => sequelize.sync({ force: true })
 
 const commonGroupData = {
   groupType: GroupType.Regular,
-  primaryLocation: { country: 'FR', city: 'Calais' },
+  country: 'FR',
+  locality: 'Calais',
   primaryContact: { name: 'Contact', email: 'contact@example.com' },
   website: 'http://www.example.com',
 } as const
@@ -74,7 +75,8 @@ describe('Groups API', () => {
           $name: String!
           $description: String
           $groupType: GroupType!
-          $primaryLocation: LocationInput!
+          $country: ID!
+          $locality: String!
           $primaryContact: ContactInfoInput!
           $website: String
         ) {
@@ -83,7 +85,8 @@ describe('Groups API', () => {
               name: $name
               description: $description
               groupType: $groupType
-              primaryLocation: $primaryLocation
+              country: $country
+              locality: $locality
               primaryContact: $primaryContact
               website: $website
             }
@@ -166,14 +169,12 @@ describe('Groups API', () => {
             name
             description
             groupType
-            primaryLocation {
-              country {
-                countrycode
-                shortName
-                alias
-              }
-              city
+            country {
+              countrycode
+              shortName
+              alias
             }
+            locality
             primaryContact {
               name
               email
@@ -192,7 +193,8 @@ describe('Groups API', () => {
             name: 'updated-contact-name',
             email: 'updated@example.com',
           },
-          primaryLocation: { country: 'US', city: 'Bellingham' },
+          country: 'US',
+          locality: 'Bellingham',
           captainId: newCaptain.id,
         }
 
@@ -220,12 +222,10 @@ describe('Groups API', () => {
         expect(res.data?.updateGroup?.primaryContact?.email).toEqual(
           updateParams?.primaryContact?.email,
         )
-        expect(
-          res.data?.updateGroup?.primaryLocation?.country.countrycode,
-        ).toEqual(updateParams?.primaryLocation?.country)
-        expect(res.data?.updateGroup?.primaryLocation?.city).toEqual(
-          updateParams?.primaryLocation?.city,
+        expect(res.data?.updateGroup?.country.countrycode).toEqual(
+          updateParams?.country,
         )
+        expect(res.data?.updateGroup?.locality).toEqual(updateParams?.locality)
         expect(res.data?.updateGroup?.captainId).toEqual(newCaptain.id)
       })
 

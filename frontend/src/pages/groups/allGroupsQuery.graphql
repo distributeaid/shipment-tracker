@@ -11,14 +11,12 @@ query AllGroups($captainId: Int, $groupType: [GroupType!]) {
       email
       signal
     }
-    primaryLocation {
-      country {
-        countrycode
-        shortName
-        alias
-      }
-      city
+    country {
+      countrycode
+      shortName
+      alias
     }
+    locality
   }
 }
 

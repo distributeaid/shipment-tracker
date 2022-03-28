@@ -48,7 +48,8 @@ describe('Offers API', () => {
       {
         name: 'group 1',
         groupType: GroupType.DaHub,
-        primaryLocation: { country: 'GB', city: 'Bristol' },
+        country: 'GB',
+        locality: 'Bristol',
         primaryContact: { name: 'Contact', email: 'contact@example.com' },
       },
       captain.id,
@@ -57,7 +58,8 @@ describe('Offers API', () => {
     group2 = await createGroup({
       name: 'group 2',
       groupType: GroupType.Regular,
-      primaryLocation: { country: 'FR', city: 'Bordeaux' },
+      country: 'FR',
+      locality: 'Bordeaux',
       primaryContact: {
         name: 'Second Contact',
         email: '2ndcontact@example.com',

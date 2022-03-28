@@ -34,10 +34,8 @@ test('Admins can create a shipment', async ({ page }) => {
     await page.locator('text=Create group').click()
     await page.locator('input[name="name"]').fill(name)
     await page.locator('select[name="groupType"]').selectOption(`DA_HUB`)
-    await page.locator('input[name="primaryLocation\\.city"]').fill(city)
-    await page
-      .locator('select[name="primaryLocation\\.country"]')
-      .selectOption(country)
+    await page.locator('input[name="locality"]').fill(city)
+    await page.locator('select[name="country"]').selectOption(country)
     await page
       .locator('input[name="primaryContact\\.name"]')
       .fill('Distribute Aid')
