@@ -38,7 +38,6 @@ const GroupEditPage: FunctionComponent = () => {
 
       if (input.primaryLocation) {
         input.primaryLocation = stripIdAndTypename(input.primaryLocation)
-        delete input.primaryLocation.openLocationCode
       }
 
       await updateGroup({

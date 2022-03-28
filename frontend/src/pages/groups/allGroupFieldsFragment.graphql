@@ -10,7 +10,6 @@ fragment AllGroupFields on Group {
       shortName
       alias
     }
-    openLocationCode
   }
   primaryContact {
     name

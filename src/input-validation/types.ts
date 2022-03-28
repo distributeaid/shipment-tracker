@@ -6,10 +6,6 @@ import { Static, TSchema, Type } from '@sinclair/typebox'
 import { countries } from '../data/countries'
 import { currencyCodes } from './currency-codes'
 
-export const OpenLocationCode = Type.RegEx(
-  /^[23456789C][23456789CFGHJMPQRV][23456789CFGHJMPQRVWX]{6}\+[23456789CFGHJMPQRVWX]{2,3}/i,
-)
-
 export const PhoneNumber = Type.RegEx(/^\+[1-9][0-9]+$/, {
   title: 'phone number',
 })
