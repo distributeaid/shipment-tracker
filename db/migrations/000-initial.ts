@@ -148,6 +148,9 @@ export const up = async (queryInterface: QueryInterface) => {
         isUrl: true,
       },
     },
+    description: {
+      type: DataTypes.TEXT,
+    },
     ...autoTimestampFields,
   })
   await queryInterface.addIndex(`Groups`, ['captainId'], {
@@ -298,6 +301,13 @@ export const up = async (queryInterface: QueryInterface) => {
       type: DataTypes.STRING,
       validate: {
         isIn: [[PalletType.Standard, PalletType.Euro, PalletType.Custom]],
+      },
+    },
+    palletCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 1,
       },
     },
     paymentStatus: {
