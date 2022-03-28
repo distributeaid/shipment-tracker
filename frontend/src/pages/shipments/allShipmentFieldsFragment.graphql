@@ -3,6 +3,7 @@ fragment AllShipmentFields on Shipment {
   shipmentRoute {
     id
     from {
+      id
       country {
         countrycode
         shortName
@@ -11,6 +12,7 @@ fragment AllShipmentFields on Shipment {
       locality
     }
     to {
+      id
       country {
         countrycode
         shortName

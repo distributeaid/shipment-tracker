@@ -2,6 +2,7 @@ query AllShipmentRoutes {
   shipmentRoutes {
     id
     from {
+      id
       country {
         countrycode
         shortName
@@ -10,6 +11,7 @@ query AllShipmentRoutes {
       locality
     }
     to {
+      id
       country {
         countrycode
         shortName

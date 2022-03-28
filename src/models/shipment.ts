@@ -18,7 +18,7 @@ import ShipmentSendingHub from './shipment_sending_hub'
 
 export interface ShipmentAttributes {
   id: number
-  shipmentRoute: typeof shipmentRoutes[number]['id']
+  shipmentRoute: keyof typeof shipmentRoutes
   labelYear: number
   labelMonth: number
   offerSubmissionDeadline?: Date | null
@@ -42,7 +42,7 @@ export default class Shipment extends Model<
   public id!: number
 
   @Column(DataType.STRING)
-  public shipmentRoute!: typeof shipmentRoutes[number]['id']
+  public shipmentRoute!: keyof typeof shipmentRoutes
 
   @Column
   public labelYear!: number

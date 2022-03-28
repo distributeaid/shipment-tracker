@@ -13,6 +13,7 @@ import {
   LineItemCategory,
   LineItemContainerType,
   PalletType,
+  Region,
   Shipment,
   ShipmentQuery,
   ShipmentStatus,
@@ -103,6 +104,12 @@ export function formatShipmentStatus(shipmentStatus: ShipmentStatus) {
     (option) => option.value === shipmentStatus,
   )
   return matchingStatus?.label || shipmentStatus
+}
+
+export const formatRegion = (region: Region): string => {
+  let regionString = region.country.alias ?? region.country.shortName
+  if (region.locality !== undefined) regionString += ` (${region.locality})`
+  return regionString
 }
 
 export function formatContainerType(

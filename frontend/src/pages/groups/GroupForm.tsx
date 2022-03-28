@@ -12,7 +12,9 @@ import TextField from '../../components/forms/TextField'
 import { GROUP_TYPE_OPTIONS } from '../../data/constants'
 import { useAuth } from '../../hooks/useAuth'
 import { useCountries } from '../../hooks/useCountries'
+import { useRegions } from '../../hooks/useRegions'
 import { GroupCreateInput, GroupQuery, GroupType } from '../../types/api-types'
+import { formatRegion } from '../../utils/format'
 import { stripIdAndTypename } from '../../utils/types'
 
 interface Props {
@@ -41,6 +43,7 @@ interface Props {
 const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
   const { me: profile } = useAuth()
   const countries = useCountries()
+  const regions = useRegions()
 
   const {
     register,
@@ -71,6 +74,8 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
 
     props.onSubmit(input)
   })
+
+  console.log(regions)
 
   return (
     <form onSubmit={submitForm}>
@@ -165,6 +170,23 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
           register={register}
           errors={errors}
         />
+      </fieldset>
+
+      <fieldset className="mt-12">
+        <legend className="font-semibold text-gray-700 mb-4">
+          Regions your group serves
+        </legend>
+        <div className="md:grid grid-cols-3 rounded-sm gap-4">
+          {regions.map((region) => (
+            <label
+              className="flex items-center space-x-2 cursor-pointer"
+              key={region.id}
+            >
+              <input type="checkbox" />
+              <span>{formatRegion(region)}</span>
+            </label>
+          ))}
+        </div>
       </fieldset>
 
       <Button

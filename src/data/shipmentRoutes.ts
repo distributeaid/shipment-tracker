@@ -1,3 +1,4 @@
+import { ShipmentRoute as ShipmentRouteWireFormat } from '../server-internal-types'
 import { countries } from './countries'
 
 export type Region = {
@@ -5,28 +6,98 @@ export type Region = {
   locality?: string
 }
 
-export type ShipmentRoute = {
-  id: string
-  from: Region
-  to: Region
+export const knownRegions: Record<string, Region> = {
+  calais: {
+    country: 'GB',
+    locality: 'Calais/Dunkirk',
+  },
+  paris: {
+    country: 'FR',
+    locality: 'Paris',
+  },
+  chios: {
+    country: 'GR',
+    locality: 'Chios',
+  },
+  samos: {
+    country: 'GR',
+    locality: 'Samos',
+  },
+  lesvos: {
+    country: 'GR',
+    locality: 'Lesvos',
+  },
+  northernGreece: {
+    country: 'GR',
+    locality: 'Thessaloniki/Northern Mainland',
+  },
+  southernGreece: {
+    country: 'GR',
+    locality: 'Athens/Southern Mainland',
+  },
+  beirut: {
+    country: 'LB',
+    locality: 'Beirut',
+  },
+  bekaa: {
+    country: 'LB',
+    locality: 'Bekaa Valley',
+  },
+  saida: {
+    country: 'LB',
+    locality: 'Saida',
+  },
+  lebanon: {
+    country: 'LB',
+    locality: 'Lebanon other',
+  },
+  bosnia: {
+    country: 'BA',
+  },
+  serbia: {
+    country: 'RS',
+  },
+  ventimiglia: {
+    country: 'IT',
+    locality: 'Ventimiglia',
+  },
+  romania: {
+    country: 'RO',
+  },
+  poland: {
+    country: 'PL',
+  },
+  germany: {
+    country: 'DE',
+  },
+  uk: {
+    country: 'GB',
+  },
 }
 
-export const shipmentRoutes: ShipmentRoute[] = [
-  { id: 'DeToBa', from: { country: 'DE' }, to: { country: 'BA' } },
-  { id: 'DeToRs', from: { country: 'DE' }, to: { country: 'RS' } },
-  { id: 'DeToFr', from: { country: 'DE' }, to: { country: 'FR' } },
-  { id: 'DeToGr', from: { country: 'DE' }, to: { country: 'GR' } },
-  { id: 'DeToLb', from: { country: 'DE' }, to: { country: 'LB' } },
-  { id: 'UkToBa', from: { country: 'GB' }, to: { country: 'BA' } },
-  { id: 'UkToRs', from: { country: 'GB' }, to: { country: 'RS' } },
-  { id: 'UkToFr', from: { country: 'GB' }, to: { country: 'FR' } },
-  { id: 'UkToGr', from: { country: 'GB' }, to: { country: 'GR' } },
-  { id: 'UkToLb', from: { country: 'GB' }, to: { country: 'LB' } },
-]
+export type ShipmentRoute = {
+  from: keyof typeof knownRegions
+  to: keyof typeof knownRegions
+}
 
-export const wireFormatShipmentRoute = (shipmentRouteId: string) => {
+export const shipmentRoutes: Record<string, ShipmentRoute> = {
+  DeToBa: { from: 'germany', to: 'bosnia' },
+  DeToRs: { from: 'germany', to: 'serbia' },
+  DeToFr: { from: 'germany', to: 'calais' },
+  DeToGr: { from: 'germany', to: 'greece' },
+  DeToLb: { from: 'germany', to: 'lybia' },
+  UkToBa: { from: 'uk', to: 'bosnia' },
+  UkToRs: { from: 'uk', to: 'serbia' },
+  UkToFr: { from: 'uk', to: 'calais' },
+  UkToGr: { from: 'uk', to: 'greece' },
+  UkToLb: { from: 'uk', to: 'lybia' },
+} as const
+
+export const wireFormatShipmentRoute = (
+  shipmentRouteId: string,
+): ShipmentRouteWireFormat => {
   // Find ShipmentRoute
-  const shipmentRoute = shipmentRoutes.find(({ id }) => shipmentRouteId === id)
+  const shipmentRoute = shipmentRoutes[shipmentRouteId]
   if (shipmentRoute === undefined) {
     throw new Error(`Unknown shipment route ${shipmentRouteId}!`)
   }
@@ -47,7 +118,7 @@ export const wireFormatShipmentRoute = (shipmentRouteId: string) => {
     )
   }
   return {
-    ...shipmentRoute,
+    id: shipmentRouteId,
     from: {
       ...shipmentRoute.from,
       country: fromCountry,

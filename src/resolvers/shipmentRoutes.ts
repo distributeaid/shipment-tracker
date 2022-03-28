@@ -4,8 +4,8 @@ import { QueryResolvers } from '../server-internal-types'
 
 export const listShipmentRoutes: QueryResolvers['shipmentRoutes'] =
   async () => [
-    ...shipmentRoutes.map((route) => ({
-      ...route,
+    ...Object.entries(shipmentRoutes).map(([id, route]) => ({
+      id,
       from: {
         ...route.from,
         country: countries.find(

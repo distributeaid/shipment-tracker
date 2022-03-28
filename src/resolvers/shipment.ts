@@ -137,7 +137,9 @@ const shipment: QueryResolvers['shipment'] = async (_, { id }, context) => {
 
 const addShipmentInput = Type.Object(
   {
-    shipmentRoute: Type.Union(shipmentRoutes.map(({ id }) => Type.Literal(id))),
+    shipmentRoute: Type.Union(
+      Object.keys(shipmentRoutes).map((id) => Type.Literal(id)),
+    ),
     labelYear: CurrentYearOrGreater(),
     labelMonth: MonthIndexStartingAt1,
     sendingHubs: Type.Array(ID, { minItems: 1 }),
@@ -278,7 +280,7 @@ const updateShipmentInput = Type.Object(
         labelYear: Type.Optional(CurrentYearOrGreater()),
         labelMonth: Type.Optional(MonthIndexStartingAt1),
         shipmentRoute: Type.Optional(
-          Type.Union(shipmentRoutes.map(({ id }) => Type.Literal(id))),
+          Type.Union(Object.keys(shipmentRoutes).map((id) => Type.Literal(id))),
         ),
         pricing: Type.Optional(Pricing),
       },

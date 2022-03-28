@@ -83,6 +83,8 @@ type Query {
   listShipmentExports(shipmentId: Int!): [ShipmentExport!]!
 
   countries: [Country!]!
+
+  regions: [Region!]!
 }
 
 type Mutation {
@@ -123,6 +125,7 @@ type Country {
 }
 
 type Region {
+  id: ID!
   country: Country!
   locality: String
 }

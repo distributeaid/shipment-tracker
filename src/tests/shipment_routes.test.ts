@@ -14,6 +14,7 @@ const shipmentRoutesQuery = gql`
     shipmentRoutes {
       id
       from {
+        id
         country {
           countrycode
           shortName
@@ -22,6 +23,7 @@ const shipmentRoutesQuery = gql`
         locality
       }
       to {
+        id
         country {
           countrycode
           shortName
@@ -55,7 +57,9 @@ describe('shipmentRoutes API', () => {
 
     expect(res?.errors).toBeUndefined()
 
-    expect(res.data?.shipmentRoutes ?? []).toHaveLength(shipmentRoutes.length)
+    expect(res.data?.shipmentRoutes ?? []).toHaveLength(
+      Object.values(shipmentRoutes).length,
+    )
 
     const DeToBa = ((res.data?.shipmentRoutes ?? []) as ShipmentRoute[]).find(
       ({ id }) => id === 'DeToBa',

@@ -4,6 +4,7 @@ query AllShipments($status: [ShipmentStatus!]) {
     shipmentRoute {
       id
       from {
+        id
         country {
           countrycode
           shortName
@@ -12,6 +13,7 @@ query AllShipments($status: [ShipmentStatus!]) {
         locality
       }
       to {
+        id
         country {
           countrycode
           shortName

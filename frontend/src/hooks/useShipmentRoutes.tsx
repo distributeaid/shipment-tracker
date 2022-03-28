@@ -15,7 +15,9 @@ export const useShipmentRoutes = (): (ShipmentRoute & { label: string })[] => {
 /**
  * Creates a descriptive string for the given route
  */
-export const formatShipmentRouteToLabel = (route: ShipmentRoute): string => {
+export const formatShipmentRouteToLabel = (
+  route: Pick<ShipmentRoute, 'from' | 'to'>,
+): string => {
   const { alias: fromAlias, shortName: fromName } = route.from.country
   const { alias: toAlias, shortName: toName } = route.to.country
 
