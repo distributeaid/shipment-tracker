@@ -74,31 +74,31 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
 
   return (
     <form onSubmit={submitForm}>
-      <TextField
-        label="Group name"
-        name="name"
-        register={register}
-        required
-        errors={errors}
-      />
-      <fieldset className="space-y-4 mt-8">
+      <fieldset className="space-y-4">
+        <TextField
+          label="Group name"
+          name="name"
+          register={register}
+          required
+          errors={errors}
+        />
         <TextArea
           label="Group description"
           name="description"
           register={register}
           errors={errors}
         />
+        {profile?.isAdmin && (
+          <SelectField
+            label="Type"
+            name="groupType"
+            options={GROUP_TYPE_OPTIONS}
+            className="mt-4"
+            required
+            register={register}
+          />
+        )}
       </fieldset>
-      {profile?.isAdmin && (
-        <SelectField
-          label="Type"
-          name="groupType"
-          options={GROUP_TYPE_OPTIONS}
-          className="mt-4"
-          required
-          register={register}
-        />
-      )}
       <fieldset className="space-y-4 mt-8">
         <legend>Location</legend>
         <TextField
