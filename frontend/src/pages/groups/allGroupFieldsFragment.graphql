@@ -5,7 +5,7 @@ fragment AllGroupFields on Group {
   groupType
   locality
   country {
-    countrycode
+    countryCode
     shortName
     alias
   }

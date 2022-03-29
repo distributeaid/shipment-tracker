@@ -6,7 +6,7 @@ query AllShipments($status: [ShipmentStatus!]) {
       from {
         id
         country {
-          countrycode
+          countryCode
           shortName
           alias
         }
@@ -15,7 +15,7 @@ query AllShipments($status: [ShipmentStatus!]) {
       to {
         id
         country {
-          countrycode
+          countryCode
           shortName
           alias
         }

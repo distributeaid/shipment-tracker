@@ -128,7 +128,7 @@ export const up = async (queryInterface: QueryInterface) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isIn: [countries.map(({ countrycode }) => countrycode)],
+        isIn: [Object.values(countries).map(({ countryCode }) => countryCode)],
       },
     },
     locality: {

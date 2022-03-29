@@ -5,7 +5,7 @@ fragment AllShipmentFields on Shipment {
     from {
       id
       country {
-        countrycode
+        countryCode
         shortName
         alias
       }
@@ -14,7 +14,7 @@ fragment AllShipmentFields on Shipment {
     to {
       id
       country {
-        countrycode
+        countryCode
         shortName
         alias
       }
@@ -30,7 +30,7 @@ fragment AllShipmentFields on Shipment {
     name
     locality
     country {
-      countrycode
+      countryCode
       shortName
       alias
     }
@@ -40,7 +40,7 @@ fragment AllShipmentFields on Shipment {
     name
     locality
     country {
-      countrycode
+      countryCode
       shortName
       alias
     }

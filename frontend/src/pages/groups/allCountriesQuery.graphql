@@ -1,6 +1,6 @@
 query AllCountries {
   countries {
-    countrycode
+    countryCode
     shortName
     alias
   }

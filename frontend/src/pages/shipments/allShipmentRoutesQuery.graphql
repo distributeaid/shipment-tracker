@@ -4,7 +4,7 @@ query AllShipmentRoutes {
     from {
       id
       country {
-        countrycode
+        countryCode
         shortName
         alias
       }
@@ -13,7 +13,7 @@ query AllShipmentRoutes {
     to {
       id
       country {
-        countrycode
+        countryCode
         shortName
         alias
       }

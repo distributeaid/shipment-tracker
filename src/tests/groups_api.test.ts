@@ -170,7 +170,7 @@ describe('Groups API', () => {
             description
             groupType
             country {
-              countrycode
+              countryCode
               shortName
               alias
             }
@@ -222,7 +222,7 @@ describe('Groups API', () => {
         expect(res.data?.updateGroup?.primaryContact?.email).toEqual(
           updateParams?.primaryContact?.email,
         )
-        expect(res.data?.updateGroup?.country.countrycode).toEqual(
+        expect(res.data?.updateGroup?.country.countryCode).toEqual(
           updateParams?.country,
         )
         expect(res.data?.updateGroup?.locality).toEqual(updateParams?.locality)

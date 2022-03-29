@@ -28,8 +28,8 @@ export const formatShipmentRouteToLabel = (
  * Creates a short identifier for the given route
  */
 export const formatShipmentRouteToID = (route: ShipmentRoute): string => {
-  const { countrycode: fromCountryCode } = route.from.country
-  const { countrycode: toCountryCode } = route.to.country
+  const { countryCode: fromCountryCode } = route.from.country
+  const { countryCode: toCountryCode } = route.to.country
 
   return `${fromCountryCode}-${toCountryCode}`
 }

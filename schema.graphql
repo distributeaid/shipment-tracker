@@ -27,6 +27,7 @@ type Group {
   locality: String!
   primaryContact: ContactInfo!
   website: String
+  servingRegions: [Region!]!
   captainId: Int!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -40,6 +41,7 @@ input GroupCreateInput {
   locality: String!
   primaryContact: ContactInfoInput!
   website: String
+  servingRegions: [ID!]
 }
 
 input GroupUpdateInput {
@@ -51,6 +53,7 @@ input GroupUpdateInput {
   primaryContact: ContactInfoInput
   website: String
   captainId: Int
+  servingRegions: [ID!]
 }
 
 input ShipmentUpdateInput {
@@ -119,7 +122,7 @@ input ShipmentCreateInput {
 }
 
 type Country {
-  countrycode: ID!
+  countryCode: ID!
   shortName: String!
   alias: String
 }

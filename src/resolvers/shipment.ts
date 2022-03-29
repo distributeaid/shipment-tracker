@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { isEqual, xor } from 'lodash'
-import { shipmentRoutes, wireFormatShipmentRoute } from '../data/shipmentRoutes'
+import { shipmentRoutes } from '../data/shipmentRoutes'
 import { validateIdInput } from '../input-validation/idInputSchema'
 import {
   CurrentYearOrGreater,
@@ -44,6 +44,15 @@ const dbToGraphQL = (shipment: Shipment): ResolversTypes['Shipment'] => ({
   receivingHubs: [],
   sendingHubs: [],
 })
+
+const wireFormatShipmentRoute = (shipmentRouteId: string): ShipmentRoute => {
+  // Find ShipmentRoute
+  const shipmentRoute = shipmentRoutes[shipmentRouteId]
+  if (shipmentRoute === undefined) {
+    throw new Error(`Unknown shipment route ${shipmentRouteId}!`)
+  }
+  return shipmentRoute
+}
 
 // Shipment query resolvers
 

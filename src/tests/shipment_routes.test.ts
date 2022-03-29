@@ -16,7 +16,7 @@ const shipmentRoutesQuery = gql`
       from {
         id
         country {
-          countrycode
+          countryCode
           shortName
           alias
         }
@@ -25,7 +25,7 @@ const shipmentRoutesQuery = gql`
       to {
         id
         country {
-          countrycode
+          countryCode
           shortName
           alias
         }
@@ -70,7 +70,7 @@ describe('shipmentRoutes API', () => {
       from: {
         country: {
           shortName: 'Germany',
-          countrycode: 'DE',
+          countryCode: 'DE',
           alias: null,
         },
         locality: null,
@@ -78,7 +78,7 @@ describe('shipmentRoutes API', () => {
       to: {
         country: {
           shortName: 'Bosnia and Herzegovina',
-          countrycode: 'BA',
+          countryCode: 'BA',
           alias: null,
         },
         locality: null,

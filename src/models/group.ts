@@ -18,7 +18,7 @@ export interface GroupAttributes {
   name: string
   description?: string | null
   groupType: GroupType
-  country: typeof countries[number]['countrycode']
+  country: keyof typeof countries
   locality: string
   primaryContact: ContactInfo
   website?: string | null

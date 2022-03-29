@@ -2,7 +2,7 @@ query AllRegions {
   regions {
     id
     country {
-      countrycode
+      countryCode
       shortName
       alias
     }

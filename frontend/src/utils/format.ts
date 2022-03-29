@@ -108,7 +108,7 @@ export function formatShipmentStatus(shipmentStatus: ShipmentStatus) {
 
 export const formatRegion = (region: Region): string => {
   let regionString = region.country.alias ?? region.country.shortName
-  if (region.locality !== undefined) regionString += ` (${region.locality})`
+  if (region.locality !== null) regionString += ` (${region.locality})`
   return regionString
 }
 

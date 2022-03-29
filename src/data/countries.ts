@@ -16,7 +16,7 @@ export type Country = {
    * Two-letter ISO code for the country.
    * Example: "NO"
    */
-  countrycode: string
+  countryCode: string
   /**
    * Three-letter ISO code for the country.
    * Example: "NOR"
@@ -31,1749 +31,1997 @@ export type Country = {
 /**
  * @source https://www.iso.org/obp/ui/#search
  */
-export const countries: Readonly<Country[]> = [
-  {
+export const countries = {
+  AF: {
     shortName: 'Afghanistan',
     shortNameFR: "Afghanistan (l')",
-    countrycode: 'AF',
+    countryCode: 'AF',
     countryCode3: 'AFG',
     numeric: 4,
+    alias: undefined,
   },
-  {
+  AL: {
     shortName: 'Albania',
     shortNameFR: "Albanie (l')",
-    countrycode: 'AL',
+    countryCode: 'AL',
     countryCode3: 'ALB',
     numeric: 8,
+    alias: undefined,
   },
-  {
+  DZ: {
     shortName: 'Algeria',
     shortNameFR: "Algérie (l')",
-    countrycode: 'DZ',
+    countryCode: 'DZ',
     countryCode3: 'DZA',
     numeric: 12,
+    alias: undefined,
   },
-  {
+  AS: {
     shortName: 'American Samoa',
     shortNameFR: 'Samoa américaines (les)',
-    countrycode: 'AS',
+    countryCode: 'AS',
     countryCode3: 'ASM',
     numeric: 16,
+    alias: undefined,
   },
-  {
+  AD: {
     shortName: 'Andorra',
     shortNameFR: "Andorre (l')",
-    countrycode: 'AD',
+    countryCode: 'AD',
     countryCode3: 'AND',
     numeric: 20,
+    alias: undefined,
   },
-  {
+  AO: {
     shortName: 'Angola',
     shortNameFR: "Angola (l')",
-    countrycode: 'AO',
+    countryCode: 'AO',
     countryCode3: 'AGO',
     numeric: 24,
+    alias: undefined,
   },
-  {
+  AI: {
     shortName: 'Anguilla',
     shortNameFR: 'Anguilla',
-    countrycode: 'AI',
+    countryCode: 'AI',
     countryCode3: 'AIA',
     numeric: 660,
+    alias: undefined,
   },
-  {
+  AQ: {
     shortName: 'Antarctica',
     shortNameFR: "Antarctique (l')",
-    countrycode: 'AQ',
+    countryCode: 'AQ',
     countryCode3: 'ATA',
     numeric: 10,
+    alias: undefined,
   },
-  {
+  AG: {
     shortName: 'Antigua and Barbuda',
     shortNameFR: 'Antigua-et-Barbuda',
-    countrycode: 'AG',
+    countryCode: 'AG',
     countryCode3: 'ATG',
     numeric: 28,
+    alias: undefined,
   },
-  {
+  AR: {
     shortName: 'Argentina',
     shortNameFR: "Argentine (l')",
-    countrycode: 'AR',
+    countryCode: 'AR',
     countryCode3: 'ARG',
     numeric: 32,
+    alias: undefined,
   },
-  {
+  AM: {
     shortName: 'Armenia',
     shortNameFR: "Arménie (l')",
-    countrycode: 'AM',
+    countryCode: 'AM',
     countryCode3: 'ARM',
     numeric: 51,
+    alias: undefined,
   },
-  {
+  AW: {
     shortName: 'Aruba',
     shortNameFR: 'Aruba',
-    countrycode: 'AW',
+    countryCode: 'AW',
     countryCode3: 'ABW',
     numeric: 533,
+    alias: undefined,
   },
-  {
+  AU: {
     shortName: 'Australia',
     shortNameFR: "Australie (l')",
-    countrycode: 'AU',
+    countryCode: 'AU',
     countryCode3: 'AUS',
     numeric: 36,
+    alias: undefined,
   },
-  {
+  AT: {
     shortName: 'Austria',
     shortNameFR: "Autriche (l')",
-    countrycode: 'AT',
+    countryCode: 'AT',
     countryCode3: 'AUT',
     numeric: 40,
+    alias: undefined,
   },
-  {
+  AZ: {
     shortName: 'Azerbaijan',
     shortNameFR: "Azerbaïdjan (l')",
-    countrycode: 'AZ',
+    countryCode: 'AZ',
     countryCode3: 'AZE',
     numeric: 31,
+    alias: undefined,
   },
-  {
+  BS: {
     shortName: 'Bahamas (the)',
     shortNameFR: 'Bahamas (les)',
-    countrycode: 'BS',
+    countryCode: 'BS',
     countryCode3: 'BHS',
     numeric: 44,
+    alias: undefined,
   },
-  {
+  BH: {
     shortName: 'Bahrain',
     shortNameFR: 'Bahreïn',
-    countrycode: 'BH',
+    countryCode: 'BH',
     countryCode3: 'BHR',
     numeric: 48,
+    alias: undefined,
   },
-  {
+  BD: {
     shortName: 'Bangladesh',
     shortNameFR: 'Bangladesh (le)',
-    countrycode: 'BD',
+    countryCode: 'BD',
     countryCode3: 'BGD',
     numeric: 50,
+    alias: undefined,
   },
-  {
+  BB: {
     shortName: 'Barbados',
     shortNameFR: 'Barbade (la)',
-    countrycode: 'BB',
+    countryCode: 'BB',
     countryCode3: 'BRB',
     numeric: 52,
+    alias: undefined,
   },
-  {
+  BY: {
     shortName: 'Belarus',
     shortNameFR: 'Bélarus (le)',
-    countrycode: 'BY',
+    countryCode: 'BY',
     countryCode3: 'BLR',
     numeric: 112,
+    alias: undefined,
   },
-  {
+  BE: {
     shortName: 'Belgium',
     shortNameFR: 'Belgique (la)',
-    countrycode: 'BE',
+    countryCode: 'BE',
     countryCode3: 'BEL',
     numeric: 56,
+    alias: undefined,
   },
-  {
+  BZ: {
     shortName: 'Belize',
     shortNameFR: 'Belize (le)',
-    countrycode: 'BZ',
+    countryCode: 'BZ',
     countryCode3: 'BLZ',
     numeric: 84,
+    alias: undefined,
   },
-  {
+  BJ: {
     shortName: 'Benin',
     shortNameFR: 'Bénin (le)',
-    countrycode: 'BJ',
+    countryCode: 'BJ',
     countryCode3: 'BEN',
     numeric: 204,
+    alias: undefined,
   },
-  {
+  BM: {
     shortName: 'Bermuda',
     shortNameFR: 'Bermudes (les)',
-    countrycode: 'BM',
+    countryCode: 'BM',
     countryCode3: 'BMU',
     numeric: 60,
+    alias: undefined,
   },
-  {
+  BT: {
     shortName: 'Bhutan',
     shortNameFR: 'Bhoutan (le)',
-    countrycode: 'BT',
+    countryCode: 'BT',
     countryCode3: 'BTN',
     numeric: 64,
+    alias: undefined,
   },
-  {
+  BO: {
     shortName: 'Bolivia (Plurinational State of)',
     shortNameFR: 'Bolivie (État plurinational de)',
-    countrycode: 'BO',
+    countryCode: 'BO',
     countryCode3: 'BOL',
     numeric: 68,
+    alias: undefined,
   },
-  {
+  BQ: {
     shortName: 'Bonaire, Sint Eustatius and Saba',
     shortNameFR: 'Bonaire, Saint-Eustache et Saba',
-    countrycode: 'BQ',
+    countryCode: 'BQ',
     countryCode3: 'BES',
     numeric: 535,
+    alias: undefined,
   },
-  {
+  BA: {
     shortName: 'Bosnia and Herzegovina',
     shortNameFR: 'Bosnie-Herzégovine (la)',
-    countrycode: 'BA',
+    countryCode: 'BA',
     countryCode3: 'BIH',
     numeric: 70,
+    alias: undefined,
   },
-  {
+  BW: {
     shortName: 'Botswana',
     shortNameFR: 'Botswana (le)',
-    countrycode: 'BW',
+    countryCode: 'BW',
     countryCode3: 'BWA',
     numeric: 72,
+    alias: undefined,
   },
-  {
+  BV: {
     shortName: 'Bouvet Island',
     shortNameFR: "Bouvet (l'Île)",
-    countrycode: 'BV',
+    countryCode: 'BV',
     countryCode3: 'BVT',
     numeric: 74,
+    alias: undefined,
   },
-  {
+  BR: {
     shortName: 'Brazil',
     shortNameFR: 'Brésil (le)',
-    countrycode: 'BR',
+    countryCode: 'BR',
     countryCode3: 'BRA',
     numeric: 76,
+    alias: undefined,
   },
-  {
+  IO: {
     shortName: 'British Indian Ocean Territory (the)',
     shortNameFR: "Indien (le Territoire britannique de l'océan)",
-    countrycode: 'IO',
+    countryCode: 'IO',
     countryCode3: 'IOT',
     numeric: 86,
+    alias: undefined,
   },
-  {
+  BN: {
     shortName: 'Brunei Darussalam',
     shortNameFR: 'Brunéi Darussalam (le)',
-    countrycode: 'BN',
+    countryCode: 'BN',
     countryCode3: 'BRN',
     numeric: 96,
+    alias: undefined,
   },
-  {
+  BG: {
     shortName: 'Bulgaria',
     shortNameFR: 'Bulgarie (la)',
-    countrycode: 'BG',
+    countryCode: 'BG',
     countryCode3: 'BGR',
     numeric: 100,
+    alias: undefined,
   },
-  {
+  BF: {
     shortName: 'Burkina Faso',
     shortNameFR: 'Burkina Faso (le)',
-    countrycode: 'BF',
+    countryCode: 'BF',
     countryCode3: 'BFA',
     numeric: 854,
+    alias: undefined,
   },
-  {
+  BI: {
     shortName: 'Burundi',
     shortNameFR: 'Burundi (le)',
-    countrycode: 'BI',
+    countryCode: 'BI',
     countryCode3: 'BDI',
     numeric: 108,
+    alias: undefined,
   },
-  {
+  CV: {
     shortName: 'Cabo Verde',
     shortNameFR: 'Cabo Verde',
-    countrycode: 'CV',
+    countryCode: 'CV',
     countryCode3: 'CPV',
     numeric: 132,
+    alias: undefined,
   },
-  {
+  KH: {
     shortName: 'Cambodia',
     shortNameFR: 'Cambodge (le)',
-    countrycode: 'KH',
+    countryCode: 'KH',
     countryCode3: 'KHM',
     numeric: 116,
+    alias: undefined,
   },
-  {
+  CM: {
     shortName: 'Cameroon',
     shortNameFR: 'Cameroun (le)',
-    countrycode: 'CM',
+    countryCode: 'CM',
     countryCode3: 'CMR',
     numeric: 120,
+    alias: undefined,
   },
-  {
+  CA: {
     shortName: 'Canada',
     shortNameFR: 'Canada (le)',
-    countrycode: 'CA',
+    countryCode: 'CA',
     countryCode3: 'CAN',
     numeric: 124,
+    alias: undefined,
   },
-  {
+  KY: {
     shortName: 'Cayman Islands (the)',
     shortNameFR: 'Caïmans (les Îles)',
-    countrycode: 'KY',
+    countryCode: 'KY',
     countryCode3: 'CYM',
     numeric: 136,
+    alias: undefined,
   },
-  {
+  CF: {
     shortName: 'Central African Republic (the)',
     shortNameFR: 'République centrafricaine (la)',
-    countrycode: 'CF',
+    countryCode: 'CF',
     countryCode3: 'CAF',
     numeric: 140,
+    alias: undefined,
   },
-  {
+  TD: {
     shortName: 'Chad',
     shortNameFR: 'Tchad (le)',
-    countrycode: 'TD',
+    countryCode: 'TD',
     countryCode3: 'TCD',
     numeric: 148,
+    alias: undefined,
   },
-  {
+  CL: {
     shortName: 'Chile',
     shortNameFR: 'Chili (le)',
-    countrycode: 'CL',
+    countryCode: 'CL',
     countryCode3: 'CHL',
     numeric: 152,
+    alias: undefined,
   },
-  {
+  CN: {
     shortName: 'China',
     shortNameFR: 'Chine (la)',
-    countrycode: 'CN',
+    countryCode: 'CN',
     countryCode3: 'CHN',
     numeric: 156,
+    alias: undefined,
   },
-  {
+  CX: {
     shortName: 'Christmas Island',
     shortNameFR: "Christmas (l'Île)",
-    countrycode: 'CX',
+    countryCode: 'CX',
     countryCode3: 'CXR',
     numeric: 162,
+    alias: undefined,
   },
-  {
+  CC: {
     shortName: 'Cocos (Keeling) Islands (the)',
     shortNameFR: 'Cocos (les Îles)/ Keeling (les Îles)',
-    countrycode: 'CC',
+    countryCode: 'CC',
     countryCode3: 'CCK',
     numeric: 166,
+    alias: undefined,
   },
-  {
+  CO: {
     shortName: 'Colombia',
     shortNameFR: 'Colombie (la)',
-    countrycode: 'CO',
+    countryCode: 'CO',
     countryCode3: 'COL',
     numeric: 170,
+    alias: undefined,
   },
-  {
+  KM: {
     shortName: 'Comoros (the)',
     shortNameFR: 'Comores (les)',
-    countrycode: 'KM',
+    countryCode: 'KM',
     countryCode3: 'COM',
     numeric: 174,
+    alias: undefined,
   },
-  {
+  CD: {
     shortName: 'Congo (the Democratic Republic of the)',
     shortNameFR: 'Congo (la République démocratique du)',
-    countrycode: 'CD',
+    countryCode: 'CD',
     countryCode3: 'COD',
     numeric: 180,
+    alias: undefined,
   },
-  {
+  CG: {
     shortName: 'Congo (the)',
     shortNameFR: 'Congo (le)',
-    countrycode: 'CG',
+    countryCode: 'CG',
     countryCode3: 'COG',
     numeric: 178,
+    alias: undefined,
   },
-  {
+  CK: {
     shortName: 'Cook Islands (the)',
     shortNameFR: 'Cook (les Îles)',
-    countrycode: 'CK',
+    countryCode: 'CK',
     countryCode3: 'COK',
     numeric: 184,
+    alias: undefined,
   },
-  {
+  CR: {
     shortName: 'Costa Rica',
     shortNameFR: 'Costa Rica (le)',
-    countrycode: 'CR',
+    countryCode: 'CR',
     countryCode3: 'CRI',
     numeric: 188,
+    alias: undefined,
   },
-  {
+  HR: {
     shortName: 'Croatia',
     shortNameFR: 'Croatie (la)',
-    countrycode: 'HR',
+    countryCode: 'HR',
     countryCode3: 'HRV',
     numeric: 191,
+    alias: undefined,
   },
-  {
+  CU: {
     shortName: 'Cuba',
     shortNameFR: 'Cuba',
-    countrycode: 'CU',
+    countryCode: 'CU',
     countryCode3: 'CUB',
     numeric: 192,
+    alias: undefined,
   },
-  {
+  CW: {
     shortName: 'Curaçao',
     shortNameFR: 'Curaçao',
-    countrycode: 'CW',
+    countryCode: 'CW',
     countryCode3: 'CUW',
     numeric: 531,
+    alias: undefined,
   },
-  {
+  CY: {
     shortName: 'Cyprus',
     shortNameFR: 'Chypre',
-    countrycode: 'CY',
+    countryCode: 'CY',
     countryCode3: 'CYP',
     numeric: 196,
+    alias: undefined,
   },
-  {
+  CZ: {
     shortName: 'Czechia',
     shortNameFR: 'Tchéquie (la)',
-    countrycode: 'CZ',
+    countryCode: 'CZ',
     countryCode3: 'CZE',
     numeric: 203,
+    alias: undefined,
   },
-  {
+  CI: {
     shortName: "Côte d'Ivoire",
     shortNameFR: "Côte d'Ivoire (la)",
-    countrycode: 'CI',
+    countryCode: 'CI',
     countryCode3: 'CIV',
     numeric: 384,
+    alias: undefined,
   },
-  {
+  DK: {
     shortName: 'Denmark',
     shortNameFR: 'Danemark (le)',
-    countrycode: 'DK',
+    countryCode: 'DK',
     countryCode3: 'DNK',
     numeric: 208,
+    alias: undefined,
   },
-  {
+  DJ: {
     shortName: 'Djibouti',
     shortNameFR: 'Djibouti',
-    countrycode: 'DJ',
+    countryCode: 'DJ',
     countryCode3: 'DJI',
     numeric: 262,
+    alias: undefined,
   },
-  {
+  DM: {
     shortName: 'Dominica',
     shortNameFR: 'Dominique (la)',
-    countrycode: 'DM',
+    countryCode: 'DM',
     countryCode3: 'DMA',
     numeric: 212,
+    alias: undefined,
   },
-  {
+  DO: {
     shortName: 'Dominican Republic (the)',
     shortNameFR: 'dominicaine (la République)',
-    countrycode: 'DO',
+    countryCode: 'DO',
     countryCode3: 'DOM',
     numeric: 214,
+    alias: undefined,
   },
-  {
+  EC: {
     shortName: 'Ecuador',
     shortNameFR: "Équateur (l')",
-    countrycode: 'EC',
+    countryCode: 'EC',
     countryCode3: 'ECU',
     numeric: 218,
+    alias: undefined,
   },
-  {
+  EG: {
     shortName: 'Egypt',
     shortNameFR: "Égypte (l')",
-    countrycode: 'EG',
+    countryCode: 'EG',
     countryCode3: 'EGY',
     numeric: 818,
+    alias: undefined,
   },
-  {
+  SV: {
     shortName: 'El Salvador',
     shortNameFR: 'El Salvador',
-    countrycode: 'SV',
+    countryCode: 'SV',
     countryCode3: 'SLV',
     numeric: 222,
+    alias: undefined,
   },
-  {
+  GQ: {
     shortName: 'Equatorial Guinea',
     shortNameFR: 'Guinée équatoriale (la)',
-    countrycode: 'GQ',
+    countryCode: 'GQ',
     countryCode3: 'GNQ',
     numeric: 226,
+    alias: undefined,
   },
-  {
+  ER: {
     shortName: 'Eritrea',
     shortNameFR: "Érythrée (l')",
-    countrycode: 'ER',
+    countryCode: 'ER',
     countryCode3: 'ERI',
     numeric: 232,
+    alias: undefined,
   },
-  {
+  EE: {
     shortName: 'Estonia',
     shortNameFR: "Estonie (l')",
-    countrycode: 'EE',
+    countryCode: 'EE',
     countryCode3: 'EST',
     numeric: 233,
+    alias: undefined,
   },
-  {
+  SZ: {
     shortName: 'Eswatini',
     shortNameFR: "Eswatini (l')",
-    countrycode: 'SZ',
+    countryCode: 'SZ',
     countryCode3: 'SWZ',
     numeric: 748,
+    alias: undefined,
   },
-  {
+  ET: {
     shortName: 'Ethiopia',
     shortNameFR: "Éthiopie (l')",
-    countrycode: 'ET',
+    countryCode: 'ET',
     countryCode3: 'ETH',
     numeric: 231,
+    alias: undefined,
   },
-  {
+  FK: {
     shortName: 'Falkland Islands (the) [Malvinas]',
     shortNameFR: 'Falkland (les Îles)/Malouines (les Îles)',
-    countrycode: 'FK',
+    countryCode: 'FK',
     countryCode3: 'FLK',
     numeric: 238,
+    alias: undefined,
   },
-  {
+  FO: {
     shortName: 'Faroe Islands (the)',
     shortNameFR: 'Féroé (les Îles)',
-    countrycode: 'FO',
+    countryCode: 'FO',
     countryCode3: 'FRO',
     numeric: 234,
+    alias: undefined,
   },
-  {
+  FJ: {
     shortName: 'Fiji',
     shortNameFR: 'Fidji (les)',
-    countrycode: 'FJ',
+    countryCode: 'FJ',
     countryCode3: 'FJI',
     numeric: 242,
+    alias: undefined,
   },
-  {
+  FI: {
     shortName: 'Finland',
     shortNameFR: 'Finlande (la)',
-    countrycode: 'FI',
+    countryCode: 'FI',
     countryCode3: 'FIN',
     numeric: 246,
+    alias: undefined,
   },
-  {
+  FR: {
     shortName: 'France',
     shortNameFR: 'France (la)',
-    countrycode: 'FR',
+    countryCode: 'FR',
     countryCode3: 'FRA',
     numeric: 250,
+    alias: undefined,
   },
-  {
+  GF: {
     shortName: 'French Guiana',
     shortNameFR: 'Guyane française (la )',
-    countrycode: 'GF',
+    countryCode: 'GF',
     countryCode3: 'GUF',
     numeric: 254,
+    alias: undefined,
   },
-  {
+  PF: {
     shortName: 'French Polynesia',
     shortNameFR: 'Polynésie française (la)',
-    countrycode: 'PF',
+    countryCode: 'PF',
     countryCode3: 'PYF',
     numeric: 258,
+    alias: undefined,
   },
-  {
+  TF: {
     shortName: 'French Southern Territories (the)',
     shortNameFR: 'Terres australes françaises (les)',
-    countrycode: 'TF',
+    countryCode: 'TF',
     countryCode3: 'ATF',
     numeric: 260,
+    alias: undefined,
   },
-  {
+  GA: {
     shortName: 'Gabon',
     shortNameFR: 'Gabon (le)',
-    countrycode: 'GA',
+    countryCode: 'GA',
     countryCode3: 'GAB',
     numeric: 266,
+    alias: undefined,
   },
-  {
+  GM: {
     shortName: 'Gambia (the)',
     shortNameFR: 'Gambie (la)',
-    countrycode: 'GM',
+    countryCode: 'GM',
     countryCode3: 'GMB',
     numeric: 270,
+    alias: undefined,
   },
-  {
+  GE: {
     shortName: 'Georgia',
     shortNameFR: 'Géorgie (la)',
-    countrycode: 'GE',
+    countryCode: 'GE',
     countryCode3: 'GEO',
     numeric: 268,
+    alias: undefined,
   },
-  {
+  DE: {
     shortName: 'Germany',
     shortNameFR: "Allemagne (l')",
-    countrycode: 'DE',
+    countryCode: 'DE',
     countryCode3: 'DEU',
     numeric: 276,
+    alias: undefined,
   },
-  {
+  GH: {
     shortName: 'Ghana',
     shortNameFR: 'Ghana (le)',
-    countrycode: 'GH',
+    countryCode: 'GH',
     countryCode3: 'GHA',
     numeric: 288,
+    alias: undefined,
   },
-  {
+  GI: {
     shortName: 'Gibraltar',
     shortNameFR: 'Gibraltar',
-    countrycode: 'GI',
+    countryCode: 'GI',
     countryCode3: 'GIB',
     numeric: 292,
+    alias: undefined,
   },
-  {
+  GR: {
     shortName: 'Greece',
     shortNameFR: 'Grèce (la)',
-    countrycode: 'GR',
+    countryCode: 'GR',
     countryCode3: 'GRC',
     numeric: 300,
+    alias: undefined,
   },
-  {
+  GL: {
     shortName: 'Greenland',
     shortNameFR: 'Groenland (le)',
-    countrycode: 'GL',
+    countryCode: 'GL',
     countryCode3: 'GRL',
     numeric: 304,
+    alias: undefined,
   },
-  {
+  GD: {
     shortName: 'Grenada',
     shortNameFR: 'Grenade (la)',
-    countrycode: 'GD',
+    countryCode: 'GD',
     countryCode3: 'GRD',
     numeric: 308,
+    alias: undefined,
   },
-  {
+  GP: {
     shortName: 'Guadeloupe',
     shortNameFR: 'Guadeloupe (la)',
-    countrycode: 'GP',
+    countryCode: 'GP',
     countryCode3: 'GLP',
     numeric: 312,
+    alias: undefined,
   },
-  {
+  GU: {
     shortName: 'Guam',
     shortNameFR: 'Guam',
-    countrycode: 'GU',
+    countryCode: 'GU',
     countryCode3: 'GUM',
     numeric: 316,
+    alias: undefined,
   },
-  {
+  GT: {
     shortName: 'Guatemala',
     shortNameFR: 'Guatemala (le)',
-    countrycode: 'GT',
+    countryCode: 'GT',
     countryCode3: 'GTM',
     numeric: 320,
+    alias: undefined,
   },
-  {
+  GG: {
     shortName: 'Guernsey',
     shortNameFR: 'Guernesey',
-    countrycode: 'GG',
+    countryCode: 'GG',
     countryCode3: 'GGY',
     numeric: 831,
+    alias: undefined,
   },
-  {
+  GN: {
     shortName: 'Guinea',
     shortNameFR: 'Guinée (la)',
-    countrycode: 'GN',
+    countryCode: 'GN',
     countryCode3: 'GIN',
     numeric: 324,
+    alias: undefined,
   },
-  {
+  GW: {
     shortName: 'Guinea-Bissau',
     shortNameFR: 'Guinée-Bissau (la)',
-    countrycode: 'GW',
+    countryCode: 'GW',
     countryCode3: 'GNB',
     numeric: 624,
+    alias: undefined,
   },
-  {
+  GY: {
     shortName: 'Guyana',
     shortNameFR: 'Guyana (le)',
-    countrycode: 'GY',
+    countryCode: 'GY',
     countryCode3: 'GUY',
     numeric: 328,
+    alias: undefined,
   },
-  {
+  HT: {
     shortName: 'Haiti',
     shortNameFR: 'Haïti',
-    countrycode: 'HT',
+    countryCode: 'HT',
     countryCode3: 'HTI',
     numeric: 332,
+    alias: undefined,
   },
-  {
+  HM: {
     shortName: 'Heard Island and McDonald Islands',
     shortNameFR: "Heard-et-Îles MacDonald (l'Île)",
-    countrycode: 'HM',
+    countryCode: 'HM',
     countryCode3: 'HMD',
     numeric: 334,
+    alias: undefined,
   },
-  {
+  VA: {
     shortName: 'Holy See (the)',
     shortNameFR: 'Saint-Siège (le)',
-    countrycode: 'VA',
+    countryCode: 'VA',
     countryCode3: 'VAT',
     numeric: 336,
+    alias: undefined,
   },
-  {
+  HN: {
     shortName: 'Honduras',
     shortNameFR: 'Honduras (le)',
-    countrycode: 'HN',
+    countryCode: 'HN',
     countryCode3: 'HND',
     numeric: 340,
+    alias: undefined,
   },
-  {
+  HK: {
     shortName: 'Hong Kong',
     shortNameFR: 'Hong Kong',
-    countrycode: 'HK',
+    countryCode: 'HK',
     countryCode3: 'HKG',
     numeric: 344,
+    alias: undefined,
   },
-  {
+  HU: {
     shortName: 'Hungary',
     shortNameFR: 'Hongrie (la)',
-    countrycode: 'HU',
+    countryCode: 'HU',
     countryCode3: 'HUN',
     numeric: 348,
+    alias: undefined,
   },
-  {
+  IS: {
     shortName: 'Iceland',
     shortNameFR: "Islande (l')",
-    countrycode: 'IS',
+    countryCode: 'IS',
     countryCode3: 'ISL',
     numeric: 352,
+    alias: undefined,
   },
-  {
+  IN: {
     shortName: 'India',
     shortNameFR: "Inde (l')",
-    countrycode: 'IN',
+    countryCode: 'IN',
     countryCode3: 'IND',
     numeric: 356,
+    alias: undefined,
   },
-  {
+  ID: {
     shortName: 'Indonesia',
     shortNameFR: "Indonésie (l')",
-    countrycode: 'ID',
+    countryCode: 'ID',
     countryCode3: 'IDN',
     numeric: 360,
+    alias: undefined,
   },
-  {
+  IR: {
     shortName: 'Iran (Islamic Republic of)',
     shortNameFR: "Iran (République Islamique d')",
-    countrycode: 'IR',
+    countryCode: 'IR',
     countryCode3: 'IRN',
     numeric: 364,
+    alias: undefined,
   },
-  {
+  IQ: {
     shortName: 'Iraq',
     shortNameFR: "Iraq (l')",
-    countrycode: 'IQ',
+    countryCode: 'IQ',
     countryCode3: 'IRQ',
     numeric: 368,
+    alias: undefined,
   },
-  {
+  IE: {
     shortName: 'Ireland',
     shortNameFR: "Irlande (l')",
-    countrycode: 'IE',
+    countryCode: 'IE',
     countryCode3: 'IRL',
     numeric: 372,
+    alias: undefined,
   },
-  {
+  IM: {
     shortName: 'Isle of Man',
     shortNameFR: 'Île de Man',
-    countrycode: 'IM',
+    countryCode: 'IM',
     countryCode3: 'IMN',
     numeric: 833,
+    alias: undefined,
   },
-  {
+  IL: {
     shortName: 'Israel',
     shortNameFR: 'Israël',
-    countrycode: 'IL',
+    countryCode: 'IL',
     countryCode3: 'ISR',
     numeric: 376,
+    alias: undefined,
   },
-  {
+  IT: {
     shortName: 'Italy',
     shortNameFR: "Italie (l')",
-    countrycode: 'IT',
+    countryCode: 'IT',
     countryCode3: 'ITA',
     numeric: 380,
+    alias: undefined,
   },
-  {
+  JM: {
     shortName: 'Jamaica',
     shortNameFR: 'Jamaïque (la)',
-    countrycode: 'JM',
+    countryCode: 'JM',
     countryCode3: 'JAM',
     numeric: 388,
+    alias: undefined,
   },
-  {
+  JP: {
     shortName: 'Japan',
     shortNameFR: 'Japon (le)',
-    countrycode: 'JP',
+    countryCode: 'JP',
     countryCode3: 'JPN',
     numeric: 392,
+    alias: undefined,
   },
-  {
+  JE: {
     shortName: 'Jersey',
     shortNameFR: 'Jersey',
-    countrycode: 'JE',
+    countryCode: 'JE',
     countryCode3: 'JEY',
     numeric: 832,
+    alias: undefined,
   },
-  {
+  JO: {
     shortName: 'Jordan',
     shortNameFR: 'Jordanie (la)',
-    countrycode: 'JO',
+    countryCode: 'JO',
     countryCode3: 'JOR',
     numeric: 400,
+    alias: undefined,
   },
-  {
+  KZ: {
     shortName: 'Kazakhstan',
     shortNameFR: 'Kazakhstan (le)',
-    countrycode: 'KZ',
+    countryCode: 'KZ',
     countryCode3: 'KAZ',
     numeric: 398,
+    alias: undefined,
   },
-  {
+  KE: {
     shortName: 'Kenya',
     shortNameFR: 'Kenya (le)',
-    countrycode: 'KE',
+    countryCode: 'KE',
     countryCode3: 'KEN',
     numeric: 404,
+    alias: undefined,
   },
-  {
+  KI: {
     shortName: 'Kiribati',
     shortNameFR: 'Kiribati',
-    countrycode: 'KI',
+    countryCode: 'KI',
     countryCode3: 'KIR',
     numeric: 296,
+    alias: undefined,
   },
-  {
+  KP: {
     shortName: "Korea (the Democratic People's Republic of)",
     shortNameFR: 'Corée (la République populaire démocratique de)',
-    countrycode: 'KP',
+    countryCode: 'KP',
     countryCode3: 'PRK',
     numeric: 408,
+    alias: undefined,
   },
-  {
+  KR: {
     shortName: 'Korea (the Republic of)',
     shortNameFR: 'Corée (la République de)',
-    countrycode: 'KR',
+    countryCode: 'KR',
     countryCode3: 'KOR',
     numeric: 410,
+    alias: undefined,
   },
-  {
+  KW: {
     shortName: 'Kuwait',
     shortNameFR: 'Koweït (le)',
-    countrycode: 'KW',
+    countryCode: 'KW',
     countryCode3: 'KWT',
     numeric: 414,
+    alias: undefined,
   },
-  {
+  KG: {
     shortName: 'Kyrgyzstan',
     shortNameFR: 'Kirghizistan (le)',
-    countrycode: 'KG',
+    countryCode: 'KG',
     countryCode3: 'KGZ',
     numeric: 417,
+    alias: undefined,
   },
-  {
+  LA: {
     shortName: "Lao People's Democratic Republic (the)",
     shortNameFR: 'Lao (la République démocratique populaire)',
-    countrycode: 'LA',
+    countryCode: 'LA',
     countryCode3: 'LAO',
     numeric: 418,
+    alias: undefined,
   },
-  {
+  LV: {
     shortName: 'Latvia',
     shortNameFR: 'Lettonie (la)',
-    countrycode: 'LV',
+    countryCode: 'LV',
     countryCode3: 'LVA',
     numeric: 428,
+    alias: undefined,
   },
-  {
+  LB: {
     shortName: 'Lebanon',
     shortNameFR: 'Liban (le)',
-    countrycode: 'LB',
+    countryCode: 'LB',
     countryCode3: 'LBN',
     numeric: 422,
+    alias: undefined,
   },
-  {
+  LS: {
     shortName: 'Lesotho',
     shortNameFR: 'Lesotho (le)',
-    countrycode: 'LS',
+    countryCode: 'LS',
     countryCode3: 'LSO',
     numeric: 426,
+    alias: undefined,
   },
-  {
+  LR: {
     shortName: 'Liberia',
     shortNameFR: 'Libéria (le)',
-    countrycode: 'LR',
+    countryCode: 'LR',
     countryCode3: 'LBR',
     numeric: 430,
+    alias: undefined,
   },
-  {
+  LY: {
     shortName: 'Libya',
     shortNameFR: 'Libye (la)',
-    countrycode: 'LY',
+    countryCode: 'LY',
     countryCode3: 'LBY',
     numeric: 434,
+    alias: undefined,
   },
-  {
+  LI: {
     shortName: 'Liechtenstein',
     shortNameFR: 'Liechtenstein (le)',
-    countrycode: 'LI',
+    countryCode: 'LI',
     countryCode3: 'LIE',
     numeric: 438,
+    alias: undefined,
   },
-  {
+  LT: {
     shortName: 'Lithuania',
     shortNameFR: 'Lituanie (la)',
-    countrycode: 'LT',
+    countryCode: 'LT',
     countryCode3: 'LTU',
     numeric: 440,
+    alias: undefined,
   },
-  {
+  LU: {
     shortName: 'Luxembourg',
     shortNameFR: 'Luxembourg (le)',
-    countrycode: 'LU',
+    countryCode: 'LU',
     countryCode3: 'LUX',
     numeric: 442,
+    alias: undefined,
   },
-  {
+  MO: {
     shortName: 'Macao',
     shortNameFR: 'Macao',
-    countrycode: 'MO',
+    countryCode: 'MO',
     countryCode3: 'MAC',
     numeric: 446,
+    alias: undefined,
   },
-  {
+  MG: {
     shortName: 'Madagascar',
     shortNameFR: 'Madagascar',
-    countrycode: 'MG',
+    countryCode: 'MG',
     countryCode3: 'MDG',
     numeric: 450,
+    alias: undefined,
   },
-  {
+  MW: {
     shortName: 'Malawi',
     shortNameFR: 'Malawi (le)',
-    countrycode: 'MW',
+    countryCode: 'MW',
     countryCode3: 'MWI',
     numeric: 454,
+    alias: undefined,
   },
-  {
+  MY: {
     shortName: 'Malaysia',
     shortNameFR: 'Malaisie (la)',
-    countrycode: 'MY',
+    countryCode: 'MY',
     countryCode3: 'MYS',
     numeric: 458,
+    alias: undefined,
   },
-  {
+  MV: {
     shortName: 'Maldives',
     shortNameFR: 'Maldives (les)',
-    countrycode: 'MV',
+    countryCode: 'MV',
     countryCode3: 'MDV',
     numeric: 462,
+    alias: undefined,
   },
-  {
+  ML: {
     shortName: 'Mali',
     shortNameFR: 'Mali (le)',
-    countrycode: 'ML',
+    countryCode: 'ML',
     countryCode3: 'MLI',
     numeric: 466,
+    alias: undefined,
   },
-  {
+  MT: {
     shortName: 'Malta',
     shortNameFR: 'Malte',
-    countrycode: 'MT',
+    countryCode: 'MT',
     countryCode3: 'MLT',
     numeric: 470,
+    alias: undefined,
   },
-  {
+  MH: {
     shortName: 'Marshall Islands (the)',
     shortNameFR: 'Marshall (les Îles)',
-    countrycode: 'MH',
+    countryCode: 'MH',
     countryCode3: 'MHL',
     numeric: 584,
+    alias: undefined,
   },
-  {
+  MQ: {
     shortName: 'Martinique',
     shortNameFR: 'Martinique (la)',
-    countrycode: 'MQ',
+    countryCode: 'MQ',
     countryCode3: 'MTQ',
     numeric: 474,
+    alias: undefined,
   },
-  {
+  MR: {
     shortName: 'Mauritania',
     shortNameFR: 'Mauritanie (la)',
-    countrycode: 'MR',
+    countryCode: 'MR',
     countryCode3: 'MRT',
     numeric: 478,
+    alias: undefined,
   },
-  {
+  MU: {
     shortName: 'Mauritius',
     shortNameFR: 'Maurice',
-    countrycode: 'MU',
+    countryCode: 'MU',
     countryCode3: 'MUS',
     numeric: 480,
+    alias: undefined,
   },
-  {
+  YT: {
     shortName: 'Mayotte',
     shortNameFR: 'Mayotte',
-    countrycode: 'YT',
+    countryCode: 'YT',
     countryCode3: 'MYT',
     numeric: 175,
+    alias: undefined,
   },
-  {
+  MX: {
     shortName: 'Mexico',
     shortNameFR: 'Mexique (le)',
-    countrycode: 'MX',
+    countryCode: 'MX',
     countryCode3: 'MEX',
     numeric: 484,
+    alias: undefined,
   },
-  {
+  FM: {
     shortName: 'Micronesia (Federated States of)',
     shortNameFR: 'Micronésie (États fédérés de)',
-    countrycode: 'FM',
+    countryCode: 'FM',
     countryCode3: 'FSM',
     numeric: 583,
+    alias: undefined,
   },
-  {
+  MD: {
     shortName: 'Moldova (the Republic of)',
     shortNameFR: 'Moldova (la République de)',
-    countrycode: 'MD',
+    countryCode: 'MD',
     countryCode3: 'MDA',
     numeric: 498,
+    alias: undefined,
   },
-  {
+  MC: {
     shortName: 'Monaco',
     shortNameFR: 'Monaco',
-    countrycode: 'MC',
+    countryCode: 'MC',
     countryCode3: 'MCO',
     numeric: 492,
+    alias: undefined,
   },
-  {
+  MN: {
     shortName: 'Mongolia',
     shortNameFR: 'Mongolie (la)',
-    countrycode: 'MN',
+    countryCode: 'MN',
     countryCode3: 'MNG',
     numeric: 496,
+    alias: undefined,
   },
-  {
+  ME: {
     shortName: 'Montenegro',
     shortNameFR: 'Monténégro (le)',
-    countrycode: 'ME',
+    countryCode: 'ME',
     countryCode3: 'MNE',
     numeric: 499,
+    alias: undefined,
   },
-  {
+  MS: {
     shortName: 'Montserrat',
     shortNameFR: 'Montserrat',
-    countrycode: 'MS',
+    countryCode: 'MS',
     countryCode3: 'MSR',
     numeric: 500,
+    alias: undefined,
   },
-  {
+  MA: {
     shortName: 'Morocco',
     shortNameFR: 'Maroc (le)',
-    countrycode: 'MA',
+    countryCode: 'MA',
     countryCode3: 'MAR',
     numeric: 504,
+    alias: undefined,
   },
-  {
+  MZ: {
     shortName: 'Mozambique',
     shortNameFR: 'Mozambique (le)',
-    countrycode: 'MZ',
+    countryCode: 'MZ',
     countryCode3: 'MOZ',
     numeric: 508,
+    alias: undefined,
   },
-  {
+  MM: {
     shortName: 'Myanmar',
     shortNameFR: 'Myanmar (le)',
-    countrycode: 'MM',
+    countryCode: 'MM',
     countryCode3: 'MMR',
     numeric: 104,
+    alias: undefined,
   },
-  {
+  NA: {
     shortName: 'Namibia',
     shortNameFR: 'Namibie (la)',
-    countrycode: 'NA',
+    countryCode: 'NA',
     countryCode3: 'NAM',
     numeric: 516,
+    alias: undefined,
   },
-  {
+  NR: {
     shortName: 'Nauru',
     shortNameFR: 'Nauru',
-    countrycode: 'NR',
+    countryCode: 'NR',
     countryCode3: 'NRU',
     numeric: 520,
+    alias: undefined,
   },
-  {
+  NP: {
     shortName: 'Nepal',
     shortNameFR: 'Népal (le)',
-    countrycode: 'NP',
+    countryCode: 'NP',
     countryCode3: 'NPL',
     numeric: 524,
+    alias: undefined,
   },
-  {
+  NL: {
     shortName: 'Netherlands (the)',
     shortNameFR: 'Pays-Bas (les)',
-    countrycode: 'NL',
+    countryCode: 'NL',
     countryCode3: 'NLD',
     numeric: 528,
+    alias: undefined,
   },
-  {
+  NC: {
     shortName: 'New Caledonia',
     shortNameFR: 'Nouvelle-Calédonie (la)',
-    countrycode: 'NC',
+    countryCode: 'NC',
     countryCode3: 'NCL',
     numeric: 540,
+    alias: undefined,
   },
-  {
+  NZ: {
     shortName: 'New Zealand',
     shortNameFR: 'Nouvelle-Zélande (la)',
-    countrycode: 'NZ',
+    countryCode: 'NZ',
     countryCode3: 'NZL',
     numeric: 554,
+    alias: undefined,
   },
-  {
+  NI: {
     shortName: 'Nicaragua',
     shortNameFR: 'Nicaragua (le)',
-    countrycode: 'NI',
+    countryCode: 'NI',
     countryCode3: 'NIC',
     numeric: 558,
+    alias: undefined,
   },
-  {
+  NE: {
     shortName: 'Niger (the)',
     shortNameFR: 'Niger (le)',
-    countrycode: 'NE',
+    countryCode: 'NE',
     countryCode3: 'NER',
     numeric: 562,
+    alias: undefined,
   },
-  {
+  NG: {
     shortName: 'Nigeria',
     shortNameFR: 'Nigéria (le)',
-    countrycode: 'NG',
+    countryCode: 'NG',
     countryCode3: 'NGA',
     numeric: 566,
+    alias: undefined,
   },
-  {
+  NU: {
     shortName: 'Niue',
     shortNameFR: 'Niue',
-    countrycode: 'NU',
+    countryCode: 'NU',
     countryCode3: 'NIU',
     numeric: 570,
+    alias: undefined,
   },
-  {
+  NF: {
     shortName: 'Norfolk Island',
     shortNameFR: "Norfolk (l'Île)",
-    countrycode: 'NF',
+    countryCode: 'NF',
     countryCode3: 'NFK',
     numeric: 574,
+    alias: undefined,
   },
-  {
+  MK: {
     shortName: 'North Macedonia',
     shortNameFR: 'Macédoine du Nord (la)',
-    countrycode: 'MK',
+    countryCode: 'MK',
     countryCode3: 'MKD',
     numeric: 807,
+    alias: undefined,
   },
-  {
+  MP: {
     shortName: 'Northern Mariana Islands (the)',
     shortNameFR: 'Mariannes du Nord (les Îles)',
-    countrycode: 'MP',
+    countryCode: 'MP',
     countryCode3: 'MNP',
     numeric: 580,
+    alias: undefined,
   },
-  {
+  NO: {
     shortName: 'Norway',
     shortNameFR: 'Norvège (la)',
-    countrycode: 'NO',
+    countryCode: 'NO',
     countryCode3: 'NOR',
     numeric: 578,
+    alias: undefined,
   },
-  {
+  OM: {
     shortName: 'Oman',
     shortNameFR: 'Oman',
-    countrycode: 'OM',
+    countryCode: 'OM',
     countryCode3: 'OMN',
     numeric: 512,
+    alias: undefined,
   },
-  {
+  PK: {
     shortName: 'Pakistan',
     shortNameFR: 'Pakistan (le)',
-    countrycode: 'PK',
+    countryCode: 'PK',
     countryCode3: 'PAK',
     numeric: 586,
+    alias: undefined,
   },
-  {
+  PW: {
     shortName: 'Palau',
     shortNameFR: 'Palaos (les)',
-    countrycode: 'PW',
+    countryCode: 'PW',
     countryCode3: 'PLW',
     numeric: 585,
+    alias: undefined,
   },
-  {
+  PS: {
     shortName: 'Palestine, State of',
     shortNameFR: 'Palestine, État de',
-    countrycode: 'PS',
+    countryCode: 'PS',
     countryCode3: 'PSE',
     numeric: 275,
+    alias: undefined,
   },
-  {
+  PA: {
     shortName: 'Panama',
     shortNameFR: 'Panama (le)',
-    countrycode: 'PA',
+    countryCode: 'PA',
     countryCode3: 'PAN',
     numeric: 591,
+    alias: undefined,
   },
-  {
+  PG: {
     shortName: 'Papua New Guinea',
     shortNameFR: 'Papouasie-Nouvelle-Guinée (la)',
-    countrycode: 'PG',
+    countryCode: 'PG',
     countryCode3: 'PNG',
     numeric: 598,
+    alias: undefined,
   },
-  {
+  PY: {
     shortName: 'Paraguay',
     shortNameFR: 'Paraguay (le)',
-    countrycode: 'PY',
+    countryCode: 'PY',
     countryCode3: 'PRY',
     numeric: 600,
+    alias: undefined,
   },
-  {
+  PE: {
     shortName: 'Peru',
     shortNameFR: 'Pérou (le)',
-    countrycode: 'PE',
+    countryCode: 'PE',
     countryCode3: 'PER',
     numeric: 604,
+    alias: undefined,
   },
-  {
+  PH: {
     shortName: 'Philippines (the)',
     shortNameFR: 'Philippines (les)',
-    countrycode: 'PH',
+    countryCode: 'PH',
     countryCode3: 'PHL',
     numeric: 608,
+    alias: undefined,
   },
-  {
+  PN: {
     shortName: 'Pitcairn',
     shortNameFR: 'Pitcairn',
-    countrycode: 'PN',
+    countryCode: 'PN',
     countryCode3: 'PCN',
     numeric: 612,
+    alias: undefined,
   },
-  {
+  PL: {
     shortName: 'Poland',
     shortNameFR: 'Pologne (la)',
-    countrycode: 'PL',
+    countryCode: 'PL',
     countryCode3: 'POL',
     numeric: 616,
+    alias: undefined,
   },
-  {
+  PT: {
     shortName: 'Portugal',
     shortNameFR: 'Portugal (le)',
-    countrycode: 'PT',
+    countryCode: 'PT',
     countryCode3: 'PRT',
     numeric: 620,
+    alias: undefined,
   },
-  {
+  PR: {
     shortName: 'Puerto Rico',
     shortNameFR: 'Porto Rico',
-    countrycode: 'PR',
+    countryCode: 'PR',
     countryCode3: 'PRI',
     numeric: 630,
+    alias: undefined,
   },
-  {
+  QA: {
     shortName: 'Qatar',
     shortNameFR: 'Qatar (le)',
-    countrycode: 'QA',
+    countryCode: 'QA',
     countryCode3: 'QAT',
     numeric: 634,
+    alias: undefined,
   },
-  {
+  RO: {
     shortName: 'Romania',
     shortNameFR: 'Roumanie (la)',
-    countrycode: 'RO',
+    countryCode: 'RO',
     countryCode3: 'ROU',
     numeric: 642,
+    alias: undefined,
   },
-  {
+  RU: {
     shortName: 'Russian Federation (the)',
     shortNameFR: 'Russie (la Fédération de)',
-    countrycode: 'RU',
+    countryCode: 'RU',
     countryCode3: 'RUS',
     numeric: 643,
+    alias: undefined,
   },
-  {
+  RW: {
     shortName: 'Rwanda',
     shortNameFR: 'Rwanda (le)',
-    countrycode: 'RW',
+    countryCode: 'RW',
     countryCode3: 'RWA',
     numeric: 646,
+    alias: undefined,
   },
-  {
+  RE: {
     shortName: 'Réunion',
     shortNameFR: 'Réunion (La)',
-    countrycode: 'RE',
+    countryCode: 'RE',
     countryCode3: 'REU',
     numeric: 638,
+    alias: undefined,
   },
-  {
+  BL: {
     shortName: 'Saint Barthélemy',
     shortNameFR: 'Saint-Barthélemy',
-    countrycode: 'BL',
+    countryCode: 'BL',
     countryCode3: 'BLM',
     numeric: 652,
+    alias: undefined,
   },
-  {
+  SH: {
     shortName: 'Saint Helena, Ascension and Tristan da Cunha',
     shortNameFR: 'Sainte-Hélène, Ascension et Tristan da Cunha',
-    countrycode: 'SH',
+    countryCode: 'SH',
     countryCode3: 'SHN',
     numeric: 654,
+    alias: undefined,
   },
-  {
+  KN: {
     shortName: 'Saint Kitts and Nevis',
     shortNameFR: 'Saint-Kitts-et-Nevis',
-    countrycode: 'KN',
+    countryCode: 'KN',
     countryCode3: 'KNA',
     numeric: 659,
+    alias: undefined,
   },
-  {
+  LC: {
     shortName: 'Saint Lucia',
     shortNameFR: 'Sainte-Lucie',
-    countrycode: 'LC',
+    countryCode: 'LC',
     countryCode3: 'LCA',
     numeric: 662,
+    alias: undefined,
   },
-  {
+  MF: {
     shortName: 'Saint Martin (French part)',
     shortNameFR: 'Saint-Martin (partie française)',
-    countrycode: 'MF',
+    countryCode: 'MF',
     countryCode3: 'MAF',
     numeric: 663,
+    alias: undefined,
   },
-  {
+  PM: {
     shortName: 'Saint Pierre and Miquelon',
     shortNameFR: 'Saint-Pierre-et-Miquelon',
-    countrycode: 'PM',
+    countryCode: 'PM',
     countryCode3: 'SPM',
     numeric: 666,
+    alias: undefined,
   },
-  {
+  VC: {
     shortName: 'Saint Vincent and the Grenadines',
     shortNameFR: 'Saint-Vincent-et-les Grenadines',
-    countrycode: 'VC',
+    countryCode: 'VC',
     countryCode3: 'VCT',
     numeric: 670,
+    alias: undefined,
   },
-  {
+  WS: {
     shortName: 'Samoa',
     shortNameFR: 'Samoa (le)',
-    countrycode: 'WS',
+    countryCode: 'WS',
     countryCode3: 'WSM',
     numeric: 882,
+    alias: undefined,
   },
-  {
+  SM: {
     shortName: 'San Marino',
     shortNameFR: 'Saint-Marin',
-    countrycode: 'SM',
+    countryCode: 'SM',
     countryCode3: 'SMR',
     numeric: 674,
+    alias: undefined,
   },
-  {
+  ST: {
     shortName: 'Sao Tome and Principe',
     shortNameFR: 'Sao Tomé-et-Principe',
-    countrycode: 'ST',
+    countryCode: 'ST',
     countryCode3: 'STP',
     numeric: 678,
+    alias: undefined,
   },
-  {
+  SA: {
     shortName: 'Saudi Arabia',
     shortNameFR: "Arabie saoudite (l')",
-    countrycode: 'SA',
+    countryCode: 'SA',
     countryCode3: 'SAU',
     numeric: 682,
+    alias: undefined,
   },
-  {
+  SN: {
     shortName: 'Senegal',
     shortNameFR: 'Sénégal (le)',
-    countrycode: 'SN',
+    countryCode: 'SN',
     countryCode3: 'SEN',
     numeric: 686,
+    alias: undefined,
   },
-  {
+  RS: {
     shortName: 'Serbia',
     shortNameFR: 'Serbie (la)',
-    countrycode: 'RS',
+    countryCode: 'RS',
     countryCode3: 'SRB',
     numeric: 688,
+    alias: undefined,
   },
-  {
+  SC: {
     shortName: 'Seychelles',
     shortNameFR: 'Seychelles (les)',
-    countrycode: 'SC',
+    countryCode: 'SC',
     countryCode3: 'SYC',
     numeric: 690,
+    alias: undefined,
   },
-  {
+  SL: {
     shortName: 'Sierra Leone',
     shortNameFR: 'Sierra Leone (la)',
-    countrycode: 'SL',
+    countryCode: 'SL',
     countryCode3: 'SLE',
     numeric: 694,
+    alias: undefined,
   },
-  {
+  SG: {
     shortName: 'Singapore',
     shortNameFR: 'Singapour',
-    countrycode: 'SG',
+    countryCode: 'SG',
     countryCode3: 'SGP',
     numeric: 702,
+    alias: undefined,
   },
-  {
+  SX: {
     shortName: 'Sint Maarten (Dutch part)',
     shortNameFR: 'Saint-Martin (partie néerlandaise)',
-    countrycode: 'SX',
+    countryCode: 'SX',
     countryCode3: 'SXM',
     numeric: 534,
+    alias: undefined,
   },
-  {
+  SK: {
     shortName: 'Slovakia',
     shortNameFR: 'Slovaquie (la)',
-    countrycode: 'SK',
+    countryCode: 'SK',
     countryCode3: 'SVK',
     numeric: 703,
+    alias: undefined,
   },
-  {
+  SI: {
     shortName: 'Slovenia',
     shortNameFR: 'Slovénie (la)',
-    countrycode: 'SI',
+    countryCode: 'SI',
     countryCode3: 'SVN',
     numeric: 705,
+    alias: undefined,
   },
-  {
+  SB: {
     shortName: 'Solomon Islands',
     shortNameFR: 'Salomon (les Îles)',
-    countrycode: 'SB',
+    countryCode: 'SB',
     countryCode3: 'SLB',
     numeric: 90,
+    alias: undefined,
   },
-  {
+  SO: {
     shortName: 'Somalia',
     shortNameFR: 'Somalie (la)',
-    countrycode: 'SO',
+    countryCode: 'SO',
     countryCode3: 'SOM',
     numeric: 706,
+    alias: undefined,
   },
-  {
+  ZA: {
     shortName: 'South Africa',
     shortNameFR: "Afrique du Sud (l')",
-    countrycode: 'ZA',
+    countryCode: 'ZA',
     countryCode3: 'ZAF',
     numeric: 710,
+    alias: undefined,
   },
-  {
+  GS: {
     shortName: 'South Georgia and the South Sandwich Islands',
     shortNameFR: 'Géorgie du Sud-et-les Îles Sandwich du Sud (la)',
-    countrycode: 'GS',
+    countryCode: 'GS',
     countryCode3: 'SGS',
     numeric: 239,
+    alias: undefined,
   },
-  {
+  SS: {
     shortName: 'South Sudan',
     shortNameFR: 'Soudan du Sud (le)',
-    countrycode: 'SS',
+    countryCode: 'SS',
     countryCode3: 'SSD',
     numeric: 728,
+    alias: undefined,
   },
-  {
+  ES: {
     shortName: 'Spain',
     shortNameFR: "Espagne (l')",
-    countrycode: 'ES',
+    countryCode: 'ES',
     countryCode3: 'ESP',
     numeric: 724,
+    alias: undefined,
   },
-  {
+  LK: {
     shortName: 'Sri Lanka',
     shortNameFR: 'Sri Lanka',
-    countrycode: 'LK',
+    countryCode: 'LK',
     countryCode3: 'LKA',
     numeric: 144,
+    alias: undefined,
   },
-  {
+  SD: {
     shortName: 'Sudan (the)',
     shortNameFR: 'Soudan (le)',
-    countrycode: 'SD',
+    countryCode: 'SD',
     countryCode3: 'SDN',
     numeric: 729,
+    alias: undefined,
   },
-  {
+  SR: {
     shortName: 'Suriname',
     shortNameFR: 'Suriname (le)',
-    countrycode: 'SR',
+    countryCode: 'SR',
     countryCode3: 'SUR',
     numeric: 740,
+    alias: undefined,
   },
-  {
+  SJ: {
     shortName: 'Svalbard and Jan Mayen',
     shortNameFR: "Svalbard et l'Île Jan Mayen (le)",
-    countrycode: 'SJ',
+    countryCode: 'SJ',
     countryCode3: 'SJM',
     numeric: 744,
+    alias: undefined,
   },
-  {
+  SE: {
     shortName: 'Sweden',
     shortNameFR: 'Suède (la)',
-    countrycode: 'SE',
+    countryCode: 'SE',
     countryCode3: 'SWE',
     numeric: 752,
+    alias: undefined,
   },
-  {
+  CH: {
     shortName: 'Switzerland',
     shortNameFR: 'Suisse (la)',
-    countrycode: 'CH',
+    countryCode: 'CH',
     countryCode3: 'CHE',
     numeric: 756,
+    alias: undefined,
   },
-  {
+  SY: {
     shortName: 'Syrian Arab Republic (the)',
     shortNameFR: 'République arabe syrienne (la)',
-    countrycode: 'SY',
+    countryCode: 'SY',
     countryCode3: 'SYR',
     numeric: 760,
+    alias: undefined,
   },
-  {
+  TW: {
     shortName: 'Taiwan (Province of China)',
     shortNameFR: 'Taïwan (Province de Chine)',
-    countrycode: 'TW',
+    countryCode: 'TW',
     countryCode3: 'TWN',
     numeric: 158,
+    alias: undefined,
   },
-  {
+  TJ: {
     shortName: 'Tajikistan',
     shortNameFR: 'Tadjikistan (le)',
-    countrycode: 'TJ',
+    countryCode: 'TJ',
     countryCode3: 'TJK',
     numeric: 762,
+    alias: undefined,
   },
-  {
+  TZ: {
     shortName: 'Tanzania, the United Republic of',
     shortNameFR: 'Tanzanie (la République-Unie de)',
-    countrycode: 'TZ',
+    countryCode: 'TZ',
     countryCode3: 'TZA',
     numeric: 834,
+    alias: undefined,
   },
-  {
+  TH: {
     shortName: 'Thailand',
     shortNameFR: 'Thaïlande (la)',
-    countrycode: 'TH',
+    countryCode: 'TH',
     countryCode3: 'THA',
     numeric: 764,
+    alias: undefined,
   },
-  {
+  TL: {
     shortName: 'Timor-Leste',
     shortNameFR: 'Timor-Leste (le)',
-    countrycode: 'TL',
+    countryCode: 'TL',
     countryCode3: 'TLS',
     numeric: 626,
+    alias: undefined,
   },
-  {
+  TG: {
     shortName: 'Togo',
     shortNameFR: 'Togo (le)',
-    countrycode: 'TG',
+    countryCode: 'TG',
     countryCode3: 'TGO',
     numeric: 768,
+    alias: undefined,
   },
-  {
+  TK: {
     shortName: 'Tokelau',
     shortNameFR: 'Tokelau (les)',
-    countrycode: 'TK',
+    countryCode: 'TK',
     countryCode3: 'TKL',
     numeric: 772,
+    alias: undefined,
   },
-  {
+  TO: {
     shortName: 'Tonga',
     shortNameFR: 'Tonga (les)',
-    countrycode: 'TO',
+    countryCode: 'TO',
     countryCode3: 'TON',
     numeric: 776,
+    alias: undefined,
   },
-  {
+  TT: {
     shortName: 'Trinidad and Tobago',
     shortNameFR: 'Trinité-et-Tobago (la)',
-    countrycode: 'TT',
+    countryCode: 'TT',
     countryCode3: 'TTO',
     numeric: 780,
+    alias: undefined,
   },
-  {
+  TN: {
     shortName: 'Tunisia',
     shortNameFR: 'Tunisie (la)',
-    countrycode: 'TN',
+    countryCode: 'TN',
     countryCode3: 'TUN',
     numeric: 788,
+    alias: undefined,
   },
-  {
+  TR: {
     shortName: 'Turkey',
     shortNameFR: 'Turquie (la)',
-    countrycode: 'TR',
+    countryCode: 'TR',
     countryCode3: 'TUR',
     numeric: 792,
+    alias: undefined,
   },
-  {
+  TM: {
     shortName: 'Turkmenistan',
     shortNameFR: 'Turkménistan (le)',
-    countrycode: 'TM',
+    countryCode: 'TM',
     countryCode3: 'TKM',
     numeric: 795,
+    alias: undefined,
   },
-  {
+  TC: {
     shortName: 'Turks and Caicos Islands (the)',
     shortNameFR: 'Turks-et-Caïcos (les Îles)',
-    countrycode: 'TC',
+    countryCode: 'TC',
     countryCode3: 'TCA',
     numeric: 796,
+    alias: undefined,
   },
-  {
+  TV: {
     shortName: 'Tuvalu',
     shortNameFR: 'Tuvalu (les)',
-    countrycode: 'TV',
+    countryCode: 'TV',
     countryCode3: 'TUV',
     numeric: 798,
+    alias: undefined,
   },
-  {
+  UG: {
     shortName: 'Uganda',
     shortNameFR: "Ouganda (l')",
-    countrycode: 'UG',
+    countryCode: 'UG',
     countryCode3: 'UGA',
     numeric: 800,
+    alias: undefined,
   },
-  {
+  UA: {
     shortName: 'Ukraine',
     shortNameFR: "Ukraine (l')",
-    countrycode: 'UA',
+    countryCode: 'UA',
     countryCode3: 'UKR',
     numeric: 804,
+    alias: undefined,
   },
-  {
+  AE: {
     shortName: 'United Arab Emirates (the)',
     shortNameFR: 'Émirats arabes unis (les)',
-    countrycode: 'AE',
+    countryCode: 'AE',
     countryCode3: 'ARE',
     numeric: 784,
+    alias: undefined,
   },
-  {
+  GB: {
     shortName: 'United Kingdom of Great Britain and Northern Ireland (the)',
     shortNameFR: "Royaume-Uni de Grande-Bretagne et d'Irlande du Nord (le)",
-    alias: 'UK',
-    countrycode: 'GB',
+    countryCode: 'GB',
     countryCode3: 'GBR',
     numeric: 826,
+    alias: 'UK',
   },
-  {
+  UM: {
     shortName: 'United States Minor Outlying Islands (the)',
     shortNameFR: 'Îles mineures éloignées des États-Unis (les)',
-    countrycode: 'UM',
+    countryCode: 'UM',
     countryCode3: 'UMI',
     numeric: 581,
+    alias: undefined,
   },
-  {
+  US: {
     shortName: 'United States of America (the)',
     shortNameFR: "États-Unis d'Amérique (les)",
-    countrycode: 'US',
+    countryCode: 'US',
     countryCode3: 'USA',
     numeric: 840,
+    alias: undefined,
   },
-  {
+  UY: {
     shortName: 'Uruguay',
     shortNameFR: "Uruguay (l')",
-    countrycode: 'UY',
+    countryCode: 'UY',
     countryCode3: 'URY',
     numeric: 858,
+    alias: undefined,
   },
-  {
+  UZ: {
     shortName: 'Uzbekistan',
     shortNameFR: "Ouzbékistan (l')",
-    countrycode: 'UZ',
+    countryCode: 'UZ',
     countryCode3: 'UZB',
     numeric: 860,
+    alias: undefined,
   },
-  {
+  VU: {
     shortName: 'Vanuatu',
     shortNameFR: 'Vanuatu (le)',
-    countrycode: 'VU',
+    countryCode: 'VU',
     countryCode3: 'VUT',
     numeric: 548,
+    alias: undefined,
   },
-  {
+  VE: {
     shortName: 'Venezuela (Bolivarian Republic of)',
     shortNameFR: 'Venezuela (République bolivarienne du)',
-    countrycode: 'VE',
+    countryCode: 'VE',
     countryCode3: 'VEN',
     numeric: 862,
+    alias: undefined,
   },
-  {
+  VN: {
     shortName: 'Viet Nam',
     shortNameFR: 'Viet Nam (le)',
-    countrycode: 'VN',
+    countryCode: 'VN',
     countryCode3: 'VNM',
     numeric: 704,
+    alias: undefined,
   },
-  {
+  VG: {
     shortName: 'Virgin Islands (British)',
     shortNameFR: 'Vierges britanniques (les Îles)',
-    countrycode: 'VG',
+    countryCode: 'VG',
     countryCode3: 'VGB',
     numeric: 92,
+    alias: undefined,
   },
-  {
+  VI: {
     shortName: 'Virgin Islands (U.S.)',
     shortNameFR: 'Vierges des États-Unis (les Îles)',
-    countrycode: 'VI',
+    countryCode: 'VI',
     countryCode3: 'VIR',
     numeric: 850,
+    alias: undefined,
   },
-  {
+  WF: {
     shortName: 'Wallis and Futuna',
     shortNameFR: 'Wallis-et-Futuna',
-    countrycode: 'WF',
+    countryCode: 'WF',
     countryCode3: 'WLF',
     numeric: 876,
+    alias: undefined,
   },
-  {
+  EH: {
     shortName: 'Western Sahara*',
     shortNameFR: 'Sahara occidental (le)*',
-    countrycode: 'EH',
+    countryCode: 'EH',
     countryCode3: 'ESH',
     numeric: 732,
+    alias: undefined,
   },
-  {
+  YE: {
     shortName: 'Yemen',
     shortNameFR: 'Yémen (le)',
-    countrycode: 'YE',
+    countryCode: 'YE',
     countryCode3: 'YEM',
     numeric: 887,
+    alias: undefined,
   },
-  {
+  ZM: {
     shortName: 'Zambia',
     shortNameFR: 'Zambie (la)',
-    countrycode: 'ZM',
+    countryCode: 'ZM',
     countryCode3: 'ZMB',
     numeric: 894,
+    alias: undefined,
   },
-  {
+  ZW: {
     shortName: 'Zimbabwe',
     shortNameFR: 'Zimbabwe (le)',
-    countrycode: 'ZW',
+    countryCode: 'ZW',
     countryCode3: 'ZWE',
     numeric: 716,
+    alias: undefined,
   },
-  {
+  AX: {
     shortName: 'Åland Islands',
     shortNameFR: 'Åland(les Îles)',
-    countrycode: 'AX',
+    countryCode: 'AX',
     countryCode3: 'ALA',
     numeric: 248,
+    alias: undefined,
   },
-] as const
+} as const

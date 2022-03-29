@@ -59,7 +59,7 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
         // Update the values of the fields
         reset({
           ...defaults,
-          country: defaults.country?.countrycode,
+          country: defaults.country?.countryCode,
         })
       }
     },
@@ -123,9 +123,9 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
               value: '',
               disabled: true,
             },
-            ...countries.map(({ alias, shortName, countrycode }) => ({
+            ...countries.map(({ alias, shortName, countryCode }) => ({
               label: alias ?? shortName,
-              value: countrycode,
+              value: countryCode,
             })),
           ]}
           required
@@ -176,17 +176,19 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
         <legend className="font-semibold text-gray-700 mb-4">
           Regions your group serves
         </legend>
-        <div className="md:grid grid-cols-3 rounded-sm gap-4">
-          {regions.map((region) => (
-            <label
-              className="flex items-center space-x-2 cursor-pointer"
-              key={region.id}
-            >
-              <input type="checkbox" />
-              <span>{formatRegion(region)}</span>
-            </label>
-          ))}
-        </div>
+        {regions.map((region) => (
+          <label
+            className="flex items-center space-x-2 cursor-pointer"
+            key={region.id}
+          >
+            <input
+              type="checkbox"
+              value={region.id}
+              {...register('servingRegions')}
+            />
+            <span>{formatRegion(region)}</span>
+          </label>
+        ))}
       </fieldset>
 
       <Button
