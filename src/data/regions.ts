@@ -9,7 +9,7 @@ export type Region = {
 export const knownRegions = {
   calais: {
     id: 'calais',
-    country: countries.GB,
+    country: countries.FR,
     locality: 'Calais/Dunkirk',
   },
   paris: {
