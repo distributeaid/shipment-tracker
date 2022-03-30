@@ -70,6 +70,7 @@ export const knownRegions = {
   lebanon: {
     id: 'lebanon',
     country: countries.LB,
+    locality: undefined,
   },
   bosnia: {
     id: 'bosnia',

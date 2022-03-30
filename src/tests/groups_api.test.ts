@@ -2,6 +2,7 @@ import { ApolloServer } from 'apollo-server-express'
 import gql from 'graphql-tag'
 import { omit } from 'lodash'
 import { userToAuthContext } from '../authenticateRequest'
+import { countries } from '../data/countries'
 import Group, { GroupAttributes } from '../models/group'
 import UserAccount from '../models/user_account'
 import { sequelize } from '../sequelize'
@@ -12,7 +13,7 @@ const purgeDb = async () => sequelize.sync({ force: true })
 
 const commonGroupData = {
   groupType: GroupType.Regular,
-  country: 'FR',
+  country: countries.FR.countryCode,
   locality: 'Calais',
   primaryContact: { name: 'Contact', email: 'contact@example.com' },
   website: 'http://www.example.com',
@@ -201,6 +202,7 @@ describe('Groups API', () => {
         existingGroup = await Group.create({
           ...group1Params,
           captainId: captain.id,
+          servingRegions: [],
         })
       })
 

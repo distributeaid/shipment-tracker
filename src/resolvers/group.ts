@@ -3,6 +3,7 @@ import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { strict as assert } from 'assert'
 import { FindOptions, Op } from 'sequelize'
 import { getCountryByCountryCode } from '../data/getCountryByCountryCode'
+import { knownRegions } from '../data/regions'
 import { Contact } from '../input-validation/Contact'
 import { validateIdInput } from '../input-validation/idInputSchema'
 import {
@@ -27,6 +28,7 @@ export const dbToGraphQL = (group: Group): ResolversTypes['Group'] => ({
   createdAt: group.createdAt,
   updatedAt: group.updatedAt,
   country: getCountryByCountryCode(group.country),
+  servingRegions: group.servingRegions?.map((id) => knownRegions[id]) ?? [],
 })
 
 // Group query resolvers
@@ -142,6 +144,7 @@ const addGroup: MutationResolvers['addGroup'] = async (
   const group = await Group.create({
     ...valid.value,
     captainId: context.auth.userId,
+    servingRegions: [],
   })
 
   return dbToGraphQL(group)

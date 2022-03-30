@@ -10,6 +10,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript'
 import { countries } from '../data/countries'
+import { knownRegions } from '../data/regions'
 import { ContactInfo, GroupType } from '../server-internal-types'
 import UserAccount from './user_account'
 
@@ -23,6 +24,7 @@ export interface GroupAttributes {
   primaryContact: ContactInfo
   website?: string | null
   captainId: number
+  servingRegions?: Array<keyof typeof knownRegions>
 }
 
 export interface GroupCreationAttributes
@@ -64,6 +66,9 @@ export default class Group extends Model<
 
   @BelongsTo(() => UserAccount, 'captainId')
   public captain!: UserAccount
+
+  @Column(DataType.ARRAY(DataType.STRING))
+  public servingRegions: GroupAttributes['servingRegions'] = []
 
   @CreatedAt
   @Column

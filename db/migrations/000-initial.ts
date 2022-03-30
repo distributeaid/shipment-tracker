@@ -1,5 +1,6 @@
 import { DataTypes, QueryInterface, Sequelize } from 'sequelize'
 import { countries } from '../../src/data/countries'
+import { knownRegions } from '../../src/data/regions'
 import {
   DangerousGoods,
   GroupType,
@@ -150,6 +151,13 @@ export const up = async (queryInterface: QueryInterface) => {
     },
     description: {
       type: DataTypes.TEXT,
+    },
+    servingRegions: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false,
+      validate: {
+        isIn: [Object.values(knownRegions).map(({ id }) => id)],
+      },
     },
     ...autoTimestampFields,
   })
