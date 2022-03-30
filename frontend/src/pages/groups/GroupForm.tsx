@@ -72,10 +72,15 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
       input.groupType = GroupType.Regular
     }
 
-    props.onSubmit(input)
+    props.onSubmit({
+      ...input,
+      // FIXME: for some reasons, servingRegions will be `false` in no item is selected
+      servingRegions:
+        (input.servingRegions as any) === false
+          ? undefined
+          : input.servingRegions,
+    })
   })
-
-  console.log(regions)
 
   return (
     <form onSubmit={submitForm}>
