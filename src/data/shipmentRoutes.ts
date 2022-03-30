@@ -6,6 +6,7 @@ export type ShipmentRoute = {
   to: Region
 }
 
+// TODO: turn `to` in a list of servingRegions
 export const shipmentRoutes: Record<string, ShipmentRoute> = {
   DeToBa: { id: 'DeToBa', from: knownRegions.germany, to: knownRegions.bosnia },
   DeToRs: { id: 'DeToRs', from: knownRegions.germany, to: knownRegions.serbia },
