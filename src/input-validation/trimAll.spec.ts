@@ -1,4 +1,4 @@
-import { trimAll } from '../input-validation/trimAll'
+import { trimAll } from './trimAll'
 
 describe('trimAll', () => {
   it('should trim all whitespace in an object', () =>
