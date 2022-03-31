@@ -1,13 +1,17 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import * as ReactDOMClient from 'react-dom/client'
 import App from './AppRoot'
 import './stylesheets/index.css'
 
 console.log('endpoint', process.env.REACT_APP_SERVER_URL)
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root'),
-)
+const container = document.getElementById('root')
+
+if (container !== null) {
+  const root = ReactDOMClient.createRoot(container)
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+  )
+}

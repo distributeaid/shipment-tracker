@@ -31,6 +31,7 @@ export const ROUTES = {
   KITCHEN_SINK: '/kitchen-sink',
   FORM_DEMO: '/form-demo',
   CONFIRM_EMAIL_WITH_TOKEN: '/register/confirm',
+  USERS: '/users',
 }
 
 export const groupViewRoute = (groupId: number): string =>

@@ -23,13 +23,12 @@ import setNewPasswordUsingTokenAndEmail from '../routes/password/new'
 import sendVerificationTokenByEmail from '../routes/password/token'
 import registerUser, { hashPassword } from '../routes/register'
 import confirmRegistration from '../routes/register/confirm'
+import { tokenCookieRx } from './helpers/auth'
 
 jest.setTimeout(15 * 1000)
 
 const cookieAuth = passport.authenticate('cookie', { session: false })
 passport.use(cookieAuthStrategy)
-
-const tokenCookieRx = new RegExp(`${authCookieName}=([^;]+);`, 'i')
 
 const parseCookie = (cookie: string) =>
   cookie
@@ -393,6 +392,30 @@ describe('User account API', () => {
             })
             .expect(HTTPStatusCode.NoContent))
       })
+    })
+    describe('GET /users', () => {
+      const adminEmail = `some-admin${v4()}@example.com`
+
+      /** Create and log in admin */
+      beforeAll(async () => {
+        await UserAccount.create({
+          email: adminEmail,
+          isAdmin: true,
+          isConfirmed: true,
+          name: 'Some Admin',
+          passwordHash: hashPassword('2DhE.sf!f9Z3u8x', 1),
+        })
+        const res = await r
+          .post('/auth/login')
+          .send({
+            email: adminEmail,
+            password: '2DhE.sf!f9Z3u8x',
+          })
+          .expect(HTTPStatusCode.NoContent)
+          .expect('set-cookie', tokenCookieRx)
+      })
+
+      test('admins should be allowed to list all users', () => {})
     })
   })
 })

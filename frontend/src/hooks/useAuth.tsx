@@ -37,7 +37,7 @@ export class AuthError extends Error {
  * @see https://datatracker.ietf.org/doc/html/rfc7807#section-3
  * @throws AuthError
  */
-const throwOnProblem =
+export const throwOnProblem =
   (fallbackTitle: string) =>
   async (response: Response): Promise<Response> => {
     const { ok, status: httpStatusCode } = response
@@ -84,9 +84,9 @@ export const AuthContext = createContext<AuthInfo>({
 
 export const useAuth = () => useContext(AuthContext)
 
-const SERVER_URL = process.env.REACT_APP_SERVER_URL?.replace(/\/$/, '')
+export const SERVER_URL = process.env.REACT_APP_SERVER_URL?.replace(/\/$/, '')
 
-const headers = {
+export const headers = {
   'content-type': 'application/json; charset=utf-8',
 }
 

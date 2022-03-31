@@ -1,6 +1,7 @@
 import { FunctionComponent } from 'react'
 import { Link } from 'react-router-dom'
 import CogIcon from '../components/icons/CogIcon'
+import UserIcon from '../components/icons/UserIcon'
 import LayoutWithNav from '../layouts/LayoutWithNav'
 
 /**
@@ -19,7 +20,9 @@ const AdminPage: FunctionComponent = () => {
               <CogIcon className="w-5 h-5 mr-1" />
               Manage groups
             </Link>
-            <Link to="/users">Users (in construction)</Link>
+            <Link to="/users" className="flex items-center hover:underline">
+              <UserIcon className="w-5 h-5 mr-1" /> Users
+            </Link>
           </div>
         </main>
       </div>
