@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom'
 import { apolloClient } from './apolloClient'
 import { AuthProvider, useAuth } from './hooks/useAuth'
+import AdminUsers from './pages/admin/Users'
 import AdminPage from './pages/AdminPage'
 import ConfirmEmailWithTokenPage from './pages/ConfirmEmailWithTokenPage'
 import ApolloDemoPage from './pages/demo/ApolloDemo'
@@ -64,6 +65,7 @@ const App = () => {
               <Route path={ROUTES.HOME} element={<HomePage />} />
               <Route path={ROUTES.ADMIN_ROOT} element={<AdminPage />} />
               <Route path={ROUTES.GROUP_LIST} element={<GroupList />} />
+              <Route path={ROUTES.USERS} element={<AdminUsers />} />
               <Route path={ROUTES.GROUP_CREATE} element={<GroupCreatePage />} />
               <Route path={ROUTES.GROUP_EDIT} element={<GroupEditPage />} />
               <Route path={ROUTES.GROUP_VIEW} element={<GroupViewPage />} />

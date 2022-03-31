@@ -16,6 +16,8 @@ import setNewPasswordUsingTokenAndEmail from '../../routes/password/new'
 import sendVerificationTokenByEmail from '../../routes/password/token'
 import registerUser from '../../routes/register'
 import confirmRegistrationByEmail from '../../routes/register/confirm'
+import { adminUpdateUser } from '../../routes/user/update'
+import { adminListUsers } from '../../routes/users'
 import sendShipmentExportCsv from '../../sendShipmentExportCsv'
 import { addRequestId } from '../addRequestId'
 import { addVersion } from '../addVersion'
@@ -85,6 +87,9 @@ export const backend = ({
   )
 
   app.get('/auth/shipment-exports/:id', cookieAuth, sendShipmentExportCsv)
+
+  app.get('/users', cookieAuth, adminListUsers)
+  app.patch('/user/:id', cookieAuth, adminUpdateUser)
 
   app.use(compression())
 
