@@ -36,9 +36,24 @@ const ConfirmEmailWithTokenPage: FunctionComponent = () => {
               </p>
             </Success>
           )}
-          <p className="mt-4 mb-6">
+          <p className="mt-4">
             In order to complete your registration, please provide the token you
             have received by email.
+          </p>
+          <p className="mt-4">
+            In case you do not receive the token, double-check that your email
+            address is spelled correctly. If not, register again with your
+            correct email address.
+          </p>
+          <p className="mt-4">Also check your SPAM folder.</p>
+          <p className="mt-4 mb-6">
+            If you still dont't have the token, ask a Shipment Tracker
+            administrator to activate your account, or if you don't know one,
+            reach out to{' '}
+            <a href="mailto:tools@distributeaid.org">
+              <code>tools@distributeaid.org</code>
+            </a>{' '}
+            so we can activate your account for you.
           </p>
           <form>
             <TextField
