@@ -135,8 +135,8 @@ type Region {
 
 type ShipmentRoute {
   id: ID!
-  from: Region!
-  to: Region!
+  origin: Region!
+  servingRegions: [Region!]!
 }
 
 enum ShipmentStatus {

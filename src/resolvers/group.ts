@@ -2,6 +2,7 @@ import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { strict as assert } from 'assert'
 import { FindOptions, Op } from 'sequelize'
+import { countries } from '../data/countries'
 import { getCountryByCountryCode } from '../data/getCountryByCountryCode'
 import { knownRegions } from '../data/regions'
 import { Contact } from '../input-validation/Contact'
@@ -143,6 +144,7 @@ const addGroup: MutationResolvers['addGroup'] = async (
 
   const group = await Group.create({
     ...valid.value,
+    country: valid.value.country as keyof typeof countries,
     captainId: context.auth.userId,
     servingRegions: [],
   })
@@ -210,7 +212,7 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
     updateAttributes.primaryContact = valid.value.primaryContact
   }
   if (valid.value.country !== undefined) {
-    updateAttributes.country = valid.value.country
+    updateAttributes.country = valid.value.country as keyof typeof countries
   }
   if (valid.value.locality !== undefined) {
     updateAttributes.locality = valid.value.locality

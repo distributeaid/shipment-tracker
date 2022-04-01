@@ -2,7 +2,7 @@ fragment AllShipmentFields on Shipment {
   id
   shipmentRoute {
     id
-    from {
+    origin {
       id
       country {
         countryCode
@@ -11,7 +11,7 @@ fragment AllShipmentFields on Shipment {
       }
       locality
     }
-    to {
+    servingRegions {
       id
       country {
         countryCode

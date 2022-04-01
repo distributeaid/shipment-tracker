@@ -3,7 +3,7 @@ query AllShipments($status: [ShipmentStatus!]) {
     id
     shipmentRoute {
       id
-      from {
+      origin {
         id
         country {
           countryCode
@@ -12,7 +12,7 @@ query AllShipments($status: [ShipmentStatus!]) {
         }
         locality
       }
-      to {
+      servingRegions {
         id
         country {
           countryCode

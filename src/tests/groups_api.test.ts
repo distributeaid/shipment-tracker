@@ -13,7 +13,7 @@ const purgeDb = async () => sequelize.sync({ force: true })
 
 const commonGroupData = {
   groupType: GroupType.Regular,
-  country: countries.FR.countryCode,
+  country: countries.FR.countryCode as keyof typeof countries,
   locality: 'Calais',
   primaryContact: { name: 'Contact', email: 'contact@example.com' },
   website: 'http://www.example.com',

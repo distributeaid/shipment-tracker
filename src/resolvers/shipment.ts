@@ -1,6 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { isEqual, xor } from 'lodash'
+import { Region } from '../data/regions'
 import { shipmentRoutes } from '../data/shipmentRoutes'
 import { validateIdInput } from '../input-validation/idInputSchema'
 import {
@@ -51,7 +52,10 @@ const wireFormatShipmentRoute = (shipmentRouteId: string): ShipmentRoute => {
   if (shipmentRoute === undefined) {
     throw new Error(`Unknown shipment route ${shipmentRouteId}!`)
   }
-  return shipmentRoute
+  return {
+    ...shipmentRoute,
+    servingRegions: shipmentRoute.servingRegions as Region[],
+  }
 }
 
 // Shipment query resolvers

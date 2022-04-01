@@ -7,10 +7,10 @@ describe('shipmentRoutes', () => {
   )
   test.each(Object.values(shipmentRoutes))(
     'to on %j should be defined',
-    (route) => expect(route.to).not.toBeUndefined(),
+    (route) => expect(route.servingRegions).not.toBeUndefined(),
   )
   test.each(Object.values(shipmentRoutes))(
     'from on %j should be defined',
-    (route) => expect(route.from).not.toBeUndefined(),
+    (route) => expect(route.origin).not.toBeUndefined(),
   )
 })

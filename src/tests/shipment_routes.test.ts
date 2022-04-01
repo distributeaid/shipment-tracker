@@ -13,7 +13,7 @@ const shipmentRoutesQuery = gql`
   query {
     shipmentRoutes {
       id
-      from {
+      origin {
         id
         country {
           countryCode
@@ -22,7 +22,7 @@ const shipmentRoutesQuery = gql`
         }
         locality
       }
-      to {
+      servingRegions {
         id
         country {
           countryCode
@@ -67,7 +67,7 @@ describe('shipmentRoutes API', () => {
 
     expect(DeToBa).toMatchObject({
       id: 'DeToBa',
-      from: {
+      origin: {
         country: {
           shortName: 'Germany',
           countryCode: 'DE',
@@ -75,14 +75,16 @@ describe('shipmentRoutes API', () => {
         },
         locality: null,
       },
-      to: {
-        country: {
-          shortName: 'Bosnia and Herzegovina',
-          countryCode: 'BA',
-          alias: null,
+      servingRegions: [
+        {
+          country: {
+            shortName: 'Bosnia and Herzegovina',
+            countryCode: 'BA',
+            alias: null,
+          },
+          locality: null,
         },
-        locality: null,
-      },
+      ],
     })
   })
 })

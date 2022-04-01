@@ -1,7 +1,7 @@
 query AllShipmentRoutes {
   shipmentRoutes {
     id
-    from {
+    origin {
       id
       country {
         countryCode
@@ -10,7 +10,7 @@ query AllShipmentRoutes {
       }
       locality
     }
-    to {
+    servingRegions {
       id
       country {
         countryCode
