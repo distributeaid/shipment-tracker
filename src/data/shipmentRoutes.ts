@@ -1,3 +1,4 @@
+import { countries, Country } from './countries'
 import { knownRegions, Region } from './regions'
 
 export type ShipmentRoute = {
@@ -6,55 +7,61 @@ export type ShipmentRoute = {
   servingRegions: Readonly<Region[]>
 }
 
-export const shipmentRoutes: Record<string, ShipmentRoute> = {
+const filterRegionsByCountry = (country: Country): Region[] =>
+  Object.values(knownRegions).filter(
+    ({ country: regionCountry }) =>
+      regionCountry.countryCode === country.countryCode,
+  )
+
+export const shipmentRoutes = {
   DeToBa: {
     id: 'DeToBa',
     origin: knownRegions.germany,
-    servingRegions: [knownRegions.bosnia],
+    servingRegions: filterRegionsByCountry(countries.BA),
   } as ShipmentRoute,
   DeToRs: {
     id: 'DeToRs',
     origin: knownRegions.germany,
-    servingRegions: [knownRegions.serbia],
+    servingRegions: filterRegionsByCountry(countries.RS),
   } as ShipmentRoute,
   DeToFr: {
     id: 'DeToFr',
     origin: knownRegions.germany,
-    servingRegions: [knownRegions.calais],
+    servingRegions: filterRegionsByCountry(countries.FR),
   } as ShipmentRoute,
   DeToGr: {
     id: 'DeToGr',
     origin: knownRegions.germany,
-    servingRegions: [knownRegions.greece],
+    servingRegions: filterRegionsByCountry(countries.GR),
   } as ShipmentRoute,
   DeToLb: {
     id: 'DeToLb',
     origin: knownRegions.germany,
-    servingRegions: [knownRegions.lybia],
+    servingRegions: filterRegionsByCountry(countries.LB),
   } as ShipmentRoute,
   UkToBa: {
     id: 'UkToBa',
     origin: knownRegions.uk,
-    servingRegions: [knownRegions.bosnia],
+    servingRegions: filterRegionsByCountry(countries.BA),
   } as ShipmentRoute,
   UkToRs: {
     id: 'UkToRs',
     origin: knownRegions.uk,
-    servingRegions: [knownRegions.serbia],
+    servingRegions: filterRegionsByCountry(countries.RS),
   } as ShipmentRoute,
   UkToFr: {
     id: 'UkToFr',
     origin: knownRegions.uk,
-    servingRegions: [knownRegions.calais],
+    servingRegions: filterRegionsByCountry(countries.FR),
   } as ShipmentRoute,
   UkToGr: {
     id: 'UkToGr',
     origin: knownRegions.uk,
-    servingRegions: [knownRegions.greece],
+    servingRegions: filterRegionsByCountry(countries.GR),
   } as ShipmentRoute,
   UkToLb: {
     id: 'UkToLb',
     origin: knownRegions.uk,
-    servingRegions: [knownRegions.lybia],
+    servingRegions: filterRegionsByCountry(countries.LB),
   } as ShipmentRoute,
 } as const

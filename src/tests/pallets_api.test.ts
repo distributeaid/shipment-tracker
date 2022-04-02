@@ -57,10 +57,11 @@ describe('Pallets API', () => {
       locality: 'Bristol',
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
       captainId: captain.id,
+      servingRegions: [],
     })
 
     shipment = await Shipment.create({
-      shipmentRoute: 'UkToCs',
+      shipmentRoute: 'UkToGr',
       labelYear: 2020,
       labelMonth: 1,
       sendingHubs: [group],

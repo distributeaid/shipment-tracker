@@ -36,6 +36,7 @@ describe('Shipments API', () => {
       country: 'GB',
       locality: 'Bristol',
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
+      servingRegions: [],
     })
     group2 = await createGroup({
       name: 'group 2',
@@ -46,6 +47,7 @@ describe('Shipments API', () => {
         name: 'Second Contact',
         email: '2ndcontact@example.com',
       },
+      servingRegions: [],
     })
   })
 
@@ -279,6 +281,7 @@ describe('Shipments API', () => {
             name: 'Third Contact',
             email: '3rdcontact@example.com',
           },
+          servingRegions: [],
         })
         group4 = await createGroup({
           name: 'group 4',
@@ -289,6 +292,7 @@ describe('Shipments API', () => {
             name: 'Fourth Contact',
             email: '4thcontact@example.com',
           },
+          servingRegions: [],
         })
         group5 = await createGroup({
           name: 'group 5',
@@ -299,6 +303,7 @@ describe('Shipments API', () => {
             name: 'Fifth Contact',
             email: '5thcontact@example.com',
           },
+          servingRegions: [],
         })
 
         // Create the shipment with two sending and receiving groups

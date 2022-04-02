@@ -51,6 +51,7 @@ describe('Offers API', () => {
         country: 'GB',
         locality: 'Bristol',
         primaryContact: { name: 'Contact', email: 'contact@example.com' },
+        servingRegions: [],
       },
       captain.id,
     )
@@ -64,6 +65,7 @@ describe('Offers API', () => {
         name: 'Second Contact',
         email: '2ndcontact@example.com',
       },
+      servingRegions: [],
     })
     shipment = await createShipment({
       shipmentRoute: 'UkToGr',

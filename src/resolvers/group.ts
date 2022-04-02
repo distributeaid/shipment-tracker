@@ -1,10 +1,11 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { strict as assert } from 'assert'
-import { FindOptions, Op } from 'sequelize'
+import { Attributes, Op, WhereOptions } from 'sequelize'
 import { countries } from '../data/countries'
 import { getCountryByCountryCode } from '../data/getCountryByCountryCode'
 import { knownRegions } from '../data/regions'
+import { shipmentRoutes } from '../data/shipmentRoutes'
 import { Contact } from '../input-validation/Contact'
 import { validateIdInput } from '../input-validation/idInputSchema'
 import {
@@ -38,6 +39,12 @@ const listGroupsInput = Type.Object(
   {
     groupType: Type.Optional(Type.Array(Type.Enum(GroupType))),
     captainId: Type.Optional(ID),
+    shipmentRoute: Type.Optional(
+      Type.Union(
+        Object.keys(shipmentRoutes).map((id) => Type.Literal(id)),
+        { title: 'Shipment route ID' },
+      ),
+    ),
   },
   { additionalProperties: false },
 )
@@ -50,25 +57,31 @@ const listGroups: QueryResolvers['listGroups'] = async (_, input) => {
     throw new UserInputError('List groups arguments invalid', valid.errors)
   }
 
-  const query = {} as FindOptions<Group['_attributes']>
+  const { groupType, captainId, shipmentRoute } = valid.value
 
-  const { groupType, captainId } = valid.value
+  const where: WhereOptions<Attributes<Group>> = {}
 
-  if (groupType !== undefined || captainId !== undefined) {
-    query.where = {}
-
-    if (groupType !== undefined) {
-      query.where.groupType = {
-        [Op.in]: groupType,
-      }
-    }
-
-    if (captainId !== undefined) {
-      query.where.captainId = captainId
+  if (groupType !== undefined) {
+    where.groupType = {
+      [Op.in]: groupType,
     }
   }
 
-  const groups = await Group.findAll(query)
+  if (captainId !== undefined) {
+    where.captainId = captainId
+  }
+
+  if (shipmentRoute !== undefined) {
+    where.servingRegions = {
+      [Op.in]: [
+        ...shipmentRoutes[
+          shipmentRoute as keyof typeof shipmentRoutes
+        ]?.servingRegions.map(({ id }) => id),
+      ],
+    }
+  }
+
+  const groups = await Group.findAll({ where })
 
   return groups.map(dbToGraphQL)
 }
@@ -106,6 +119,14 @@ export const addGroupInputSchema = Type.Object(
     primaryContact: Contact,
     website: Type.Optional(URI),
     description: Description,
+    servingRegions: Type.Optional(
+      Type.Array(
+        Type.Union(
+          Object.keys(knownRegions).map((id) => Type.Literal(id)),
+          { title: 'Region ID' },
+        ),
+      ),
+    ),
   },
   { additionalProperties: false },
 )
@@ -146,7 +167,10 @@ const addGroup: MutationResolvers['addGroup'] = async (
     ...valid.value,
     country: valid.value.country as keyof typeof countries,
     captainId: context.auth.userId,
-    servingRegions: [],
+    servingRegions:
+      (valid.value.servingRegions as
+        | Array<keyof typeof knownRegions>
+        | undefined) ?? [],
   })
 
   return dbToGraphQL(group)
@@ -164,6 +188,14 @@ export const updateGroupInput = Type.Object(
     website: OptionalValueOrUnset(URI),
     captainId: Type.Optional(ID),
     description: Description,
+    servingRegions: Type.Optional(
+      Type.Array(
+        Type.Union(
+          Object.keys(knownRegions).map((id) => Type.Literal(id)),
+          { title: 'Region ID' },
+        ),
+      ),
+    ),
   },
   { additionalProperties: false },
 )
@@ -232,6 +264,12 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
     }
 
     updateAttributes.captainId = captain.id
+  }
+
+  if (valid.value.servingRegions !== undefined) {
+    updateAttributes.servingRegions = valid.value.servingRegions as Array<
+      keyof typeof knownRegions
+    >
   }
 
   const updatedGroup = await group.update(updateAttributes)

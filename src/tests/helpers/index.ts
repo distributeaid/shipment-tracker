@@ -1,5 +1,6 @@
 import { GraphQLResponse } from 'apollo-server-types'
 import { Maybe } from 'graphql/jsutils/Maybe'
+import { shipmentRoutes } from '../../data/shipmentRoutes'
 import Group from '../../models/group'
 import Shipment from '../../models/shipment'
 import ShipmentReceivingHub from '../../models/shipment_receiving_hub'
@@ -41,6 +42,7 @@ async function createShipment(input: ShipmentCreateInput): Promise<Shipment> {
     pricing: input.pricing || undefined,
     receivingHubs,
     sendingHubs,
+    shipmentRoute: input.shipmentRoute as keyof typeof shipmentRoutes,
   })
   await Promise.all([
     Promise.all(

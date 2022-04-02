@@ -3,6 +3,8 @@ import gql from 'graphql-tag'
 import { omit } from 'lodash'
 import { userToAuthContext } from '../authenticateRequest'
 import { countries } from '../data/countries'
+import { knownRegions } from '../data/regions'
+import { shipmentRoutes } from '../data/shipmentRoutes'
 import Group, { GroupAttributes } from '../models/group'
 import UserAccount from '../models/user_account'
 import { sequelize } from '../sequelize'
@@ -19,17 +21,18 @@ const commonGroupData = {
   website: 'http://www.example.com',
 } as const
 
+const greeceRegionIds = Object.values(knownRegions)
+  .filter(({ country }) => country.countryCode === countries.GR.countryCode)
+  .map(({ id }) => id)
+
 describe('Groups API', () => {
   describe('modifying', () => {
     const group1Name: string = 'group1'
     const group1Params = {
       name: group1Name,
       ...commonGroupData,
-    }
-
-    const group2Params = {
-      name: 'group2',
-      ...commonGroupData,
+      // All Greece regions
+      servingRegions: greeceRegionIds,
     }
 
     const groupWithDescription = {
@@ -80,6 +83,7 @@ describe('Groups API', () => {
           $locality: String!
           $primaryContact: ContactInfoInput!
           $website: String
+          $servingRegions: [ID!]
         ) {
           addGroup(
             input: {
@@ -90,12 +94,16 @@ describe('Groups API', () => {
               locality: $locality
               primaryContact: $primaryContact
               website: $website
+              servingRegions: $servingRegions
             }
           ) {
             id
             name
             description
             groupType
+            servingRegions {
+              id
+            }
           }
         }
       `
@@ -109,6 +117,9 @@ describe('Groups API', () => {
         expect(res.errors).toBeUndefined()
         expect(res?.data?.addGroup?.name).toEqual(group1Name)
         expect(res?.data?.addGroup?.id).not.toBeNull()
+        expect(res?.data?.addGroup?.servingRegions).toEqual(
+          expect.arrayContaining(greeceRegionIds.map((id) => ({ id }))),
+        )
       })
 
       it('prevents group captains from creating more than 1 group', async () => {
@@ -119,7 +130,10 @@ describe('Groups API', () => {
 
         const res = await testServer.executeOperation({
           query: ADD_GROUP,
-          variables: group2Params,
+          variables: {
+            name: 'group2',
+            ...commonGroupData,
+          },
         })
 
         expect(res.errors).not.toBeUndefined()
@@ -360,27 +374,32 @@ describe('Groups API', () => {
         description: 'Sending Group #1',
         captainId: captain1.id,
         ...commonGroupData,
+        servingRegions: [],
       })
       sendingGroup2 = await Group.create({
         name: sendingGroup2Name,
         captainId: captain2.id,
         ...commonGroupData,
+        servingRegions: [],
       })
       receivingGroup1 = await Group.create({
         name: receivingGroup1Name,
         captainId: captain2.id,
         ...commonGroupData,
+        servingRegions: [],
       })
       receivingGroup2 = await Group.create({
         name: receivingGroup2Name,
         captainId: captain1.id,
         ...commonGroupData,
+        servingRegions: [],
       })
       daHubGroup = await Group.create({
         ...commonGroupData,
         name: daHubGroupName,
         groupType: GroupType.DaHub,
         captainId: daCaptain.id,
+        servingRegions: [],
       })
       testServer = await makeTestServer({
         context: () => ({ auth: userToAuthContext(captain1) }),
@@ -617,6 +636,35 @@ describe('Groups API', () => {
                       captain.email ===
                       `${captainName.toLowerCase()}@example.com`,
                   )
+                  .map(toGroupData),
+              ),
+            )
+          },
+        )
+
+        it.each([[shipmentRoutes.DeToGr.id, [sendingGroup1Name]]])(
+          'search for groups with shipment route %s should yield %s',
+          async (shipmentRoute, expectedGroupNames) => {
+            const res = await testServer.executeOperation({
+              query: gql`
+                query listGroupsByShipmentRoute($shipmentRoute: ID!) {
+                  listGroups(shipmentRoute: $shipmentRoute) {
+                    id
+                    name
+                    groupType
+                  }
+                }
+              `,
+              variables: {
+                shipmentRoute,
+              },
+            })
+            console.log(JSON.stringify(res.errors, null, 2))
+            expect(res.errors).toBeUndefined()
+            expect(res?.data?.listGroups).toEqual(
+              expect.arrayContaining(
+                (await Group.findAll())
+                  .filter(({ name }) => expectedGroupNames.includes(name))
                   .map(toGroupData),
               ),
             )

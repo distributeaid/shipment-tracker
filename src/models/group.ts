@@ -24,7 +24,7 @@ export interface GroupAttributes {
   primaryContact: ContactInfo
   website?: string | null
   captainId: number
-  servingRegions?: Array<keyof typeof knownRegions>
+  servingRegions: Array<keyof typeof knownRegions>
 }
 
 export interface GroupCreationAttributes
@@ -68,7 +68,7 @@ export default class Group extends Model<
   public captain!: UserAccount
 
   @Column(DataType.ARRAY(DataType.STRING))
-  public servingRegions: GroupAttributes['servingRegions'] = []
+  public servingRegions!: GroupAttributes['servingRegions']
 
   @CreatedAt
   @Column

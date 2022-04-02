@@ -54,6 +54,7 @@ describe('LineItems API', () => {
       locality: 'Bristol',
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
       captainId: captain.id,
+      servingRegions: [],
     })
 
     shipment = await Shipment.create({

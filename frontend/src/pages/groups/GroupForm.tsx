@@ -76,9 +76,7 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
       ...input,
       // FIXME: for some reasons, servingRegions will be `false` in no item is selected
       servingRegions:
-        (input.servingRegions as any) === false
-          ? undefined
-          : input.servingRegions,
+        (input.servingRegions as any) === false ? [] : input.servingRegions,
     })
   })
 

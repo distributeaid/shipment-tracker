@@ -46,7 +46,9 @@ const dbToGraphQL = (shipment: Shipment): ResolversTypes['Shipment'] => ({
   sendingHubs: [],
 })
 
-const wireFormatShipmentRoute = (shipmentRouteId: string): ShipmentRoute => {
+const wireFormatShipmentRoute = (
+  shipmentRouteId: keyof typeof shipmentRoutes,
+): ShipmentRoute => {
   // Find ShipmentRoute
   const shipmentRoute = shipmentRoutes[shipmentRouteId]
   if (shipmentRoute === undefined) {
@@ -232,13 +234,15 @@ const addShipment: MutationResolvers['addShipment'] = async (
 
   let shipmentRoute: ShipmentRoute
   try {
-    shipmentRoute = wireFormatShipmentRoute(valid.value.shipmentRoute)
+    shipmentRoute = wireFormatShipmentRoute(
+      valid.value.shipmentRoute as keyof typeof shipmentRoutes,
+    )
   } catch (err) {
     throw new UserInputError((err as Error).message)
   }
 
   const shipment = await Shipment.create({
-    shipmentRoute: valid.value.shipmentRoute,
+    shipmentRoute: valid.value.shipmentRoute as keyof typeof shipmentRoutes,
     labelYear: valid.value.labelYear,
     labelMonth: valid.value.labelMonth,
     sendingHubs: sendingHubs,
@@ -293,7 +297,10 @@ const updateShipmentInput = Type.Object(
         labelYear: Type.Optional(CurrentYearOrGreater()),
         labelMonth: Type.Optional(MonthIndexStartingAt1),
         shipmentRoute: Type.Optional(
-          Type.Union(Object.keys(shipmentRoutes).map((id) => Type.Literal(id))),
+          Type.Union(
+            Object.keys(shipmentRoutes).map((id) => Type.Literal(id)),
+            { title: 'Shipment route ID' },
+          ),
         ),
         pricing: Type.Optional(Pricing),
       },
@@ -413,8 +420,11 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
 
   if (shipmentRoute !== undefined) {
     try {
-      const route = wireFormatShipmentRoute(shipmentRoute)
-      updateAttributes.shipmentRoute = shipmentRoute
+      const route = wireFormatShipmentRoute(
+        shipmentRoute as keyof typeof shipmentRoutes,
+      )
+      updateAttributes.shipmentRoute =
+        shipmentRoute as keyof typeof shipmentRoutes
     } catch (err) {
       throw new UserInputError((err as Error).message)
     }
