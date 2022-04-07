@@ -287,7 +287,7 @@ const LineItemForm: FunctionComponent<Props> = ({
   }
 
   return (
-    <form onSubmit={submitForm} className="pb-12">
+    <form onSubmit={submitForm} className="pb-12" aria-label="Add Line Item">
       <h2 className="text-gray-700 text-lg flex items-center mb-4">
         Line Item {lineItemIsLoading && <Spinner className="ml-2" />}
       </h2>
