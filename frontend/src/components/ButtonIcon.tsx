@@ -1,11 +1,12 @@
+import cx from 'classnames'
 import {
-  FunctionComponent,
-  ReactNode,
-  isValidElement,
   Children,
   cloneElement,
+  FunctionComponent,
+  isValidElement,
+  PropsWithChildren,
+  ReactNode,
 } from 'react'
-import cx from 'classnames'
 
 interface ExplicitProps {
   /**
@@ -18,7 +19,7 @@ interface ExplicitProps {
  * Use this component to add the necessary classes to display icons inside
  * buttons. It is also exported from the `Button` component as `Button.Icon`.
  */
-const ButtonIcon: FunctionComponent<ExplicitProps> = ({
+const ButtonIcon: FunctionComponent<PropsWithChildren<ExplicitProps>> = ({
   children,
   placement,
 }) => {
@@ -40,4 +41,4 @@ const ButtonIcon: FunctionComponent<ExplicitProps> = ({
   return <>{Children.map(children, (child) => getModifiedChild(child))}</>
 }
 
-export default ButtonIcon as FunctionComponent<ExplicitProps>
+export default ButtonIcon as FunctionComponent<PropsWithChildren<ExplicitProps>>

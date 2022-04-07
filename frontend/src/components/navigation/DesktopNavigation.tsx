@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 import { Link } from 'react-router-dom'
 import { NavLinkItem } from '../TopNavigation'
 
@@ -6,7 +6,9 @@ interface Props {
   navLinks: NavLinkItem[]
 }
 
-const DesktopNavigation: FunctionComponent<Props> = ({ navLinks }) => {
+const DesktopNavigation: FunctionComponent<PropsWithChildren<Props>> = ({
+  navLinks,
+}) => {
   return (
     <nav role="navigation" className="hidden md:block w-full">
       <ul className="pl-6 flex space-x-2">

@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid'
 import {
   ChangeEvent,
   FunctionComponent,
+  PropsWithChildren,
   ReactNode,
   TextareaHTMLAttributes,
   useState,
@@ -79,7 +80,7 @@ type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   helpText?: ReactNode
 }
 
-const TextArea: FunctionComponent<Props> = ({
+const TextArea: FunctionComponent<PropsWithChildren<Props>> = ({
   id,
   label,
   errors,

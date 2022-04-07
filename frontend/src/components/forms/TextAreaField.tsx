@@ -2,7 +2,11 @@ import cx from 'classnames'
 import _merge from 'lodash/merge'
 import _omit from 'lodash/omit'
 import _pick from 'lodash/pick'
-import { FunctionComponent, TextareaHTMLAttributes } from 'react'
+import {
+  FunctionComponent,
+  PropsWithChildren,
+  TextareaHTMLAttributes,
+} from 'react'
 import { RegisterOptions, UseFormRegister } from 'react-hook-form'
 import { augmentRegisterOptionsForTextArea } from './formUtils'
 
@@ -40,7 +44,7 @@ type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
 
 const PROPS_TO_PICK = ['minLength', 'maxLength', 'required'] as const
 
-const TextArea: FunctionComponent<Props> = ({
+const TextArea: FunctionComponent<PropsWithChildren<Props>> = ({
   hasError = false,
   register,
   registerOptions,

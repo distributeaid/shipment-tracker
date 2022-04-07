@@ -1,4 +1,8 @@
-import { FunctionComponent, LabelHTMLAttributes } from 'react'
+import {
+  FunctionComponent,
+  LabelHTMLAttributes,
+  PropsWithChildren,
+} from 'react'
 
 interface Props extends LabelHTMLAttributes<HTMLLabelElement> {
   /**
@@ -15,7 +19,7 @@ interface Props extends LabelHTMLAttributes<HTMLLabelElement> {
  * fields. Read more about that below:
  * https://a11y-101.com/development/required
  */
-const Label: FunctionComponent<Props> = ({
+const Label: FunctionComponent<PropsWithChildren<Props>> = ({
   children,
   required,
   ...otherProps

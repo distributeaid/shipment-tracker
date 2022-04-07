@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode } from 'react'
+import { FunctionComponent, PropsWithChildren, ReactNode } from 'react'
 import Button from '../Button'
 import ModalBase, { CloseReason } from './ModalBase'
 
@@ -31,7 +31,7 @@ interface Props {
   onConfirm: () => void
 }
 
-const ConfirmationModal: FunctionComponent<Props> = ({
+const ConfirmationModal: FunctionComponent<PropsWithChildren<Props>> = ({
   children,
   isOpen,
   onCancel,

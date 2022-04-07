@@ -1,4 +1,9 @@
-import { FunctionComponent, ReactNode, useEffect } from 'react'
+import {
+  FunctionComponent,
+  PropsWithChildren,
+  ReactNode,
+  useEffect,
+} from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
@@ -33,7 +38,7 @@ interface Props {
 /**
  * This component encapsulates a form for creating and editing groups.
  */
-const GroupForm: FunctionComponent<Props> = (props) => {
+const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
   const { me: profile } = useAuth()
   const countries = useCountries()
 

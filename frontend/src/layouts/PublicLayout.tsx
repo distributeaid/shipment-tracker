@@ -1,10 +1,12 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, ReactNode } from 'react'
 import DistributeAidWordmark from '../components/branding/DistributeAidWordmark'
 
 /**
  * Application layout for logged-in users with a header at the top.
  */
-const PublicLayout: FunctionComponent = ({ children }) => {
+const PublicLayout: FunctionComponent<{ children: ReactNode }> = ({
+  children,
+}) => {
   return (
     <main className="flex min-h-screen justify-center bg-gradient-to-tr from-navy-700 to-navy-900 p-4 pb-12">
       <div className="max-w-md w-full mt-6 md:mt-20">

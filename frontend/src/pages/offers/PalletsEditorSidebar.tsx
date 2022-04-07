@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 import Button from '../../components/Button'
 import ChevronIcon from '../../components/icons/ChevronIcon'
 import WarningIcon from '../../components/icons/WarningIcon'
@@ -23,7 +23,7 @@ type Props = {
   canEdit: boolean
 }
 
-const PalletsEditorSidebar: FunctionComponent<Props> = ({
+const PalletsEditorSidebar: FunctionComponent<PropsWithChildren<Props>> = ({
   isLoading,
   createPallet,
   pallets,

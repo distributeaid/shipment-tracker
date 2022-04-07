@@ -1,11 +1,13 @@
 import cx from 'classnames'
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 
 interface Props {
   className?: string
 }
 
-const Spinner: FunctionComponent<Props> = ({ className }) => {
+const Spinner: FunctionComponent<PropsWithChildren<Props>> = ({
+  className,
+}) => {
   return (
     <svg
       className={cx('animate-spin h-5 w-5 text-navy-700', className)}

@@ -1,5 +1,5 @@
 import _pick from 'lodash/pick'
-import { FunctionComponent, useEffect, useMemo } from 'react'
+import { FunctionComponent, PropsWithChildren, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import Button from '../../components/Button'
@@ -42,7 +42,9 @@ interface Props {
  * - some users (usually admins) have the ability to create offers for any group
  * - other users only have access to a single sending group
  */
-const CreateOfferForm: FunctionComponent<Props> = (props) => {
+const CreateOfferForm: FunctionComponent<PropsWithChildren<Props>> = (
+  props,
+) => {
   // Display the shipment information (read-only)
   const { data: targetShipment, loading: isLoadingShipment } = useShipmentQuery(
     {

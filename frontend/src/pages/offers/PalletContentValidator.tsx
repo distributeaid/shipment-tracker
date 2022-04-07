@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 import { PalletType } from '../../types/api-types'
 import {
   PalletLineItem,
@@ -10,7 +10,7 @@ type Props = {
   lineItems: PalletLineItem[]
 }
 
-const PalletContentValidator: FunctionComponent<Props> = ({
+const PalletContentValidator: FunctionComponent<PropsWithChildren<Props>> = ({
   palletType,
   lineItems,
 }) => {

@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { FunctionComponent, useMemo } from 'react'
+import { FunctionComponent, PropsWithChildren, useMemo } from 'react'
 import { Column, useSortBy, useTable } from 'react-table'
 import Badge from '../../components/Badge'
 import ButtonLink from '../../components/ButtonLink'
@@ -17,7 +17,7 @@ interface Props {
   allowNewOffers?: boolean
 }
 
-const ShipmentOffers: FunctionComponent<Props> = ({
+const ShipmentOffers: FunctionComponent<PropsWithChildren<Props>> = ({
   shipmentId,
   allowNewOffers,
 }) => {

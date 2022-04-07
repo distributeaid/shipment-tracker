@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
@@ -19,7 +19,7 @@ interface Props {
  * 3. In review
  * 4. Accepted or Rejected
  */
-const OfferStatusSwitcher: FunctionComponent<Props> = ({
+const OfferStatusSwitcher: FunctionComponent<PropsWithChildren<Props>> = ({
   currentOfferStatus,
   updateStatus,
 }) => {

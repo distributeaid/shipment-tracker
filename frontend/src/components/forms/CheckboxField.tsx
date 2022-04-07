@@ -1,12 +1,16 @@
 import cx from 'classnames'
-import { FunctionComponent, InputHTMLAttributes } from 'react'
+import {
+  FunctionComponent,
+  InputHTMLAttributes,
+  PropsWithChildren,
+} from 'react'
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   label: string
   containerClassName?: string
 }
 
-const CheckboxField: FunctionComponent<Props> = ({
+const CheckboxField: FunctionComponent<PropsWithChildren<Props>> = ({
   label,
   containerClassName,
   ...otherProps

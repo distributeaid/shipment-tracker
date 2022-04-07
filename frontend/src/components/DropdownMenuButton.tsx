@@ -1,8 +1,12 @@
-import { ButtonHTMLAttributes, FunctionComponent } from 'react'
+import {
+  ButtonHTMLAttributes,
+  FunctionComponent,
+  PropsWithChildren,
+} from 'react'
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {}
 
-const DropdownMenuButton: FunctionComponent<Props> = ({
+const DropdownMenuButton: FunctionComponent<PropsWithChildren<Props>> = ({
   children,
   ...otherProps
 }) => {

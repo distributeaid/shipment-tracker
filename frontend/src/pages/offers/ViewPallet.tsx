@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect } from 'react'
+import { FunctionComponent, PropsWithChildren, useEffect } from 'react'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import Spinner from '../../components/Spinner'
 import { usePalletQuery } from '../../types/api-types'
@@ -16,7 +16,7 @@ interface Props {
   canEdit: boolean
 }
 
-const ViewPallet: FunctionComponent<Props> = ({
+const ViewPallet: FunctionComponent<PropsWithChildren<Props>> = ({
   palletId,
   onPalletDestroyed,
   canEdit,

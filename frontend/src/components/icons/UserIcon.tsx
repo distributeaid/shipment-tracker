@@ -1,6 +1,8 @@
-import { FunctionComponent, SVGProps } from 'react'
+import { FunctionComponent, PropsWithChildren, SVGProps } from 'react'
 
-const UserIcon: FunctionComponent<SVGProps<SVGSVGElement>> = (props) => (
+const UserIcon: FunctionComponent<
+  PropsWithChildren<SVGProps<SVGSVGElement>>
+> = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"

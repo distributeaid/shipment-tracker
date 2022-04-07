@@ -1,4 +1,4 @@
-import { FunctionComponent, useState } from 'react'
+import { FunctionComponent, PropsWithChildren, useState } from 'react'
 import useModalState from '../../hooks/useModalState'
 import {
   OfferDocument,
@@ -26,7 +26,10 @@ interface Props {
  * This is a 2-column UI with a list of pallets on the left and details aobut
  * each line-item on the right.
  */
-const PalletsEditor: FunctionComponent<Props> = ({ offer, pallets = [] }) => {
+const PalletsEditor: FunctionComponent<PropsWithChildren<Props>> = ({
+  offer,
+  pallets = [],
+}) => {
   // TODO move this to the URL
   const [selectedPalletId, setSelectedPalletId] = useState<number>()
 

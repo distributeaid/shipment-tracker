@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react'
+import React, { FunctionComponent, PropsWithChildren, useEffect } from 'react'
 import Button from '../../components/Button'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import ExternalLinkIcon from '../../components/icons/ExternalLinkIcon'
@@ -43,7 +43,7 @@ interface Props {
   canEdit: boolean
 }
 
-const ViewLineItem: FunctionComponent<Props> = ({
+const ViewLineItem: FunctionComponent<PropsWithChildren<Props>> = ({
   lineItemId,
   onLineItemDeleted,
   editLineItem,

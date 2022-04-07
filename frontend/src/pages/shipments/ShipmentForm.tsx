@@ -3,6 +3,7 @@ import _range from 'lodash/range'
 import {
   FormEvent,
   FunctionComponent,
+  PropsWithChildren,
   ReactNode,
   useEffect,
   useState,
@@ -60,7 +61,7 @@ type HubSelectOption = {
   value: number
 }
 
-const ShipmentForm: FunctionComponent<Props> = (props) => {
+const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
   const [hubs, setHubs] = useState<HubSelectOption[]>([])
   const [isExistingShipment, setIsExistingShipment] = useState(false)
   const shipmentRoutes = useShipmentRoutes()

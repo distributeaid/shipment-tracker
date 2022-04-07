@@ -1,9 +1,8 @@
-import { FunctionComponent, HTMLAttributes } from 'react'
+import { FunctionComponent, HTMLAttributes, PropsWithChildren } from 'react'
 
-const InlineError: FunctionComponent<HTMLAttributes<HTMLElement>> = ({
-  children,
-  ...otherProps
-}) => {
+const InlineError: FunctionComponent<
+  PropsWithChildren<HTMLAttributes<HTMLElement>>
+> = ({ children, ...otherProps }) => {
   return (
     <small {...otherProps} className="flex text-sm text-red-700 my-2">
       <svg
