@@ -1,4 +1,10 @@
-import { FormEvent, FunctionComponent, useEffect, useState } from 'react'
+import {
+  FormEvent,
+  FunctionComponent,
+  PropsWithChildren,
+  useEffect,
+  useState,
+} from 'react'
 import Button from '../../components/Button'
 import Label from '../../components/forms/Label'
 import { CloseReason, ModalBaseProps } from '../../components/modal/ModalBase'
@@ -21,7 +27,9 @@ interface Props extends Pick<ModalBaseProps, 'onRequestClose' | 'isOpen'> {
 /**
  * Allow users to create a new pallet for a specific offer.
  */
-const CreatePalletModal: FunctionComponent<Props> = (props) => {
+const CreatePalletModal: FunctionComponent<PropsWithChildren<Props>> = (
+  props,
+) => {
   const [palletType, setPalletType] = useState<PalletType>(PalletType.Standard)
 
   useEffect(

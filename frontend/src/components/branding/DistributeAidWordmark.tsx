@@ -1,8 +1,8 @@
-import { FunctionComponent, SVGProps } from 'react'
+import { FunctionComponent, PropsWithChildren, SVGProps } from 'react'
 
-const DistributeAidLogo: FunctionComponent<SVGProps<SVGSVGElement>> = (
-  props,
-) => (
+const DistributeAidLogo: FunctionComponent<
+  PropsWithChildren<SVGProps<SVGSVGElement>>
+> = (props) => (
   <svg
     viewBox="0 0 403 323"
     fill="none"

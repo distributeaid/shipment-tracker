@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 import { Link, LinkProps } from 'react-router-dom'
 import ButtonIcon from './ButtonIcon'
 
@@ -28,7 +28,7 @@ export type ButtonProps = LinkProps & {
   variant?: 'default' | 'primary'
 }
 
-const ButtonLink: FunctionComponent<ButtonProps> & {
+const ButtonLink: FunctionComponent<PropsWithChildren<ButtonProps>> & {
   Icon: typeof ButtonIcon
 } = ({ variant = 'default', slim = false, type = 'button', ...otherProps }) => {
   const { className, children } = otherProps

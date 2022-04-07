@@ -1,5 +1,11 @@
 import cx from 'classnames'
-import { FunctionComponent, ReactNode, useRef, useState } from 'react'
+import {
+  FunctionComponent,
+  PropsWithChildren,
+  ReactNode,
+  useRef,
+  useState,
+} from 'react'
 import Button, { ButtonVariant } from './Button'
 import DropdownMenuButton from './DropdownMenuButton'
 import DropdownMenuDivider from './DropdownMenuDivider'
@@ -45,7 +51,8 @@ enum MenuAnim {
  * The menu will close when the user clicks outside of it or presses the Escape
  * key.
  */
-const DropdownMenu: FunctionComponent<Props> & NestedComponents = ({
+const DropdownMenu: FunctionComponent<PropsWithChildren<Props>> &
+  NestedComponents = ({
   position = 'left',
   buttonVariant,
   label,

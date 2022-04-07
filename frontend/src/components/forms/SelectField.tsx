@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid'
 import {
   ChangeEvent,
   FunctionComponent,
+  PropsWithChildren,
   ReactNode,
   SelectHTMLAttributes,
   useState,
@@ -78,7 +79,7 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
   errors?: DeepMap<any, FieldError>
 }
 
-const SelectField: FunctionComponent<Props> = ({
+const SelectField: FunctionComponent<PropsWithChildren<Props>> = ({
   id,
   label,
   errors,

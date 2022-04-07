@@ -1,4 +1,4 @@
-import { FunctionComponent, useMemo } from 'react'
+import { FunctionComponent, PropsWithChildren, useMemo } from 'react'
 import Button from '../../components/Button'
 import { FormattedDate } from '../../components/FormattedDate'
 import PlainModal from '../../components/modal/PlainModal'
@@ -15,7 +15,9 @@ interface Props {
 
 const SERVER_URL = process.env.REACT_APP_SERVER_URL?.replace(/\/$/, '')
 
-const DownloadCSVMenu: FunctionComponent<Props> = ({ shipment }) => {
+const DownloadCSVMenu: FunctionComponent<PropsWithChildren<Props>> = ({
+  shipment,
+}) => {
   const [modalIsVisible, showModal, hideModal] = useModalState()
 
   const { data: shipmentWithExports } = useShipmentWithExportsQuery({

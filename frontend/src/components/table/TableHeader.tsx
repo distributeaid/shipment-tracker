@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { FunctionComponent, ThHTMLAttributes } from 'react'
+import { FunctionComponent, PropsWithChildren, ThHTMLAttributes } from 'react'
 
 interface Props extends ThHTMLAttributes<HTMLTableHeaderCellElement> {
   canSort?: boolean
@@ -10,7 +10,7 @@ interface Props extends ThHTMLAttributes<HTMLTableHeaderCellElement> {
 /**
  * A <th> element augmented with styling and a representation of sort status.
  */
-const TableHeader: FunctionComponent<Props> = ({
+const TableHeader: FunctionComponent<PropsWithChildren<Props>> = ({
   children,
   canSort,
   isSorted,

@@ -1,8 +1,8 @@
 import cx from 'classnames'
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 import { Link, LinkProps } from 'react-router-dom'
 
-const InternalLink: FunctionComponent<LinkProps> = ({
+const InternalLink: FunctionComponent<PropsWithChildren<LinkProps>> = ({
   className,
   children,
   ...otherProps

@@ -37,15 +37,17 @@ const KitchenSink: FunctionComponent = () => {
             a glance.
           </p>
           <div className="space-y-2">
-            {([
-              'gray',
-              'red',
-              'navy',
-              'blue',
-              'green',
-              'yellow',
-              'purple',
-            ] as BadgeColor[]).map((color) => (
+            {(
+              [
+                'gray',
+                'red',
+                'navy',
+                'blue',
+                'green',
+                'yellow',
+                'purple',
+              ] as BadgeColor[]
+            ).map((color) => (
               <div key={color}>
                 <span className="w-16 inline-block">{color}: </span>
                 <Badge color={color}>{color}</Badge>

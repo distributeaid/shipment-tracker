@@ -2,7 +2,11 @@ import cx from 'classnames'
 import _merge from 'lodash/merge'
 import _omit from 'lodash/omit'
 import _pick from 'lodash/pick'
-import { FunctionComponent, InputHTMLAttributes } from 'react'
+import {
+  FunctionComponent,
+  InputHTMLAttributes,
+  PropsWithChildren,
+} from 'react'
 import { RegisterOptions, UseFormRegister } from 'react-hook-form'
 import { augmentRegisterOptionsForInput } from './formUtils'
 
@@ -51,7 +55,7 @@ const PROPS_TO_PICK = [
   'required',
 ] as const
 
-const TextInput: FunctionComponent<Props> = ({
+const TextInput: FunctionComponent<PropsWithChildren<Props>> = ({
   type = 'text',
   hasError = false,
   register,

@@ -1,7 +1,11 @@
 import cx from 'classnames'
 import _merge from 'lodash/merge'
 import _pick from 'lodash/pick'
-import { FunctionComponent, SelectHTMLAttributes } from 'react'
+import {
+  FunctionComponent,
+  PropsWithChildren,
+  SelectHTMLAttributes,
+} from 'react'
 import { RegisterOptions, UseFormRegister } from 'react-hook-form'
 
 type Props = SelectHTMLAttributes<HTMLSelectElement> & {
@@ -24,7 +28,7 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
   castAsNumber?: boolean
 }
 
-const SelectInput: FunctionComponent<Props> = ({
+const SelectInput: FunctionComponent<PropsWithChildren<Props>> = ({
   hasError = false,
   register,
   registerOptions,

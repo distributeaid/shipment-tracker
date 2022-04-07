@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 import { PalletConfig } from '../../data/constants'
 
 interface Props extends PalletConfig {
@@ -14,7 +14,7 @@ interface Props extends PalletConfig {
  * A fully-controlled wrapper around a <radio> input that allows users to select
  * a pallet card within the CreatePalletModal.
  */
-const PalletCard: FunctionComponent<Props> = (props) => {
+const PalletCard: FunctionComponent<PropsWithChildren<Props>> = (props) => {
   const cellClasses = cx('border-t-2 border-b-2 py-2 transition-colors', {
     'border-navy-600': props.isSelected,
     'border-transparent': !props.isSelected,

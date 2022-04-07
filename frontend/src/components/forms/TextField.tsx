@@ -6,6 +6,7 @@ import {
   ChangeEvent,
   FunctionComponent,
   InputHTMLAttributes,
+  PropsWithChildren,
   ReactNode,
   useState,
 } from 'react'
@@ -79,7 +80,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   helpText?: ReactNode
 }
 
-const TextField: FunctionComponent<Props> = ({
+const TextField: FunctionComponent<PropsWithChildren<Props>> = ({
   id,
   label,
   errors,

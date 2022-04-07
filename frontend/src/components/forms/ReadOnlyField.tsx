@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { FunctionComponent, ReactNode } from 'react'
+import { FunctionComponent, PropsWithChildren, ReactNode } from 'react'
 
 interface Props {
   label: ReactNode
@@ -10,7 +10,7 @@ interface Props {
   stacked?: boolean
 }
 
-const ReadOnlyField: FunctionComponent<Props> = (props) => {
+const ReadOnlyField: FunctionComponent<PropsWithChildren<Props>> = (props) => {
   if (!props.children) {
     return null
   }

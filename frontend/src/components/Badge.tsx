@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 
 export type BadgeColor =
   | 'red'
@@ -10,16 +10,12 @@ export type BadgeColor =
   | 'yellow'
   | 'purple'
 
-interface Props {
-  color?: BadgeColor
-  className?: string
-}
-
-const Badge: FunctionComponent<Props> = ({
-  color = 'gray',
-  className,
-  children,
-}) => {
+const Badge: FunctionComponent<
+  PropsWithChildren<{
+    color?: BadgeColor
+    className?: string
+  }>
+> = ({ color = 'gray', className, children }) => {
   const classes = cx(className, 'rounded-sm py-1 px-2 text-sm font-semibold', {
     'bg-red-100 text-red-700': color === 'red',
     'bg-navy-100 text-navy-600': color === 'navy',

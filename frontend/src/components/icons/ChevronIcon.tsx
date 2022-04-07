@@ -1,11 +1,11 @@
 import cx from 'classnames'
-import { FunctionComponent, SVGProps } from 'react'
+import { FunctionComponent, PropsWithChildren, SVGProps } from 'react'
 
 interface Props extends SVGProps<SVGSVGElement> {
   direction?: 'up' | 'right' | 'down' | 'left'
 }
 
-const ChevronIcon: FunctionComponent<Props> = ({
+const ChevronIcon: FunctionComponent<PropsWithChildren<Props>> = ({
   direction,
   className,
   ...otherProps

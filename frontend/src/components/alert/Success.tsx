@@ -1,7 +1,7 @@
-import { FunctionComponent, useState } from 'react'
+import { FunctionComponent, PropsWithChildren, useState } from 'react'
 import CloseIcon from './CloseIcon'
 
-const Success: FunctionComponent<{ className?: string }> = ({
+const Success: FunctionComponent<PropsWithChildren<{ className?: string }>> = ({
   children,
   className,
 }) => {

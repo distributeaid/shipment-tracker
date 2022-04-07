@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 import ModalBase, { CloseReason } from './ModalBase'
 
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
   onRequestClose: (reason: CloseReason) => void
 }
 
-const PlainModal: FunctionComponent<Props> = ({
+const PlainModal: FunctionComponent<PropsWithChildren<Props>> = ({
   modalWidth = '28rem',
   onRequestClose,
   children,

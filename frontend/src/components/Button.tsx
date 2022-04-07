@@ -1,5 +1,10 @@
 import cx from 'classnames'
-import { ButtonHTMLAttributes, FunctionComponent, Ref } from 'react'
+import {
+  ButtonHTMLAttributes,
+  FunctionComponent,
+  PropsWithChildren,
+  Ref,
+} from 'react'
 import ButtonIcon from './ButtonIcon'
 
 /**
@@ -33,7 +38,9 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   forwardRef?: Ref<HTMLButtonElement>
 }
 
-const Button: FunctionComponent<ButtonProps> & { Icon: typeof ButtonIcon } = ({
+const Button: FunctionComponent<PropsWithChildren<ButtonProps>> & {
+  Icon: typeof ButtonIcon
+} = ({
   variant = 'default',
   slim = false,
   type = 'button',

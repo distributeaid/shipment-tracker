@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { FunctionComponent, useState } from 'react'
+import { FunctionComponent, PropsWithChildren, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { NavLinkItem } from '../TopNavigation'
 
@@ -7,7 +7,9 @@ interface Props {
   navLinks: NavLinkItem[]
 }
 
-const MobileNavigation: FunctionComponent<Props> = ({ navLinks }) => {
+const MobileNavigation: FunctionComponent<PropsWithChildren<Props>> = ({
+  navLinks,
+}) => {
   const [showMobileNav, setShowMobileNav] = useState(false)
 
   const toggleMobileNav = () => {

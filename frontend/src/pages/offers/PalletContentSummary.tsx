@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 import { LineItem } from '../../types/api-types'
 import { formatContainerType, gramsToKilos } from '../../utils/format'
 
@@ -14,7 +14,9 @@ type Props = {
   >[]
 }
 
-const PalletContentSummary: FunctionComponent<Props> = ({ lineItems }) => {
+const PalletContentSummary: FunctionComponent<PropsWithChildren<Props>> = ({
+  lineItems,
+}) => {
   if (lineItems.length === 0) {
     return <p className="text-gray-600">This pallet is empty</p>
   }

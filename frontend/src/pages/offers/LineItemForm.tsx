@@ -2,6 +2,7 @@ import _pick from 'lodash/pick'
 import {
   ChangeEvent,
   FunctionComponent,
+  PropsWithChildren,
   useEffect,
   useMemo,
   useState,
@@ -55,7 +56,7 @@ interface Props {
   offer: OfferQuery['offer']
 }
 
-const LineItemForm: FunctionComponent<Props> = ({
+const LineItemForm: FunctionComponent<PropsWithChildren<Props>> = ({
   lineItemId,
   onEditingComplete,
   palletType,

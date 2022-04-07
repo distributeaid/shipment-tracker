@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 import { Hint } from '../../components/alert/Hint'
 import Badge from '../../components/Badge'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
@@ -17,7 +17,9 @@ interface Props {
   shipmentId: number
 }
 
-const ShipmentDetails: FunctionComponent<Props> = ({ shipmentId }) => {
+const ShipmentDetails: FunctionComponent<PropsWithChildren<Props>> = ({
+  shipmentId,
+}) => {
   const { data: shipment } = useShipmentQuery({
     variables: { id: shipmentId },
   })
