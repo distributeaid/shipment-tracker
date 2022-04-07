@@ -48,7 +48,7 @@
     "@babel/helper-environment-visitor": "7.16.7",
     "@babel/preset-env": "7.16.11",
     "@babel/preset-typescript": "7.16.7",
-    "@playwright/test": "1.20.0",
+    "@playwright/test": "1.20.2",
     "@testing-library/dom": "^8.11.3",
     "@testing-library/react": "13.0.0",
     "@testing-library/user-event": "^13.5.0",
