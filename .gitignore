@@ -29,3 +29,6 @@ yarn-error.log*
 
 # Auto-generated types
 src/server-internal-types.ts
+
+# Config needed for running end-to-end tests locally
+.env.production.local
