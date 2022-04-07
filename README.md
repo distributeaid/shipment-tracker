@@ -109,7 +109,7 @@ You can click on the printed URLs to open them in a browser.
    CREATE DATABASE distributeaid_dev;
    ```
 
-1. Seed the database:
+1. Migrate the database:
    ```shell
    npx sequelize-cli --env=test db:migrate
    npx sequelize-cli --env=development db:migrate
@@ -132,6 +132,8 @@ If this is your first time, you'll probably want to create an account. You can u
 3. When asked for an email confirmation, check your terminal! There will be a confirmation token.
 4. Once confirmed, enter your password again to log in.
 5. To make yourself an admin, run: `node cli admin <youremail@domain.com>`
+
+You can seed the database by running the end-to-end tests following [these instructions](./frontend#end-to-end-tests-using-playwright).
 
 ## Technical documentation
 
