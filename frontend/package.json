@@ -60,7 +60,7 @@
   "scripts": {
     "start": "NODE_ENV=development craco start",
     "build": "craco build",
-    "test": "jest",
+    "test": "TZ=UTC jest",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
