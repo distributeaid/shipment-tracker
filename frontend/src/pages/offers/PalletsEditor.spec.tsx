@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { MockedProvider } from '@apollo/react-testing'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createLineItem, createOffer } from '../../../tests/builders'
 import createPallet from '../../../tests/builders/createPallet'
@@ -64,11 +64,12 @@ describe('PalletsEditor', () => {
     )
 
     userEvent.click(screen.getByText('Pallet 1'))
+    const firstLineItem = await screen.findByRole('button', {
+      name: 'First line item',
+    })
+    userEvent.click(firstLineItem)
 
-    userEvent.click(
-      await screen.findByRole('button', { name: 'First line item' }),
-    )
-    userEvent.click(await screen.findByRole('button', { name: 'Edit' }))
+    userEvent.click(screen.getByRole('button', { name: 'Edit' }))
 
     expect(
       await screen.findByRole('form', {
@@ -76,9 +77,13 @@ describe('PalletsEditor', () => {
       }),
     ).not.toBeNull()
 
-    userEvent.click(
-      await screen.findByRole('button', { name: 'Second line item' }),
-    )
+    const secondLineItem = await screen.findByRole('button', {
+      name: 'Second line item',
+    })
+
+    await waitFor(() => {
+      userEvent.click(secondLineItem)
+    })
 
     expect(
       screen.queryByRole('form', {
