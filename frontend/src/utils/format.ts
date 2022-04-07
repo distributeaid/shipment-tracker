@@ -106,11 +106,8 @@ export function formatShipmentStatus(shipmentStatus: ShipmentStatus) {
   return matchingStatus?.label || shipmentStatus
 }
 
-export const formatRegion = (region: Region): string => {
-  let regionString = region.country.alias ?? region.country.shortName
-  if (region.locality !== null) regionString += ` (${region.locality})`
-  return regionString
-}
+export const formatRegion = (region: Region): string =>
+  `${region.country.alias ?? region.country.shortName} (${region.locality})`
 
 export function formatContainerType(
   type: LineItemContainerType,

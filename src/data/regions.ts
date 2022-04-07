@@ -3,7 +3,7 @@ import { countries, Country } from './countries'
 export type Region = {
   id: string
   country: Country
-  locality?: string
+  locality: string
 }
 
 export const knownRegions = {
@@ -20,7 +20,7 @@ export const knownRegions = {
   greece: {
     id: 'greece',
     country: countries.GR,
-    locality: undefined,
+    locality: 'Other regions',
   } as Region,
   chios: {
     id: 'chios',
@@ -50,7 +50,7 @@ export const knownRegions = {
   lybia: {
     id: 'lybia',
     country: countries.LY,
-    locality: undefined,
+    locality: 'All regions',
   } as Region,
   beirut: {
     id: 'beirut',
@@ -70,17 +70,17 @@ export const knownRegions = {
   lebanon: {
     id: 'lebanon',
     country: countries.LB,
-    locality: undefined,
+    locality: 'Other regions',
   } as Region,
   bosnia: {
     id: 'bosnia',
     country: countries.BA,
-    locality: undefined,
+    locality: 'All regions',
   } as Region,
   serbia: {
     id: 'serbia',
     country: countries.RS,
-    locality: undefined,
+    locality: 'All regions',
   } as Region,
   ventimiglia: {
     id: 'ventimiglia',
@@ -90,21 +90,21 @@ export const knownRegions = {
   romania: {
     id: 'romania',
     country: countries.RO,
-    locality: undefined,
+    locality: 'All regions',
   } as Region,
   poland: {
     id: 'poland',
     country: countries.PL,
-    locality: undefined,
+    locality: 'All regions',
   } as Region,
   germany: {
     id: 'germany',
     country: countries.DE,
-    locality: undefined,
+    locality: 'All regions',
   } as Region,
   uk: {
     id: 'uk',
     country: countries.GB,
-    locality: undefined,
+    locality: 'All regions',
   } as Region,
 } as const

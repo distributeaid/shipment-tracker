@@ -134,7 +134,7 @@ type Country {
 type Region {
   id: ID!
   country: Country!
-  locality: String
+  locality: String!
 }
 
 type ShipmentRoute {
