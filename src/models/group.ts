@@ -67,7 +67,7 @@ export default class Group extends Model<
   @BelongsTo(() => UserAccount, 'captainId')
   public captain!: UserAccount
 
-  @Column(DataType.ARRAY(DataType.STRING))
+  @Column(DataType.ARRAY(DataType.ENUM(...Object.keys(knownRegions))))
   public servingRegions!: GroupAttributes['servingRegions']
 
   @CreatedAt

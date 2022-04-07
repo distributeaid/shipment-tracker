@@ -17,6 +17,15 @@ query AllGroups($captainId: Int, $groupType: [GroupType!]) {
       alias
     }
     locality
+    servingRegions {
+      id
+      country {
+        countryCode
+        shortName
+        alias
+      }
+      locality
+    }
   }
 }
 
@@ -26,5 +35,14 @@ query AllGroupsMinimal($captainId: Int, $groupType: [GroupType!]) {
     name
     description
     groupType
+    servingRegions {
+      id
+      country {
+        countryCode
+        shortName
+        alias
+      }
+      locality
+    }
   }
 }

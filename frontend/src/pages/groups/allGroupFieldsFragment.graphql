@@ -16,4 +16,13 @@ fragment AllGroupFields on Group {
     phone
     signal
   }
+  servingRegions {
+    id
+    country {
+      countryCode
+      shortName
+      alias
+    }
+    locality
+  }
 }

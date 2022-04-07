@@ -8,7 +8,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { useGroupLeaderGroups } from '../../hooks/useGroupLeaderGroups'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import { useGroupQuery } from '../../types/api-types'
-import { formatGroupType } from '../../utils/format'
+import { formatGroupType, formatRegion } from '../../utils/format'
 import ROUTES, { groupEditRoute } from '../../utils/routes'
 
 const GroupViewPage: FunctionComponent = () => {
@@ -96,6 +96,13 @@ const GroupViewPage: FunctionComponent = () => {
                   {groupData.primaryContact.signal}
                 </ReadOnlyField>
               </div>
+            </ReadOnlyField>
+            <ReadOnlyField label="Serving regions">
+              <ul>
+                {groupData.servingRegions.map((region) => (
+                  <li key={region.id}>{formatRegion(region)}</li>
+                ))}
+              </ul>
             </ReadOnlyField>
             <Hint
               id="group:whatsnext"
