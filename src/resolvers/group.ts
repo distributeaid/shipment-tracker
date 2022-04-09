@@ -72,12 +72,13 @@ const listGroups: QueryResolvers['listGroups'] = async (_, input) => {
   }
 
   if (shipmentRoute !== undefined) {
+    const routeIds =
+      shipmentRoutes[
+        shipmentRoute as keyof typeof shipmentRoutes
+      ]?.servingRegions.map(({ id }) => id) ?? []
+
     where.servingRegions = {
-      [Op.in]: [
-        ...shipmentRoutes[
-          shipmentRoute as keyof typeof shipmentRoutes
-        ]?.servingRegions.map(({ id }) => id),
-      ],
+      [Op.contained]: routeIds,
     }
   }
 

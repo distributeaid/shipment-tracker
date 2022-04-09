@@ -73,7 +73,7 @@ describe('shipmentRoutes API', () => {
           countryCode: 'DE',
           alias: null,
         },
-        locality: null,
+        locality: 'All regions',
       },
       servingRegions: [
         {
@@ -82,7 +82,7 @@ describe('shipmentRoutes API', () => {
             countryCode: 'BA',
             alias: null,
           },
-          locality: null,
+          locality: 'All regions',
         },
       ],
     })

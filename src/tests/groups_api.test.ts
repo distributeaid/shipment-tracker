@@ -659,7 +659,6 @@ describe('Groups API', () => {
                 shipmentRoute,
               },
             })
-            console.log(JSON.stringify(res.errors, null, 2))
             expect(res.errors).toBeUndefined()
             expect(res?.data?.listGroups).toEqual(
               expect.arrayContaining(
