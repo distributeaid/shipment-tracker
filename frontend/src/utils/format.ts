@@ -93,7 +93,7 @@ export function formatShipmentName(
       >,
 ) {
   const month = shipment.labelMonth.toString().padStart(2, '0')
-  return `${shipment.origin.id}${shipment.destination.id}-${shipment.labelYear}-${month}`
+  return `${shipment.origin.id}-${shipment.destination.id}-${shipment.labelYear}-${month}`
 }
 
 export function formatShipmentStatus(shipmentStatus: ShipmentStatus) {

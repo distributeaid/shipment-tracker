@@ -86,9 +86,7 @@ test('Admins can create a shipment', async ({ page }) => {
   // Verify
   await page.locator('header a:has-text("Shipments")').nth(1).click()
   await page.reload() // FIXME: new shipment should be visible immediately
-  await expect(page.locator('main table tbody')).toContainText(
-    `${hubs[0].countryName} → ${hubs[1].countryName}`,
-  )
+  await expect(page.locator('main table tbody')).toContainText(`uk-calais`)
   await expect(page.locator('main table tbody')).toContainText(
     `${hubs[0].name}`,
   )
