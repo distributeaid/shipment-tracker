@@ -4,7 +4,6 @@ import Badge from '../../components/Badge'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import InternalLink from '../../components/InternalLink'
 import Spinner from '../../components/Spinner'
-import { formatShipmentRouteToLabel } from '../../hooks/useShipmentRoutes'
 import { useShipmentQuery } from '../../types/api-types'
 import {
   formatLabelMonth,
@@ -62,13 +61,6 @@ const ShipmentDetails: FunctionComponent<PropsWithChildren<Props>> = ({
         </ReadOnlyField>
       </div>
       <h2 className="font-semibold mt-6 mb-4">Itinerary</h2>
-      <p className="text-gray-600 mb-4">
-        This shipment follows the{' '}
-        <span className="font-semibold text-gray-800">
-          {formatShipmentRouteToLabel(shipmentData.shipmentRoute)}
-        </span>{' '}
-        route.
-      </p>
       <div className="md:flex items-center">
         <div className="border border-gray-200 p-4 md:p-6 rounded flex-shrink-0 space-y-2">
           <div className="uppercase text-xs text-gray-500 mb-2">From</div>

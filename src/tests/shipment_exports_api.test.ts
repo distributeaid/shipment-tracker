@@ -57,7 +57,8 @@ describe('ShipmentExports API', () => {
     })
 
     shipment = await Shipment.create({
-      shipmentRoute: 'UkToGr',
+      origin: 'uk',
+      destination: 'greece',
       labelYear: 2020,
       labelMonth: 1,
       sendingHubs: [group],

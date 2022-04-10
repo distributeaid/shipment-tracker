@@ -57,7 +57,8 @@ input GroupUpdateInput {
 }
 
 input ShipmentUpdateInput {
-  shipmentRoute: ID
+  origin: ID
+  destination: ID
   labelYear: Int
   labelMonth: Int
   sendingHubs: [Int!]
@@ -69,13 +70,7 @@ input ShipmentUpdateInput {
 type Query {
   group(id: Int!): Group!
 
-  listGroups(
-    groupType: [GroupType!]
-    captainId: Int
-    shipmentRoute: ID
-  ): [Group!]!
-
-  shipmentRoutes: [ShipmentRoute!]!
+  listGroups(groupType: [GroupType!], captainId: Int, region: ID): [Group!]!
 
   shipment(id: Int!): Shipment!
   listShipments(status: [ShipmentStatus!]): [Shipment!]!
@@ -116,7 +111,8 @@ type Mutation {
 }
 
 input ShipmentCreateInput {
-  shipmentRoute: ID!
+  origin: ID!
+  destination: ID!
   labelYear: Int!
   labelMonth: Int!
   sendingHubs: [Int!]!
@@ -137,12 +133,6 @@ type Region {
   locality: String!
 }
 
-type ShipmentRoute {
-  id: ID!
-  origin: Region!
-  servingRegions: [Region!]!
-}
-
 enum ShipmentStatus {
   DRAFT
   ANNOUNCED
@@ -157,7 +147,8 @@ enum ShipmentStatus {
 
 type Shipment {
   id: Int!
-  shipmentRoute: ShipmentRoute!
+  origin: Region!
+  destination: Region!
   # label{year,month} are for identification purposes only e.g. for deriving
   # display names like "UK-2021-03".
   labelYear: Int!

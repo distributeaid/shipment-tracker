@@ -68,7 +68,8 @@ describe('Offers API', () => {
       servingRegions: [],
     })
     shipment = await createShipment({
-      shipmentRoute: 'UkToGr',
+      origin: 'uk',
+      destination: 'greece',
       labelYear: 2020,
       labelMonth: 1,
       sendingHubs: [captainsGroup.id],
@@ -129,7 +130,8 @@ describe('Offers API', () => {
         `does not create an offer shipment status is %s`,
         async (shipmentStatus) => {
           const shipment = await createShipment({
-            shipmentRoute: 'UkToGr',
+            origin: 'uk',
+            destination: 'greece',
             labelYear: 2020,
             labelMonth: 1,
             sendingHubs: [captainsGroup.id],
@@ -395,7 +397,8 @@ describe('Offers API', () => {
       otherShipment = await createShipment({
         labelYear: 2021,
         labelMonth: 1,
-        shipmentRoute: 'UkToFr',
+        origin: 'uk',
+        destination: 'calais',
         sendingHubs: [captainsGroup.id],
         receivingHubs: [captainsGroup.id],
         status: ShipmentStatus.Open,

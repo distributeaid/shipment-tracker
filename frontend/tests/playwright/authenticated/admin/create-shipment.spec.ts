@@ -55,7 +55,8 @@ test('Admins can create a shipment', async ({ page }) => {
   // Create the shipment
   await page.locator('header a:has-text("Shipments")').nth(1).click()
   await page.locator('text=Create shipment').click()
-  await page.locator('select[name="shipmentRoute"]').selectOption('UkToFr')
+  await page.locator('select[name="origin"]').selectOption('uk')
+  await page.locator('select[name="destination"]').selectOption('calais')
   // Click on the chevron
   await page.locator('#new-shipment-receivingHubs svg').click()
   // Select the sending hub

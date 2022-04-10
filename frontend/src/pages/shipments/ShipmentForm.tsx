@@ -15,7 +15,7 @@ import InlineError from '../../components/forms/InlineError'
 import Label from '../../components/forms/Label'
 import SelectField from '../../components/forms/SelectField'
 import { MONTH_OPTIONS, SHIPMENT_STATUS_OPTIONS } from '../../data/constants'
-import { useShipmentRoutes } from '../../hooks/useShipmentRoutes'
+import { useRegions } from '../../hooks/useRegions'
 import {
   GroupType,
   ShipmentCreateInput,
@@ -23,6 +23,7 @@ import {
   useAllGroupsMinimalQuery,
 } from '../../types/api-types'
 import { arraysOverlap } from '../../utils/arraysOverlap'
+import { formatRegion } from '../../utils/format'
 
 interface Props {
   /**
@@ -64,7 +65,7 @@ type HubSelectOption = {
 const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
   const [hubs, setHubs] = useState<HubSelectOption[]>([])
   const [isExistingShipment, setIsExistingShipment] = useState(false)
-  const shipmentRoutes = useShipmentRoutes()
+  const regions = useRegions()
 
   // Load the list of groups
   const { data: groups, loading: hubListIsLoading } = useAllGroupsMinimalQuery({
@@ -106,7 +107,8 @@ const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
       if (props.defaultValues) {
         reset({
           ...props.defaultValues.shipment,
-          shipmentRoute: props.defaultValues.shipment.shipmentRoute.id,
+          origin: props.defaultValues.shipment.origin.id,
+          destination: props.defaultValues.shipment.destination.id,
           sendingHubs: props.defaultValues.shipment.sendingHubs.map(
             ({ id }) => id,
           ),
@@ -182,12 +184,23 @@ const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
         />
       )}
       <SelectField
-        options={shipmentRoutes.map((route) => ({
-          label: route.label,
-          value: route.id,
+        options={regions.map((region) => ({
+          label: formatRegion(region),
+          value: region.id,
         }))}
-        label="Shipping route"
-        name="shipmentRoute"
+        label="Origin region"
+        name="origin"
+        register={register}
+        required
+        errors={errors}
+      />
+      <SelectField
+        options={regions.map((region) => ({
+          label: formatRegion(region),
+          value: region.id,
+        }))}
+        label="Destination"
+        name="destination"
         register={register}
         required
         errors={errors}

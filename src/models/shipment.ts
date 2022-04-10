@@ -9,7 +9,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
-import { shipmentRoutes } from '../data/shipmentRoutes'
+import { knownRegions } from '../data/regions'
 import { ShipmentPricing, ShipmentStatus } from '../server-internal-types'
 import Group from './group'
 import Offer from './offer'
@@ -18,7 +18,8 @@ import ShipmentSendingHub from './shipment_sending_hub'
 
 export interface ShipmentAttributes {
   id: number
-  shipmentRoute: keyof typeof shipmentRoutes
+  origin: keyof typeof knownRegions
+  destination: keyof typeof knownRegions
   labelYear: number
   labelMonth: number
   offerSubmissionDeadline?: Date | null
@@ -42,7 +43,10 @@ export default class Shipment extends Model<
   public id!: number
 
   @Column(DataType.STRING)
-  public shipmentRoute!: keyof typeof shipmentRoutes
+  public origin!: keyof typeof knownRegions
+
+  @Column(DataType.STRING)
+  public destination!: keyof typeof knownRegions
 
   @Column
   public labelYear!: number

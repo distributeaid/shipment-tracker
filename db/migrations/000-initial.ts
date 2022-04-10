@@ -167,7 +167,11 @@ export const up = async (queryInterface: QueryInterface) => {
   // Shipment
   await queryInterface.createTable(`Shipments`, {
     id,
-    shipmentRoute: {
+    origin: {
+      allowNull: false,
+      type: DataTypes.STRING,
+    },
+    destination: {
       allowNull: false,
       type: DataTypes.STRING,
     },

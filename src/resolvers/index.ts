@@ -29,7 +29,6 @@ import {
   shipmentExports,
   updateShipment,
 } from './shipment'
-import { listShipmentRoutes } from './shipmentRoutes'
 import { exportShipment, listShipmentExports } from './shipment_exports'
 
 const resolvers: Resolvers = {
@@ -48,7 +47,6 @@ const resolvers: Resolvers = {
     lineItem,
     listShipmentExports,
     countries: listCountries,
-    shipmentRoutes: listShipmentRoutes,
     regions: listRegions,
   },
 

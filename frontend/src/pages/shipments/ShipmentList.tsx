@@ -10,7 +10,6 @@ import Spinner from '../../components/Spinner'
 import TableHeader from '../../components/table/TableHeader'
 import { SHIPMENT_STATUS_OPTIONS } from '../../data/constants'
 import { useAuth } from '../../hooks/useAuth'
-import { formatShipmentRouteToLabel } from '../../hooks/useShipmentRoutes'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
   AllShipmentsQuery,
@@ -20,6 +19,7 @@ import {
 import {
   formatLabelMonth,
   formatListOfHubs,
+  formatRegion,
   formatShipmentName,
   formatShipmentStatus,
   getShipmentStatusBadgeColor,
@@ -32,8 +32,12 @@ const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
     accessor: (row) => formatShipmentName(row),
   },
   {
-    Header: 'Route',
-    accessor: (row) => formatShipmentRouteToLabel(row.shipmentRoute),
+    Header: 'Origin',
+    accessor: (row) => formatRegion(row.origin),
+  },
+  {
+    Header: 'Destination',
+    accessor: (row) => formatRegion(row.destination),
   },
   {
     Header: 'Sending hubs',

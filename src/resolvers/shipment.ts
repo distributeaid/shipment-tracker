@@ -1,8 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { isEqual, xor } from 'lodash'
-import { Region } from '../data/regions'
-import { shipmentRoutes } from '../data/shipmentRoutes'
+import { knownRegions, Region } from '../data/regions'
 import { validateIdInput } from '../input-validation/idInputSchema'
 import {
   CurrentYearOrGreater,
@@ -21,7 +20,6 @@ import {
   QueryResolvers,
   ResolversTypes,
   ShipmentResolvers,
-  ShipmentRoute,
   ShipmentStatus,
 } from '../server-internal-types'
 import { dbToGraphQL as dbGroupToGraphQL } from './group'
@@ -40,25 +38,12 @@ const dbToGraphQL = (shipment: Shipment): ResolversTypes['Shipment'] => ({
   ...shipment.get({ plain: true }),
   createdAt: shipment.createdAt,
   updatedAt: shipment.updatedAt,
-  shipmentRoute: wireFormatShipmentRoute(shipment.shipmentRoute),
+  origin: knownRegions[shipment.origin],
+  destination: knownRegions[shipment.destination],
   // Handled in custom resolvers
   receivingHubs: [],
   sendingHubs: [],
 })
-
-const wireFormatShipmentRoute = (
-  shipmentRouteId: keyof typeof shipmentRoutes,
-): ShipmentRoute => {
-  // Find ShipmentRoute
-  const shipmentRoute = shipmentRoutes[shipmentRouteId]
-  if (shipmentRoute === undefined) {
-    throw new Error(`Unknown shipment route ${shipmentRouteId}!`)
-  }
-  return {
-    ...shipmentRoute,
-    servingRegions: shipmentRoute.servingRegions as Region[],
-  }
-}
 
 // Shipment query resolvers
 
@@ -150,11 +135,15 @@ const shipment: QueryResolvers['shipment'] = async (_, { id }, context) => {
 
 // - add shipment
 
+const regionIdInput = Type.Union(
+  Object.keys(knownRegions).map((id) => Type.Literal(id)),
+  { title: 'region ID' },
+)
+
 const addShipmentInput = Type.Object(
   {
-    shipmentRoute: Type.Union(
-      Object.keys(shipmentRoutes).map((id) => Type.Literal(id)),
-    ),
+    origin: regionIdInput,
+    destination: regionIdInput,
     labelYear: CurrentYearOrGreater(),
     labelMonth: MonthIndexStartingAt1,
     sendingHubs: Type.Array(ID, { minItems: 1 }),
@@ -232,17 +221,18 @@ const addShipment: MutationResolvers['addShipment'] = async (
     )
   }
 
-  let shipmentRoute: ShipmentRoute
-  try {
-    shipmentRoute = wireFormatShipmentRoute(
-      valid.value.shipmentRoute as keyof typeof shipmentRoutes,
-    )
-  } catch (err) {
-    throw new UserInputError((err as Error).message)
-  }
+  const origin: Region | undefined =
+    knownRegions[valid.value.origin as keyof typeof knownRegions]
+  if (origin === undefined)
+    throw new UserInputError(`Unknown region: ${valid.value.origin}`)
+  const destination: Region | undefined =
+    knownRegions[valid.value.destination as keyof typeof knownRegions]
+  if (destination === undefined)
+    throw new UserInputError(`Unknown region: ${valid.value.destination}`)
 
   const shipment = await Shipment.create({
-    shipmentRoute: valid.value.shipmentRoute as keyof typeof shipmentRoutes,
+    origin: origin.id as keyof typeof knownRegions,
+    destination: destination.id as keyof typeof knownRegions,
     labelYear: valid.value.labelYear,
     labelMonth: valid.value.labelMonth,
     sendingHubs: sendingHubs,
@@ -296,12 +286,8 @@ const updateShipmentInput = Type.Object(
         receivingHubs: Type.Optional(Type.Array(ID, { minItems: 1 })),
         labelYear: Type.Optional(CurrentYearOrGreater()),
         labelMonth: Type.Optional(MonthIndexStartingAt1),
-        shipmentRoute: Type.Optional(
-          Type.Union(
-            Object.keys(shipmentRoutes).map((id) => Type.Literal(id)),
-            { title: 'Shipment route ID' },
-          ),
-        ),
+        origin: Type.Optional(regionIdInput),
+        destination: Type.Optional(regionIdInput),
         pricing: Type.Optional(Pricing),
       },
       { additionalProperties: false },
@@ -340,7 +326,8 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     sendingHubs: sendingHubsUpdate,
     labelMonth,
     labelYear,
-    shipmentRoute,
+    origin,
+    destination,
     pricing,
   } = valid.value.input
 
@@ -418,16 +405,19 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     )
   }
 
-  if (shipmentRoute !== undefined) {
-    try {
-      const route = wireFormatShipmentRoute(
-        shipmentRoute as keyof typeof shipmentRoutes,
-      )
-      updateAttributes.shipmentRoute =
-        shipmentRoute as keyof typeof shipmentRoutes
-    } catch (err) {
-      throw new UserInputError((err as Error).message)
-    }
+  if (origin !== undefined) {
+    updateAttributes.origin = knownRegions[origin as keyof typeof knownRegions]
+      .id as keyof typeof knownRegions
+    if (updateAttributes.origin === undefined)
+      throw new UserInputError(`Unknown region: ${origin}`)
+  }
+
+  if (destination !== undefined) {
+    updateAttributes.destination = knownRegions[
+      destination as keyof typeof knownRegions
+    ].id as keyof typeof knownRegions
+    if (updateAttributes.destination === undefined)
+      throw new UserInputError(`Unknown region: ${destination}`)
   }
 
   if (pricing !== undefined && !isEqual(pricing, shipment.pricing)) {

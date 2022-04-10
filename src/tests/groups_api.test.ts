@@ -4,7 +4,6 @@ import { omit } from 'lodash'
 import { userToAuthContext } from '../authenticateRequest'
 import { countries } from '../data/countries'
 import { knownRegions } from '../data/regions'
-import { shipmentRoutes } from '../data/shipmentRoutes'
 import Group, { GroupAttributes } from '../models/group'
 import UserAccount from '../models/user_account'
 import { sequelize } from '../sequelize'
@@ -642,13 +641,13 @@ describe('Groups API', () => {
           },
         )
 
-        it.each([[shipmentRoutes.DeToGr.id, [sendingGroup1Name]]])(
-          'search for groups with shipment route %s should yield %s',
-          async (shipmentRoute, expectedGroupNames) => {
+        it.each([[greeceRegionIds[0], [sendingGroup1Name]]])(
+          'search for groups with serving region %s should yield %s',
+          async (region, expectedGroupNames) => {
             const res = await testServer.executeOperation({
               query: gql`
-                query listGroupsByShipmentRoute($shipmentRoute: ID!) {
-                  listGroups(shipmentRoute: $shipmentRoute) {
+                query listGroupsByRegion($region: ID!) {
+                  listGroups(region: $region) {
                     id
                     name
                     groupType
@@ -656,7 +655,7 @@ describe('Groups API', () => {
                 }
               `,
               variables: {
-                shipmentRoute,
+                region,
               },
             })
             expect(res.errors).toBeUndefined()

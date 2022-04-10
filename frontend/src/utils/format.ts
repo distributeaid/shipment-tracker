@@ -5,7 +5,6 @@ import {
   MONTHS,
   SHIPMENT_STATUS_OPTIONS,
 } from '../data/constants'
-import { formatShipmentRouteToID } from '../hooks/useShipmentRoutes'
 import {
   AllGroupsMinimalQuery,
   GroupType,
@@ -90,13 +89,11 @@ export function formatShipmentName(
     | Shipment
     | Pick<
         ShipmentQuery['shipment'],
-        'labelMonth' | 'labelYear' | 'shipmentRoute'
+        'labelMonth' | 'labelYear' | 'origin' | 'destination'
       >,
 ) {
   const month = shipment.labelMonth.toString().padStart(2, '0')
-  return `${formatShipmentRouteToID(shipment.shipmentRoute)}-${
-    shipment.labelYear
-  }-${month}`
+  return `${shipment.origin.id}${shipment.destination.id}-${shipment.labelYear}-${month}`
 }
 
 export function formatShipmentStatus(shipmentStatus: ShipmentStatus) {

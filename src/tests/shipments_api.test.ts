@@ -55,7 +55,10 @@ describe('Shipments API', () => {
     mutation ($input: ShipmentCreateInput!) {
       addShipment(input: $input) {
         id
-        shipmentRoute {
+        origin {
+          id
+        }
+        destination {
           id
         }
         labelYear
@@ -79,7 +82,8 @@ describe('Shipments API', () => {
         query: ADD_SHIPMENT,
         variables: {
           input: {
-            shipmentRoute: 'UkToFr',
+            origin: 'uk',
+            destination: 'calais',
             labelYear: nextYear,
             labelMonth: 1,
             sendingHubs: [group1.id],
@@ -106,7 +110,8 @@ describe('Shipments API', () => {
         query: ADD_SHIPMENT,
         variables: {
           input: {
-            shipmentRoute: 'UkToFr',
+            origin: 'uk',
+            destination: 'calais',
             labelYear: nextYear,
             labelMonth: 1,
             sendingHubs: [group1.id],
@@ -119,7 +124,8 @@ describe('Shipments API', () => {
       }>
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.addShipment?.shipmentRoute.id).toEqual('UkToFr')
+      expect(res?.data?.addShipment?.origin.id).toEqual('uk')
+      expect(res?.data?.addShipment?.destination.id).toEqual('calais')
       expect(res?.data?.addShipment?.labelYear).toEqual(nextYear)
       expect(res?.data?.addShipment?.labelMonth).toEqual(1)
       expect(res?.data?.addShipment?.sendingHubs).toHaveLength(1)
@@ -154,7 +160,8 @@ describe('Shipments API', () => {
 
     beforeEach(async () => {
       shipment = await createShipment({
-        shipmentRoute: 'UkToFr',
+        origin: 'uk',
+        destination: 'calais',
         labelYear: nextYear,
         labelMonth: 1,
         sendingHubs: [group1.id],
@@ -312,7 +319,8 @@ describe('Shipments API', () => {
             query: ADD_SHIPMENT,
             variables: {
               input: {
-                shipmentRoute: 'UkToFr',
+                origin: 'uk',
+                destination: 'calais',
                 labelYear: nextYear,
                 labelMonth: 1,
                 sendingHubs: [group1.id, group2.id],
@@ -423,7 +431,8 @@ describe('Shipments API', () => {
 
     beforeEach(async () => {
       shipment1 = await createShipment({
-        shipmentRoute: 'UkToFr',
+        origin: 'uk',
+        destination: 'calais',
         labelYear: nextYear,
         labelMonth: 1,
         sendingHubs: [group1.id],
@@ -432,7 +441,8 @@ describe('Shipments API', () => {
       })
 
       shipment2 = await createShipment({
-        shipmentRoute: 'UkToFr',
+        origin: 'uk',
+        destination: 'calais',
         labelYear: nextYear + 1,
         labelMonth: 6,
         sendingHubs: [group2.id],
@@ -528,7 +538,8 @@ describe('Shipments API', () => {
 
     beforeEach(async () => {
       shipment = await createShipment({
-        shipmentRoute: 'UkToFr',
+        origin: 'uk',
+        destination: 'calais',
         labelYear: nextYear,
         labelMonth: 1,
         sendingHubs: [group1.id],
@@ -537,7 +548,8 @@ describe('Shipments API', () => {
       })
 
       adminOnlyShipment = await createShipment({
-        shipmentRoute: 'UkToFr',
+        origin: 'uk',
+        destination: 'calais',
         labelYear: nextYear,
         labelMonth: 1,
         sendingHubs: [group1.id],
@@ -557,7 +569,10 @@ describe('Shipments API', () => {
     const SHIPMENT = gql`
       query ($id: Int!) {
         shipment(id: $id) {
-          shipmentRoute {
+          origin {
+            id
+          }
+          destination {
             id
           }
         }
@@ -567,7 +582,10 @@ describe('Shipments API', () => {
     const SHIPMENT_WITH_EXPORTS = gql`
       query ($id: Int!) {
         shipment(id: $id) {
-          shipmentRoute {
+          origin {
+            id
+          }
+          destination {
             id
           }
           exports {
@@ -600,9 +618,8 @@ describe('Shipments API', () => {
           })) as TypedGraphQLResponse<{ shipment: GqlShipment }>
 
           expect(res.errors).toBeUndefined()
-          expect(res.data?.shipment?.shipmentRoute.id).toBe(
-            shipment.shipmentRoute,
-          )
+          expect(res.data?.shipment?.origin.id).toBe(shipment.origin)
+          expect(res.data?.shipment?.destination.id).toBe(shipment.destination)
         })
 
         it('returns exports when admins ask for them', async () => {

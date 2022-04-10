@@ -5,7 +5,6 @@ import { Attributes, Op, WhereOptions } from 'sequelize'
 import { countries } from '../data/countries'
 import { getCountryByCountryCode } from '../data/getCountryByCountryCode'
 import { knownRegions } from '../data/regions'
-import { shipmentRoutes } from '../data/shipmentRoutes'
 import { Contact } from '../input-validation/Contact'
 import { validateIdInput } from '../input-validation/idInputSchema'
 import {
@@ -39,10 +38,10 @@ const listGroupsInput = Type.Object(
   {
     groupType: Type.Optional(Type.Array(Type.Enum(GroupType))),
     captainId: Type.Optional(ID),
-    shipmentRoute: Type.Optional(
+    region: Type.Optional(
       Type.Union(
-        Object.keys(shipmentRoutes).map((id) => Type.Literal(id)),
-        { title: 'Shipment route ID' },
+        Object.keys(knownRegions).map((id) => Type.Literal(id)),
+        { title: 'region ID' },
       ),
     ),
   },
@@ -57,7 +56,7 @@ const listGroups: QueryResolvers['listGroups'] = async (_, input) => {
     throw new UserInputError('List groups arguments invalid', valid.errors)
   }
 
-  const { groupType, captainId, shipmentRoute } = valid.value
+  const { groupType, captainId, region } = valid.value
 
   const where: WhereOptions<Attributes<Group>> = {}
 
@@ -71,14 +70,9 @@ const listGroups: QueryResolvers['listGroups'] = async (_, input) => {
     where.captainId = captainId
   }
 
-  if (shipmentRoute !== undefined) {
-    const routeIds =
-      shipmentRoutes[
-        shipmentRoute as keyof typeof shipmentRoutes
-      ]?.servingRegions.map(({ id }) => id) ?? []
-
+  if (region !== undefined) {
     where.servingRegions = {
-      [Op.contained]: routeIds,
+      [Op.contained]: [region],
     }
   }
 
