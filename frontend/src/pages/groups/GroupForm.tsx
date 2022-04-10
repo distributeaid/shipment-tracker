@@ -59,7 +59,8 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
         // Update the values of the fields
         reset({
           ...defaults,
-          country: defaults.country?.countryCode,
+          country: defaults.country.countryCode,
+          servingRegions: defaults.servingRegions.map(({ id }) => id),
         })
       }
     },
