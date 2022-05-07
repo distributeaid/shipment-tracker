@@ -63,6 +63,7 @@ input ShipmentUpdateInput {
   labelMonth: Int
   sendingHubs: [Int!]
   receivingHubs: [Int!]
+  receivingGroups: [Int!]
   status: ShipmentStatus
   pricing: ShipmentPricingInput
 }
@@ -117,6 +118,7 @@ input ShipmentCreateInput {
   labelMonth: Int!
   sendingHubs: [Int!]!
   receivingHubs: [Int!]!
+  receivingGroups: [Int!]!
   status: ShipmentStatus!
   pricing: ShipmentPricingInput
 }
@@ -157,6 +159,7 @@ type Shipment {
   status: ShipmentStatus!
   sendingHubs: [Group!]!
   receivingHubs: [Group!]!
+  receivingGroups: [Group!]!
   pricing: ShipmentPricing
 
   # Exports are forbidden to non-admins

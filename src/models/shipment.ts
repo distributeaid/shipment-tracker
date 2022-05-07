@@ -13,6 +13,7 @@ import { knownRegions } from '../data/regions'
 import { ShipmentPricing, ShipmentStatus } from '../server-internal-types'
 import Group from './group'
 import Offer from './offer'
+import ShipmentReceivingGroup from './shipment_receiving_group'
 import ShipmentReceivingHub from './shipment_receiving_hub'
 import ShipmentSendingHub from './shipment_sending_hub'
 
@@ -26,6 +27,7 @@ export interface ShipmentAttributes {
   status: ShipmentStatus
   sendingHubs: Group[]
   receivingHubs: Group[]
+  receivingGroups: Group[]
   statusChangeTime: Date
   pricing: ShipmentPricing
 }
@@ -68,6 +70,9 @@ export default class Shipment extends Model<
 
   @BelongsToMany(() => Group, () => ShipmentReceivingHub)
   public receivingHubs!: Group[]
+
+  @BelongsToMany(() => Group, () => ShipmentReceivingGroup)
+  public receivingGroups!: Group[]
 
   @Column
   public statusChangeTime!: Date

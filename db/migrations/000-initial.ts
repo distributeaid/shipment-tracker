@@ -235,6 +235,27 @@ export const up = async (queryInterface: QueryInterface) => {
   await queryInterface.addIndex(`ShipmentReceivingHubs`, ['hubId'], {
     unique: false,
   })
+  // ShipmentReceivingGroups
+  await queryInterface.createTable(`ShipmentReceivingGroups`, {
+    id,
+    shipmentId: {
+      type: DataTypes.INTEGER,
+      references: { model: `Shipments`, key: 'id' },
+      allowNull: false,
+    },
+    groupId: {
+      type: DataTypes.INTEGER,
+      references: { model: `Groups`, key: 'id' },
+      allowNull: false,
+    },
+    ...autoTimestampFields,
+  })
+  await queryInterface.addIndex(`ShipmentReceivingGroups`, ['shipmentId'], {
+    unique: false,
+  })
+  await queryInterface.addIndex(`ShipmentReceivingGroups`, ['groupId'], {
+    unique: false,
+  })
   // ShipmentSendingHub
   await queryInterface.createTable(`ShipmentSendingHubs`, {
     id,

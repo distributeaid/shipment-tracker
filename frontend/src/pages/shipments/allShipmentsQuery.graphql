@@ -31,6 +31,10 @@ query AllShipments($status: [ShipmentStatus!]) {
       id
       name
     }
+    receivingGroups {
+      id
+      name
+    }
     statusChangeTime
   }
 }

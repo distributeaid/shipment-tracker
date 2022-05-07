@@ -33,15 +33,17 @@ async function createGroup(
 }
 
 async function createShipment(input: ShipmentCreateInput): Promise<Shipment> {
-  const [receivingHubs, sendingHubs] = await Promise.all([
+  const [receivingHubs, sendingHubs, receivingGroups] = await Promise.all([
     Group.findAll({ where: { id: input.receivingHubs } }),
     Group.findAll({ where: { id: input.sendingHubs } }),
+    Group.findAll({ where: { id: input.receivingGroups } }),
   ])
   const shipment = await Shipment.create({
     ...input,
     pricing: input.pricing || undefined,
     receivingHubs,
     sendingHubs,
+    receivingGroups,
     origin: input.origin as keyof typeof knownRegions,
     destination: input.destination as keyof typeof knownRegions,
   })

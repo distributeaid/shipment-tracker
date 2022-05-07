@@ -23,6 +23,7 @@ import { listRegions } from './regions'
 import {
   addShipment,
   listShipments,
+  receivingGroups,
   receivingHubs,
   sendingHubs,
   shipment,
@@ -72,6 +73,7 @@ const resolvers: Resolvers = {
   Shipment: {
     sendingHubs,
     receivingHubs,
+    receivingGroups,
     exports: shipmentExports,
   },
 

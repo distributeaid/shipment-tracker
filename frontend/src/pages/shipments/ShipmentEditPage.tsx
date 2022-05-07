@@ -39,6 +39,7 @@ const ShipmentEditPage: FunctionComponent = () => {
       'labelMonth',
       'sendingHubs',
       'receivingHubs',
+      'receivingGroups',
       'status',
       'pricing',
     ])

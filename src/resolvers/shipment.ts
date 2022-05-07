@@ -13,9 +13,11 @@ import { validateWithJSONSchema } from '../input-validation/validateWithJSONSche
 import Group from '../models/group'
 import Shipment, { ShipmentAttributes } from '../models/shipment'
 import ShipmentExport from '../models/shipment_export'
+import ShipmentReceivingGroup from '../models/shipment_receiving_group'
 import ShipmentReceivingHub from '../models/shipment_receiving_hub'
 import ShipmentSendingHub from '../models/shipment_sending_hub'
 import {
+  GroupType,
   MutationResolvers,
   QueryResolvers,
   ResolversTypes,
@@ -43,6 +45,7 @@ const dbToGraphQL = (shipment: Shipment): ResolversTypes['Shipment'] => ({
   // Handled in custom resolvers
   receivingHubs: [],
   sendingHubs: [],
+  receivingGroups: [],
 })
 
 // Shipment query resolvers
@@ -148,6 +151,7 @@ const addShipmentInput = Type.Object(
     labelMonth: MonthIndexStartingAt1,
     sendingHubs: Type.Array(ID, { minItems: 1 }),
     receivingHubs: Type.Array(ID, { minItems: 1 }),
+    receivingGroups: Type.Array(ID, { minItems: 1 }),
     status: Type.Enum(ShipmentStatus),
     pricing: Type.Optional(Pricing),
   },
@@ -176,6 +180,20 @@ const addShipment: MutationResolvers['addShipment'] = async (
     )
   }
 
+  if (
+    arraysOverlap(valid.value.receivingGroups, valid.value.receivingHubs) ||
+    arraysOverlap(valid.value.receivingGroups, valid.value.sendingHubs)
+  ) {
+    throw new UserInputError(
+      'Add shipment input invalid: receiving group must not be a sending or receiving hub',
+      {
+        sendingHubs: valid.value.sendingHubs,
+        receivingHubs: valid.value.receivingHubs,
+        receivingGroups: valid.value.receivingGroups,
+      },
+    )
+  }
+
   if (!context.auth.isAdmin) {
     throw new ForbiddenError('addShipment forbidden to non-admin users')
   }
@@ -183,11 +201,19 @@ const addShipment: MutationResolvers['addShipment'] = async (
   const sendingHubPromise = Group.findAll({
     where: {
       id: valid.value.sendingHubs,
+      groupType: GroupType.DaHub,
     },
   })
   const receivingHubPromise = Group.findAll({
     where: {
       id: valid.value.receivingHubs,
+      groupType: GroupType.DaHub,
+    },
+  })
+  const receivingGroupsPromise = Group.findAll({
+    where: {
+      id: valid.value.receivingGroups,
+      groupType: GroupType.Regular,
     },
   })
 
@@ -207,6 +233,16 @@ const addShipment: MutationResolvers['addShipment'] = async (
     throw new ApolloError(
       `Could not find receiving hubs: ${valid.value.receivingHubs.filter(
         (id) => !foundHubs.includes(id),
+      )}`,
+    )
+  }
+
+  const receivingGroups = await receivingGroupsPromise
+  if (receivingGroups.length !== valid.value.receivingGroups.length) {
+    const foundGroups = receivingGroups.map(({ id }) => id)
+    throw new ApolloError(
+      `Could not find receiving group: ${valid.value.receivingGroups.filter(
+        (id) => !foundGroups.includes(id),
       )}`,
     )
   }
@@ -237,6 +273,7 @@ const addShipment: MutationResolvers['addShipment'] = async (
     labelMonth: valid.value.labelMonth,
     sendingHubs: sendingHubs,
     receivingHubs: receivingHubs,
+    receivingGroups: receivingGroups,
     status: valid.value.status,
     statusChangeTime: new Date(),
     pricing: valid.value.pricing,
@@ -258,6 +295,14 @@ const addShipment: MutationResolvers['addShipment'] = async (
         }),
       ),
     ),
+    Promise.all(
+      receivingGroups.map((group) =>
+        ShipmentReceivingGroup.create({
+          groupId: group.id,
+          shipmentId: shipment.id,
+        }),
+      ),
+    ),
   ])
 
   return dbToGraphQL(
@@ -268,6 +313,9 @@ const addShipment: MutationResolvers['addShipment'] = async (
         },
         {
           association: 'receivingHubs',
+        },
+        {
+          association: 'receivingGroups',
         },
       ],
     })) as Shipment,
@@ -284,6 +332,7 @@ const updateShipmentInput = Type.Object(
         status: Type.Optional(Type.Enum(ShipmentStatus)),
         sendingHubs: Type.Optional(Type.Array(ID, { minItems: 1 })),
         receivingHubs: Type.Optional(Type.Array(ID, { minItems: 1 })),
+        receivingGroups: Type.Optional(Type.Array(ID, { minItems: 1 })),
         labelYear: Type.Optional(CurrentYearOrGreater()),
         labelMonth: Type.Optional(MonthIndexStartingAt1),
         origin: Type.Optional(regionIdInput),
@@ -313,7 +362,11 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
   }
 
   const shipment = await Shipment.findByPk(valid.value.id, {
-    include: [{ association: 'sendingHubs' }, { association: 'receivingHubs' }],
+    include: [
+      { association: 'sendingHubs' },
+      { association: 'receivingHubs' },
+      { association: 'receivingGroups' },
+    ],
   })
 
   if (shipment === null) {
@@ -324,6 +377,7 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     status,
     receivingHubs: receivingHubsUpdate,
     sendingHubs: sendingHubsUpdate,
+    receivingGroups: receivingGroupsUpdate,
     labelMonth,
     labelYear,
     origin,
@@ -340,7 +394,7 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
 
   if (receivingHubsUpdate !== undefined) {
     const loadedReceivingHubs = await Group.findAll({
-      where: { id: receivingHubsUpdate },
+      where: { id: receivingHubsUpdate, groupType: GroupType.DaHub },
     })
 
     if (loadedReceivingHubs.length !== receivingHubsUpdate.length) {
@@ -356,7 +410,7 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
 
   if (sendingHubsUpdate) {
     const loadedSendingHubs = await Group.findAll({
-      where: { id: sendingHubsUpdate },
+      where: { id: sendingHubsUpdate, groupType: GroupType.DaHub },
     })
 
     if (loadedSendingHubs.length !== sendingHubsUpdate.length) {
@@ -371,11 +425,30 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     updateAttributes.sendingHubs = loadedSendingHubs
   }
 
+  if (receivingGroupsUpdate !== undefined) {
+    const loadedReceivingGroups = await Group.findAll({
+      where: { id: receivingGroupsUpdate, groupType: GroupType.Regular },
+    })
+
+    if (loadedReceivingGroups.length !== receivingGroupsUpdate.length) {
+      const foundHubs = loadedReceivingGroups.map(({ id }) => id)
+      throw new ApolloError(
+        `Could not find receiving groups: ${receivingGroupsUpdate
+          .filter((id) => !foundHubs.includes(id))
+          .join(', ')}`,
+      )
+    }
+    updateAttributes.receivingGroups = loadedReceivingGroups
+  }
+
   const newSendingHubs = (
     updateAttributes.sendingHubs ?? shipment.sendingHubs
   ).map(({ id }) => id)
   const newReceivingHubs = (
     updateAttributes.receivingHubs ?? shipment.receivingHubs
+  ).map(({ id }) => id)
+  const newReceivingGroups = (
+    updateAttributes.receivingGroups ?? shipment.receivingGroups
   ).map(({ id }) => id)
   if (arraysOverlap(newSendingHubs, newReceivingHubs)) {
     throw new UserInputError(
@@ -383,6 +456,19 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
       {
         sendingHubs: newSendingHubs,
         receivingHubs: newReceivingHubs,
+      },
+    )
+  }
+  if (
+    arraysOverlap(newReceivingGroups, newReceivingHubs) ||
+    arraysOverlap(newReceivingGroups, newSendingHubs)
+  ) {
+    throw new UserInputError(
+      'Add shipment input invalid: receiving group must not be a sending or receiving hub',
+      {
+        sendingHubs: newSendingHubs,
+        receivingHubs: newReceivingHubs,
+        receivingGroups: newReceivingGroups,
       },
     )
   }
@@ -483,6 +569,37 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
     ])
   }
 
+  // Did receiving groups change?
+  if (updateAttributes.receivingGroups !== undefined) {
+    // Find IDs of receiving groups to delete
+    const oldReceivingGroupIds = shipment.receivingGroups.map(({ id }) => id)
+    const receivingGroupsToDelete = oldReceivingGroupIds.filter(
+      (id) => !receivingGroupsUpdate?.includes(id) ?? false,
+    )
+    // Find IDs of receiving groups to add
+    const receivingGroupsToAdd =
+      receivingGroupsUpdate?.filter(
+        (id) => !oldReceivingGroupIds.includes(id),
+      ) ?? []
+    // Execute
+    await Promise.all([
+      ShipmentReceivingHub.destroy({
+        where: {
+          shipmentId: shipment.id,
+          groupId: receivingGroupsToDelete,
+        },
+      }),
+      Promise.all(
+        receivingGroupsToAdd.map((groupId) =>
+          ShipmentReceivingHub.create({
+            shipmentId: shipment.id,
+            groupId,
+          }),
+        ),
+      ),
+    ])
+  }
+
   return dbToGraphQL(await shipment.update(updateAttributes))
 }
 
@@ -515,6 +632,22 @@ const receivingHubs: ShipmentResolvers['receivingHubs'] = async (parent) => {
   return receivingHubs.map(({ hub }) => dbGroupToGraphQL(hub))
 }
 
+const receivingGroups: ShipmentResolvers['receivingGroups'] = async (
+  parent,
+) => {
+  const receivingGroups = await ShipmentReceivingGroup.findAll({
+    where: {
+      shipmentId: parent.id,
+    },
+    include: [
+      {
+        association: 'group',
+      },
+    ],
+  })
+  return receivingGroups.map(({ group }) => dbGroupToGraphQL(group))
+}
+
 const shipmentExports: ShipmentResolvers['exports'] = async (
   parent,
   _,
@@ -539,5 +672,6 @@ export {
   updateShipment,
   sendingHubs,
   receivingHubs,
+  receivingGroups,
   shipmentExports,
 }

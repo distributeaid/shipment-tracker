@@ -27,7 +27,10 @@ describe('ShipmentExports API', () => {
   let adminTestServer: ApolloServer,
     shipment: Shipment,
     captain: UserAccount,
-    group: Group,
+    hub1: Group,
+    hub2: Group,
+    group1: Group,
+    group2: Group,
     offer: Offer,
     pallet: Pallet,
     lineItem: LineItem,
@@ -46,11 +49,41 @@ describe('ShipmentExports API', () => {
     adminTestServer = serverWithContext.testServer
     services = serverWithContext.services
 
-    group = await Group.create({
-      name: 'group 1',
+    hub1 = await Group.create({
+      name: 'hub 1',
       groupType: GroupType.DaHub,
       country: 'GB',
       locality: 'Bristol',
+      primaryContact: { name: 'Contact', email: 'contact@example.com' },
+      captainId: captain.id,
+      servingRegions: [],
+    })
+
+    hub2 = await Group.create({
+      name: 'hub 2',
+      groupType: GroupType.DaHub,
+      country: 'FR',
+      locality: 'Calais',
+      primaryContact: { name: 'Contact', email: 'contact@example.com' },
+      captainId: captain.id,
+      servingRegions: [],
+    })
+
+    group1 = await Group.create({
+      name: 'group 1',
+      groupType: GroupType.Regular,
+      country: 'GB',
+      locality: 'Bristol',
+      primaryContact: { name: 'Contact', email: 'contact@example.com' },
+      captainId: captain.id,
+      servingRegions: [],
+    })
+
+    group2 = await Group.create({
+      name: 'group 2',
+      groupType: GroupType.Regular,
+      country: 'FR',
+      locality: 'Calais',
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
       captainId: captain.id,
       servingRegions: [],
@@ -61,14 +94,15 @@ describe('ShipmentExports API', () => {
       destination: 'greece',
       labelYear: 2020,
       labelMonth: 1,
-      sendingHubs: [group],
-      receivingHubs: [group],
+      sendingHubs: [hub1],
+      receivingHubs: [hub2],
+      receivingGroups: [group1],
       status: ShipmentStatus.Open,
     })
 
     offer = await Offer.create({
       shipmentId: shipment.id,
-      sendingGroupId: group.id,
+      sendingGroupId: group1.id,
       status: OfferStatus.Draft,
       photoUris: [],
       contact: {
@@ -100,7 +134,7 @@ describe('ShipmentExports API', () => {
     })
 
     await lineItem.update({
-      acceptedReceivingGroupId: group.id,
+      acceptedReceivingGroupId: group2.id,
       description: 'description',
       containerCount: 5,
       sendingHubDeliveryDate: new Date(),
@@ -150,19 +184,18 @@ describe('ShipmentExports API', () => {
         rows: [
           HEADER_ROW,
           [
-            'group 1',
-            'offer contact name',
-            'test@email.com',
-            'whatsapp',
-            'group 1 (accepted)',
-            'UK Hub -- what is this?',
-            'UNSET',
-            'description',
-            1,
-            5,
-            0,
-            'None',
-            expect.stringMatching(/^\d\d\d\d-\d\d-\d\d$/),
+            'group 1', // 'Sending group',
+            'offer contact name', // 'Contact name',
+            'test@email.com', // 'Contact email',
+            'whatsapp', // 'Contact WhatsApp',
+            'group 2 (accepted)', // 'Receiving group',
+            'UNSET', // 'Category of aid',
+            'description', // 'Item description',
+            1, // 'Pallet ID',
+            5, //  'Container count',
+            0, // 'Pallet weight (kg)',
+            'None', // Dangerous items',
+            expect.stringMatching(/^\d\d\d\d-\d\d-\d\d$/), // 'Sending hub delivery date',
           ],
         ],
       })

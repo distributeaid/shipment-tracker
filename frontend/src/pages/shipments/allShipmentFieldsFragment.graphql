@@ -42,4 +42,14 @@ fragment AllShipmentFields on Shipment {
       alias
     }
   }
+  receivingGroups {
+    id
+    name
+    locality
+    country {
+      countryCode
+      shortName
+      alias
+    }
+  }
 }

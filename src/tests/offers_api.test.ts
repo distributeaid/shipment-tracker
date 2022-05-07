@@ -19,6 +19,8 @@ describe('Offers API', () => {
     otherUserTestServer: ApolloServer,
     adminTestServer: ApolloServer,
     captain: UserAccount,
+    hub1: Group,
+    hub2: Group,
     captainsGroup: Group,
     group2: Group,
     shipment: Shipment,
@@ -43,6 +45,27 @@ describe('Offers API', () => {
     })
     otherUserTestServer = await makeTestServer()
     adminTestServer = await makeAdminTestServer()
+
+    hub1 = await createGroup({
+      name: 'hub 1',
+      groupType: GroupType.DaHub,
+      country: 'GB',
+      locality: 'Bristol',
+      primaryContact: { name: 'Contact', email: 'contact@example.com' },
+      servingRegions: [],
+    })
+
+    hub2 = await createGroup({
+      name: 'hub 2',
+      groupType: GroupType.DaHub,
+      country: 'FR',
+      locality: 'Bordeaux',
+      primaryContact: {
+        name: 'Second Contact',
+        email: '2ndcontact@example.com',
+      },
+      servingRegions: [],
+    })
 
     captainsGroup = await createGroup(
       {
@@ -72,8 +95,9 @@ describe('Offers API', () => {
       destination: 'greece',
       labelYear: 2020,
       labelMonth: 1,
-      sendingHubs: [captainsGroup.id],
-      receivingHubs: [group2.id],
+      sendingHubs: [hub1.id],
+      receivingHubs: [hub2.id],
+      receivingGroups: [captainsGroup.id, group2.id],
       status: ShipmentStatus.Open,
     })
   })
@@ -134,8 +158,9 @@ describe('Offers API', () => {
             destination: 'greece',
             labelYear: 2020,
             labelMonth: 1,
-            sendingHubs: [captainsGroup.id],
-            receivingHubs: [group2.id],
+            sendingHubs: [hub1.id],
+            receivingHubs: [hub2.id],
+            receivingGroups: [captainsGroup.id, group2.id],
             status: shipmentStatus,
           })
 
@@ -399,8 +424,9 @@ describe('Offers API', () => {
         labelMonth: 1,
         origin: 'uk',
         destination: 'calais',
-        sendingHubs: [captainsGroup.id],
-        receivingHubs: [captainsGroup.id],
+        sendingHubs: [hub1.id],
+        receivingHubs: [hub2.id],
+        receivingGroups: [captainsGroup.id, group2.id],
         status: ShipmentStatus.Open,
       })
 
