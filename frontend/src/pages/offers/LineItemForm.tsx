@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import InlineError from '../../components/forms/InlineError'
 import PlaceholderField from '../../components/forms/PlaceholderField'
-import SelectField, { SelectOption } from '../../components/forms/SelectField'
+import SelectField from '../../components/forms/SelectField'
 import TextField from '../../components/forms/TextField'
 import Spinner from '../../components/Spinner'
 import {
@@ -21,21 +21,16 @@ import {
 } from '../../data/constants'
 import {
   DangerousGoods,
-  GroupType,
   LineItemCategory,
   LineItemContainerType,
   LineItemUpdateInput,
   OfferQuery,
   PalletType,
-  useAllGroupsMinimalQuery,
+  ShipmentQuery,
   useLineItemQuery,
   useUpdateLineItemMutation,
 } from '../../types/api-types'
-import {
-  gramsToKilos,
-  groupToSelectOption,
-  kilosToGrams,
-} from '../../utils/format'
+import { gramsToKilos, kilosToGrams } from '../../utils/format'
 import { setEmptyFieldsToUndefined } from '../../utils/setEmptyFieldsToUndefined'
 
 interface Props {
@@ -54,6 +49,7 @@ interface Props {
    */
   palletType: PalletType
   offer: OfferQuery['offer']
+  shipment: ShipmentQuery['shipment']
 }
 
 const LineItemForm: FunctionComponent<PropsWithChildren<Props>> = ({
@@ -61,6 +57,7 @@ const LineItemForm: FunctionComponent<PropsWithChildren<Props>> = ({
   onEditingComplete,
   palletType,
   offer,
+  shipment,
 }) => {
   const {
     data,
@@ -70,25 +67,15 @@ const LineItemForm: FunctionComponent<PropsWithChildren<Props>> = ({
     variables: { id: lineItemId },
   })
 
-  const [receivingGroups, setReceivingGroups] = useState<SelectOption[]>([])
-  const { data: groups, loading: groupsAreLoading } = useAllGroupsMinimalQuery({
-    variables: { groupType: GroupType.Regular },
-  })
-
-  // Groups available for reception are all groups that are not the sending group
-  const availableReceivingGroups = useMemo(
+  // Groups available for reception are all receiving groups that are not the sending group
+  const receivingGroups = useMemo(
     () =>
-      groups?.listGroups.filter(({ id }) => offer.sendingGroupId !== id) ?? [],
-    [groups, offer],
-  )
-
-  useEffect(
-    function organizeGroups() {
-      if (availableReceivingGroups.length) {
-        setReceivingGroups(availableReceivingGroups.map(groupToSelectOption))
-      }
-    },
-    [availableReceivingGroups],
+      (
+        shipment.receivingGroups.filter(
+          ({ id }) => offer.sendingGroupId !== id,
+        ) ?? []
+      ).map(({ id, name }) => ({ label: name, value: id })),
+    [shipment, offer],
   )
 
   /**
@@ -275,7 +262,7 @@ const LineItemForm: FunctionComponent<PropsWithChildren<Props>> = ({
     })
   })
 
-  if (!groupsAreLoading && receivingGroups.length === 0) {
+  if (receivingGroups.length === 0) {
     return (
       <div>
         <h2 className="text-lg mb-2">Unable to add items</h2>

@@ -57,36 +57,26 @@ const YEAR_OPTIONS = _range(
 
 const DEFAULT_MONTH = (new Date().getMonth() + 2) % 12
 
-type HubSelectOption = {
-  label: string
-  value: number
-}
-
 const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
-  const [hubs, setHubs] = useState<HubSelectOption[]>([])
   const [isExistingShipment, setIsExistingShipment] = useState(false)
   const regions = useRegions()
 
   // Load the list of groups
-  const { data: groups, loading: hubListIsLoading } = useAllGroupsMinimalQuery({
-    variables: { groupType: GroupType.DaHub },
+  const { data: groupsAndHubs } = useAllGroupsMinimalQuery({
+    variables: {},
   })
 
-  // When the groups are loaded, organize them by type so we can present them
-  // in the form
-  useEffect(
-    function organizeGroups() {
-      if (groups && groups.listGroups) {
-        setHubs(
-          groups.listGroups.map((group) => ({
-            label: group.name,
-            value: group.id,
-          })),
-        )
-      }
-    },
-    [hubListIsLoading, groups],
-  )
+  const hubs = (
+    groupsAndHubs?.listGroups.filter(
+      ({ groupType }) => groupType === GroupType.DaHub,
+    ) ?? []
+  ).map(({ id, name }) => ({ label: name, value: id }))
+
+  const groups = (
+    groupsAndHubs?.listGroups.filter(
+      ({ groupType }) => groupType === GroupType.Regular,
+    ) ?? []
+  ).map(({ id, name }) => ({ label: name, value: id }))
 
   const {
     register,
@@ -113,6 +103,9 @@ const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
             ({ id }) => id,
           ),
           receivingHubs: props.defaultValues.shipment.receivingHubs.map(
+            ({ id }) => id,
+          ),
+          receivingGroups: props.defaultValues.shipment.receivingGroups.map(
             ({ id }) => id,
           ),
         })
@@ -184,10 +177,17 @@ const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
         />
       )}
       <SelectField
-        options={regions.map((region) => ({
-          label: formatRegion(region),
-          value: region.id,
-        }))}
+        options={[
+          {
+            label: 'Pick an origin region',
+            value: '',
+            disabled: true,
+          },
+          ...regions.map((region) => ({
+            label: formatRegion(region),
+            value: region.id,
+          })),
+        ]}
         label="Origin region"
         name="origin"
         register={register}
@@ -195,10 +195,17 @@ const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
         errors={errors}
       />
       <SelectField
-        options={regions.map((region) => ({
-          label: formatRegion(region),
-          value: region.id,
-        }))}
+        options={[
+          {
+            label: 'Pick an destination region',
+            value: '',
+            disabled: true,
+          },
+          ...regions.map((region) => ({
+            label: formatRegion(region),
+            value: region.id,
+          })),
+        ]}
         label="Destination"
         name="destination"
         register={register}
@@ -274,7 +281,29 @@ const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
           )}
         />
       </div>
-
+      <div>
+        <Label>Receiving groups</Label>
+        <ErrorMessage
+          name="receivingGroups"
+          errors={errors || {}}
+          as={InlineError}
+        />
+        <Controller
+          control={control}
+          name="receivingGroups"
+          render={({ field }) => (
+            <Select
+              onChange={(value) => field.onChange(value.map((c) => c.value))}
+              options={groups}
+              isMulti
+              value={groups.filter((groups) =>
+                field.value?.includes(groups.value),
+              )}
+              id="new-shipment-receivingGroups"
+            />
+          )}
+        />
+      </div>
       <div className="flex items-center">
         <Button variant="primary" type="submit" disabled={props.isLoading}>
           {props.submitButtonLabel}

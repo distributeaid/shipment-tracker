@@ -1,12 +1,10 @@
 import { BadgeColor } from '../components/Badge'
-import { SelectOption } from '../components/forms/SelectField'
 import {
   LINE_ITEM_CATEGORY_OPTIONS,
   MONTHS,
   SHIPMENT_STATUS_OPTIONS,
 } from '../data/constants'
 import {
-  AllGroupsMinimalQuery,
   GroupType,
   LineItem,
   LineItemCategory,
@@ -151,12 +149,6 @@ export function getContainerCountLabel(containerType: LineItemContainerType) {
 export const kilosToGrams = (kilos: number) => kilos * 1000
 
 export const gramsToKilos = (grams: number) => grams / 1000
-
-export function groupToSelectOption(
-  group: AllGroupsMinimalQuery['listGroups'][0],
-): SelectOption {
-  return { value: group.id, label: group.name }
-}
 
 export const formatListOfHubs = (hubs: { name: string }[]): string =>
   hubs.map(({ name }) => name).join(', ')

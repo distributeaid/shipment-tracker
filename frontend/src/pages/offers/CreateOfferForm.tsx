@@ -203,7 +203,8 @@ const CreateOfferForm: FunctionComponent<PropsWithChildren<Props>> = (
             <p className="">{formatShipmentName(targetShipment.shipment)}</p>
             <p className="text-gray-500 text-sm">
               {formatListOfHubs(targetShipment.shipment.sendingHubs)} →{' '}
-              {formatListOfHubs(targetShipment.shipment.receivingHubs)}
+              {formatListOfHubs(targetShipment.shipment.receivingHubs)} →{' '}
+              {formatListOfHubs(targetShipment.shipment.receivingGroups)}
             </p>
           </>
         )}

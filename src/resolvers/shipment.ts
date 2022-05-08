@@ -583,7 +583,7 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
       ) ?? []
     // Execute
     await Promise.all([
-      ShipmentReceivingHub.destroy({
+      ShipmentReceivingGroup.destroy({
         where: {
           shipmentId: shipment.id,
           groupId: receivingGroupsToDelete,
@@ -591,7 +591,7 @@ const updateShipment: MutationResolvers['updateShipment'] = async (
       }),
       Promise.all(
         receivingGroupsToAdd.map((groupId) =>
-          ShipmentReceivingHub.create({
+          ShipmentReceivingGroup.create({
             shipmentId: shipment.id,
             groupId,
           }),

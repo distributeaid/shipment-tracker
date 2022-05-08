@@ -83,7 +83,7 @@ const ShipmentDetails: FunctionComponent<PropsWithChildren<Props>> = ({
           ↓
         </div>
         <div className="border border-gray-200 p-4 md:p-6 rounded flex-shrink-0 space-y-2">
-          <div className="uppercase text-xs text-gray-500 mb-2">To</div>
+          <div className="uppercase text-xs text-gray-500 mb-2">Via</div>
           {shipmentData.receivingHubs.map((hub) => (
             <div key={hub.id}>
               <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
@@ -93,6 +93,28 @@ const ShipmentDetails: FunctionComponent<PropsWithChildren<Props>> = ({
                   <>
                     {', '}
                     {hub.country.alias ?? hub.country.shortName}
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="text-2xl text-gray-500 p-2 md:p-4 transform md:-rotate-90 text-center">
+          ↓
+        </div>
+        <div className="border border-gray-200 p-4 md:p-6 rounded flex-shrink-0 space-y-2">
+          <div className="uppercase text-xs text-gray-500 mb-2">To</div>
+          {shipmentData.receivingGroups.map((group) => (
+            <div key={group.id}>
+              <div className="text-lg md:text-xl text-gray-800">
+                {group.name}
+              </div>
+              <div className="text-gray-600">
+                {group.locality}
+                {group.country && (
+                  <>
+                    {', '}
+                    {group.country.alias ?? group.country.shortName}
                   </>
                 )}
               </div>

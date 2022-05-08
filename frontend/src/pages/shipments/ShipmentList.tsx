@@ -28,6 +28,15 @@ import ROUTES, { shipmentViewRoute } from '../../utils/routes'
 
 const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
   {
+    Header: 'Status',
+    accessor: 'status',
+    Cell: ({ value }: any) => (
+      <Badge color={getShipmentStatusBadgeColor(value)}>
+        {formatShipmentStatus(value)}
+      </Badge>
+    ),
+  },
+  {
     Header: 'Name',
     accessor: (row) => formatShipmentName(row),
   },
@@ -51,15 +60,6 @@ const COLUMNS: Column<AllShipmentsQuery['listShipments'][0]>[] = [
     Header: 'Date',
     // TODO this accessor won't sort properly
     accessor: (row) => `${formatLabelMonth(row.labelMonth)} ${row.labelYear}`,
-  },
-  {
-    Header: 'Status',
-    accessor: 'status',
-    Cell: ({ value }: any) => (
-      <Badge color={getShipmentStatusBadgeColor(value)}>
-        {formatShipmentStatus(value)}
-      </Badge>
-    ),
   },
 ]
 
