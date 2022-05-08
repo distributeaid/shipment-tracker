@@ -1236,7 +1236,7 @@
   resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.7.5.tgz#2c40f81449a4e554e9fc6396910ed4843ec2be50"
   integrity sha512-igX9a37DR2ZPGYtV6suZ6whr8pTFtyHL3K/oLUotxpSVO2ASaprmAe2Dkq7tBo7CRY7MMDrAa9nuQP9/YG8FxQ==
 
-"@emotion/react@^11.1.1", "@emotion/react@^11.8.1":
+"@emotion/react@^11.8.1":
   version "11.9.0"
   resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.9.0.tgz#b6d42b1db3bd7511e7a7c4151dc8bc82e14593b8"
   integrity sha512-lBVSF5d0ceKtfKCDQJveNAtkC7ayxpVlgOohLgXqRwqWr9bOf4TZAFFyIcNngnV6xK6X4x2ZeXq7vliHkoVkxQ==
@@ -2225,16 +2225,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*":
-  version "18.0.8"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.8.tgz#a051eb380a9fbcaa404550543c58e1cf5ce4ab87"
-  integrity sha512-+j2hk9BzCOrrOSJASi5XiOyBbERk9jG5O73Ya4M0env5Ixi6vUNli4qy994AINcEF+1IEHISYFfIT4zwr++LKw==
-  dependencies:
-    "@types/prop-types" "*"
-    "@types/scheduler" "*"
-    csstype "^3.0.2"
-
-"@types/react@18.0.9":
+"@types/react@*", "@types/react@18.0.9":
   version "18.0.9"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.9.tgz#d6712a38bd6cd83469603e7359511126f122e878"
   integrity sha512-9bjbg1hJHUm4De19L1cHiW0Jvx3geel6Qczhjd0qY5VKVE2X5+x77YxAepuCwVh4vrgZJdgEJw48zrhRIeF4Nw==
@@ -10416,23 +10407,10 @@ react-scripts@4.0.3:
   optionalDependencies:
     fsevents "^2.1.3"
 
-react-select@*:
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/react-select/-/react-select-5.3.0.tgz#dc77c1f95e1037ec4cb01c5e5d6272d80be8d3f6"
-  integrity sha512-GM6Fbv1+X+kb3e5Fc4oNeyOJkCIesY/D4NBiReKlGY4RxoeztFYm3J0KREgwMaIKQqwTiuLqTlpUBY3SYw5goQ==
-  dependencies:
-    "@babel/runtime" "^7.12.0"
-    "@emotion/cache" "^11.4.0"
-    "@emotion/react" "^11.1.1"
-    "@types/react-transition-group" "^4.4.0"
-    memoize-one "^5.0.0"
-    prop-types "^15.6.0"
-    react-transition-group "^4.3.0"
-
-react-select@5.3.1:
-  version "5.3.1"
-  resolved "https://registry.yarnpkg.com/react-select/-/react-select-5.3.1.tgz#2cb651b71493e494c56f6b4ce40011669b34bd95"
-  integrity sha512-Y195MmhDoDAj/8gTDyYZU1Raf7tmZd81wxM6RkFko4pqJ4Xv0/ilqUMtSn+GYkwmSlTWeMlzh+e+t7PJgtuXPw==
+react-select@*, react-select@5.3.2:
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/react-select/-/react-select-5.3.2.tgz#ecee0d5c59ed4acb7f567f7de3c75a488d93dacb"
+  integrity sha512-W6Irh7U6Ha7p5uQQ2ZnemoCQ8mcfgOtHfw3wuMzG6FAu0P+CYicgofSLOq97BhjMx8jS+h+wwWdCBeVVZ9VqlQ==
   dependencies:
     "@babel/runtime" "^7.12.0"
     "@emotion/cache" "^11.4.0"
