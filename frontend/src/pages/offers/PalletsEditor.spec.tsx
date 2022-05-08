@@ -29,6 +29,7 @@ describe('PalletsEditor', () => {
       description: 'a group',
       groupType: GroupType.Regular,
       name: 'Group',
+      servingRegions: [],
     },
   ]
 
