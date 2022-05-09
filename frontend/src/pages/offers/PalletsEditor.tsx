@@ -7,6 +7,7 @@ import {
   PalletCreateInput,
   PalletDocument,
   PalletType,
+  ShipmentQuery,
   useCreateLineItemMutation,
   useCreatePalletMutation,
   usePalletLazyQuery,
@@ -19,6 +20,7 @@ import ViewLineItem from './ViewLineItem'
 import ViewPallet from './ViewPallet'
 interface Props {
   offer: OfferQuery['offer']
+  shipment: ShipmentQuery['shipment']
   pallets?: OfferQuery['offer']['pallets']
 }
 
@@ -28,6 +30,7 @@ interface Props {
  */
 const PalletsEditor: FunctionComponent<PropsWithChildren<Props>> = ({
   offer,
+  shipment,
   pallets = [],
 }) => {
   // TODO move this to the URL
@@ -182,6 +185,7 @@ const PalletsEditor: FunctionComponent<PropsWithChildren<Props>> = ({
             {lineItemToEditId === selectedLineItemId ? (
               <LineItemForm
                 offer={offer}
+                shipment={shipment}
                 lineItemId={selectedLineItemId}
                 palletType={
                   selectedPalletData.data?.pallet.palletType ||

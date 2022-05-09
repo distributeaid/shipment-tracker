@@ -12,7 +12,9 @@ import TextField from '../../components/forms/TextField'
 import { GROUP_TYPE_OPTIONS } from '../../data/constants'
 import { useAuth } from '../../hooks/useAuth'
 import { useCountries } from '../../hooks/useCountries'
+import { useRegions } from '../../hooks/useRegions'
 import { GroupCreateInput, GroupQuery, GroupType } from '../../types/api-types'
+import { formatRegion } from '../../utils/format'
 import { stripIdAndTypename } from '../../utils/types'
 
 interface Props {
@@ -41,6 +43,7 @@ interface Props {
 const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
   const { me: profile } = useAuth()
   const countries = useCountries()
+  const regions = useRegions()
 
   const {
     register,
@@ -56,10 +59,8 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
         // Update the values of the fields
         reset({
           ...defaults,
-          primaryLocation: {
-            ...defaults.primaryLocation,
-            country: defaults.primaryLocation.country?.countrycode,
-          },
+          country: defaults.country.countryCode,
+          servingRegions: defaults.servingRegions.map(({ id }) => id),
         })
       }
     },
@@ -72,48 +73,53 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
       input.groupType = GroupType.Regular
     }
 
-    props.onSubmit(input)
+    props.onSubmit({
+      ...input,
+      // FIXME: for some reasons, servingRegions will be `false` in no item is selected
+      servingRegions:
+        (input.servingRegions as any) === false ? [] : input.servingRegions,
+    })
   })
 
   return (
     <form onSubmit={submitForm}>
-      <TextField
-        label="Group name"
-        name="name"
-        register={register}
-        required
-        errors={errors}
-      />
-      <fieldset className="space-y-4 mt-8">
+      <fieldset className="space-y-4">
+        <TextField
+          label="Group name"
+          name="name"
+          register={register}
+          required
+          errors={errors}
+        />
         <TextArea
           label="Group description"
           name="description"
           register={register}
           errors={errors}
         />
+        {profile?.isAdmin && (
+          <SelectField
+            label="Type"
+            name="groupType"
+            options={GROUP_TYPE_OPTIONS}
+            className="mt-4"
+            required
+            register={register}
+          />
+        )}
       </fieldset>
-      {profile?.isAdmin && (
-        <SelectField
-          label="Type"
-          name="groupType"
-          options={GROUP_TYPE_OPTIONS}
-          className="mt-4"
-          required
-          register={register}
-        />
-      )}
       <fieldset className="space-y-4 mt-8">
         <legend>Location</legend>
         <TextField
-          label="City"
-          name="primaryLocation.city"
+          label="Locality"
+          name="locality"
           required
           register={register}
           errors={errors}
         />
         <SelectField
           label="Country"
-          name="primaryLocation.country"
+          name="country"
           defaultValue=""
           options={[
             {
@@ -121,9 +127,9 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
               value: '',
               disabled: true,
             },
-            ...countries.map(({ alias, shortName, countrycode }) => ({
+            ...countries.map(({ alias, shortName, countryCode }) => ({
               label: alias ?? shortName,
-              value: countrycode,
+              value: countryCode,
             })),
           ]}
           required
@@ -168,6 +174,25 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
           register={register}
           errors={errors}
         />
+      </fieldset>
+
+      <fieldset className="mt-12">
+        <legend className="font-semibold text-gray-700 mb-4">
+          Regions your group serves
+        </legend>
+        {regions.map((region) => (
+          <label
+            className="flex items-center space-x-2 cursor-pointer"
+            key={region.id}
+          >
+            <input
+              type="checkbox"
+              value={region.id}
+              {...register('servingRegions')}
+            />
+            <span>{formatRegion(region)}</span>
+          </label>
+        ))}
       </fieldset>
 
       <Button

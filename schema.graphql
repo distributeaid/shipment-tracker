@@ -2,24 +2,12 @@ scalar Date
 scalar DateTime
 scalar Currency
 
-type Location {
-  country: Country
-  city: String!
-  openLocationCode: String
-}
-
 type ContactInfo {
   name: String!
   email: String
   phone: String
   signal: String
   whatsApp: String
-}
-
-input LocationInput {
-  country: ID
-  city: String!
-  openLocationCode: String
 }
 
 input ContactInfoInput {
@@ -35,9 +23,11 @@ type Group {
   name: String!
   description: String
   groupType: GroupType!
-  primaryLocation: Location!
+  country: Country!
+  locality: String!
   primaryContact: ContactInfo!
   website: String
+  servingRegions: [Region!]!
   captainId: Int!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -47,27 +37,33 @@ input GroupCreateInput {
   name: String!
   description: String
   groupType: GroupType!
-  primaryLocation: LocationInput!
+  country: ID!
+  locality: String!
   primaryContact: ContactInfoInput!
   website: String
+  servingRegions: [ID!]
 }
 
 input GroupUpdateInput {
   name: String
   description: String
   groupType: GroupType
-  primaryLocation: LocationInput
+  country: ID
+  locality: String
   primaryContact: ContactInfoInput
   website: String
   captainId: Int
+  servingRegions: [ID!]
 }
 
 input ShipmentUpdateInput {
-  shipmentRoute: ID
+  origin: ID
+  destination: ID
   labelYear: Int
   labelMonth: Int
   sendingHubs: [Int!]
   receivingHubs: [Int!]
+  receivingGroups: [Int!]
   status: ShipmentStatus
   pricing: ShipmentPricingInput
 }
@@ -75,9 +71,7 @@ input ShipmentUpdateInput {
 type Query {
   group(id: Int!): Group!
 
-  listGroups(groupType: [GroupType!], captainId: Int): [Group!]!
-
-  shipmentRoutes: [ShipmentRoute!]!
+  listGroups(groupType: [GroupType!], captainId: Int, region: ID): [Group!]!
 
   shipment(id: Int!): Shipment!
   listShipments(status: [ShipmentStatus!]): [Shipment!]!
@@ -92,6 +86,8 @@ type Query {
   listShipmentExports(shipmentId: Int!): [ShipmentExport!]!
 
   countries: [Country!]!
+
+  regions: [Region!]!
 }
 
 type Mutation {
@@ -116,30 +112,27 @@ type Mutation {
 }
 
 input ShipmentCreateInput {
-  shipmentRoute: ID!
+  origin: ID!
+  destination: ID!
   labelYear: Int!
   labelMonth: Int!
   sendingHubs: [Int!]!
   receivingHubs: [Int!]!
+  receivingGroups: [Int!]!
   status: ShipmentStatus!
   pricing: ShipmentPricingInput
 }
 
 type Country {
-  countrycode: ID!
+  countryCode: ID!
   shortName: String!
   alias: String
 }
 
 type Region {
-  country: Country!
-  locality: String
-}
-
-type ShipmentRoute {
   id: ID!
-  from: Region!
-  to: Region!
+  country: Country!
+  locality: String!
 }
 
 enum ShipmentStatus {
@@ -156,7 +149,8 @@ enum ShipmentStatus {
 
 type Shipment {
   id: Int!
-  shipmentRoute: ShipmentRoute!
+  origin: Region!
+  destination: Region!
   # label{year,month} are for identification purposes only e.g. for deriving
   # display names like "UK-2021-03".
   labelYear: Int!
@@ -165,6 +159,7 @@ type Shipment {
   status: ShipmentStatus!
   sendingHubs: [Group!]!
   receivingHubs: [Group!]!
+  receivingGroups: [Group!]!
   pricing: ShipmentPricing
 
   # Exports are forbidden to non-admins

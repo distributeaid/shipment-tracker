@@ -2,6 +2,8 @@ import { ApolloServer } from 'apollo-server-express'
 import gql from 'graphql-tag'
 import { omit } from 'lodash'
 import { userToAuthContext } from '../authenticateRequest'
+import { countries } from '../data/countries'
+import { knownRegions } from '../data/regions'
 import Group, { GroupAttributes } from '../models/group'
 import UserAccount from '../models/user_account'
 import { sequelize } from '../sequelize'
@@ -12,10 +14,15 @@ const purgeDb = async () => sequelize.sync({ force: true })
 
 const commonGroupData = {
   groupType: GroupType.Regular,
-  primaryLocation: { country: 'FR', city: 'Calais' },
+  country: countries.FR.countryCode as keyof typeof countries,
+  locality: 'Calais',
   primaryContact: { name: 'Contact', email: 'contact@example.com' },
   website: 'http://www.example.com',
 } as const
+
+const greeceRegionIds = Object.values(knownRegions)
+  .filter(({ country }) => country.countryCode === countries.GR.countryCode)
+  .map(({ id }) => id)
 
 describe('Groups API', () => {
   describe('modifying', () => {
@@ -23,11 +30,8 @@ describe('Groups API', () => {
     const group1Params = {
       name: group1Name,
       ...commonGroupData,
-    }
-
-    const group2Params = {
-      name: 'group2',
-      ...commonGroupData,
+      // All Greece regions
+      servingRegions: greeceRegionIds,
     }
 
     const groupWithDescription = {
@@ -74,24 +78,31 @@ describe('Groups API', () => {
           $name: String!
           $description: String
           $groupType: GroupType!
-          $primaryLocation: LocationInput!
+          $country: ID!
+          $locality: String!
           $primaryContact: ContactInfoInput!
           $website: String
+          $servingRegions: [ID!]
         ) {
           addGroup(
             input: {
               name: $name
               description: $description
               groupType: $groupType
-              primaryLocation: $primaryLocation
+              country: $country
+              locality: $locality
               primaryContact: $primaryContact
               website: $website
+              servingRegions: $servingRegions
             }
           ) {
             id
             name
             description
             groupType
+            servingRegions {
+              id
+            }
           }
         }
       `
@@ -105,6 +116,9 @@ describe('Groups API', () => {
         expect(res.errors).toBeUndefined()
         expect(res?.data?.addGroup?.name).toEqual(group1Name)
         expect(res?.data?.addGroup?.id).not.toBeNull()
+        expect(res?.data?.addGroup?.servingRegions).toEqual(
+          expect.arrayContaining(greeceRegionIds.map((id) => ({ id }))),
+        )
       })
 
       it('prevents group captains from creating more than 1 group', async () => {
@@ -115,7 +129,10 @@ describe('Groups API', () => {
 
         const res = await testServer.executeOperation({
           query: ADD_GROUP,
-          variables: group2Params,
+          variables: {
+            name: 'group2',
+            ...commonGroupData,
+          },
         })
 
         expect(res.errors).not.toBeUndefined()
@@ -166,14 +183,12 @@ describe('Groups API', () => {
             name
             description
             groupType
-            primaryLocation {
-              country {
-                countrycode
-                shortName
-                alias
-              }
-              city
+            country {
+              countryCode
+              shortName
+              alias
             }
+            locality
             primaryContact {
               name
               email
@@ -192,13 +207,15 @@ describe('Groups API', () => {
             name: 'updated-contact-name',
             email: 'updated@example.com',
           },
-          primaryLocation: { country: 'US', city: 'Bellingham' },
+          country: 'US',
+          locality: 'Bellingham',
           captainId: newCaptain.id,
         }
 
         existingGroup = await Group.create({
           ...group1Params,
           captainId: captain.id,
+          servingRegions: [],
         })
       })
 
@@ -220,12 +237,10 @@ describe('Groups API', () => {
         expect(res.data?.updateGroup?.primaryContact?.email).toEqual(
           updateParams?.primaryContact?.email,
         )
-        expect(
-          res.data?.updateGroup?.primaryLocation?.country.countrycode,
-        ).toEqual(updateParams?.primaryLocation?.country)
-        expect(res.data?.updateGroup?.primaryLocation?.city).toEqual(
-          updateParams?.primaryLocation?.city,
+        expect(res.data?.updateGroup?.country.countryCode).toEqual(
+          updateParams?.country,
         )
+        expect(res.data?.updateGroup?.locality).toEqual(updateParams?.locality)
         expect(res.data?.updateGroup?.captainId).toEqual(newCaptain.id)
       })
 
@@ -358,27 +373,32 @@ describe('Groups API', () => {
         description: 'Sending Group #1',
         captainId: captain1.id,
         ...commonGroupData,
+        servingRegions: [],
       })
       sendingGroup2 = await Group.create({
         name: sendingGroup2Name,
         captainId: captain2.id,
         ...commonGroupData,
+        servingRegions: [],
       })
       receivingGroup1 = await Group.create({
         name: receivingGroup1Name,
         captainId: captain2.id,
         ...commonGroupData,
+        servingRegions: [],
       })
       receivingGroup2 = await Group.create({
         name: receivingGroup2Name,
         captainId: captain1.id,
         ...commonGroupData,
+        servingRegions: [],
       })
       daHubGroup = await Group.create({
         ...commonGroupData,
         name: daHubGroupName,
         groupType: GroupType.DaHub,
         captainId: daCaptain.id,
+        servingRegions: [],
       })
       testServer = await makeTestServer({
         context: () => ({ auth: userToAuthContext(captain1) }),
@@ -615,6 +635,34 @@ describe('Groups API', () => {
                       captain.email ===
                       `${captainName.toLowerCase()}@example.com`,
                   )
+                  .map(toGroupData),
+              ),
+            )
+          },
+        )
+
+        it.each([[greeceRegionIds[0], [sendingGroup1Name]]])(
+          'search for groups with serving region %s should yield %s',
+          async (region, expectedGroupNames) => {
+            const res = await testServer.executeOperation({
+              query: gql`
+                query listGroupsByRegion($region: ID!) {
+                  listGroups(region: $region) {
+                    id
+                    name
+                    groupType
+                  }
+                }
+              `,
+              variables: {
+                region,
+              },
+            })
+            expect(res.errors).toBeUndefined()
+            expect(res?.data?.listGroups).toEqual(
+              expect.arrayContaining(
+                (await Group.findAll())
+                  .filter(({ name }) => expectedGroupNames.includes(name))
                   .map(toGroupData),
               ),
             )

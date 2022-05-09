@@ -4,8 +4,10 @@
 import { MockedProvider } from '@apollo/react-testing'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createLineItem, createOffer } from '../../../tests/builders'
+import createLineItem from '../../../tests/builders/createLineItem'
+import createOffer from '../../../tests/builders/createOffer'
 import createPallet from '../../../tests/builders/createPallet'
+import { createShipment } from '../../../tests/builders/createShipment'
 import {
   AllGroupsMinimalDocument,
   GroupType,
@@ -15,6 +17,7 @@ import {
 import PalletsEditor from './PalletsEditor'
 
 describe('PalletsEditor', () => {
+  const shipment = createShipment({ id: 1 })
   const offer = createOffer({ id: 2, offerId: 2 })
   const pallet = createPallet({
     id: 2,
@@ -29,6 +32,7 @@ describe('PalletsEditor', () => {
       description: 'a group',
       groupType: GroupType.Regular,
       name: 'Group',
+      servingRegions: [],
     },
   ]
 
@@ -59,7 +63,11 @@ describe('PalletsEditor', () => {
   it('shows form only for the line item which is being edited', async () => {
     render(
       <MockedProvider mocks={apolloQueryMocks}>
-        <PalletsEditor offer={offer} pallets={offer.pallets} />
+        <PalletsEditor
+          shipment={shipment}
+          offer={offer}
+          pallets={offer.pallets}
+        />
       </MockedProvider>,
     )
 

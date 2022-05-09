@@ -26,6 +26,8 @@ describe('Pallets API', () => {
     captainTestServer: ApolloServer,
     otherUserTestServer: ApolloServer,
     shipment: Shipment,
+    hub1: Group,
+    hub2: Group,
     group: Group,
     offer: Offer,
     captain: UserAccount
@@ -50,20 +52,48 @@ describe('Pallets API', () => {
     adminTestServer = await makeAdminTestServer()
     otherUserTestServer = await makeTestServer()
 
-    group = await Group.create({
-      name: 'group 1',
+    hub1 = await Group.create({
+      name: 'hub 1',
       groupType: GroupType.DaHub,
-      primaryLocation: { country: 'GB', city: 'Bristol' },
+      country: 'GB',
+      locality: 'Bristol',
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
       captainId: captain.id,
+      servingRegions: [],
+    })
+    hub2 = await Group.create({
+      name: 'hub 2',
+      groupType: GroupType.DaHub,
+      country: 'FR',
+      locality: 'Bordeaux',
+      primaryContact: {
+        name: 'Second Contact',
+        email: '2ndcontact@example.com',
+      },
+      captainId: captain.id,
+      servingRegions: [],
+    })
+    group = await Group.create({
+      name: 'group 2',
+      groupType: GroupType.Regular,
+      country: 'FR',
+      locality: 'Bordeaux',
+      primaryContact: {
+        name: 'Third Contact',
+        email: '3rdcontact@example.com',
+      },
+      captainId: captain.id,
+      servingRegions: [],
     })
 
     shipment = await Shipment.create({
-      shipmentRoute: 'UkToCs',
+      origin: 'uk',
+      destination: 'greece',
       labelYear: 2020,
       labelMonth: 1,
-      sendingHubs: [group],
-      receivingHubs: [group],
+      sendingHubs: [hub1],
+      receivingHubs: [hub2],
+      receivingGroups: [group],
       status: ShipmentStatus.Open,
     })
 

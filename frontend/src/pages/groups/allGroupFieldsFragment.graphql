@@ -3,14 +3,11 @@ fragment AllGroupFields on Group {
   name
   description
   groupType
-  primaryLocation {
-    city
-    country {
-      countrycode
-      shortName
-      alias
-    }
-    openLocationCode
+  locality
+  country {
+    countryCode
+    shortName
+    alias
   }
   primaryContact {
     name
@@ -18,5 +15,14 @@ fragment AllGroupFields on Group {
     whatsApp
     phone
     signal
+  }
+  servingRegions {
+    id
+    country {
+      countryCode
+      shortName
+      alias
+    }
+    locality
   }
 }

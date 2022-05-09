@@ -6,10 +6,6 @@ import { Static, TSchema, Type } from '@sinclair/typebox'
 import { countries } from '../data/countries'
 import { currencyCodes } from './currency-codes'
 
-export const OpenLocationCode = Type.RegEx(
-  /^[23456789C][23456789CFGHJMPQRV][23456789CFGHJMPQRVWX]{6}\+[23456789CFGHJMPQRVWX]{2,3}/i,
-)
-
 export const PhoneNumber = Type.RegEx(/^\+[1-9][0-9]+$/, {
   title: 'phone number',
 })
@@ -41,7 +37,7 @@ export const NonEmptyShortString = NonEmptyLimitedString({
 
 export type TwoLetterCountryCode = Static<typeof TwoLetterCountryCode>
 export const TwoLetterCountryCode = Type.Union(
-  countries.map(({ countrycode }) => Type.Literal(countrycode)),
+  Object.values(countries).map(({ countryCode }) => Type.Literal(countryCode)),
   { title: 'ISO 3166 country code' },
 )
 

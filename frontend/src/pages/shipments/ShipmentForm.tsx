@@ -15,7 +15,7 @@ import InlineError from '../../components/forms/InlineError'
 import Label from '../../components/forms/Label'
 import SelectField from '../../components/forms/SelectField'
 import { MONTH_OPTIONS, SHIPMENT_STATUS_OPTIONS } from '../../data/constants'
-import { useShipmentRoutes } from '../../hooks/useShipmentRoutes'
+import { useRegions } from '../../hooks/useRegions'
 import {
   GroupType,
   ShipmentCreateInput,
@@ -23,6 +23,7 @@ import {
   useAllGroupsMinimalQuery,
 } from '../../types/api-types'
 import { arraysOverlap } from '../../utils/arraysOverlap'
+import { formatRegion } from '../../utils/format'
 
 interface Props {
   /**
@@ -56,36 +57,26 @@ const YEAR_OPTIONS = _range(
 
 const DEFAULT_MONTH = (new Date().getMonth() + 2) % 12
 
-type HubSelectOption = {
-  label: string
-  value: number
-}
-
 const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
-  const [hubs, setHubs] = useState<HubSelectOption[]>([])
   const [isExistingShipment, setIsExistingShipment] = useState(false)
-  const shipmentRoutes = useShipmentRoutes()
+  const regions = useRegions()
 
   // Load the list of groups
-  const { data: groups, loading: hubListIsLoading } = useAllGroupsMinimalQuery({
-    variables: { groupType: GroupType.DaHub },
+  const { data: groupsAndHubs } = useAllGroupsMinimalQuery({
+    variables: {},
   })
 
-  // When the groups are loaded, organize them by type so we can present them
-  // in the form
-  useEffect(
-    function organizeGroups() {
-      if (groups && groups.listGroups) {
-        setHubs(
-          groups.listGroups.map((group) => ({
-            label: group.name,
-            value: group.id,
-          })),
-        )
-      }
-    },
-    [hubListIsLoading, groups],
-  )
+  const hubs = (
+    groupsAndHubs?.listGroups.filter(
+      ({ groupType }) => groupType === GroupType.DaHub,
+    ) ?? []
+  ).map(({ id, name }) => ({ label: name, value: id }))
+
+  const groups = (
+    groupsAndHubs?.listGroups.filter(
+      ({ groupType }) => groupType === GroupType.Regular,
+    ) ?? []
+  ).map(({ id, name }) => ({ label: name, value: id }))
 
   const {
     register,
@@ -106,11 +97,15 @@ const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
       if (props.defaultValues) {
         reset({
           ...props.defaultValues.shipment,
-          shipmentRoute: props.defaultValues.shipment.shipmentRoute.id,
+          origin: props.defaultValues.shipment.origin.id,
+          destination: props.defaultValues.shipment.destination.id,
           sendingHubs: props.defaultValues.shipment.sendingHubs.map(
             ({ id }) => id,
           ),
           receivingHubs: props.defaultValues.shipment.receivingHubs.map(
+            ({ id }) => id,
+          ),
+          receivingGroups: props.defaultValues.shipment.receivingGroups.map(
             ({ id }) => id,
           ),
         })
@@ -182,12 +177,37 @@ const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
         />
       )}
       <SelectField
-        options={shipmentRoutes.map((route) => ({
-          label: route.label,
-          value: route.id,
-        }))}
-        label="Shipping route"
-        name="shipmentRoute"
+        options={[
+          {
+            label: 'Pick an origin region',
+            value: '',
+            disabled: true,
+          },
+          ...regions.map((region) => ({
+            label: formatRegion(region),
+            value: region.id,
+          })),
+        ]}
+        label="Origin region"
+        name="origin"
+        register={register}
+        required
+        errors={errors}
+      />
+      <SelectField
+        options={[
+          {
+            label: 'Pick an destination region',
+            value: '',
+            disabled: true,
+          },
+          ...regions.map((region) => ({
+            label: formatRegion(region),
+            value: region.id,
+          })),
+        ]}
+        label="Destination"
+        name="destination"
         register={register}
         required
         errors={errors}
@@ -261,7 +281,29 @@ const ShipmentForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
           )}
         />
       </div>
-
+      <div>
+        <Label>Receiving groups</Label>
+        <ErrorMessage
+          name="receivingGroups"
+          errors={errors || {}}
+          as={InlineError}
+        />
+        <Controller
+          control={control}
+          name="receivingGroups"
+          render={({ field }) => (
+            <Select
+              onChange={(value) => field.onChange(value.map((c) => c.value))}
+              options={groups}
+              isMulti
+              value={groups.filter((groups) =>
+                field.value?.includes(groups.value),
+              )}
+              id="new-shipment-receivingGroups"
+            />
+          )}
+        />
+      </div>
       <div className="flex items-center">
         <Button variant="primary" type="submit" disabled={props.isLoading}>
           {props.submitButtonLabel}

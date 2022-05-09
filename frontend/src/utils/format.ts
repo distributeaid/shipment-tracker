@@ -1,18 +1,16 @@
 import { BadgeColor } from '../components/Badge'
-import { SelectOption } from '../components/forms/SelectField'
 import {
   LINE_ITEM_CATEGORY_OPTIONS,
   MONTHS,
   SHIPMENT_STATUS_OPTIONS,
 } from '../data/constants'
-import { formatShipmentRouteToID } from '../hooks/useShipmentRoutes'
 import {
-  AllGroupsMinimalQuery,
   GroupType,
   LineItem,
   LineItemCategory,
   LineItemContainerType,
   PalletType,
+  Region,
   Shipment,
   ShipmentQuery,
   ShipmentStatus,
@@ -89,13 +87,11 @@ export function formatShipmentName(
     | Shipment
     | Pick<
         ShipmentQuery['shipment'],
-        'labelMonth' | 'labelYear' | 'shipmentRoute'
+        'labelMonth' | 'labelYear' | 'origin' | 'destination'
       >,
 ) {
   const month = shipment.labelMonth.toString().padStart(2, '0')
-  return `${formatShipmentRouteToID(shipment.shipmentRoute)}-${
-    shipment.labelYear
-  }-${month}`
+  return `${shipment.origin.id}-${shipment.destination.id}-${shipment.labelYear}-${month}`
 }
 
 export function formatShipmentStatus(shipmentStatus: ShipmentStatus) {
@@ -104,6 +100,9 @@ export function formatShipmentStatus(shipmentStatus: ShipmentStatus) {
   )
   return matchingStatus?.label || shipmentStatus
 }
+
+export const formatRegion = (region: Region): string =>
+  `${region.country.alias ?? region.country.shortName} (${region.locality})`
 
 export function formatContainerType(
   type: LineItemContainerType,
@@ -150,12 +149,6 @@ export function getContainerCountLabel(containerType: LineItemContainerType) {
 export const kilosToGrams = (kilos: number) => kilos * 1000
 
 export const gramsToKilos = (grams: number) => grams / 1000
-
-export function groupToSelectOption(
-  group: AllGroupsMinimalQuery['listGroups'][0],
-): SelectOption {
-  return { value: group.id, label: group.name }
-}
 
 export const formatListOfHubs = (hubs: { name: string }[]): string =>
   hubs.map(({ name }) => name).join(', ')

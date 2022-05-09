@@ -7,7 +7,8 @@ import ShipmentExport from './models/shipment_export'
 const displayName = (shipment: Shipment): string =>
   [
     'Shipment',
-    shipment.shipmentRoute,
+    shipment.origin,
+    shipment.destination,
     shipment.labelYear,
     shipment.labelMonth.toString().padStart(2, '0'),
   ].join('-')

@@ -1,0 +1,11 @@
+query AllRegions {
+  regions {
+    id
+    country {
+      countryCode
+      shortName
+      alias
+    }
+    locality
+  }
+}

@@ -72,13 +72,13 @@ jobs:
         working-directory: frontend
         run: npx playwright test tests/playwright/unauthenticated
 
-      - name: Run tests (admin workflows)
-        working-directory: frontend
-        run: npx playwright test tests/playwright/authenticated/admin
-
       - name: Run tests (user onboarding)
         working-directory: frontend
         run: npx playwright test tests/playwright/authenticated/user/onboarding
+
+      - name: Run tests (admin workflows)
+        working-directory: frontend
+        run: npx playwright test tests/playwright/authenticated/admin
 
       - name: Run tests (user offer creation)
         working-directory: frontend

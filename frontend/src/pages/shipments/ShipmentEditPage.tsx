@@ -33,11 +33,13 @@ const ShipmentEditPage: FunctionComponent = () => {
     setError(undefined)
 
     const formattedInput = _pick(input, [
-      'shipmentRoute',
+      'origin',
+      'destination',
       'labelYear',
       'labelMonth',
       'sendingHubs',
       'receivingHubs',
+      'receivingGroups',
       'status',
       'pricing',
     ])

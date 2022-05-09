@@ -4,7 +4,6 @@ import Badge from '../../components/Badge'
 import ReadOnlyField from '../../components/forms/ReadOnlyField'
 import InternalLink from '../../components/InternalLink'
 import Spinner from '../../components/Spinner'
-import { formatShipmentRouteToLabel } from '../../hooks/useShipmentRoutes'
 import { useShipmentQuery } from '../../types/api-types'
 import {
   formatLabelMonth,
@@ -62,13 +61,6 @@ const ShipmentDetails: FunctionComponent<PropsWithChildren<Props>> = ({
         </ReadOnlyField>
       </div>
       <h2 className="font-semibold mt-6 mb-4">Itinerary</h2>
-      <p className="text-gray-600 mb-4">
-        This shipment follows the{' '}
-        <span className="font-semibold text-gray-800">
-          {formatShipmentRouteToLabel(shipmentData.shipmentRoute)}
-        </span>{' '}
-        route.
-      </p>
       <div className="md:flex items-center">
         <div className="border border-gray-200 p-4 md:p-6 rounded flex-shrink-0 space-y-2">
           <div className="uppercase text-xs text-gray-500 mb-2">From</div>
@@ -76,12 +68,31 @@ const ShipmentDetails: FunctionComponent<PropsWithChildren<Props>> = ({
             <div key={hub.id}>
               <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
               <div className="text-gray-600">
-                {hub.primaryLocation.city}
-                {hub.primaryLocation.country && (
+                {hub.locality}
+                {hub.country && (
                   <>
                     {', '}
-                    {hub.primaryLocation.country.alias ??
-                      hub.primaryLocation.country.shortName}
+                    {hub.country.alias ?? hub.country.shortName}
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="text-2xl text-gray-500 p-2 md:p-4 transform md:-rotate-90 text-center">
+          ↓
+        </div>
+        <div className="border border-gray-200 p-4 md:p-6 rounded flex-shrink-0 space-y-2">
+          <div className="uppercase text-xs text-gray-500 mb-2">Via</div>
+          {shipmentData.receivingHubs.map((hub) => (
+            <div key={hub.id}>
+              <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
+              <div className="text-gray-600">
+                {hub.locality}
+                {hub.country && (
+                  <>
+                    {', '}
+                    {hub.country.alias ?? hub.country.shortName}
                   </>
                 )}
               </div>
@@ -93,16 +104,17 @@ const ShipmentDetails: FunctionComponent<PropsWithChildren<Props>> = ({
         </div>
         <div className="border border-gray-200 p-4 md:p-6 rounded flex-shrink-0 space-y-2">
           <div className="uppercase text-xs text-gray-500 mb-2">To</div>
-          {shipmentData.receivingHubs.map((hub) => (
-            <div key={hub.id}>
-              <div className="text-lg md:text-xl text-gray-800">{hub.name}</div>
+          {shipmentData.receivingGroups.map((group) => (
+            <div key={group.id}>
+              <div className="text-lg md:text-xl text-gray-800">
+                {group.name}
+              </div>
               <div className="text-gray-600">
-                {hub.primaryLocation.city}
-                {hub.primaryLocation.country && (
+                {group.locality}
+                {group.country && (
                   <>
                     {', '}
-                    {hub.primaryLocation.country.alias ??
-                      hub.primaryLocation.country.shortName}
+                    {group.country.alias ?? group.country.shortName}
                   </>
                 )}
               </div>

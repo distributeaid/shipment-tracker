@@ -1,15 +1,17 @@
 import { Type } from '@sinclair/typebox'
 import { ApolloError, ForbiddenError, UserInputError } from 'apollo-server'
 import { strict as assert } from 'assert'
-import { FindOptions, Op } from 'sequelize'
+import { Attributes, Op, WhereOptions } from 'sequelize'
+import { countries } from '../data/countries'
 import { getCountryByCountryCode } from '../data/getCountryByCountryCode'
+import { knownRegions } from '../data/regions'
 import { Contact } from '../input-validation/Contact'
 import { validateIdInput } from '../input-validation/idInputSchema'
-import { Location } from '../input-validation/Location'
 import {
   ID,
   NonEmptyShortString,
   OptionalValueOrUnset,
+  TwoLetterCountryCode,
   URI,
 } from '../input-validation/types'
 import { validateWithJSONSchema } from '../input-validation/validateWithJSONSchema'
@@ -26,13 +28,8 @@ export const dbToGraphQL = (group: Group): ResolversTypes['Group'] => ({
   ...group.get({ plain: true }),
   createdAt: group.createdAt,
   updatedAt: group.updatedAt,
-  primaryLocation: {
-    ...group.primaryLocation,
-    country:
-      group.primaryLocation.country === undefined
-        ? undefined
-        : getCountryByCountryCode(group.primaryLocation.country),
-  },
+  country: getCountryByCountryCode(group.country),
+  servingRegions: group.servingRegions?.map((id) => knownRegions[id]) ?? [],
 })
 
 // Group query resolvers
@@ -41,6 +38,12 @@ const listGroupsInput = Type.Object(
   {
     groupType: Type.Optional(Type.Array(Type.Enum(GroupType))),
     captainId: Type.Optional(ID),
+    region: Type.Optional(
+      Type.Union(
+        Object.keys(knownRegions).map((id) => Type.Literal(id)),
+        { title: 'region ID' },
+      ),
+    ),
   },
   { additionalProperties: false },
 )
@@ -53,25 +56,27 @@ const listGroups: QueryResolvers['listGroups'] = async (_, input) => {
     throw new UserInputError('List groups arguments invalid', valid.errors)
   }
 
-  const query = {} as FindOptions<Group['_attributes']>
+  const { groupType, captainId, region } = valid.value
 
-  const { groupType, captainId } = valid.value
+  const where: WhereOptions<Attributes<Group>> = {}
 
-  if (groupType !== undefined || captainId !== undefined) {
-    query.where = {}
-
-    if (groupType !== undefined) {
-      query.where.groupType = {
-        [Op.in]: groupType,
-      }
-    }
-
-    if (captainId !== undefined) {
-      query.where.captainId = captainId
+  if (groupType !== undefined) {
+    where.groupType = {
+      [Op.in]: groupType,
     }
   }
 
-  const groups = await Group.findAll(query)
+  if (captainId !== undefined) {
+    where.captainId = captainId
+  }
+
+  if (region !== undefined) {
+    where.servingRegions = {
+      [Op.contained]: [region],
+    }
+  }
+
+  const groups = await Group.findAll({ where })
 
   return groups.map(dbToGraphQL)
 }
@@ -104,10 +109,19 @@ export const addGroupInputSchema = Type.Object(
   {
     name: NonEmptyShortString,
     groupType: Type.Enum(GroupType),
-    primaryLocation: Location,
+    locality: NonEmptyShortString,
+    country: TwoLetterCountryCode,
     primaryContact: Contact,
     website: Type.Optional(URI),
     description: Description,
+    servingRegions: Type.Optional(
+      Type.Array(
+        Type.Union(
+          Object.keys(knownRegions).map((id) => Type.Literal(id)),
+          { title: 'Region ID' },
+        ),
+      ),
+    ),
   },
   { additionalProperties: false },
 )
@@ -146,7 +160,12 @@ const addGroup: MutationResolvers['addGroup'] = async (
 
   const group = await Group.create({
     ...valid.value,
+    country: valid.value.country as keyof typeof countries,
     captainId: context.auth.userId,
+    servingRegions:
+      (valid.value.servingRegions as
+        | Array<keyof typeof knownRegions>
+        | undefined) ?? [],
   })
 
   return dbToGraphQL(group)
@@ -158,11 +177,20 @@ export const updateGroupInput = Type.Object(
   {
     name: Type.Optional(NonEmptyShortString),
     groupType: Type.Optional(Type.Enum(GroupType)),
-    primaryLocation: Type.Optional(Location),
+    locality: Type.Optional(NonEmptyShortString),
+    country: Type.Optional(TwoLetterCountryCode),
     primaryContact: Type.Optional(Contact),
     website: OptionalValueOrUnset(URI),
     captainId: Type.Optional(ID),
     description: Description,
+    servingRegions: Type.Optional(
+      Type.Array(
+        Type.Union(
+          Object.keys(knownRegions).map((id) => Type.Literal(id)),
+          { title: 'Region ID' },
+        ),
+      ),
+    ),
   },
   { additionalProperties: false },
 )
@@ -210,8 +238,11 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
   if (valid.value.primaryContact !== undefined) {
     updateAttributes.primaryContact = valid.value.primaryContact
   }
-  if (valid.value.primaryLocation !== undefined) {
-    updateAttributes.primaryLocation = valid.value.primaryLocation
+  if (valid.value.country !== undefined) {
+    updateAttributes.country = valid.value.country as keyof typeof countries
+  }
+  if (valid.value.locality !== undefined) {
+    updateAttributes.locality = valid.value.locality
   }
 
   if (valid.value.website !== undefined) {
@@ -228,6 +259,12 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
     }
 
     updateAttributes.captainId = captain.id
+  }
+
+  if (valid.value.servingRegions !== undefined) {
+    updateAttributes.servingRegions = valid.value.servingRegions as Array<
+      keyof typeof knownRegions
+    >
   }
 
   const updatedGroup = await group.update(updateAttributes)

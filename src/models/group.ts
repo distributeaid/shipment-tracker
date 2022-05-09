@@ -10,7 +10,8 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript'
 import { countries } from '../data/countries'
-import { ContactInfo, GroupType, Location } from '../server-internal-types'
+import { knownRegions } from '../data/regions'
+import { ContactInfo, GroupType } from '../server-internal-types'
 import UserAccount from './user_account'
 
 export interface GroupAttributes {
@@ -18,12 +19,12 @@ export interface GroupAttributes {
   name: string
   description?: string | null
   groupType: GroupType
-  primaryLocation: Omit<Location, 'country'> & {
-    country?: typeof countries[number]['countrycode']
-  }
+  country: keyof typeof countries
+  locality: string
   primaryContact: ContactInfo
   website?: string | null
   captainId: number
+  servingRegions: Array<keyof typeof knownRegions>
 }
 
 export interface GroupCreationAttributes
@@ -47,8 +48,11 @@ export default class Group extends Model<
   @Column(DataType.STRING)
   public groupType!: GroupType
 
-  @Column(DataType.JSONB)
-  public primaryLocation!: GroupAttributes['primaryLocation']
+  @Column(DataType.STRING)
+  public country!: GroupAttributes['country']
+
+  @Column(DataType.STRING)
+  public locality!: GroupAttributes['locality']
 
   @Column(DataType.JSONB)
   public primaryContact!: ContactInfo
@@ -62,6 +66,9 @@ export default class Group extends Model<
 
   @BelongsTo(() => UserAccount, 'captainId')
   public captain!: UserAccount
+
+  @Column(DataType.ARRAY(DataType.ENUM(...Object.keys(knownRegions))))
+  public servingRegions!: GroupAttributes['servingRegions']
 
   @CreatedAt
   @Column

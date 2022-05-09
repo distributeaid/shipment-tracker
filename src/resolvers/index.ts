@@ -19,16 +19,17 @@ import {
   palletLineItems,
   updatePallet,
 } from './pallet'
+import { listRegions } from './regions'
 import {
   addShipment,
   listShipments,
+  receivingGroups,
   receivingHubs,
   sendingHubs,
   shipment,
   shipmentExports,
   updateShipment,
 } from './shipment'
-import { listShipmentRoutes } from './shipmentRoutes'
 import { exportShipment, listShipmentExports } from './shipment_exports'
 
 const resolvers: Resolvers = {
@@ -47,7 +48,7 @@ const resolvers: Resolvers = {
     lineItem,
     listShipmentExports,
     countries: listCountries,
-    shipmentRoutes: listShipmentRoutes,
+    regions: listRegions,
   },
 
   // Mutation Resolvers
@@ -72,6 +73,7 @@ const resolvers: Resolvers = {
   Shipment: {
     sendingHubs,
     receivingHubs,
+    receivingGroups,
     exports: shipmentExports,
   },
 

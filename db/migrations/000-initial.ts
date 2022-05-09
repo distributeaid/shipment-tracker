@@ -1,4 +1,6 @@
 import { DataTypes, QueryInterface, Sequelize } from 'sequelize'
+import { countries } from '../../src/data/countries'
+import { knownRegions } from '../../src/data/regions'
 import {
   DangerousGoods,
   GroupType,
@@ -123,9 +125,19 @@ export const up = async (queryInterface: QueryInterface) => {
         isIn: [[GroupType.Regular, GroupType.DaHub]],
       },
     },
-    primaryLocation: {
-      type: DataTypes.JSONB,
+    country: {
+      type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        isIn: [Object.values(countries).map(({ countryCode }) => countryCode)],
+      },
+    },
+    locality: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: [1, 255],
+      },
     },
     primaryContact: {
       type: DataTypes.JSONB,
@@ -137,6 +149,16 @@ export const up = async (queryInterface: QueryInterface) => {
         isUrl: true,
       },
     },
+    description: {
+      type: DataTypes.TEXT,
+    },
+    servingRegions: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false,
+      validate: {
+        isIn: [Object.values(knownRegions).map(({ id }) => id)],
+      },
+    },
     ...autoTimestampFields,
   })
   await queryInterface.addIndex(`Groups`, ['captainId'], {
@@ -145,7 +167,11 @@ export const up = async (queryInterface: QueryInterface) => {
   // Shipment
   await queryInterface.createTable(`Shipments`, {
     id,
-    shipmentRoute: {
+    origin: {
+      allowNull: false,
+      type: DataTypes.STRING,
+    },
+    destination: {
       allowNull: false,
       type: DataTypes.STRING,
     },
@@ -207,6 +233,27 @@ export const up = async (queryInterface: QueryInterface) => {
     unique: false,
   })
   await queryInterface.addIndex(`ShipmentReceivingHubs`, ['hubId'], {
+    unique: false,
+  })
+  // ShipmentReceivingGroups
+  await queryInterface.createTable(`ShipmentReceivingGroups`, {
+    id,
+    shipmentId: {
+      type: DataTypes.INTEGER,
+      references: { model: `Shipments`, key: 'id' },
+      allowNull: false,
+    },
+    groupId: {
+      type: DataTypes.INTEGER,
+      references: { model: `Groups`, key: 'id' },
+      allowNull: false,
+    },
+    ...autoTimestampFields,
+  })
+  await queryInterface.addIndex(`ShipmentReceivingGroups`, ['shipmentId'], {
+    unique: false,
+  })
+  await queryInterface.addIndex(`ShipmentReceivingGroups`, ['groupId'], {
     unique: false,
   })
   // ShipmentSendingHub
@@ -287,6 +334,13 @@ export const up = async (queryInterface: QueryInterface) => {
       type: DataTypes.STRING,
       validate: {
         isIn: [[PalletType.Standard, PalletType.Euro, PalletType.Custom]],
+      },
+    },
+    palletCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 1,
       },
     },
     paymentStatus: {

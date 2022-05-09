@@ -16,8 +16,9 @@ import { createGroup, createShipment, TypedGraphQLResponse } from './helpers'
 describe('Shipments API', () => {
   let testServer: ApolloServer,
     adminTestServer: ApolloServer,
-    group1: Group,
-    group2: Group
+    hub1: Group,
+    hub2: Group,
+    group: Group
 
   // Shipments cannot be created in the past, so we use the following year
   const nextYear = new Date().getFullYear() + 1
@@ -30,20 +31,35 @@ describe('Shipments API', () => {
     testServer = await makeTestServer()
     adminTestServer = await makeAdminTestServer()
 
-    group1 = await createGroup({
-      name: 'group 1',
+    hub1 = await createGroup({
+      name: 'hub 1',
       groupType: GroupType.DaHub,
-      primaryLocation: { country: 'GB', city: 'Bristol' },
+      country: 'GB',
+      locality: 'Bristol',
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
+      servingRegions: [],
     })
-    group2 = await createGroup({
-      name: 'group 2',
-      groupType: GroupType.Regular,
-      primaryLocation: { country: 'FR', city: 'Bordeaux' },
+    hub2 = await createGroup({
+      name: 'hub 2',
+      groupType: GroupType.DaHub,
+      country: 'FR',
+      locality: 'Bordeaux',
       primaryContact: {
         name: 'Second Contact',
         email: '2ndcontact@example.com',
       },
+      servingRegions: [],
+    })
+    group = await createGroup({
+      name: 'group 1',
+      groupType: GroupType.Regular,
+      country: 'FR',
+      locality: 'Bordeaux',
+      primaryContact: {
+        name: 'Third Contact',
+        email: '3rdcontact@example.com',
+      },
+      servingRegions: [],
     })
   })
 
@@ -51,7 +67,10 @@ describe('Shipments API', () => {
     mutation ($input: ShipmentCreateInput!) {
       addShipment(input: $input) {
         id
-        shipmentRoute {
+        origin {
+          id
+        }
+        destination {
           id
         }
         labelYear
@@ -75,11 +94,13 @@ describe('Shipments API', () => {
         query: ADD_SHIPMENT,
         variables: {
           input: {
-            shipmentRoute: 'UkToFr',
+            origin: 'uk',
+            destination: 'calais',
             labelYear: nextYear,
             labelMonth: 1,
-            sendingHubs: [group1.id],
-            receivingHubs: [group2.id],
+            sendingHubs: [hub1.id],
+            receivingHubs: [hub2.id],
+            receivingGroups: [group.id],
             status: ShipmentStatus.Open,
           },
         },
@@ -102,11 +123,13 @@ describe('Shipments API', () => {
         query: ADD_SHIPMENT,
         variables: {
           input: {
-            shipmentRoute: 'UkToFr',
+            origin: 'uk',
+            destination: 'calais',
             labelYear: nextYear,
             labelMonth: 1,
-            sendingHubs: [group1.id],
-            receivingHubs: [group2.id],
+            sendingHubs: [hub1.id],
+            receivingHubs: [hub2.id],
+            receivingGroups: [group.id],
             status: ShipmentStatus.Open,
           },
         },
@@ -115,16 +138,17 @@ describe('Shipments API', () => {
       }>
 
       expect(res.errors).toBeUndefined()
-      expect(res?.data?.addShipment?.shipmentRoute.id).toEqual('UkToFr')
+      expect(res?.data?.addShipment?.origin.id).toEqual('uk')
+      expect(res?.data?.addShipment?.destination.id).toEqual('calais')
       expect(res?.data?.addShipment?.labelYear).toEqual(nextYear)
       expect(res?.data?.addShipment?.labelMonth).toEqual(1)
       expect(res?.data?.addShipment?.sendingHubs).toHaveLength(1)
       expect(res?.data?.addShipment?.sendingHubs[0]).toMatchObject({
-        id: group1.id,
+        id: hub1.id,
       })
       expect(res?.data?.addShipment?.receivingHubs).toHaveLength(1)
       expect(res?.data?.addShipment?.receivingHubs[0]).toMatchObject({
-        id: group2.id,
+        id: hub2.id,
       })
     })
   })
@@ -150,11 +174,13 @@ describe('Shipments API', () => {
 
     beforeEach(async () => {
       shipment = await createShipment({
-        shipmentRoute: 'UkToFr',
+        origin: 'uk',
+        destination: 'calais',
         labelYear: nextYear,
         labelMonth: 1,
-        sendingHubs: [group1.id],
-        receivingHubs: [group2.id],
+        sendingHubs: [hub1.id],
+        receivingHubs: [hub2.id],
+        receivingGroups: [hub2.id],
         status: ShipmentStatus.Open,
       })
     })
@@ -264,36 +290,42 @@ describe('Shipments API', () => {
     })
 
     describe('update sending and receiving hubs', () => {
-      let group3: Group, group4: Group, group5: Group
+      let hub3: Group, hub4: Group, hub5: Group
       let shipmentId: number
 
       beforeEach(async () => {
-        group3 = await createGroup({
+        hub3 = await createGroup({
           name: 'group 3',
-          groupType: GroupType.Regular,
-          primaryLocation: { country: 'DE', city: 'Berlin' },
+          groupType: GroupType.DaHub,
+          country: 'DE',
+          locality: 'Berlin',
           primaryContact: {
             name: 'Third Contact',
             email: '3rdcontact@example.com',
           },
+          servingRegions: [],
         })
-        group4 = await createGroup({
+        hub4 = await createGroup({
           name: 'group 4',
-          groupType: GroupType.Regular,
-          primaryLocation: { country: 'SE', city: 'Lund' },
+          groupType: GroupType.DaHub,
+          country: 'SE',
+          locality: 'Lund',
           primaryContact: {
             name: 'Fourth Contact',
             email: '4thcontact@example.com',
           },
+          servingRegions: [],
         })
-        group5 = await createGroup({
+        hub5 = await createGroup({
           name: 'group 5',
-          groupType: GroupType.Regular,
-          primaryLocation: { country: 'NO', city: 'Trondheim' },
+          groupType: GroupType.DaHub,
+          country: 'NO',
+          locality: 'Trondheim',
           primaryContact: {
             name: 'Fifth Contact',
             email: '5thcontact@example.com',
           },
+          servingRegions: [],
         })
 
         // Create the shipment with two sending and receiving groups
@@ -302,11 +334,13 @@ describe('Shipments API', () => {
             query: ADD_SHIPMENT,
             variables: {
               input: {
-                shipmentRoute: 'UkToFr',
+                origin: 'uk',
+                destination: 'calais',
                 labelYear: nextYear,
                 labelMonth: 1,
-                sendingHubs: [group1.id, group2.id],
-                receivingHubs: [group3.id, group4.id],
+                sendingHubs: [hub1.id, hub2.id],
+                receivingHubs: [hub3.id, hub4.id],
+                receivingGroups: [group.id],
                 status: ShipmentStatus.Open,
               },
             },
@@ -320,8 +354,8 @@ describe('Shipments API', () => {
           variables: {
             id: shipmentId,
             input: {
-              sendingHubs: [group3.id, group5.id],
-              receivingHubs: [group3.id, group5.id],
+              sendingHubs: [hub3.id, hub5.id],
+              receivingHubs: [hub3.id, hub5.id],
             },
           },
         })
@@ -338,8 +372,8 @@ describe('Shipments API', () => {
           variables: {
             id: shipmentId,
             input: {
-              sendingHubs: [group1.id, 42, 666],
-              receivingHubs: [group3.id, group5.id],
+              sendingHubs: [hub1.id, 42, 666],
+              receivingHubs: [hub3.id, hub5.id],
             },
           },
         })
@@ -357,8 +391,8 @@ describe('Shipments API', () => {
           variables: {
             id: shipmentId,
             input: {
-              sendingHubs: [group3.id, group5.id],
-              receivingHubs: [group4.id, group1.id],
+              sendingHubs: [hub3.id, hub5.id],
+              receivingHubs: [hub4.id, hub1.id],
             },
           },
         })
@@ -383,10 +417,10 @@ describe('Shipments API', () => {
           updatedShipment?.receivingHubs.map(({ id }) => id) ?? []
         expect(sendingHubIds).toHaveLength(2)
         expect(receivingHubIds).toHaveLength(2)
-        expect(sendingHubIds).toContain(group5.id)
-        expect(sendingHubIds).toContain(group3.id)
-        expect(receivingHubIds).toContain(group1.id)
-        expect(receivingHubIds).toContain(group4.id)
+        expect(sendingHubIds).toContain(hub5.id)
+        expect(sendingHubIds).toContain(hub3.id)
+        expect(receivingHubIds).toContain(hub1.id)
+        expect(receivingHubIds).toContain(hub4.id)
       })
     })
   })
@@ -413,20 +447,24 @@ describe('Shipments API', () => {
 
     beforeEach(async () => {
       shipment1 = await createShipment({
-        shipmentRoute: 'UkToFr',
+        origin: 'uk',
+        destination: 'calais',
         labelYear: nextYear,
         labelMonth: 1,
-        sendingHubs: [group1.id],
-        receivingHubs: [group2.id],
+        sendingHubs: [hub1.id],
+        receivingHubs: [hub2.id],
+        receivingGroups: [group.id],
         status: ShipmentStatus.Open,
       })
 
       shipment2 = await createShipment({
-        shipmentRoute: 'UkToFr',
+        origin: 'uk',
+        destination: 'calais',
         labelYear: nextYear + 1,
         labelMonth: 6,
-        sendingHubs: [group2.id],
-        receivingHubs: [],
+        sendingHubs: [hub2.id],
+        receivingGroups: [group.id],
+        receivingHubs: [hub1.id],
         status: ShipmentStatus.InProgress,
       })
     })
@@ -446,14 +484,14 @@ describe('Shipments API', () => {
             status: shipment1.status,
             sendingHubs: [
               {
-                id: group1.id,
-                name: group1.name,
+                id: hub1.id,
+                name: hub1.name,
               },
             ],
             receivingHubs: [
               {
-                id: group2.id,
-                name: group2.name,
+                id: hub2.id,
+                name: hub2.name,
               },
             ],
           },
@@ -480,14 +518,14 @@ describe('Shipments API', () => {
             status: shipment1.status,
             sendingHubs: [
               {
-                id: group1.id,
-                name: group1.name,
+                id: hub1.id,
+                name: hub1.name,
               },
             ],
             receivingHubs: [
               {
-                id: group2.id,
-                name: group2.name,
+                id: hub2.id,
+                name: hub2.name,
               },
             ],
           },
@@ -518,20 +556,24 @@ describe('Shipments API', () => {
 
     beforeEach(async () => {
       shipment = await createShipment({
-        shipmentRoute: 'UkToFr',
+        origin: 'uk',
+        destination: 'calais',
         labelYear: nextYear,
         labelMonth: 1,
-        sendingHubs: [group1.id],
-        receivingHubs: [group2.id],
+        sendingHubs: [hub1.id],
+        receivingHubs: [hub2.id],
+        receivingGroups: [group.id],
         status: ShipmentStatus.Open,
       })
 
       adminOnlyShipment = await createShipment({
-        shipmentRoute: 'UkToFr',
+        origin: 'uk',
+        destination: 'calais',
         labelYear: nextYear,
         labelMonth: 1,
-        sendingHubs: [group1.id],
-        receivingHubs: [group2.id],
+        sendingHubs: [hub1.id],
+        receivingHubs: [hub2.id],
+        receivingGroups: [group.id],
         status: ShipmentStatus.InProgress,
       })
 
@@ -547,7 +589,10 @@ describe('Shipments API', () => {
     const SHIPMENT = gql`
       query ($id: Int!) {
         shipment(id: $id) {
-          shipmentRoute {
+          origin {
+            id
+          }
+          destination {
             id
           }
         }
@@ -557,7 +602,10 @@ describe('Shipments API', () => {
     const SHIPMENT_WITH_EXPORTS = gql`
       query ($id: Int!) {
         shipment(id: $id) {
-          shipmentRoute {
+          origin {
+            id
+          }
+          destination {
             id
           }
           exports {
@@ -590,9 +638,8 @@ describe('Shipments API', () => {
           })) as TypedGraphQLResponse<{ shipment: GqlShipment }>
 
           expect(res.errors).toBeUndefined()
-          expect(res.data?.shipment?.shipmentRoute.id).toBe(
-            shipment.shipmentRoute,
-          )
+          expect(res.data?.shipment?.origin.id).toBe(shipment.origin)
+          expect(res.data?.shipment?.destination.id).toBe(shipment.destination)
         })
 
         it('returns exports when admins ask for them', async () => {

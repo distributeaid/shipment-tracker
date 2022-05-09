@@ -9,22 +9,25 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript'
 import { Optional } from 'sequelize/types'
-import { shipmentRoutes } from '../data/shipmentRoutes'
+import { knownRegions } from '../data/regions'
 import { ShipmentPricing, ShipmentStatus } from '../server-internal-types'
 import Group from './group'
 import Offer from './offer'
+import ShipmentReceivingGroup from './shipment_receiving_group'
 import ShipmentReceivingHub from './shipment_receiving_hub'
 import ShipmentSendingHub from './shipment_sending_hub'
 
 export interface ShipmentAttributes {
   id: number
-  shipmentRoute: typeof shipmentRoutes[number]['id']
+  origin: keyof typeof knownRegions
+  destination: keyof typeof knownRegions
   labelYear: number
   labelMonth: number
   offerSubmissionDeadline?: Date | null
   status: ShipmentStatus
   sendingHubs: Group[]
   receivingHubs: Group[]
+  receivingGroups: Group[]
   statusChangeTime: Date
   pricing: ShipmentPricing
 }
@@ -42,7 +45,10 @@ export default class Shipment extends Model<
   public id!: number
 
   @Column(DataType.STRING)
-  public shipmentRoute!: typeof shipmentRoutes[number]['id']
+  public origin!: keyof typeof knownRegions
+
+  @Column(DataType.STRING)
+  public destination!: keyof typeof knownRegions
 
   @Column
   public labelYear!: number
@@ -64,6 +70,9 @@ export default class Shipment extends Model<
 
   @BelongsToMany(() => Group, () => ShipmentReceivingHub)
   public receivingHubs!: Group[]
+
+  @BelongsToMany(() => Group, () => ShipmentReceivingGroup)
+  public receivingGroups!: Group[]
 
   @Column
   public statusChangeTime!: Date

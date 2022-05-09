@@ -1,24 +1,23 @@
 query AllShipments($status: [ShipmentStatus!]) {
   listShipments(status: $status) {
     id
-    shipmentRoute {
+    origin {
       id
-      from {
-        country {
-          countrycode
-          shortName
-          alias
-        }
-        locality
+      country {
+        countryCode
+        shortName
+        alias
       }
-      to {
-        country {
-          countrycode
-          shortName
-          alias
-        }
-        locality
+      locality
+    }
+    destination {
+      id
+      country {
+        countryCode
+        shortName
+        alias
       }
+      locality
     }
     labelYear
     labelMonth
@@ -29,6 +28,10 @@ query AllShipments($status: [ShipmentStatus!]) {
       name
     }
     receivingHubs {
+      id
+      name
+    }
+    receivingGroups {
       id
       name
     }

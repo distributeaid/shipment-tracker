@@ -6,6 +6,7 @@ import Offer from './models/offer'
 import Pallet from './models/pallet'
 import Shipment from './models/shipment'
 import ShipmentExport from './models/shipment_export'
+import ShipmentReceivingGroup from './models/shipment_receiving_group'
 import ShipmentReceivingHub from './models/shipment_receiving_hub'
 import ShipmentSendingHub from './models/shipment_sending_hub'
 import UserAccount from './models/user_account'
@@ -68,5 +69,6 @@ sequelize.addModels([
   ShipmentExport,
   ShipmentReceivingHub,
   ShipmentSendingHub,
+  ShipmentReceivingGroup,
   Shipment,
 ])

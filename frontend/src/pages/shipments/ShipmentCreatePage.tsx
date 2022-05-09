@@ -41,8 +41,7 @@ const ShipmentCreatePage: FunctionComponent = () => {
         <header className="p-4 md:p-6 border-b border-gray-200">
           <h1 className="text-navy-800 text-3xl mb-2">New shipment</h1>
           <p className="text-gray-700 max-w-xl">
-            Fill out the form below to create a new shipment. You will be able
-            to add offers at a later time.
+            Fill out the form below to create a new shipment.
           </p>
         </header>
         <main className="p-4 md:p-6 max-w-lg pb-20">

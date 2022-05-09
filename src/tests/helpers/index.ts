@@ -1,5 +1,6 @@
 import { GraphQLResponse } from 'apollo-server-types'
 import { Maybe } from 'graphql/jsutils/Maybe'
+import { knownRegions } from '../../data/regions'
 import Group from '../../models/group'
 import Shipment from '../../models/shipment'
 import ShipmentReceivingHub from '../../models/shipment_receiving_hub'
@@ -32,15 +33,19 @@ async function createGroup(
 }
 
 async function createShipment(input: ShipmentCreateInput): Promise<Shipment> {
-  const [receivingHubs, sendingHubs] = await Promise.all([
+  const [receivingHubs, sendingHubs, receivingGroups] = await Promise.all([
     Group.findAll({ where: { id: input.receivingHubs } }),
     Group.findAll({ where: { id: input.sendingHubs } }),
+    Group.findAll({ where: { id: input.receivingGroups } }),
   ])
   const shipment = await Shipment.create({
     ...input,
     pricing: input.pricing || undefined,
     receivingHubs,
     sendingHubs,
+    receivingGroups,
+    origin: input.origin as keyof typeof knownRegions,
+    destination: input.destination as keyof typeof knownRegions,
   })
   await Promise.all([
     Promise.all(

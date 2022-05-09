@@ -23,8 +23,8 @@ You can also run the tests against the frontend development server. Export the e
 You can then run the tests using
 
     npx playwright test tests/playwright/unauthenticated
-    npx playwright test tests/playwright/authenticated/admin
     npx playwright test tests/playwright/authenticated/user/onboarding
+    npx playwright test tests/playwright/authenticated/admin
     npx playwright test tests/playwright/authenticated/user/offer
 
 This works on your local machine, as well as using the Docker container.
@@ -36,8 +36,8 @@ For developing tests it is helpful to run the [Playwright Inspector](https://pla
 Then launch the inspector **on your local machine** using
 
     PWDEBUG=1 npx playwright test tests/playwright/unauthenticated
-    PWDEBUG=1 npx playwright test tests/playwright/authenticated/admin
     PWDEBUG=1 npx playwright test tests/playwright/authenticated/user/onboarding
+    PWDEBUG=1 npx playwright test tests/playwright/authenticated/admin
     PWDEBUG=1 npx playwright test tests/playwright/authenticated/user/offer
 
 This cannot be done inside the Docker container, since it launches the Firefox browser.

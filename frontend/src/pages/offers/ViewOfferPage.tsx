@@ -94,7 +94,8 @@ const ViewOfferPage: FunctionComponent = () => {
                     </p>
                     <p className="text-gray-600 text-sm">
                       {formatListOfHubs(shipment.shipment.sendingHubs)} →{' '}
-                      {formatListOfHubs(shipment.shipment.receivingHubs)}
+                      {formatListOfHubs(shipment.shipment.receivingHubs)} →{' '}
+                      {formatListOfHubs(shipment.shipment.receivingGroups)}
                     </p>
                   </>
                 )}
@@ -102,7 +103,7 @@ const ViewOfferPage: FunctionComponent = () => {
               <ReadOnlyField label="Group">
                 <p className="text-gray-800">{sendingGroup?.group.name}</p>
                 <p className="text-gray-600 text-sm">
-                  {sendingGroup?.group.primaryLocation.city}
+                  {sendingGroup?.group.locality}
                 </p>
               </ReadOnlyField>
               <div>
@@ -115,8 +116,12 @@ const ViewOfferPage: FunctionComponent = () => {
           )}
         </header>
         <main className="flex-grow flex items-stretch">
-          {offer?.offer && (
-            <PalletsEditor offer={offer.offer} pallets={offer?.offer.pallets} />
+          {offer?.offer && shipment?.shipment && (
+            <PalletsEditor
+              shipment={shipment.shipment}
+              offer={offer.offer}
+              pallets={offer?.offer.pallets}
+            />
           )}
         </main>
       </div>

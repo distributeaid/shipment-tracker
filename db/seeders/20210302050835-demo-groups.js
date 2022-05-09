@@ -27,10 +27,8 @@ module.exports = {
           groupType: 'REGULAR',
           createdAt: new Date(),
           updatedAt: new Date(),
-          primaryLocation: JSON.stringify({
-            country: 'FR',
-            city: 'Calais',
-          }),
+          country: 'FR',
+          locality: 'Calais',
           primaryContact: JSON.stringify({
             name: 'Myriam McLaughlin',
           }),
@@ -41,10 +39,8 @@ module.exports = {
           groupType: 'REGULAR',
           createdAt: new Date(),
           updatedAt: new Date(),
-          primaryLocation: JSON.stringify({
-            country: 'FR',
-            city: 'Dunkerque',
-          }),
+          country: 'FR',
+          locality: 'Dunkerque',
           primaryContact: JSON.stringify({
             name: 'Meaghan Crist',
           }),
@@ -55,10 +51,8 @@ module.exports = {
           groupType: 'REGULAR',
           createdAt: new Date(),
           updatedAt: new Date(),
-          primaryLocation: JSON.stringify({
-            country: 'GB',
-            city: 'London',
-          }),
+          country: 'GB',
+          locality: 'London',
           primaryContact: JSON.stringify({
             name: 'Jacinthe Donnelly',
           }),

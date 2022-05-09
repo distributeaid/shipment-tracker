@@ -11,13 +11,20 @@ query AllGroups($captainId: Int, $groupType: [GroupType!]) {
       email
       signal
     }
-    primaryLocation {
+    country {
+      countryCode
+      shortName
+      alias
+    }
+    locality
+    servingRegions {
+      id
       country {
-        countrycode
+        countryCode
         shortName
         alias
       }
-      city
+      locality
     }
   }
 }
@@ -28,5 +35,14 @@ query AllGroupsMinimal($captainId: Int, $groupType: [GroupType!]) {
     name
     description
     groupType
+    servingRegions {
+      id
+      country {
+        countryCode
+        shortName
+        alias
+      }
+      locality
+    }
   }
 }
