@@ -54,7 +54,7 @@
     "lodash": "4.17.21",
     "nodemailer": "6.7.5",
     "nodemon": "2.0.16",
-    "passport": "0.5.2",
+    "passport": "0.5.3",
     "passport-cookie": "1.0.9",
     "pg": "8.7.3",
     "reflect-metadata": "0.1.13",
