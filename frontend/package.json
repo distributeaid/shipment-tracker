@@ -42,10 +42,10 @@
   },
   "devDependencies": {
     "@apollo/react-testing": "4.0.0",
-    "@babel/core": "7.17.10",
+    "@babel/core": "7.17.12",
     "@babel/helper-environment-visitor": "7.16.7",
-    "@babel/preset-env": "7.17.10",
-    "@babel/preset-typescript": "7.16.7",
+    "@babel/preset-env": "7.17.12",
+    "@babel/preset-typescript": "7.17.12",
     "@playwright/test": "1.22.1",
     "@testing-library/dom": "8.13.0",
     "@testing-library/react": "13.2.0",
