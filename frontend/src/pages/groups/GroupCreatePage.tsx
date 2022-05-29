@@ -65,6 +65,7 @@ const GroupCreatePage: FunctionComponent = () => {
             onSubmit={onSubmit}
             isLoading={mutationIsLoading}
             submitButtonLabel="Create group"
+            renderTermsAndConditions={true}
           />
         </main>
       </div>

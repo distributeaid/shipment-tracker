@@ -35,6 +35,7 @@ module.exports = {
             name: 'Myriam McLaughlin',
           }),
           captainId,
+          termsAndConditionsAcceptedAt: new Date(),
         },
         {
           name: 'Brighton',
@@ -49,6 +50,7 @@ module.exports = {
             name: 'Meaghan Crist',
           }),
           captainId,
+          termsAndConditionsAcceptedAt: new Date(),
         },
         {
           name: 'Calais',
@@ -63,6 +65,7 @@ module.exports = {
             name: 'Jacinthe Donnelly',
           }),
           captainId,
+          termsAndConditionsAcceptedAt: new Date(),
         },
       ],
       {},

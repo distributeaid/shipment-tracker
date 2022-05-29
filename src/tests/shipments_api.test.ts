@@ -35,6 +35,7 @@ describe('Shipments API', () => {
       groupType: GroupType.DaHub,
       primaryLocation: { country: 'GB', city: 'Bristol' },
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
+      termsAndConditionsAcceptedAt: new Date().toISOString(),
     })
     group2 = await createGroup({
       name: 'group 2',
@@ -44,6 +45,7 @@ describe('Shipments API', () => {
         name: 'Second Contact',
         email: '2ndcontact@example.com',
       },
+      termsAndConditionsAcceptedAt: new Date().toISOString(),
     })
   })
 
@@ -276,6 +278,7 @@ describe('Shipments API', () => {
             name: 'Third Contact',
             email: '3rdcontact@example.com',
           },
+          termsAndConditionsAcceptedAt: new Date().toISOString(),
         })
         group4 = await createGroup({
           name: 'group 4',
@@ -285,6 +288,7 @@ describe('Shipments API', () => {
             name: 'Fourth Contact',
             email: '4thcontact@example.com',
           },
+          termsAndConditionsAcceptedAt: new Date().toISOString(),
         })
         group5 = await createGroup({
           name: 'group 5',
@@ -294,6 +298,7 @@ describe('Shipments API', () => {
             name: 'Fifth Contact',
             email: '5thcontact@example.com',
           },
+          termsAndConditionsAcceptedAt: new Date().toISOString(),
         })
 
         // Create the shipment with two sending and receiving groups

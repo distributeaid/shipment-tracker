@@ -15,6 +15,7 @@ const commonGroupData = {
   primaryLocation: { country: 'FR', city: 'Calais' },
   primaryContact: { name: 'Contact', email: 'contact@example.com' },
   website: 'http://www.example.com',
+  termsAndConditionsAcceptedAt: new Date(),
 } as const
 
 describe('Groups API', () => {
@@ -77,6 +78,7 @@ describe('Groups API', () => {
           $primaryLocation: LocationInput!
           $primaryContact: ContactInfoInput!
           $website: String
+          $termsAndConditionsAcceptedAt: DateTime!
         ) {
           addGroup(
             input: {
@@ -86,6 +88,7 @@ describe('Groups API', () => {
               primaryLocation: $primaryLocation
               primaryContact: $primaryContact
               website: $website
+              termsAndConditionsAcceptedAt: $termsAndConditionsAcceptedAt
             }
           ) {
             id
@@ -96,10 +99,28 @@ describe('Groups API', () => {
         }
       `
 
+      const params1 = {
+        ...group1Params,
+        termsAndConditionsAcceptedAt:
+          group1Params.termsAndConditionsAcceptedAt.toISOString(),
+      }
+
+      const params2 = {
+        ...group2Params,
+        termsAndConditionsAcceptedAt:
+          group2Params.termsAndConditionsAcceptedAt.toISOString(),
+      }
+
+      const daHubParams = {
+        ...daHub,
+        termsAndConditionsAcceptedAt:
+          daHub.termsAndConditionsAcceptedAt.toISOString(),
+      }
+
       it('adds a new group', async () => {
         const res = await testServer.executeOperation({
           query: ADD_GROUP,
-          variables: group1Params,
+          variables: params1,
         })
 
         expect(res.errors).toBeUndefined()
@@ -110,12 +131,12 @@ describe('Groups API', () => {
       it('prevents group captains from creating more than 1 group', async () => {
         await testServer.executeOperation({
           query: ADD_GROUP,
-          variables: group1Params,
+          variables: params2,
         })
 
         const res = await testServer.executeOperation({
           query: ADD_GROUP,
-          variables: group2Params,
+          variables: params2,
         })
 
         expect(res.errors).not.toBeUndefined()
@@ -129,7 +150,7 @@ describe('Groups API', () => {
       it('allows admins to create DA hubs', async () => {
         const res = await adminTestServer.executeOperation({
           query: ADD_GROUP,
-          variables: daHub,
+          variables: daHubParams,
         })
 
         expect(res.errors).toBeUndefined()
@@ -143,6 +164,8 @@ describe('Groups API', () => {
           variables: {
             ...groupWithDescription,
             ...commonGroupData,
+            termsAndConditionsAcceptedAt:
+              commonGroupData.termsAndConditionsAcceptedAt.toISOString(),
           },
         })
 

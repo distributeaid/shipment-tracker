@@ -7,6 +7,7 @@ import { Contact } from '../input-validation/Contact'
 import { validateIdInput } from '../input-validation/idInputSchema'
 import { Location } from '../input-validation/Location'
 import {
+  DateTime,
   ID,
   NonEmptyShortString,
   OptionalValueOrUnset,
@@ -33,6 +34,7 @@ export const dbToGraphQL = (group: Group): ResolversTypes['Group'] => ({
         ? undefined
         : getCountryByCountryCode(group.primaryLocation.country),
   },
+  termsAndConditionsAcceptedAt: group.termsAndConditionsAcceptedAt,
 })
 
 // Group query resolvers
@@ -108,6 +110,7 @@ export const addGroupInputSchema = Type.Object(
     primaryContact: Contact,
     website: Type.Optional(URI),
     description: Description,
+    termsAndConditionsAcceptedAt: DateTime,
   },
   { additionalProperties: false },
 )
@@ -145,7 +148,12 @@ const addGroup: MutationResolvers['addGroup'] = async (
   }
 
   const group = await Group.create({
-    ...valid.value,
+    ...{
+      ...valid.value,
+      termsAndConditionsAcceptedAt: new Date(
+        valid.value.termsAndConditionsAcceptedAt,
+      ),
+    },
     captainId: context.auth.userId,
   })
 
@@ -193,7 +201,9 @@ const updateGroup: MutationResolvers['updateGroup'] = async (
     throw new ForbiddenError('Not permitted to update group')
   }
 
-  const updateAttributes: Partial<Omit<GroupAttributes, 'id'>> = {}
+  const updateAttributes: Partial<
+    Omit<GroupAttributes, 'id' | 'termsAndConditionsAcceptedAt'>
+  > = {}
 
   if (valid.value.name !== undefined) updateAttributes.name = valid.value.name
 

@@ -50,6 +50,7 @@ describe('Offers API', () => {
         groupType: GroupType.DaHub,
         primaryLocation: { country: 'GB', city: 'Bristol' },
         primaryContact: { name: 'Contact', email: 'contact@example.com' },
+        termsAndConditionsAcceptedAt: new Date().toISOString(),
       },
       captain.id,
     )
@@ -62,6 +63,7 @@ describe('Offers API', () => {
         name: 'Second Contact',
         email: '2ndcontact@example.com',
       },
+      termsAndConditionsAcceptedAt: new Date().toISOString(),
     })
     shipment = await createShipment({
       shipmentRoute: 'UkToGr',

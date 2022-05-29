@@ -24,6 +24,7 @@ export interface GroupAttributes {
   primaryContact: ContactInfo
   website?: string | null
   captainId: number
+  termsAndConditionsAcceptedAt: Date
 }
 
 export interface GroupCreationAttributes
@@ -62,6 +63,9 @@ export default class Group extends Model<
 
   @BelongsTo(() => UserAccount, 'captainId')
   public captain!: UserAccount
+
+  @Column
+  public termsAndConditionsAcceptedAt!: Date
 
   @CreatedAt
   @Column

@@ -53,6 +53,7 @@ describe('LineItems API', () => {
       primaryLocation: { country: 'GB', city: 'Bristol' },
       primaryContact: { name: 'Contact', email: 'contact@example.com' },
       captainId: captain.id,
+      termsAndConditionsAcceptedAt: new Date(),
     })
 
     shipment = await Shipment.create({

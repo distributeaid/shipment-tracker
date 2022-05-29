@@ -41,6 +41,7 @@ type Group {
   captainId: Int!
   createdAt: DateTime!
   updatedAt: DateTime!
+  termsAndConditionsAcceptedAt: DateTime!
 }
 
 input GroupCreateInput {
@@ -50,6 +51,7 @@ input GroupCreateInput {
   primaryLocation: LocationInput!
   primaryContact: ContactInfoInput!
   website: String
+  termsAndConditionsAcceptedAt: DateTime!
 }
 
 input GroupUpdateInput {

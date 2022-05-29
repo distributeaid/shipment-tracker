@@ -1,14 +1,16 @@
-import { FunctionComponent, ReactNode, useEffect } from 'react'
+import { FunctionComponent, ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextArea from '../../components/forms/TextArea'
 import TextField from '../../components/forms/TextField'
+import TermsAndConditions from '../../components/TermsAndConditions'
 import { GROUP_TYPE_OPTIONS } from '../../data/constants'
 import { useAuth } from '../../hooks/useAuth'
 import { useCountries } from '../../hooks/useCountries'
 import { GroupCreateInput, GroupQuery, GroupType } from '../../types/api-types'
 import { stripIdAndTypename } from '../../utils/types'
+import TermAndCondCheckbox from './TermAndCondCheckbox'
 
 interface Props {
   /**
@@ -28,6 +30,12 @@ interface Props {
    * The callback triggered when the user submits the form
    */
   onSubmit: (input: GroupCreateInput) => void
+
+  /**
+   * If true, checkbox for terms and conditions will be displayed
+   * We don't want to display checkbox terms and conditions on update page
+   */
+  renderTermsAndConditions: boolean
 }
 
 /**
@@ -36,6 +44,8 @@ interface Props {
 const GroupForm: FunctionComponent<Props> = (props) => {
   const { me: profile } = useAuth()
   const countries = useCountries()
+  const [showTermsAndCond, setShowTermsAndCond] = useState<boolean>(false)
+  const [timeTcChecked, setTimeTcChecked] = useState<Date | null>(null)
 
   const {
     register,
@@ -67,11 +77,39 @@ const GroupForm: FunctionComponent<Props> = (props) => {
       input.groupType = GroupType.Regular
     }
 
+    if (timeTcChecked !== null) {
+      input.termsAndConditionsAcceptedAt = timeTcChecked
+    }
+
     props.onSubmit(input)
   })
 
+  function handleTcChange() {
+    if (timeTcChecked === null) {
+      setTimeTcChecked(new Date())
+    } else {
+      setTimeTcChecked(null)
+    }
+  }
+
+  let termsAndConditions
+  if (props.renderTermsAndConditions) {
+    termsAndConditions = (
+      <TermAndCondCheckbox
+        handleTcChange={handleTcChange}
+        timeTcChecked={timeTcChecked}
+        setShowTermsAndCond={setShowTermsAndCond}
+      />
+    )
+  } else {
+    termsAndConditions = null
+  }
+
   return (
     <form onSubmit={submitForm}>
+      {showTermsAndCond ? (
+        <TermsAndConditions close={() => setShowTermsAndCond(false)} />
+      ) : null}
       <TextField
         label="Group name"
         name="name"
@@ -163,13 +201,17 @@ const GroupForm: FunctionComponent<Props> = (props) => {
           register={register}
           errors={errors}
         />
+        {termsAndConditions}
       </fieldset>
 
       <Button
         variant="primary"
         type="submit"
         className="mt-6"
-        disabled={props.isLoading}
+        disabled={
+          props.isLoading ||
+          (timeTcChecked === null && props.renderTermsAndConditions)
+        }
       >
         {props.submitButtonLabel}
       </Button>
