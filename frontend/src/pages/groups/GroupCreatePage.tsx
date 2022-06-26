@@ -1,6 +1,7 @@
 import { FunctionComponent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import { useUser } from '../../hooks/useUser'
 import LayoutWithNav from '../../layouts/LayoutWithNav'
 import {
   AllGroupsDocument,
@@ -12,8 +13,9 @@ import { setEmptyFieldsToUndefined } from '../../utils/setEmptyFieldsToUndefined
 import GroupForm from './GroupForm'
 
 const GroupCreatePage: FunctionComponent = () => {
-  const { refreshMe } = useAuth()
+  const { refreshMe, me: profile } = useAuth()
   const navigate = useNavigate()
+  const user = useUser()
 
   const [addGroup, { loading: mutationIsLoading, error: mutationError }] =
     useCreateGroupMutation()
@@ -29,6 +31,14 @@ const GroupCreatePage: FunctionComponent = () => {
         // Fetch the updated list of groups
         refetchQueries: [{ query: AllGroupsDocument }],
       })
+
+      // updated user with termsAndConditionsAcceptedAt time
+      if (profile != undefined) {
+        user.updateTermsAndConditions({
+          id: profile.id,
+          termsAndConditionsAcceptedAt: input.termsAndConditionsAcceptedAt,
+        })
+      }
 
       // Because we cache the association between a group captain and their
       // group, we need to refresh that association when they create their first
@@ -65,6 +75,7 @@ const GroupCreatePage: FunctionComponent = () => {
             onSubmit={onSubmit}
             isLoading={mutationIsLoading}
             submitButtonLabel="Create group"
+            renderTermsAndConditions={true}
           />
         </main>
       </div>

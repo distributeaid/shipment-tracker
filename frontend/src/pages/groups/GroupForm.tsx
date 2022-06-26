@@ -3,12 +3,14 @@ import {
   PropsWithChildren,
   ReactNode,
   useEffect,
+  useState,
 } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../components/Button'
 import SelectField from '../../components/forms/SelectField'
 import TextArea from '../../components/forms/TextArea'
 import TextField from '../../components/forms/TextField'
+import TermsAndConditions from '../../components/TermsAndConditions'
 import { GROUP_TYPE_OPTIONS } from '../../data/constants'
 import { useAuth } from '../../hooks/useAuth'
 import { useCountries } from '../../hooks/useCountries'
@@ -16,6 +18,7 @@ import { useRegions } from '../../hooks/useRegions'
 import { GroupCreateInput, GroupQuery, GroupType } from '../../types/api-types'
 import { formatRegion } from '../../utils/format'
 import { stripIdAndTypename } from '../../utils/types'
+import TermsAndCondCheckbox from './TermsAndCondCheckbox'
 
 interface Props {
   /**
@@ -35,6 +38,11 @@ interface Props {
    * The callback triggered when the user submits the form
    */
   onSubmit: (input: GroupCreateInput) => void
+  /**
+   * If true, checkbox for terms and conditions will be displayed
+   * We don't want to display checkbox terms and conditions on update page
+   */
+  renderTermsAndConditions: boolean
 }
 
 /**
@@ -44,6 +52,10 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
   const { me: profile } = useAuth()
   const countries = useCountries()
   const regions = useRegions()
+  const [showTermsAndCond, setShowTermsAndCond] = useState<boolean>(false)
+  const [timeTcChecked, setTimeTcChecked] = useState<Date | null>(null)
+
+  console.log(profile)
 
   const {
     register,
@@ -73,6 +85,10 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
       input.groupType = GroupType.Regular
     }
 
+    if (timeTcChecked !== null) {
+      //input.termsAndConditionsAcceptedAt = timeTcChecked
+    }
+
     props.onSubmit({
       ...input,
       // FIXME: for some reasons, servingRegions will be `false` in no item is selected
@@ -81,8 +97,32 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
     })
   })
 
+  function handleTcChange() {
+    if (timeTcChecked === null) {
+      setTimeTcChecked(new Date())
+    } else {
+      setTimeTcChecked(null)
+    }
+  }
+
+  let termsAndConditions
+  if (props.renderTermsAndConditions) {
+    termsAndConditions = (
+      <TermsAndCondCheckbox
+        handleTcChange={handleTcChange}
+        timeTcChecked={timeTcChecked}
+        setShowTermsAndCond={setShowTermsAndCond}
+      />
+    )
+  } else {
+    termsAndConditions = null
+  }
+
   return (
     <form onSubmit={submitForm}>
+      {showTermsAndCond ? (
+        <TermsAndConditions close={() => setShowTermsAndCond(false)} />
+      ) : null}
       <fieldset className="space-y-4">
         <TextField
           label="Group name"
@@ -174,6 +214,7 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
           register={register}
           errors={errors}
         />
+        {termsAndConditions}
       </fieldset>
 
       <fieldset className="mt-12">
@@ -199,7 +240,10 @@ const GroupForm: FunctionComponent<PropsWithChildren<Props>> = (props) => {
         variant="primary"
         type="submit"
         className="mt-6"
-        disabled={props.isLoading}
+        disabled={
+          props.isLoading ||
+          (timeTcChecked === null && props.renderTermsAndConditions)
+        }
       >
         {props.submitButtonLabel}
       </Button>

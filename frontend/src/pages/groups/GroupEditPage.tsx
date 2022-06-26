@@ -75,6 +75,7 @@ const GroupEditPage: FunctionComponent = () => {
             submitButtonLabel="Save changes"
             onSubmit={onSubmit}
             defaultValues={originalGroupData}
+            renderTermsAndConditions={false}
           />
         </main>
       </div>
