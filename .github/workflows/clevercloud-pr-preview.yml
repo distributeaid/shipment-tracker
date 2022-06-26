@@ -4,6 +4,7 @@ name: PR-preview
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
     inputs:
       restartApp:

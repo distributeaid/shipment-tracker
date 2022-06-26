@@ -2,6 +2,14 @@ name: Frontend unit tests
 
 on:
   push:
+    branches:
+      - saga
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/codesee-arch-diagram.yml'
+      - '.github/workflows/frontend-unit-tests.yml'
+  pull_request:
+    types: [opened, synchronize, reopened]
     paths:
       - 'frontend/**'
       - '.github/workflows/codesee-arch-diagram.yml'
