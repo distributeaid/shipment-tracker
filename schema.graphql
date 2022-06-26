@@ -42,6 +42,7 @@ input GroupCreateInput {
   primaryContact: ContactInfoInput!
   website: String
   servingRegions: [ID!]
+  termsAndConditionsAcceptedAt: DateTime
 }
 
 input GroupUpdateInput {

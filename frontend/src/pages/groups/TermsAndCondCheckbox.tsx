@@ -24,7 +24,7 @@ const TermsAndCondCheckbox: FunctionComponent<Props> = ({
         className="cursor-pointer text-blue-500"
         onClick={() => setShowTermsAndCond(true)}
       >
-        &nbsp;I accept terms and conditions
+        I accept terms and conditions
       </a>
     </div>
   )

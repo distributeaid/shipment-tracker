@@ -16,7 +16,10 @@ import setNewPasswordUsingTokenAndEmail from '../../routes/password/new'
 import sendVerificationTokenByEmail from '../../routes/password/token'
 import registerUser from '../../routes/register'
 import confirmRegistrationByEmail from '../../routes/register/confirm'
-import { adminUpdateUser } from '../../routes/user/update'
+import {
+  adminUpdateUser,
+  updateTermsAndConditions,
+} from '../../routes/user/update'
 import { adminListUsers } from '../../routes/users'
 import sendShipmentExportCsv from '../../sendShipmentExportCsv'
 import { addRequestId } from '../addRequestId'
@@ -90,6 +93,7 @@ export const backend = ({
 
   app.get('/users', cookieAuth, adminListUsers)
   app.patch('/user/:id', cookieAuth, adminUpdateUser)
+  app.patch('/user/termsandcond/:id', cookieAuth, updateTermsAndConditions)
 
   app.use(compression())
 
