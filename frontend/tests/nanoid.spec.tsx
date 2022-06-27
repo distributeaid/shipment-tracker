@@ -3,7 +3,6 @@
  */
 import { render } from '@testing-library/react'
 import { nanoid } from 'nanoid'
-import * as React from 'react'
 
 describe('nanoid()', () => {
   it('should generate a usable nanoid', () => {
