@@ -55,6 +55,7 @@ jobs:
         run: yarn --frozen-lockfile
 
       - name: Install playwright (Firefox)
+        working-directory: frontend
         run: npx playwright install firefox
 
       - name: Build
