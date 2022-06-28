@@ -2,6 +2,10 @@ name: Ensure source code is properly formatted
 
 on: pull_request
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   style:
     runs-on: ubuntu-latest
@@ -9,7 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - uses: actions/setup-node@v3
         with:
@@ -35,5 +41,5 @@ jobs:
             git config --global user.name "GitHub Actions"
             git add -A
             git commit -m "style: ensure source code is properly formatted"
-            git push
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
           fi
