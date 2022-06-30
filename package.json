@@ -65,7 +65,7 @@
   "devDependencies": {
     "@distributeaid/shared-config": "distributeaid/shared-config",
     "@graphql-codegen/add": "3.1.1",
-    "@graphql-codegen/cli": "2.6.3",
+    "@graphql-codegen/cli": "2.6.4",
     "@graphql-codegen/typescript": "2.5.1",
     "@graphql-codegen/typescript-operations": "2.4.2",
     "@graphql-codegen/typescript-react-apollo": "3.2.16",
