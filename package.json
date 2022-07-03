@@ -83,7 +83,7 @@
     "@types/passport": "1.0.9",
     "@types/supertest": "2.0.12",
     "@types/uuid": "8.3.4",
-    "@types/validator": "13.7.3",
+    "@types/validator": "13.7.4",
     "@types/ws": "8.5.3",
     "clever-tools": "2.9.1",
     "commander": "9.3.0",
