@@ -4,6 +4,7 @@
 [![Frontend end-to-end tests](https://github.com/distributeaid/shipment-tracker/actions/workflows/frontend-e2e-tests.yml/badge.svg)](https://github.com/distributeaid/shipment-tracker/actions/workflows/frontend-e2e-tests.yml)
 [![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier/)
+[![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/distributeaid/shipment-tracker)](https://mergify.io)
 
 # Distribute Aid Shipment Tracker
 

@@ -1,0 +1,13 @@
+pull_request_rules:
+  - name: Automatic merge dependency PRs when all status checks pass
+    conditions:
+      - author~=^(dependabot\[bot\]|renovate\[bot\])$
+      - status-success=tests
+      - status-success=style
+    actions:
+      merge:
+        method: rebase
+        rebase_fallback: squash
+      label:
+        add:
+          - mergify
