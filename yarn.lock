@@ -1421,10 +1421,10 @@
   dependencies:
     any-observable "^0.3.0"
 
-"@sinclair/typebox@0.24.9":
-  version "0.24.9"
-  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.24.9.tgz#5e66a3c9adff81efe06a80dd189fca2810987588"
-  integrity sha512-ID/my8r4g0fp9aefo+bmEApgEgG6Sid42i5bmBXXXGqOK00aTMjHTNwSV2zTt7ddJn0IcevUxS7JzFn0WjwrGg==
+"@sinclair/typebox@0.24.10":
+  version "0.24.10"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.24.10.tgz#a2459ccf83cfe83085022563b13d119ba5df73b6"
+  integrity sha512-+0jinSndYKPW9xGO/hj8M/y+i8g9c7RBiXp+st9ZWaYe9Fn2yNC1uQ1JwSHhm6hyQPdriC4R069K9AGGP5ChYg==
 
 "@sinclair/typebox@^0.23.3":
   version "0.23.5"
