@@ -14,7 +14,7 @@
   "license": "AGPL-3.0-only",
   "dependencies": {
     "@apollo/client": "3.6.8",
-    "@craco/craco": "6.4.4",
+    "@craco/craco": "6.4.5",
     "@hookform/error-message": "2.0.0",
     "@types/body-scroll-lock": "3.1.0",
     "@types/classnames": "2.3.1",
