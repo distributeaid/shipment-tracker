@@ -1403,10 +1403,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@sinclair/typebox@0.24.13":
-  version "0.24.13"
-  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.24.13.tgz#4705841912ea7ddfb8795bac3db8df17948f5277"
-  integrity sha512-MzpUqze7Gmj1ZNNanFov1QtyXu+aPYV6KZILEqgKnKlbMTgS6HRZ6aAlaEmrFPHSN4KG+yoOACDkJqA+/oXwFQ==
+"@sinclair/typebox@0.24.14":
+  version "0.24.14"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.24.14.tgz#463720b9209ddf519454ba46e27f86915c8f1b04"
+  integrity sha512-+dld7HhmwiDD8nEYqdUQ/OpCMmiFnuu0huWbZ18hY6RL7ByIc4tdvvEDXPJJyCbbyaKR0R7P6gWmmdpv4btX7A==
 
 "@sinclair/typebox@^0.23.3":
   version "0.23.5"
