@@ -86,7 +86,7 @@
     "@types/validator": "13.7.4",
     "@types/ws": "8.5.3",
     "clever-tools": "2.9.1",
-    "commander": "9.3.0",
+    "commander": "9.4.0",
     "graphql-tag": "2.12.6",
     "husky": "8.0.1",
     "jest": "28.1.3",
