@@ -20,6 +20,7 @@ export interface UserAccountAttributes {
   isAdmin?: boolean
   isConfirmed?: boolean
   name: string
+  termsAndConditionsAcceptedAt?: Date
 }
 
 export interface UserAccountCreationAttributes
@@ -56,6 +57,9 @@ export default class UserAccount extends Model<
   @Default(false)
   @Column
   public isConfirmed!: boolean
+
+  @Column
+  public termsAndConditionsAcceptedAt!: Date
 
   @CreatedAt
   @Column
